@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: spring-boot-jersey
+Implementation-Version: 1.0-SNAPSHOT
+Built-By: David
+Implementation-Vendor-Id: com.jersey
+Build-Jdk: 1.8.0_60
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+Main-Class: com.jersey.Application
+
