@@ -3,18 +3,23 @@ package crac.controllers;
 import crac.models.HelloWorld;
 import crac.models.HelloWorldDAO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@RequestMapping("/")
 public class HelloWorldController {
 
   // ------------------------
   // PUBLIC METHODS
   // ------------------------
-  
+	  
   /**
    * /create  --> Create a new user and save it in the database.
    * 
