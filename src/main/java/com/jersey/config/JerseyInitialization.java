@@ -7,6 +7,6 @@ public class JerseyInitialization extends ResourceConfig {
      * Register JAX-RS application components.
      */
     public JerseyInitialization(){
-        this.packages("com.jersey.resources");
+        this.packages("com.jersey.controllers");
     }
 }
