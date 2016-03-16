@@ -1,13 +1,26 @@
-*.class
+# directories
+.settings/
+.target/
+.idea/
+.worksheet/
+bin/
+build/
+dist/
+logs/
+node_modules/
+out/
+target/
+tmp/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-/target/
+# files
+*.iml
+*/.DS_Store
+\#*
+.cache
+.classpath
+.DS_Store
+.history
+.idea
+.idea_modules
+.project
+RUNNING_PID

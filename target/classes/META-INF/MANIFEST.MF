@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
-Implementation-Title: spring-boot-jersey
-Implementation-Version: 1.0-SNAPSHOT
+Implementation-Title: CrAc
+Implementation-Version: 0.0.1-SNAPSHOT
 Built-By: hondl
-Implementation-Vendor-Id: com.jersey
+Implementation-Vendor-Id: crac
 Build-Jdk: 1.8.0_73
 Created-By: Maven Integration for Eclipse
 Implementation-Vendor: Pivotal Software, Inc.
-Main-Class: com.jersey.Application
+Main-Class: crac.Application
 
