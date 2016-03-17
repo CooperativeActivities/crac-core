@@ -17,7 +17,7 @@
 		<relativePath />
 	</parent>
 
-	<dependencies>		
+	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -50,7 +50,7 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.4</version>
 		</dependency>
-		
+
 		<!-- Provided (for embedded war support) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -79,6 +79,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<url>${config.tomcat.manager.url}</url>
+					<server>${config.tomcat.authentication.id}</server>
+					<path>crac-core</path>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
