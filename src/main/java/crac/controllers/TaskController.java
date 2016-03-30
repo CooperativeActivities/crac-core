@@ -5,10 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import crac.daos.TaskDAO;
+import crac.daos.UserDAO;
 import crac.models.Task;
-import crac.models.TaskDAO;
 import crac.models.User;
-import crac.models.UserDAO;
 
 @Controller
 @RequestMapping("/task")

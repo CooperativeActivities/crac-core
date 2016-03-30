@@ -1,10 +1,11 @@
-package crac.models;
+package crac.daos;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-public interface HelloWorldDAO extends CrudRepository<HelloWorld, Long> {
+import crac.models.User;
 
+@Transactional
+public interface UserDAO extends CrudRepository<User, Long>{
 
 }

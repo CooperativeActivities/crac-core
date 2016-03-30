@@ -10,7 +10,7 @@ public class MainController {
   @RequestMapping("/test")
   @ResponseBody
   public String index() {
-	  return "Hello World! Spring Boot + Hibernate! <br/> Click on <a href=\"hello-world/getAll\">me</a> to get all safed HelloWorld-data sets";
+	  return "Hello World! This is just a test!";
   }
 
 }

@@ -16,12 +16,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.daos.CompetenceDAO;
+import crac.daos.TaskDAO;
+import crac.daos.UserDAO;
 import crac.models.Competence;
-import crac.models.CompetenceDAO;
 import crac.models.Task;
-import crac.models.TaskDAO;
 import crac.models.User;
-import crac.models.UserDAO;
 
 @RestController
 @RequestMapping("/user")
@@ -78,7 +78,6 @@ public class UserController {
 	    try {
 			jsonInString = mapper.writeValueAsString(myUser);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return jsonInString;
@@ -100,9 +99,58 @@ public class UserController {
 			e.printStackTrace();
 		}
 		
-		return "{\"user\":\""+myUser.getName()+"\",\"created\":\"true\"}";
+		return "{\"user\":\""+myUser.getId()+"\",\"name\":\""+myUser.getName()+"\",\"created\":\"true\"}";
 		
 	}
+	
+	@RequestMapping(value = "/{user_id}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public String destroy(@PathVariable(value="user_id") Long id) {
+		User deleteUser = null;
+		long userId = 0;
+		String userName = "";
+		try {
+			deleteUser = userDAO.findOne(id);
+			userId = deleteUser.getId();
+			userName = deleteUser.getName();
+			userDAO.delete(deleteUser);
+	    }
+	    catch (Exception ex) {
+	      System.out.println("Error deleting the user: " + ex.toString());
+	    }
+		
+		return "{\"user\":\""+userId+"\",\"name\":\""+userName+"\",\"deleted\":\"true\"}";
+		
+	}
+	
+	@RequestMapping(value = "/{user_id}", method = RequestMethod.PUT, produces="application/json", consumes="application/json")
+	@ResponseBody
+	public String update(@RequestBody String json, @PathVariable(value="user_id") Long id) {
+		ObjectMapper mapper = new ObjectMapper();
+		User updatedUser = null;
+		User oldUser = null;
+		String oldName = "";
+		try {
+			updatedUser = mapper.readValue(json, User.class);
+			oldUser = userDAO.findOne(id);
+			
+			oldName = oldUser.getName();
+			if(updatedUser.getName() != null){oldUser.setName(updatedUser.getName());}
+			if(updatedUser.getPassword() != null){oldUser.setPassword(updatedUser.getPassword());}
+			
+			userDAO.save(oldUser);
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "{\"user\":\""+oldUser.getId()+"\",\"old_name\":\""+oldName+"\",\"new_name\":\""+oldUser.getName()+"\",\"updated\":\"true\"}";
+		
+	}
+	
 	
 	/*TODO:Rewrite when login is done
 	 * @RequestMapping("/addCompetence")
