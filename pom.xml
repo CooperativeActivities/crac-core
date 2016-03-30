@@ -3,6 +3,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+
+	<properties>
+		<config.tomcat.manager.url>http://localhost:8080/manager/text</config.tomcat.manager.url>
+		<config.tomcat.authentication.id>admin</config.tomcat.authentication.id>
+		<config.tomcat.context.path>/crac-core</config.tomcat.context.path>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<start-class>crac.Application</start-class>
+	</properties>
+
+
 	<groupId>crac</groupId>
 	<artifactId>crac-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -80,11 +91,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<start-class>crac.Application</start-class>
-	</properties>
 
 	<build>
 		<plugins>
