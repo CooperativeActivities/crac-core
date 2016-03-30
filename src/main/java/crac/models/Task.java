@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 @Table(name = "tasks")
 public class Task {
 	
@@ -33,10 +34,15 @@ public class Task {
     private Set<User> users;
     
     @Autowired
+    @NotNull
     private String name;
+    
+    @Autowired
+    @NotNull
+    private String description;
 
     @Autowired
-    @ManyToOne  
+    @ManyToOne
     @JoinColumn(name = "creator_id")  
     private User creator;
 
@@ -44,12 +50,17 @@ public class Task {
 		this.name = "";
 	}
 
-
-
 	public Task(String name) {
 		this.name = name;
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
@@ -61,7 +72,13 @@ public class Task {
 		this.name = name;
 	}
 
+	public String getDescription() {
+		return description;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public Set<User> getUsers() {
 		return users;

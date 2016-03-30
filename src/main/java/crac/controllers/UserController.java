@@ -44,7 +44,7 @@ public class UserController {
 	    	userList = userDAO.findAll();
 	    }
 	    catch (Exception ex) {
-	      System.out.println("Error creating the user: " + ex.toString());
+	      System.out.println("Error fetching the users: " + ex.toString());
 	    }
 	    
 	    String jsonInString = null;
@@ -72,7 +72,7 @@ public class UserController {
 			myUser = userDAO.findOne(id);
 	    }
 	    catch (Exception ex) {
-	      System.out.println("Error creating the user: " + ex.toString());
+	      System.out.println("Error fetching the user: " + ex.toString());
 	    }
 		
 	    try {
