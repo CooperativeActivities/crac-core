@@ -31,7 +31,7 @@ public class Task {
 	
 
 	@ManyToMany(mappedBy="openTasks")
-    private Set<User> users;
+    private Set<CracUser> users;
     
     @Autowired
     @NotNull
@@ -44,7 +44,7 @@ public class Task {
     @Autowired
     @ManyToOne
     @JoinColumn(name = "creator_id")  
-    private User creator;
+    private CracUser creator;
 
 	public Task() {
 		this.name = "";
@@ -80,25 +80,25 @@ public class Task {
 		this.description = description;
 	}
 
-	public Set<User> getUsers() {
+	public Set<CracUser> getUsers() {
 		return users;
 	}
 
 
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(Set<CracUser> users) {
 		this.users = users;
 	}
 
 
 
-	public User getCreator() {
+	public CracUser getCreator() {
 		return creator;
 	}
 
 
 
-	public void setCreator(User creator) {
+	public void setCreator(CracUser creator) {
 		this.creator = creator;
 	}
     

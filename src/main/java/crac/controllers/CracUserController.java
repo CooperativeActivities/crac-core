@@ -18,17 +18,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
-import crac.daos.UserDAO;
+import crac.daos.CracUserDAO;
 import crac.models.Competence;
 import crac.models.Task;
-import crac.models.User;
+import crac.models.CracUser;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class CracUserController {
 	
 	@Autowired
-	  private UserDAO userDAO;
+	  private CracUserDAO userDAO;
 	 
 	 @Autowired
 	  private CompetenceDAO competenceDAO;
@@ -39,7 +39,7 @@ public class UserController {
 	@RequestMapping(value = "/", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public String index() {
-		Iterable<User> userList = new ArrayList<User>();
+		Iterable<CracUser> userList = new ArrayList<CracUser>();
 	    try {
 	    	userList = userDAO.findAll();
 	    }
@@ -64,7 +64,7 @@ public class UserController {
 	@ResponseBody
 	public String show(@PathVariable(value="user_id") Long id) {
 		
-		User myUser = null;
+		CracUser myUser = null;
 		ObjectMapper mapper = new ObjectMapper();		
 		String jsonInString = null;
 		
@@ -87,9 +87,9 @@ public class UserController {
 	@ResponseBody
 	public String create(@RequestBody String json) {
 		ObjectMapper mapper = new ObjectMapper();
-		User myUser = null;
+		CracUser myUser = null;
 		try {
-			myUser = mapper.readValue(json, User.class);
+			myUser = mapper.readValue(json, CracUser.class);
 			userDAO.save(myUser);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
@@ -106,7 +106,7 @@ public class UserController {
 	@RequestMapping(value = "/{user_id}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public String destroy(@PathVariable(value="user_id") Long id) {
-		User deleteUser = null;
+		CracUser deleteUser = null;
 		long userId = 0;
 		String userName = "";
 		try {
@@ -127,11 +127,11 @@ public class UserController {
 	@ResponseBody
 	public String update(@RequestBody String json, @PathVariable(value="user_id") Long id) {
 		ObjectMapper mapper = new ObjectMapper();
-		User updatedUser = null;
-		User oldUser = null;
+		CracUser updatedUser = null;
+		CracUser oldUser = null;
 		String oldName = "";
 		try {
-			updatedUser = mapper.readValue(json, User.class);
+			updatedUser = mapper.readValue(json, CracUser.class);
 			oldUser = userDAO.findOne(id);
 			
 			oldName = oldUser.getName();

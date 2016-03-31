@@ -30,7 +30,7 @@ public class Competence {
     private long id;
 
 	@ManyToMany(mappedBy="competencies")
-    private Set<User> users;
+    private Set<CracUser> users;
 	
 	@NotNull
 	@Autowired
@@ -39,7 +39,7 @@ public class Competence {
 	@Autowired
     @ManyToOne  
     @JoinColumn(name = "creator_id")  
-    private User creator;
+    private CracUser creator;
 
 	public Competence(String name) {
 		this.name = name;
@@ -65,19 +65,19 @@ public class Competence {
 		this.name = name;
 	}
 
-	public Set<User> getUsers() {
+	public Set<CracUser> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(Set<CracUser> users) {
 		this.users = users;
 	}
 
-	public User getCreator() {
+	public CracUser getCreator() {
 		return creator;
 	}
 
-	public void setCreator(User creator) {
+	public void setCreator(CracUser creator) {
 		this.creator = creator;
 	}
 	

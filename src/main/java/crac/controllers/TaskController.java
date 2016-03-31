@@ -18,9 +18,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
-import crac.daos.UserDAO;
+import crac.daos.CracUserDAO;
 import crac.models.Task;
-import crac.models.User;
+import crac.models.CracUser;
 
 @RestController
 @RequestMapping("/task")
@@ -30,7 +30,7 @@ public class TaskController {
 	  private TaskDAO taskDAO;
 	  
 	  @Autowired
-	  private UserDAO userDAO;
+	  private CracUserDAO userDAO;
 
 		@RequestMapping(value = "/", method = RequestMethod.GET, produces="application/json")
 		@ResponseBody

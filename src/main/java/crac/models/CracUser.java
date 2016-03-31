@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Entity
 @Table(name = "users")
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class User {
+public class CracUser {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -60,14 +60,14 @@ public class User {
     inverseJoinColumns = { @JoinColumn(name = "task_id") })
     private Set<Task> openTasks;
 
-	public User(String name, String password) {
+	public CracUser(String name, String password) {
 		this.name = name;
 		this.password = password;
 		this.competencies = null;
 		this.openTasks = null;
 	}
 
-	public User() {
+	public CracUser() {
 		this.name = "";
 		this.password = "";
 		this.competencies = null;
