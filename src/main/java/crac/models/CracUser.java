@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Table(name = "users")
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class CracUser {
+	
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -95,7 +97,8 @@ public class CracUser {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+		this.password = bcryptEncoder.encode(password);
 	}
 
 	public Set<Competence> getCompetencies() {

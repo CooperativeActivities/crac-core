@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import crac.daos.CracUserDAO;
 import crac.models.CracUser;
@@ -25,7 +26,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
   @Override
   public void init(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService());
+    auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
   }
 
   @Bean

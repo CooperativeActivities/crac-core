@@ -50,8 +50,9 @@ public class Task {
 		this.name = "";
 	}
 
-	public Task(String name) {
+	public Task(String name, String description) {
 		this.name = name;
+		this.description = description;
 	}
 
 	public long getId() {
