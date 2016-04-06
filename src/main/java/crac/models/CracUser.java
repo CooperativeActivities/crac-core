@@ -44,11 +44,11 @@ public class CracUser {
 	
 	@Autowired
 	@OneToMany(mappedBy="creator", cascade=CascadeType.ALL)  
-    private Set<Task> created_tasks; 
+    private Set<Task> createdTasks; 
 	
 	@Autowired
 	@OneToMany(mappedBy="creator", cascade=CascadeType.ALL)  
-    private Set<Competence> created_competences; 
+    private Set<Competence> createdCompetences; 
 	
 	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL })
@@ -117,20 +117,20 @@ public class CracUser {
 		this.openTasks = openTasks;
 	}
 
-	public Set<Task> getCreated_tasks() {
-		return created_tasks;
+	public Set<Task> getCreatedTasks() {
+		return createdTasks;
 	}
 
-	public void setCreated_tasks(Set<Task> created_tasks) {
-		this.created_tasks = created_tasks;
+	public void setCreatedTasks(Set<Task> createdTasks) {
+		this.createdTasks = createdTasks;
 	}
 
-	public Set<Competence> getCreated_competences() {
-		return created_competences;
+	public Set<Competence> getCreatedCompetences() {
+		return createdCompetences;
 	}
 
-	public void setCreated_competences(Set<Competence> created_competences) {
-		this.created_competences = created_competences;
+	public void setCreatedCompetences(Set<Competence> createdCompetences) {
+		this.createdCompetences = createdCompetences;
 	}
 	
 	

@@ -1,0 +1,9 @@
+This is a small starter-guide to make the WIP-Backend for CrAc as accessable as possible (if used locally):
+
+1) start Apache and MySQL (use xampp or an application of choice)
+2) import the project as maven-project
+3) run the "Application.java" file as a standard java-application
+4) change the following line in the "application.properties"-file or the hibernate will drop and recreate the database everytime the app starts: 
+   "spring.jpa.hibernate.ddl-auto = create" to "spring.jpa.hibernate.ddl-auto = update"
+   The initial create-statement is for importing the standard user.
+5) Use a REST-client like "Postman" to access functionality, use the standard user to authenticate.

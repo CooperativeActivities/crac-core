@@ -7,7 +7,5 @@ import crac.models.CracUser;
 
 @Transactional
 public interface CracUserDAO extends CrudRepository<CracUser, Long>{
-
-	 public CracUser findByName(String name);
-	
+	 public CracUser findByName(String name);	
 }

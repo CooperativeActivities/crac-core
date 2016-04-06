@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,10 @@ import crac.models.Competence;
 import crac.models.Task;
 import crac.models.CracUser;
 
+/**
+ * REST controller for managing users.
+ */
+
 @RestController
 @RequestMapping("/user")
 public class CracUserController {
@@ -38,172 +43,125 @@ public class CracUserController {
 	@Autowired
 	private TaskDAO taskDAO;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
+	/**
+	 * GET / or blank -> get all users.
+	 */
+
+	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public String index() {
-		Iterable<CracUser> userList = new ArrayList<CracUser>();
-		try {
-			userList = userDAO.findAll();
-		} catch (Exception ex) {
-			System.out.println("Error fetching the users: " + ex.toString());
-		}
-
-		String jsonInString = null;
-
+	public ResponseEntity<String> index() throws JsonProcessingException {
+		Iterable<CracUser> userList = userDAO.findAll();
 		ObjectMapper mapper = new ObjectMapper();
-		try {
-			jsonInString = mapper.writeValueAsString(userList);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return jsonInString;
+		return ResponseEntity.ok().body(mapper.writeValueAsString(userList));
 	}
+
+	/**
+	 * GET /{user_id} -> get the user with given ID.
+	 */
 
 	@RequestMapping(value = "/{user_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public String show(@PathVariable(value = "user_id") Long id) {
-
-		CracUser myUser = null;
+	public ResponseEntity<String> show(@PathVariable(value = "user_id") Long id) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString = null;
-
-		try {
-			myUser = userDAO.findOne(id);
-		} catch (Exception ex) {
-			System.out.println("Error fetching the user: " + ex.toString());
-		}
-
-		try {
-			jsonInString = mapper.writeValueAsString(myUser);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return jsonInString;
+		CracUser myUser = userDAO.findOne(id);
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myUser));
 	}
+
+	/**
+	 * POST / -> create a new user.
+	 */
 
 	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public String create(@RequestBody String json) {
+	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		CracUser myUser = null;
-
-		try {
-			myUser = mapper.readValue(json, CracUser.class);
-			if (userDAO.findByName(myUser.getName()) == null) {
-				userDAO.save(myUser);
-			} else {
-				return "{\"created\":\"false\", \"exception\":\"name already exists\"}";
-			}
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		CracUser myUser = mapper.readValue(json, CracUser.class);
+		if (userDAO.findByName(myUser.getName()) == null) {
+			userDAO.save(myUser);
+		} else {
+			return ResponseEntity.ok().body("{\"created\":\"false\", \"exception\":\"name already exists\"}");
 		}
 
-		return "{\"user\":\"" + myUser.getId() + "\",\"name\":\"" + myUser.getName() + "\",\"created\":\"true\"}";
+		return ResponseEntity.ok().body(
+				"{\"user\":\"" + myUser.getId() + "\",\"name\":\"" + myUser.getName() + "\",\"created\":\"true\"}");
 
 	}
+
+	/**
+	 * DELETE /{user_id} -> delete the user with given ID.
+	 */
 
 	@RequestMapping(value = "/{user_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
-	public String destroy(@PathVariable(value = "user_id") Long id) {
-		CracUser deleteUser = null;
-		long userId = 0;
-		String userName = "";
-		try {
-			deleteUser = userDAO.findOne(id);
-			userId = deleteUser.getId();
-			userName = deleteUser.getName();
-			userDAO.delete(deleteUser);
-		} catch (Exception ex) {
-			System.out.println("Error deleting the user: " + ex.toString());
-		}
-
-		return "{\"user\":\"" + userId + "\",\"name\":\"" + userName + "\",\"deleted\":\"true\"}";
+	public ResponseEntity<String> destroy(@PathVariable(value = "user_id") Long id) {
+		CracUser deleteUser = userDAO.findOne(id);
+		long userId = deleteUser.getId();
+		String userName = deleteUser.getName();
+		userDAO.delete(deleteUser);
+		return ResponseEntity.ok()
+				.body("{\"user\":\"" + userId + "\",\"name\":\"" + userName + "\",\"deleted\":\"true\"}");
 
 	}
 
+	/**
+	 * PUT /{user_id} -> update the user with given ID.
+	 */
+
 	@RequestMapping(value = "/{user_id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public String update(@RequestBody String json, @PathVariable(value = "user_id") Long id) {
+	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "user_id") Long id)
+			throws JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		CracUser updatedUser = null;
-		CracUser oldUser = null;
-		String oldName = "";
-		try {
-			updatedUser = mapper.readValue(json, CracUser.class);
-			oldUser = userDAO.findOne(id);
+		CracUser updatedUser = mapper.readValue(json, CracUser.class);
+		CracUser oldUser = userDAO.findOne(id);
 
-			oldName = oldUser.getName();
-			if (updatedUser.getName() != null) {
-				oldUser.setName(updatedUser.getName());
-			}
-			if (updatedUser.getPassword() != null) {
-				oldUser.setPassword(updatedUser.getPassword());
-			}
-
-			userDAO.save(oldUser);
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		String oldName = oldUser.getName();
+		if (updatedUser.getName() != null) {
+			oldUser.setName(updatedUser.getName());
+		}
+		if (updatedUser.getPassword() != null) {
+			oldUser.setPassword(updatedUser.getPassword());
 		}
 
-		return "{\"user\":\"" + oldUser.getId() + "\",\"old_name\":\"" + oldName + "\",\"new_name\":\""
-				+ oldUser.getName() + "\",\"updated\":\"true\"}";
+		userDAO.save(oldUser);
+
+		return ResponseEntity.ok().body("{\"user\":\"" + oldUser.getId() + "\",\"old_name\":\"" + oldName
+				+ "\",\"new_name\":\"" + oldUser.getName() + "\",\"updated\":\"true\"}");
 
 	}
 
 	@RequestMapping(value = "/addCompetence", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public String addCompetenceByName(@RequestBody String json) {
+	public ResponseEntity<String> addCompetenceByName(@RequestBody String json)
+			throws JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
-		Competence myCompetence = null;
-		Competence realCompetence = null;
-		CracUser myUser = null;
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		try {
-			myCompetence = mapper.readValue(json, Competence.class);
-			realCompetence = competenceDAO.findByName(myCompetence.getName());
-			myUser = userDAO.findByName(userDetails.getUsername());
-			myUser.getCompetencies().add(realCompetence);
-			userDAO.save(myUser);
-		} catch (Exception ex) {
-			return "Error: " + ex.toString();
-		}
-		return "{\"user\":\"" + myUser.getName() + "\", \"competence\":\"" + realCompetence.getName()
-				+ "\", \"assigned\":\"true\"}";
+		Competence myCompetence = mapper.readValue(json, Competence.class);
+		Competence realCompetence = competenceDAO.findByName(myCompetence.getName());
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getCompetencies().add(realCompetence);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
+				+ realCompetence.getName() + "\", \"assigned\":\"true\"}");
 	}
 
 	@RequestMapping(value = "/addTask", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public String addTask(@RequestBody String json) {
+	public ResponseEntity<String> addTask(@RequestBody String json) throws JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Task myTask = null;
-		Task realTask = null;
-		CracUser myUser = null;
 
-		try {
-			myTask = mapper.readValue(json, Task.class);
-			realTask = taskDAO.findByName(myTask.getName());
-			myUser = userDAO.findByName(userDetails.getUsername());
-			myUser.getOpenTasks().add(realTask);
-			userDAO.save(myUser);
-		} catch (Exception ex) {
-			return "Error: " + ex.toString();
-		}
-		return "{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + realTask.getName()
-		+ "\", \"assigned\":\"true\"}";	}
+		Task myTask = mapper.readValue(json, Task.class);
+		Task realTask = taskDAO.findByName(myTask.getName());
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getOpenTasks().add(realTask);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + realTask.getName()
+				+ "\", \"assigned\":\"true\"}");
+	}
 	/*
 	 * TODO:Rewrite when login is done
 	 * 
