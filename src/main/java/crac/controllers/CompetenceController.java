@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
 import crac.models.Competence;
+import crac.models.CracUser;
 
 /**
  * REST controller for managing competences.
@@ -54,13 +57,16 @@ public class CompetenceController {
 	}
 
 	/**
-	 * POST / -> create a new competence.
+	 * POST / or blank -> create a new competence, creator is the logged-in user.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
 		ObjectMapper mapper = new ObjectMapper();
 		Competence myCompetence = mapper.readValue(json, Competence.class);
+		myCompetence.setCreator(myUser);
 		competenceDAO.save(myCompetence);
 
 		return ResponseEntity.ok().body("{\"created\":\"true\"}");

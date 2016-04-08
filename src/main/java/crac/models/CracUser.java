@@ -66,9 +66,9 @@ public class CracUser {
 
 	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "user_competencies", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+	@JoinTable(name = "user_competences", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "competence_id") })
-	private Set<Competence> competencies;
+	private Set<Competence> competences;
 
 	/**
 	 * defines a many to many relation with the task-entity
@@ -87,14 +87,14 @@ public class CracUser {
 	public CracUser(String name, String password) {
 		this.name = name;
 		this.password = password;
-		this.competencies = null;
+		this.competences = null;
 		this.openTasks = null;
 	}
 
 	public CracUser() {
 		this.name = "";
 		this.password = "";
-		this.competencies = null;
+		this.competences = null;
 		this.openTasks = null;
 	}
 	
@@ -127,12 +127,12 @@ public class CracUser {
 		this.password = bcryptEncoder.encode(password);
 	}
 
-	public Set<Competence> getCompetencies() {
-		return competencies;
+	public Set<Competence> getCompetences() {
+		return competences;
 	}
 
-	public void setCompetencies(Set<Competence> competencies) {
-		this.competencies = competencies;
+	public void setCompetences(Set<Competence> competences) {
+		this.competences = competences;
 	}
 
 	public Set<Task> getOpenTasks() {

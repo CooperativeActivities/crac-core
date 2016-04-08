@@ -68,10 +68,10 @@ public class CracUserController {
 	}
 
 	/**
-	 * POST / -> create a new user.
+	 * POST / or blank -> create a new user.
 	 */
 
-	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -130,96 +130,118 @@ public class CracUserController {
 
 	}
 
-	@RequestMapping(value = "/addCompetence", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> addCompetenceByName(@RequestBody String json)
-			throws JsonMappingException, IOException {
+	/**
+	 * GET /me -> get the logged-in user.
+	 */
 
+	@RequestMapping(value = "/me", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getLogged() throws JsonProcessingException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
 		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myUser));
+	}
+
+	/**
+	 * Adds target competence to the currently logged-in user
+	 * 
+	 * @param competenceId
+	 * @return ResponseEntity
+	 */
+
+	@RequestMapping(value = "/addCompetence/{competence_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addCompetenceByName(@PathVariable(value = "competence_id") Long competenceId) {
+
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		Competence myCompetence = mapper.readValue(json, Competence.class);
-		Competence realCompetence = competenceDAO.findByName(myCompetence.getName());
+		Competence myCompetence = competenceDAO.findOne(competenceId);
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getCompetencies().add(realCompetence);
+		myUser.getCompetences().add(myCompetence);
 		userDAO.save(myUser);
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
-				+ realCompetence.getName() + "\", \"assigned\":\"true\"}");
+				+ myCompetence.getName() + "\", \"assigned\":\"true\"}");
 	}
 
-	@RequestMapping(value = "/addTask", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	/**
+	 * Adds target task to the open-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/addTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addTask(@RequestBody String json) throws JsonMappingException, IOException {
+	public ResponseEntity<String> addTask(@PathVariable(value = "task_id") Long taskId) {
 
-		ObjectMapper mapper = new ObjectMapper();
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		Task myTask = mapper.readValue(json, Task.class);
-		Task realTask = taskDAO.findByName(myTask.getName());
+		Task myTask = taskDAO.findOne(taskId);
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getOpenTasks().add(realTask);
+		myUser.getOpenTasks().add(myTask);
 		userDAO.save(myUser);
-		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + realTask.getName()
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
 				+ "\", \"assigned\":\"true\"}");
 	}
-	/*
-	 * TODO:Rewrite when login is done
-	 * 
-	 * @RequestMapping("/getTasks")
-	 * 
-	 * @ResponseBody public String getTasks(long user){
-	 * 
-	 * Set<Task> myTasks = null;
-	 * 
-	 * try { myTasks = userDAO.findOne(user).getOpenTasks(); } catch (Exception
-	 * ex) { return "Error: " + ex.toString(); } String print = "";
-	 * 
-	 * for (Task s : myTasks) { print += s.getName(); }
-	 * 
-	 * return print; }
-	 * 
-	 * @RequestMapping("/getCompetences")
-	 * 
-	 * @ResponseBody public String getCompetences(long user){
-	 * 
-	 * Set<Competence> myCompetencies = null;
-	 * 
-	 * try { myCompetencies = userDAO.findOne(user).getCompetencies(); } catch
-	 * (Exception ex) { return "Error: " + ex.toString(); } String print = "";
-	 * 
-	 * for (Competence s : myCompetencies) { print += s.getName(); }
-	 * 
-	 * return print; }
-	 * 
-	 * @RequestMapping("/getCreatedTasks")
-	 * 
-	 * @ResponseBody public String getCreatedTasks(long user){
-	 * 
-	 * Set<Task> myTasks = null;
-	 * 
-	 * try { myTasks = userDAO.findOne(user).getCreated_tasks(); } catch
-	 * (Exception ex) { return "Error: " + ex.toString(); }
-	 * 
-	 * String print = "";
-	 * 
-	 * for (Task s : myTasks) { print += s.getName(); }
-	 * 
-	 * return print; }
-	 * 
-	 * @RequestMapping("/getCreatedCompetences")
-	 * 
-	 * @ResponseBody public String getCreatedCompetences(long user){
-	 * 
-	 * Set<Competence> myCompetences = null;
-	 * 
-	 * try { myCompetences = userDAO.findOne(user).getCreated_competences(); }
-	 * catch (Exception ex) { return "Error: " + ex.toString(); }
-	 * 
-	 * String print = "";
-	 * 
-	 * for (Competence s : myCompetences) { print += s.getName(); }
-	 * 
-	 * return print; }
+
+	/**
+	 * Returns the open tasks for the logged-in user
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException
 	 */
+	@RequestMapping(value = "/openTasks", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> openTasks() throws JsonProcessingException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		Iterable<Task> myTasks = myUser.getOpenTasks();
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myTasks));
+	}
+	
+	/**
+	 * Returns the competences of the user
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException
+	 */
+	@RequestMapping(value = "/competences", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> competences() throws JsonProcessingException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		Iterable<Competence> myCompetences = myUser.getCompetences();
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myCompetences));
+	}
+	
+	/**
+	 * Returns the created tasks of the loggin-in user
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException
+	 */
+	@RequestMapping(value = "/createdTasks", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> createdTasks() throws JsonProcessingException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		Iterable<Task> myTasks = myUser.getCreatedTasks();
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myTasks));
+	}
+	
+	/**
+	 * Returns the created competences of the logged-in user
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException
+	 */
+	@RequestMapping(value = "/createdCompetences", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> createdCompetences() throws JsonProcessingException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		Iterable<Competence> myCompetences = myUser.getCreatedCompetences();
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myCompetences));
+	}
 
 }

@@ -23,40 +23,47 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  */
 
 @Entity
-@Table(name = "competencies")
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@Table(name = "competences")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Competence {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Autowired
-	@Column(name="competence_id")
-    private long id;
+	@Column(name = "competence_id")
+	private long id;
+
+	/**
+	 * defines a many to many relation with the task-entity
+	 */
+
+	@ManyToMany(mappedBy = "neededCompetences")
+	private Set<Task> connectedTasks;
 
 	/**
 	 * defines a many to many relation with the cracUser-entity
 	 */
 
-	@ManyToMany(mappedBy="competencies")
-    private Set<CracUser> users;
-	
+	@ManyToMany(mappedBy = "competences")
+	private Set<CracUser> users;
+
 	@NotNull
 	@Autowired
 	private String name;
-	
+
 	/**
 	 * defines a one to many relation with the cracUser-entity
 	 */
 
 	@Autowired
-    @ManyToOne  
-    @JoinColumn(name = "creator_id")  
-    private CracUser creator;
+	@ManyToOne
+	@JoinColumn(name = "creator_id")
+	private CracUser creator;
 
 	/**
 	 * constructors
 	 */
-	
+
 	public Competence(String name) {
 		this.name = name;
 	}
@@ -64,7 +71,7 @@ public class Competence {
 	public Competence() {
 		this.name = "default";
 	}
-	
+
 	/**
 	 * getters and setters
 	 */
@@ -100,7 +107,13 @@ public class Competence {
 	public void setCreator(CracUser creator) {
 		this.creator = creator;
 	}
-	
-	
-	
+
+	public Set<Task> getConnectedTasks() {
+		return connectedTasks;
+	}
+
+	public void setConnectedTasks(Set<Task> connectedTasks) {
+		this.connectedTasks = connectedTasks;
+	}
+
 }

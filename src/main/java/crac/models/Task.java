@@ -2,12 +2,14 @@ package crac.models;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -31,6 +33,15 @@ public class Task {
 	@Autowired
 	@Column(name = "task_id")
 	private long id;
+
+	/**
+	 * defines a many to many relation with the competence-entity
+	 */
+	@Autowired
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "competence_id") })
+	private Set<Competence> neededCompetences;
 
 	/**
 	 * defines a many to many relation with the cracUser-entity
@@ -57,7 +68,7 @@ public class Task {
 	/**
 	 * constructors
 	 */
-	
+
 	public Task() {
 		this.name = "";
 	}
@@ -70,7 +81,7 @@ public class Task {
 	/**
 	 * getters and setters
 	 */
-	
+
 	public long getId() {
 		return id;
 	}
@@ -109,6 +120,14 @@ public class Task {
 
 	public void setCreator(CracUser creator) {
 		this.creator = creator;
+	}
+
+	public Set<Competence> getNeededCompetences() {
+		return neededCompetences;
+	}
+
+	public void setNeededCompetences(Set<Competence> neededCompetences) {
+		this.neededCompetences = neededCompetences;
 	}
 
 }

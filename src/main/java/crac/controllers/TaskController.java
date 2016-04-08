@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
 import crac.daos.CracUserDAO;
+import crac.models.CracUser;
 import crac.models.Task;
 
 /**
@@ -57,13 +60,16 @@ public class TaskController {
 	}
 
 	/**
-	 * POST / -> create a new task.
+	 * POST / or blank -> create a new task, creator is the logged-in user.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
 		ObjectMapper mapper = new ObjectMapper();
 		Task myTask = mapper.readValue(json, Task.class);
+		myTask.setCreator(myUser);
 		taskDAO.save(myTask);
 
 		return ResponseEntity.ok().body("{\"created\":\"true\"}");
