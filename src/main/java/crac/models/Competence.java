@@ -18,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * The competence-entity.
+ */
+
 @Entity
 @Table(name = "competencies")
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
@@ -29,6 +33,10 @@ public class Competence {
 	@Column(name="competence_id")
     private long id;
 
+	/**
+	 * defines a many to many relation with the cracUser-entity
+	 */
+
 	@ManyToMany(mappedBy="competencies")
     private Set<CracUser> users;
 	
@@ -36,11 +44,19 @@ public class Competence {
 	@Autowired
 	private String name;
 	
+	/**
+	 * defines a one to many relation with the cracUser-entity
+	 */
+
 	@Autowired
     @ManyToOne  
     @JoinColumn(name = "creator_id")  
     private CracUser creator;
 
+	/**
+	 * constructors
+	 */
+	
 	public Competence(String name) {
 		this.name = name;
 	}
@@ -48,6 +64,10 @@ public class Competence {
 	public Competence() {
 		this.name = "default";
 	}
+	
+	/**
+	 * getters and setters
+	 */
 
 	public long getId() {
 		return id;

@@ -5,6 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import crac.models.CracUser;
 
+/**
+ * Spring Data CrudRepository for the cracUser entity.
+ */
+
 @Transactional
 public interface CracUserDAO extends CrudRepository<CracUser, Long>{
 	 public CracUser findByName(String name);	

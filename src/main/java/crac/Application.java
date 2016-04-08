@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 @EnableAutoConfiguration
 @SpringBootApplication
+/**
+ * main class for running the application, this file must be executed
+ */
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {

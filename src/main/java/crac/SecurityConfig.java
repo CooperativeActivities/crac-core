@@ -29,6 +29,10 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
     auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
   }
 
+  /**
+   * this converts the login data of the user to a user-entity and compares it to the users in the
+   * database, looking for a match to confirm a registered user
+   */
   @Bean
   UserDetailsService userDetailsService() {
     return new UserDetailsService() {
@@ -49,6 +53,9 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
   }
 }
 
+/**
+ * the security configuration for this web application
+ */
 @EnableWebSecurity
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {

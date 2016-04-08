@@ -18,34 +18,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * The task-entity.
+ */
 @Entity
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "tasks")
 public class Task {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Autowired
-	@Column(name="task_id")
-    private long id;
+	@Column(name = "task_id")
+	private long id;
+
+	/**
+	 * defines a many to many relation with the cracUser-entity
+	 */
+	@ManyToMany(mappedBy = "openTasks")
+	private Set<CracUser> users;
+
+	@Autowired
+	@NotNull
+	private String name;
+
+	@Autowired
+	@NotNull
+	private String description;
+
+	/**
+	 * defines a one to many relation with the cracUser-entity
+	 */
+	@Autowired
+	@ManyToOne
+	@JoinColumn(name = "creator_id")
+	private CracUser creator;
+
+	/**
+	 * constructors
+	 */
 	
-
-	@ManyToMany(mappedBy="openTasks")
-    private Set<CracUser> users;
-    
-    @Autowired
-    @NotNull
-    private String name;
-    
-    @Autowired
-    @NotNull
-    private String description;
-
-    @Autowired
-    @ManyToOne
-    @JoinColumn(name = "creator_id")  
-    private CracUser creator;
-
 	public Task() {
 		this.name = "";
 	}
@@ -55,6 +67,10 @@ public class Task {
 		this.description = description;
 	}
 
+	/**
+	 * getters and setters
+	 */
+	
 	public long getId() {
 		return id;
 	}
@@ -66,8 +82,6 @@ public class Task {
 	public String getName() {
 		return name;
 	}
-
-
 
 	public void setName(String name) {
 		this.name = name;
@@ -85,24 +99,16 @@ public class Task {
 		return users;
 	}
 
-
-
 	public void setUsers(Set<CracUser> users) {
 		this.users = users;
 	}
-
-
 
 	public CracUser getCreator() {
 		return creator;
 	}
 
-
-
 	public void setCreator(CracUser creator) {
 		this.creator = creator;
 	}
-    
-    
 
 }

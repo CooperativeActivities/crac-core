@@ -15,53 +15,75 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.persistence.JoinColumn;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * The cracUser-entity.
+ */
+
 @Entity
 @Table(name = "users")
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CracUser {
-	
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Autowired
-	@Column(name="user_id")
-    private long id;
-	
+	@Column(name = "user_id")
+	private long id;
+
 	@NotNull
 	@Autowired
 	private String name;
-	
+
 	@NotNull
 	@Autowired
 	private String password;
-	
-	@Autowired
-	@OneToMany(mappedBy="creator", cascade=CascadeType.ALL)  
-    private Set<Task> createdTasks; 
-	
-	@Autowired
-	@OneToMany(mappedBy="creator", cascade=CascadeType.ALL)  
-    private Set<Competence> createdCompetences; 
-	
-	@Autowired
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "user_competencies", joinColumns = { @JoinColumn(name = "user_id") },
-    inverseJoinColumns = { @JoinColumn(name = "competence_id") })
-    private Set<Competence> competencies;
-	
-	@Autowired
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "user_tasks", joinColumns = { @JoinColumn(name = "user_id") },
-    inverseJoinColumns = { @JoinColumn(name = "task_id") })
-    private Set<Task> openTasks;
 
+	/**
+	 * defines a one to many relation with the task-entity
+	 */
+
+	@Autowired
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+	private Set<Task> createdTasks;
+
+	/**
+	 * defines a one to many relation with the competence-entity
+	 */
+
+	@Autowired
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+	private Set<Competence> createdCompetences;
+
+	/**
+	 * defines a many to many relation with the competence-entity
+	 */
+
+	@Autowired
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(name = "user_competencies", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "competence_id") })
+	private Set<Competence> competencies;
+
+	/**
+	 * defines a many to many relation with the task-entity
+	 */
+
+	@Autowired
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(name = "user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "task_id") })
+	private Set<Task> openTasks;
+
+	/**
+	 * constructors
+	 */
+	
 	public CracUser(String name, String password) {
 		this.name = name;
 		this.password = password;
@@ -75,6 +97,10 @@ public class CracUser {
 		this.competencies = null;
 		this.openTasks = null;
 	}
+	
+	/**
+	 * getters and setters
+	 */
 
 	public long getId() {
 		return id;
@@ -132,7 +158,5 @@ public class CracUser {
 	public void setCreatedCompetences(Set<Competence> createdCompetences) {
 		this.createdCompetences = createdCompetences;
 	}
-	
-	
 
 }
