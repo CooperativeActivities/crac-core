@@ -105,5 +105,28 @@ public class CompetenceController {
 		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 
 	}
+	
+	/**
+	 * Creates a competence, that is set as the child of the chosen existing competence
+	 * @param json
+	 * @param child_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{child_id}/addChild", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addChild(@RequestBody String json, @PathVariable(value = "child_id") Long child_id) throws JsonMappingException, IOException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		ObjectMapper mapper = new ObjectMapper();
+		Competence myCompetence = mapper.readValue(json, Competence.class);
+		myCompetence.setCreator(myUser);
+		myCompetence.setParentCompetence(competenceDAO.findOne(child_id));
+		competenceDAO.save(myCompetence);
+
+		return ResponseEntity.ok().body("{\"created\":\"true\"}");
+
+	}
 
 }

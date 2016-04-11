@@ -2,14 +2,17 @@ package crac.models;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -17,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
@@ -35,29 +39,31 @@ public class Competence {
 	private long id;
 	
 	/**
-	 * Defines a one to one relationship to itself to provide a possibility for creating a parent-child relationship between competences
+	 * Defines a one to many relationship to itself, to provide the possibility to add parent-child relationships to competences
 	 */
-
-	@OneToOne(mappedBy = "childCompetence")
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "parent_competence")
 	private Competence parentCompetence;
 	
-	@OneToOne
-	@JoinColumn(name = "child_competence")
-	private Competence childCompetence;
+	@OneToMany(mappedBy = "parentCompetence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Competence> childCompetences;
 	
 	
 	/**
 	 * defines a many to many relation with the task-entity
 	 */
 
-	@ManyToMany(mappedBy = "neededCompetences")
+	@ManyToMany(mappedBy = "neededCompetences", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Task> connectedTasks;
 
 	/**
 	 * defines a many to many relation with the cracUser-entity
 	 */
 
-	@ManyToMany(mappedBy = "competences")
+	@ManyToMany(mappedBy = "competences", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> users;
 
 	@NotNull
@@ -70,6 +76,7 @@ public class Competence {
 
 	@Autowired
 	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
 
@@ -137,12 +144,12 @@ public class Competence {
 		this.parentCompetence = parentCompetence;
 	}
 
-	public Competence getChildCompetence() {
-		return childCompetence;
+	public Set<Competence> getChildCompetences() {
+		return childCompetences;
 	}
 
-	public void setChildCompetence(Competence childCompetence) {
-		this.childCompetence = childCompetence;
+	public void setChildCompetences(Set<Competence> childCompetences) {
+		this.childCompetences = childCompetences;
 	}
 
 }

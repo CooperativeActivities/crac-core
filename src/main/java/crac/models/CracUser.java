@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -50,7 +52,8 @@ public class CracUser {
 	 */
 
 	@Autowired
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Task> createdTasks;
 
 	/**
@@ -58,7 +61,8 @@ public class CracUser {
 	 */
 
 	@Autowired
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Competence> createdCompetences;
 
 	/**
@@ -66,7 +70,7 @@ public class CracUser {
 	 */
 
 	@Autowired
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_competences", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "competence_id") })
 	private Set<Competence> competences;
@@ -76,7 +80,7 @@ public class CracUser {
 	 */
 
 	@Autowired
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
 	private Set<Task> openTasks;

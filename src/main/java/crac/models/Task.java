@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
@@ -36,13 +38,14 @@ public class Task {
 	private long id;
 
 	/**
-	 * Defines a one to many relationship to itself, to provide to possibility to add subtasks to tasks
+	 * Defines a one to many relationship to itself, to provide the possibility to add subtasks to tasks
 	 */
 	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "super_task")
 	private Task superTask;
 	
-	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Task> childTasks;
 
 	
@@ -50,7 +53,7 @@ public class Task {
 	 * defines a many to many relation with the competence-entity
 	 */
 	@Autowired
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "competence_id") })
 	private Set<Competence> neededCompetences;
@@ -58,7 +61,8 @@ public class Task {
 	/**
 	 * defines a many to many relation with the cracUser-entity
 	 */
-	@ManyToMany(mappedBy = "openTasks")
+	@ManyToMany(mappedBy = "openTasks", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> users;
 
 	@Autowired
@@ -74,6 +78,7 @@ public class Task {
 	 */
 	@Autowired
 	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
 

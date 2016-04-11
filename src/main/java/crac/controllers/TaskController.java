@@ -18,7 +18,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
+import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
+import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 
@@ -35,6 +37,9 @@ public class TaskController {
 
 	@Autowired
 	private CracUserDAO userDAO;
+
+	@Autowired
+	private CompetenceDAO competenceDAO;
 
 	/**
 	 * GET / or blank -> get all tasks.
@@ -133,6 +138,23 @@ public class TaskController {
 		return ResponseEntity.ok().body("{\"created\":\"true\",\"parent_task\":\""+myTask.getSuperTask().getId()+"\",\"child_task\":\""+myTask.getId()+"\"}");
 
 	}
+	
+	/**
+	 * Adds target competence to target task
+	 * @param task_id
+	 * @param competence_id
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/{task_id}/addCompetence/{competence_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addCompetence(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "competence_id") Long competence_id) {
+		Task myTask = taskDAO.findOne(task_id);
+		Competence myCompetence = competenceDAO.findOne(competence_id);
+		myTask.getNeededCompetences().add(myCompetence);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"task\":\""+myTask.getId()+"\",\"competence\":\""+myCompetence.getId()+"\"}");
+	}
+
 
 
 }
