@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -32,7 +33,19 @@ public class Competence {
 	@Autowired
 	@Column(name = "competence_id")
 	private long id;
+	
+	/**
+	 * Defines a one to one relationship to itself to provide a possibility for creating a parent-child relationship between competences
+	 */
 
+	@OneToOne(mappedBy = "childCompetence")
+	private Competence parentCompetence;
+	
+	@OneToOne
+	@JoinColumn(name = "child_competence")
+	private Competence childCompetence;
+	
+	
 	/**
 	 * defines a many to many relation with the task-entity
 	 */
@@ -114,6 +127,22 @@ public class Competence {
 
 	public void setConnectedTasks(Set<Task> connectedTasks) {
 		this.connectedTasks = connectedTasks;
+	}
+
+	public Competence getParentCompetence() {
+		return parentCompetence;
+	}
+
+	public void setParentCompetence(Competence parentCompetence) {
+		this.parentCompetence = parentCompetence;
+	}
+
+	public Competence getChildCompetence() {
+		return childCompetence;
+	}
+
+	public void setChildCompetence(Competence childCompetence) {
+		this.childCompetence = childCompetence;
 	}
 
 }

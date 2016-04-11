@@ -110,5 +110,29 @@ public class TaskController {
 		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 
 	}
+	
+	/**
+	 * Creates a task, that is set as the child of the chosen existing task
+	 * @param json
+	 * @param supertask_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{supertask_id}/addSubtask", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addSubtask(@RequestBody String json, @PathVariable(value = "supertask_id") Long supertask_id) throws JsonMappingException, IOException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		ObjectMapper mapper = new ObjectMapper();
+		Task myTask = mapper.readValue(json, Task.class);
+		myTask.setCreator(myUser);
+		myTask.setSuperTask(taskDAO.findOne(supertask_id));
+		taskDAO.save(myTask);
+
+		return ResponseEntity.ok().body("{\"created\":\"true\",\"parent_task\":\""+myTask.getSuperTask().getId()+"\",\"child_task\":\""+myTask.getId()+"\"}");
+
+	}
+
 
 }

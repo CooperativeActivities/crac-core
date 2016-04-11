@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +35,17 @@ public class Task {
 	@Column(name = "task_id")
 	private long id;
 
+	/**
+	 * Defines a one to many relationship to itself, to provide to possibility to add subtasks to tasks
+	 */
+	@ManyToOne
+	@JoinColumn(name = "super_task")
+	private Task superTask;
+	
+	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL)
+	private Set<Task> childTasks;
+
+	
 	/**
 	 * defines a many to many relation with the competence-entity
 	 */
@@ -130,4 +142,20 @@ public class Task {
 		this.neededCompetences = neededCompetences;
 	}
 
+	public Task getSuperTask() {
+		return superTask;
+	}
+
+	public void setSuperTask(Task superTask) {
+		this.superTask = superTask;
+	}
+
+	public Set<Task> getChildTasks() {
+		return childTasks;
+	}
+
+	public void setChildTasks(Set<Task> childTasks) {
+		this.childTasks = childTasks;
+	}
+	
 }
