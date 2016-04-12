@@ -64,6 +64,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
     	.anyRequest().fullyAuthenticated()
+    	//.antMatchers("/nope").fullyAuthenticated()
     	.and()
 	    	.httpBasic()
 	    .and()

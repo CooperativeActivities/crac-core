@@ -53,6 +53,7 @@ public class Task {
 	 * defines a many to many relation with the competence-entity
 	 */
 	@Autowired
+	@JsonIdentityReference(alwaysAsId=true)
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "competence_id") })
