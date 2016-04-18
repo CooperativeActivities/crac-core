@@ -1,5 +1,6 @@
 package crac.models;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.persistence.JoinColumn;
@@ -42,10 +44,35 @@ public class CracUser {
 	@NotNull
 	@Autowired
 	private String name;
-
+	
+	@NotNull
+	@Autowired
+	private String email;
+	
 	@NotNull
 	@Autowired
 	private String password;
+	
+	@NotNull
+	@Autowired
+	private String lastName;
+	
+	@NotNull
+	@Autowired
+	private String firstName;
+	
+	@Autowired
+	private Date birthDate;
+
+	@Autowired
+	private String status;
+	
+	@NotNull
+	@Autowired
+	private int phone;
+	
+	@Autowired
+	private String address;
 
 	/**
 	 * defines a one to many relation with the task-entity
@@ -66,6 +93,15 @@ public class CracUser {
 	private Set<Competence> createdCompetences;
 
 	/**
+	 * defines a one to many relation with the group-entity
+	 */
+
+	@Autowired
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Group> createdGroups;
+
+	/**
 	 * defines a many to many relation with the competence-entity
 	 */
 
@@ -84,6 +120,26 @@ public class CracUser {
 	@JoinTable(name = "user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
 	private Set<Task> openTasks;
+	
+	@Autowired
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	@JoinTable(name = "responsible_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "task_id") })
+	private Set<Task> responsibleForTasks;
+
+	@Autowired
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	@JoinTable(name = "following_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "task_id") })
+	private Set<Task> followingTasks;
+	
+	@ManyToMany(mappedBy = "enroledUsers", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
+	private Set<Group> groups;
+	
+	@OneToOne
+    @JoinColumn(name = "user_image")
+	private Attachment userImage;
 
 	/**
 	 * constructors
@@ -164,4 +220,100 @@ public class CracUser {
 		this.createdCompetences = createdCompetences;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public int getPhone() {
+		return phone;
+	}
+
+	public void setPhone(int phone) {
+		this.phone = phone;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
+
+	public Set<Group> getCreatedGroups() {
+		return createdGroups;
+	}
+
+	public void setCreatedGroups(Set<Group> createdGroups) {
+		this.createdGroups = createdGroups;
+	}
+
+	public Set<Task> getResponsibleForTasks() {
+		return responsibleForTasks;
+	}
+
+	public void setResponsibleForTasks(Set<Task> responsibleForTasks) {
+		this.responsibleForTasks = responsibleForTasks;
+	}
+
+	public Set<Task> getFollowingTasks() {
+		return followingTasks;
+	}
+
+	public void setFollowingTasks(Set<Task> followingTasks) {
+		this.followingTasks = followingTasks;
+	}
+
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
+	}
+
+	public Attachment getUserImage() {
+		return userImage;
+	}
+
+	public void setUserImage(Attachment userImage) {
+		this.userImage = userImage;
+	}
+	
 }

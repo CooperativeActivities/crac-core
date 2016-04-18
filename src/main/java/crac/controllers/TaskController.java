@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -153,6 +154,27 @@ public class TaskController {
 		myTask.getNeededCompetences().add(myCompetence);
 		taskDAO.save(myTask);
 		return ResponseEntity.ok().body("{\"added\":\"true\",\"task\":\""+myTask.getId()+"\",\"competence\":\""+myCompetence.getId()+"\"}");
+	}
+	
+	/**
+	 * Adds target competence to target task
+	 * @param task_id
+	 * @param competence_id
+	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws  
+	 */
+	@RequestMapping(value = "/{task_id}/addFeedback", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addFeedback(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Task newTask = mapper.readValue(json, Task.class);
+		String feedback = newTask.getFeedback();
+		myTask.setFeedback(feedback);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+feedback+"\"}");
 	}
 
 

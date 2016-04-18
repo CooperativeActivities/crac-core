@@ -22,9 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
 import crac.daos.CracUserDAO;
+import crac.daos.GroupDAO;
 import crac.models.Competence;
 import crac.models.Task;
 import crac.models.CracUser;
+import crac.models.Group;
 
 /**
  * REST controller for managing users.
@@ -42,6 +44,10 @@ public class CracUserController {
 
 	@Autowired
 	private TaskDAO taskDAO;
+	
+	@Autowired
+	private GroupDAO groupDAO;
+
 
 	/**
 	 * GET / or blank -> get all users.
@@ -152,7 +158,7 @@ public class CracUserController {
 
 	@RequestMapping(value = "/addCompetence/{competence_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addCompetenceByName(@PathVariable(value = "competence_id") Long competenceId) {
+	public ResponseEntity<String> addCompetence(@PathVariable(value = "competence_id") Long competenceId) {
 
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -162,6 +168,27 @@ public class CracUserController {
 		userDAO.save(myUser);
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
 				+ myCompetence.getName() + "\", \"assigned\":\"true\"}");
+	}
+	
+	/**
+	 * Removes target competence from the currently logged-in user
+	 * 
+	 * @param competenceId
+	 * @return ResponseEntity
+	 */
+
+	@RequestMapping(value = "/removeCompetence/{competence_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeCompetence(@PathVariable(value = "competence_id") Long competenceId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Competence myCompetence = competenceDAO.findOne(competenceId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getCompetences().remove(myCompetence);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
+				+ myCompetence.getName() + "\", \"removed\":\"true\"}");
 	}
 
 	/**
@@ -183,65 +210,145 @@ public class CracUserController {
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
 				+ "\", \"assigned\":\"true\"}");
 	}
+	
+	/**
+	 * Removes target task from the open-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/removeTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeTask(@PathVariable(value = "task_id") Long taskId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getOpenTasks().remove(myTask);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"removed\":\"true\"}");
+	}
 
 	/**
-	 * Returns the open tasks for the logged-in user
+	 * Adds target group to the groups of the logged-in user
+	 * 
+	 * @param groupId
 	 * @return ResponseEntity
-	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = "/openTasks", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/enterGroup/{group_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> openTasks() throws JsonProcessingException {
+	public ResponseEntity<String> enterGroup(@PathVariable(value = "group_id") Long groupId) {
+
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
-		Iterable<Task> myTasks = myUser.getOpenTasks();
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myTasks));
+
+		Group myGroup= groupDAO.findOne(groupId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myGroup.getEnroledUsers().add(myUser);
+		groupDAO.save(myGroup);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"group\":\"" + myGroup.getName()
+				+ "\", \"assigned\":\"true\"}");
 	}
 	
 	/**
-	 * Returns the competences of the user
+	 * Removes target group from the groups of the logged-in user
+	 * 
+	 * @param groupId
 	 * @return ResponseEntity
-	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = "/competences", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/leaveGroup/{group_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> competences() throws JsonProcessingException {
+	public ResponseEntity<String> leaveGroup(@PathVariable(value = "group_id") Long groupId) {
+
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
-		Iterable<Competence> myCompetences = myUser.getCompetences();
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myCompetences));
+
+		Group myGroup= groupDAO.findOne(groupId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myGroup.getEnroledUsers().remove(myUser);
+		groupDAO.save(myGroup);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"group\":\"" + myGroup.getName()
+				+ "\", \"removed\":\"true\"}");
 	}
 	
 	/**
-	 * Returns the created tasks of the loggin-in user
+	 * Adds target task to the follow-tasks of the logged-in user
+	 * 
+	 * @param taskId
 	 * @return ResponseEntity
-	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = "/createdTasks", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/followTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> createdTasks() throws JsonProcessingException {
+	public ResponseEntity<String> followTask(@PathVariable(value = "task_id") Long taskId) {
+
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
-		Iterable<Task> myTasks = myUser.getCreatedTasks();
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myTasks));
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getFollowingTasks().add(myTask);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"assigned\":\"true\"}");
 	}
 	
 	/**
-	 * Returns the created competences of the logged-in user
+	 * Removes target task from the follow-tasks of the logged-in user
+	 * 
+	 * @param taskId
 	 * @return ResponseEntity
-	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = "/createdCompetences", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/unfollowTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> createdCompetences() throws JsonProcessingException {
+	public ResponseEntity<String> unfollowTask(@PathVariable(value = "task_id") Long taskId) {
+
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
-		Iterable<Competence> myCompetences = myUser.getCreatedCompetences();
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myCompetences));
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getFollowingTasks().remove(myTask);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"removed\":\"true\"}");
+	}
+	
+	/**
+	 * Adds target task to the responsible-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/leadTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> leadTask(@PathVariable(value = "task_id") Long taskId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getResponsibleForTasks().add(myTask);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"assigned\":\"true\"}");
+	}
+	
+	/**
+	 * Removes target task from the responsible-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/abandonTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> abandonTask(@PathVariable(value = "task_id") Long taskId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		myUser.getResponsibleForTasks().remove(myTask);
+		userDAO.save(myUser);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"removed\":\"true\"}");
 	}
 
 }

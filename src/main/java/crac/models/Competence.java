@@ -69,6 +69,10 @@ public class Competence {
 	@NotNull
 	@Autowired
 	private String name;
+	
+	@NotNull
+	@Autowired
+	private String description;
 
 	/**
 	 * defines a one to many relation with the cracUser-entity
@@ -84,12 +88,14 @@ public class Competence {
 	 * constructors
 	 */
 
-	public Competence(String name) {
+	public Competence(String name, String description) {
 		this.name = name;
+		this.description = description;
 	}
 
 	public Competence() {
-		this.name = "default";
+		this.name = "";
+		this.description = "";
 	}
 
 	/**
@@ -150,6 +156,14 @@ public class Competence {
 
 	public void setChildCompetences(Set<Competence> childCompetences) {
 		this.childCompetences = childCompetences;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

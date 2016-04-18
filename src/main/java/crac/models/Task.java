@@ -1,5 +1,6 @@
 package crac.models;
 
+import java.sql.Timestamp;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -64,7 +65,21 @@ public class Task {
 	 */
 	@ManyToMany(mappedBy = "openTasks", fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> users;
+	private Set<CracUser> signedUsers;
+	
+	/**
+	 * defines a many to many relation with the cracUser-entity
+	 */
+	@ManyToMany(mappedBy = "responsibleForTasks", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
+	private Set<CracUser> responsibleUsers;
+	
+	/**
+	 * defines a many to many relation with the cracUser-entity
+	 */
+	@ManyToMany(mappedBy = "followingTasks", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
+	private Set<CracUser> followingUsers;
 
 	@Autowired
 	@NotNull
@@ -74,6 +89,29 @@ public class Task {
 	@NotNull
 	private String description;
 
+	@Autowired
+	@NotNull
+	private String location;
+	
+	@Autowired
+	@NotNull
+	private Timestamp startTime;
+	
+	@Autowired
+	@NotNull
+	private Timestamp endTime;
+	
+	@Autowired
+	@NotNull
+	private int urgency;
+	
+	@Autowired
+	@NotNull
+	private int amountOfVolunteers;
+	
+	@Autowired
+	private String feedback;
+	
 	/**
 	 * defines a one to many relation with the cracUser-entity
 	 */
@@ -83,12 +121,21 @@ public class Task {
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
 
+	@Autowired
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Attachment> attachments;
+	
 	/**
 	 * constructors
 	 */
 
 	public Task() {
 		this.name = "";
+	}
+	
+	public Task(String feedback) {
+		this.feedback = feedback;
 	}
 
 	public Task(String name, String description) {
@@ -124,14 +171,6 @@ public class Task {
 		this.description = description;
 	}
 
-	public Set<CracUser> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Set<CracUser> users) {
-		this.users = users;
-	}
-
 	public CracUser getCreator() {
 		return creator;
 	}
@@ -162,6 +201,86 @@ public class Task {
 
 	public void setChildTasks(Set<Task> childTasks) {
 		this.childTasks = childTasks;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public Timestamp getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Timestamp startTime) {
+		this.startTime = startTime;
+	}
+
+	public Timestamp getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Timestamp endTime) {
+		this.endTime = endTime;
+	}
+
+	public int getUrgency() {
+		return urgency;
+	}
+
+	public void setUrgency(int urgency) {
+		this.urgency = urgency;
+	}
+
+	public int getAmountOfVolunteers() {
+		return amountOfVolunteers;
+	}
+
+	public void setAmountOfVolunteers(int amountOfVolunteers) {
+		this.amountOfVolunteers = amountOfVolunteers;
+	}
+
+	public String getFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
+	}
+
+	public Set<CracUser> getSignedUsers() {
+		return signedUsers;
+	}
+
+	public void setSignedUsers(Set<CracUser> signedUsers) {
+		this.signedUsers = signedUsers;
+	}
+
+	public Set<CracUser> getResponsibleUsers() {
+		return responsibleUsers;
+	}
+
+	public void setResponsibleUsers(Set<CracUser> responsibleUsers) {
+		this.responsibleUsers = responsibleUsers;
+	}
+
+	public Set<CracUser> getFollowingUsers() {
+		return followingUsers;
+	}
+
+	public void setFollowingUsers(Set<CracUser> followingUsers) {
+		this.followingUsers = followingUsers;
+	}
+
+	public Set<Attachment> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(Set<Attachment> attachments) {
+		this.attachments = attachments;
 	}
 	
 }
