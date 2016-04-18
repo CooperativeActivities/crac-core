@@ -121,6 +121,9 @@ public class Task {
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
 
+	/**
+	 * defines a one to many relation with the attachment-entity
+	 */
 	@Autowired
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

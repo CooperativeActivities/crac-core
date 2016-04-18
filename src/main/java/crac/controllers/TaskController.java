@@ -104,14 +104,7 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		Task updatedTask = mapper.readValue(json, Task.class);
 		Task oldTask = taskDAO.findOne(id);
-
-		if (updatedTask.getName() != null) {
-			oldTask.setName(updatedTask.getName());
-		}
-		if (updatedTask.getDescription() != null) {
-			oldTask.setDescription(updatedTask.getDescription());
-		}
-
+		oldTask = updatedTask;
 		taskDAO.save(oldTask);
 		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 
@@ -157,13 +150,12 @@ public class TaskController {
 	}
 	
 	/**
-	 * Adds target competence to target task
+	 * Add feedback to target task
+	 * @param json
 	 * @param task_id
-	 * @param competence_id
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws  
+	 * @throws JsonMappingException
+	 * @throws IOException
 	 */
 	@RequestMapping(value = "/{task_id}/addFeedback", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody

@@ -1,17 +1,12 @@
 package crac.models;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -21,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+/**
+ * The attachment-entity.
+ */
 
 @Entity
 @Table(name = "attachments")
@@ -41,14 +40,26 @@ public class Attachment {
 	@Autowired
 	private String path;
 	
+	/**
+	 * defines a one to one relation with the cracUser-entity
+	 */
+	
 	@OneToOne(mappedBy = "userImage")
     private CracUser user;
+	
+	/**
+	 * defines a one to many relation with the task-entity
+	 */
 	
 	@Autowired
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "task_id")
 	private Task task;
+	
+	/**
+	 * constructors
+	 */
 	
 	public Attachment(String name, String path) {
 		this.name = name;
@@ -59,6 +70,10 @@ public class Attachment {
 		this.name = "";
 		this.path = "";
 	}
+	
+	/**
+	 * getters and setters
+	 */
 
 	public long getId() {
 		return id;

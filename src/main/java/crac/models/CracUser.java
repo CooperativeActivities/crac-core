@@ -23,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
@@ -121,21 +120,37 @@ public class CracUser {
 			@JoinColumn(name = "task_id") })
 	private Set<Task> openTasks;
 	
+	/**
+	 * defines a many to many relation with the task-entity
+	 */
+	
 	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "responsible_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
 	private Set<Task> responsibleForTasks;
 
+	/**
+	 * defines a many to many relation with the task-entity
+	 */
+	
 	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "following_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
 	private Set<Task> followingTasks;
 	
+	/**
+	 * defines a many to many relation with the group-entity
+	 */
+	
 	@ManyToMany(mappedBy = "enroledUsers", fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Group> groups;
+	
+	/**
+	 * defines a one to one relation with the attachment-entity
+	 */
 	
 	@OneToOne
     @JoinColumn(name = "user_image")

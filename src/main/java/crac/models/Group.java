@@ -22,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * The group-entity.
+ */
+
 @Entity
 @Table(name = "groups")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -45,6 +49,9 @@ public class Group {
 	@Autowired
 	private int maxEnrols;
 
+	/**
+	 * defines a many to many relation with the cracUser-entity
+	 */
 	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "group_users", joinColumns = { @JoinColumn(name = "group_id") }, inverseJoinColumns = {
@@ -59,6 +66,10 @@ public class Group {
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
+	
+	/**
+	 * constructors
+	 */
 
 	public Group(String name, String description, int maxEnrols) {
 		this.name = name;
@@ -71,6 +82,10 @@ public class Group {
 		this.description = "";
 		this.maxEnrols = 0;
 	}
+	
+	/**
+	 * getters and setters
+	 */
 
 	public long getId() {
 		return id;
