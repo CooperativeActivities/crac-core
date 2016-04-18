@@ -125,7 +125,6 @@ public class Task {
 	 * defines a one to many relation with the attachment-entity
 	 */
 	@Autowired
-	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Attachment> attachments;
 	

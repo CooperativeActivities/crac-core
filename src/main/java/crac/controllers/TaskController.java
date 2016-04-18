@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
+import crac.daos.AttachmentDAO;
 import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
+import crac.models.Attachment;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
@@ -41,6 +43,9 @@ public class TaskController {
 
 	@Autowired
 	private CompetenceDAO competenceDAO;
+
+	@Autowired
+	private AttachmentDAO attachmentDAO;
 
 	/**
 	 * GET / or blank -> get all tasks.
@@ -169,6 +174,43 @@ public class TaskController {
 		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+feedback+"\"}");
 	}
 
+	/**
+	 * Add an attachment to target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{task_id}/addAttachment", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addAttachment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Attachment myAttachment = mapper.readValue(json, Attachment.class);
+		myTask.getAttachments().add(myAttachment);
+		myAttachment.setTask(myTask);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
+	}
 
+	/**
+	 * Remove an attachment from target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{task_id}/removeAttachment/{attachment_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeAttachment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "attachment_id") Long attachment_id) {
+		Task myTask = taskDAO.findOne(task_id);
+		Attachment myAttachment = attachmentDAO.findOne(attachment_id);
+		myTask.getAttachments().remove(myAttachment);
+		attachmentDAO.delete(myAttachment);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"removed\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
+	}
 
 }
