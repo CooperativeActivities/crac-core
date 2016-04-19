@@ -1,3 +1,3 @@
-INSERT INTO users(name, email, password, last_name, first_name, phone) VALUES ('dev', 'test@mail.at', '$2a$10$IfrX7uEH8zGjHVHSPfTe6uHrQewsMVSAkhHTYaV63GiG07Eh0WV5a', 'Mustermann', 'Max', 0664000000);
-INSERT INTO tasks(name, description, location, start_time, end_time, urgency, amount_of_volunteers, creator_id) VALUES ('mainTask', 'The basic task on initialization', 'Mustertown', '2016-04-01 00:00:00', '2016-04-01 00:01:00', 3, 35, 1);
+INSERT INTO users(id, name, email, password, last_name, first_name, phone) VALUES (1, 'dev', 'test@mail.at', '$2a$10$IfrX7uEH8zGjHVHSPfTe6uHrQewsMVSAkhHTYaV63GiG07Eh0WV5a', 'Mustermann', 'Max', 0664000000);
+INSERT INTO tasks(id, name, description, location, start_time, end_time, urgency, amount_of_volunteers, creator_id) VALUES (1, 'mainTask', 'The basic task on initialization', 'Mustertown', '2016-04-01 00:00:00', '2016-04-01 00:01:00', 3, 35, 1);
 INSERT INTO competences(name, description, creator_id) VALUES ('parentCompetence', 'The first of its kind', 1);
