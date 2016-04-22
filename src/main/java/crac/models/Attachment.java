@@ -28,16 +28,13 @@ public class Attachment {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Autowired
 	@Column(name = "attachment_id")
 	private long id;
 
 	@NotNull
-	@Autowired
 	private String name;
 
 	@NotNull
-	@Autowired
 	private String path;
 	
 	/**
@@ -51,7 +48,6 @@ public class Attachment {
 	 * defines a one to many relation with the task-entity
 	 */
 	
-	@Autowired
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "task_id")

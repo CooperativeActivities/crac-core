@@ -33,7 +33,6 @@ public class Competence {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Autowired
 	@Column(name = "competence_id")
 	private long id;
 	
@@ -66,18 +65,15 @@ public class Competence {
 	private Set<CracUser> users;
 
 	@NotNull
-	@Autowired
 	private String name;
 	
 	@NotNull
-	@Autowired
 	private String description;
 
 	/**
 	 * defines a one to many relation with the cracUser-entity
 	 */
 
-	@Autowired
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")

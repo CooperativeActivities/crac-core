@@ -33,26 +33,21 @@ public class Group {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Autowired
 	@Column(name = "group_id")
 	private long id;
 
 	@NotNull
-	@Autowired
 	private String name;
 
 	@NotNull
-	@Autowired
 	private String description;
 	
 	@NotNull
-	@Autowired
 	private int maxEnrols;
 
 	/**
 	 * defines a many to many relation with the cracUser-entity
 	 */
-	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "group_users", joinColumns = { @JoinColumn(name = "group_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "user_id") })
@@ -61,7 +56,6 @@ public class Group {
 	/**
 	 * defines a one to many relation with the cracUser-entity
 	 */
-	@Autowired
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")

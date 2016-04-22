@@ -34,7 +34,6 @@ public class Task {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Autowired
 	@Column(name = "task_id")
 	private long id;
 
@@ -53,7 +52,6 @@ public class Task {
 	/**
 	 * defines a many to many relation with the competence-entity
 	 */
-	@Autowired
 	@JsonIdentityReference(alwaysAsId=true)
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
@@ -81,19 +79,15 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> followingUsers;
 
-	@Autowired
 	@NotNull
 	private String name;
 
-	@Autowired
 	@NotNull
 	private String description;
 
-	@Autowired
 	@NotNull
 	private String location;
 	
-	@Autowired
 	@NotNull
 	private Timestamp startTime;
 	
@@ -101,21 +95,17 @@ public class Task {
 	@NotNull
 	private Timestamp endTime;
 	
-	@Autowired
 	@NotNull
 	private int urgency;
 	
-	@Autowired
 	@NotNull
 	private int amountOfVolunteers;
 	
-	@Autowired
 	private String feedback;
 	
 	/**
 	 * defines a one to many relation with the cracUser-entity
 	 */
-	@Autowired
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")
@@ -124,7 +114,6 @@ public class Task {
 	/**
 	 * defines a one to many relation with the attachment-entity
 	 */
-	@Autowired
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Attachment> attachments;
 	

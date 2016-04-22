@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,48 +38,41 @@ public class CracUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Autowired
 	@Column(name = "user_id")
 	private long id;
 
 	@NotNull
-	@Autowired
 	private String name;
 	
 	@NotNull
-	@Autowired
 	private String email;
 	
 	@NotNull
-	@Autowired
 	private String password;
 	
 	@NotNull
-	@Autowired
 	private String lastName;
 	
 	@NotNull
-	@Autowired
 	private String firstName;
 	
-	@Autowired
 	private Date birthDate;
 
-	@Autowired
 	private String status;
 	
 	@NotNull
-	@Autowired
 	private int phone;
 	
-	@Autowired
 	private String address;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
 	/**
 	 * defines a one to many relation with the task-entity
 	 */
 
-	@Autowired
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Task> createdTasks;
@@ -86,7 +81,6 @@ public class CracUser {
 	 * defines a one to many relation with the competence-entity
 	 */
 
-	@Autowired
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Competence> createdCompetences;
@@ -95,7 +89,6 @@ public class CracUser {
 	 * defines a one to many relation with the group-entity
 	 */
 
-	@Autowired
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Group> createdGroups;
@@ -104,7 +97,6 @@ public class CracUser {
 	 * defines a many to many relation with the competence-entity
 	 */
 
-	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_competences", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "competence_id") })
@@ -114,7 +106,6 @@ public class CracUser {
 	 * defines a many to many relation with the task-entity
 	 */
 
-	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
@@ -124,7 +115,6 @@ public class CracUser {
 	 * defines a many to many relation with the task-entity
 	 */
 	
-	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "responsible_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
@@ -134,7 +124,6 @@ public class CracUser {
 	 * defines a many to many relation with the task-entity
 	 */
 	
-	@Autowired
 	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinTable(name = "following_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "task_id") })
@@ -168,10 +157,14 @@ public class CracUser {
 	}
 
 	public CracUser() {
-		this.name = "";
-		this.password = "";
-		this.competences = null;
-		this.openTasks = null;
+		this.name = "default";
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+		this.password = bcryptEncoder.encode("default");
+		this.email = "default";
+		this.firstName = "default";
+		this.lastName = "default";
+		this.phone = 1;
+		this.role = Role.USER;
 	}
 	
 	/**
@@ -329,6 +322,14 @@ public class CracUser {
 
 	public void setUserImage(Attachment userImage) {
 		this.userImage = userImage;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 	
 }
