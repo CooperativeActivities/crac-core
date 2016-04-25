@@ -122,16 +122,29 @@ public class Task {
 	 */
 
 	public Task() {
-		this.name = "";
+		java.util.Date date= new java.util.Date();
+		this.name = "default";
+		this.description = "default";
+		this.location = "default";
+		this.startTime = new Timestamp(date.getTime());
+		this.endTime = new Timestamp(date.getTime());
+		this.urgency = 0;
+		this.amountOfVolunteers = 0;
+	}
+	
+	public Task(String name, String description) {
+		java.util.Date date= new java.util.Date();
+		this.name = name;
+		this.description = description;
+		this.location = "default";
+		this.startTime = new Timestamp(date.getTime());
+		this.endTime = new Timestamp(date.getTime());
+		this.urgency = 0;
+		this.amountOfVolunteers = 0;
 	}
 	
 	public Task(String feedback) {
 		this.feedback = feedback;
-	}
-
-	public Task(String name, String description) {
-		this.name = name;
-		this.description = description;
 	}
 
 	/**

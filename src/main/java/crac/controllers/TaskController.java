@@ -1,6 +1,7 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -211,6 +212,20 @@ public class TaskController {
 		attachmentDAO.delete(myAttachment);
 		taskDAO.save(myTask);
 		return ResponseEntity.ok().body("{\"removed\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
+	}
+	
+	/**
+	 * Finds and returns all tasks that contain a given pattern
+	 * @param task_name
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException
+	 */
+	@RequestMapping(value = "/getByName/{task_name}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getByName(@PathVariable(value = "task_name") String task_name) throws JsonProcessingException {
+		List<Task> taskList = taskDAO.findMultipleByNameLike("%"+task_name+"%");
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
 	}
 
 }
