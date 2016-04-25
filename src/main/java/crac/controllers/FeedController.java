@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
+import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 
@@ -40,6 +41,13 @@ public class FeedController {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
 		List<Task> taskList = taskDAO.findByNeededCompetencesIn(myUser.getCompetences());
+		for (Task thisTask : taskList ){
+			for(Competence thisComp : thisTask.getNeededCompetences()){
+				if(!myUser.getCompetences().contains(thisComp)){
+					taskList.remove(thisTask);
+				}
+			}
+		}
 		for (Task thisTask : myUser.getOpenTasks()) {
 			taskList.remove(thisTask);
 		}
