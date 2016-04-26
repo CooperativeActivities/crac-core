@@ -64,6 +64,7 @@ public class Attachment {
 	
 	public Attachment(String name) {
 		this.name = name;
+		this.path = "";
 	}
 	
 	public Attachment() {

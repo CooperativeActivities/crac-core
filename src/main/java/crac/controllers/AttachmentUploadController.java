@@ -35,26 +35,24 @@ public class AttachmentUploadController {
 			@RequestParam("uploadfile") MultipartFile uploadfile) {
 
 		Attachment myAtt = attachmentDAO.findOne(attachment_id);
-		String filepath = "";
+		String filename = "";
 
-		if (myAtt.getId() != attachment_id) {
-			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\"}");
+		if (myAtt == null) {
+			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\", \"exception\":\"no_attachment\"}");
+		}
+
+		if (!myAtt.getPath().equals("")) {
+			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\", \"exception\":\"attachment_has_file\"}");
 		}
 
 		try {
 			// Get the filename and build the local file path (be sure that the
 			// application have write permissions on such directory)
-			java.util.Date date= new java.util.Date();
-			
-			Random rn = new Random();
-			int maximum = 100;
-			int minimum = 1;
-			int range = maximum - minimum + 1;
-			int randomNum =  rn.nextInt(range) + minimum;
-			
-			String filename = new Timestamp(date.getTime()).hashCode()*randomNum+uploadfile.getOriginalFilename();
+			java.util.Date date = new java.util.Date();
+
+			filename = new Timestamp(date.getTime()).hashCode() + uploadfile.getOriginalFilename();
 			String directory = "uploadedFiles";
-			filepath = Paths.get(directory, filename).toString();
+			String filepath = Paths.get(directory, filename).toString();
 
 			// Save the file locally
 			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath)));
@@ -65,10 +63,70 @@ public class AttachmentUploadController {
 			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\"}");
 		}
 
-		myAtt.setPath(filepath);
+		myAtt.setPath(filename);
 		attachmentDAO.save(myAtt);
 
-		return ResponseEntity.ok().body("{\"uploaded\":\"true\", \"img_name\":\""+filepath+"\"}");
+		return ResponseEntity.ok().body("{\"uploaded\":\"true\", \"img_name\":\"" + filename + "\"}");
+	} // method uploadFile
+
+	@RequestMapping(value = "/changeFile/{attachment_id}", headers = "content-type=multipart/*", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> changeFile(@PathVariable(value = "attachment_id") Long attachment_id,
+			@RequestParam("uploadfile") MultipartFile uploadfile) {
+
+		Attachment myAtt = attachmentDAO.findOne(attachment_id);
+		String filename = "";
+
+		if (myAtt == null) {
+			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\", \"exception\":\"no_attachment\"}");
+		}
+
+		if (myAtt.getPath().equals("") || myAtt.getPath() == null) {
+			return ResponseEntity.badRequest()
+					.body("{\"uploaded\":\"false\", \"exception\":\"attachment_has_no_file\"}");
+		}
+
+		try {
+			// Get the filename and build the local file path (be sure that the
+			// application have write permissions on such directory)
+			java.util.Date date = new java.util.Date();
+
+			filename = new Timestamp(date.getTime()).hashCode()+ uploadfile.getOriginalFilename();
+			String directory = "uploadedFiles";
+			String filepath = Paths.get(directory, filename).toString();
+
+			// Save the file locally
+			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath)));
+			stream.write(uploadfile.getBytes());
+			stream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\"}");
+		}
+
+		String oldFile = myAtt.getPath();
+
+		try {
+
+			File file = new File("uploadedFiles/"+oldFile);
+
+			if (file.delete()) {
+				System.out.println(file.getName() + " is deleted!");
+			} else {
+				System.out.println("Delete operation is failed.");
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("{\"uploaded\":\"false\", \"exception\":\"error_deleting\"}");
+
+		}
+
+		myAtt.setPath(filename);
+		attachmentDAO.save(myAtt);
+
+		return ResponseEntity.ok().body("{\"uploaded\":\"true\", \"img_name\":\"" + filename + "\"}");
 	} // method uploadFile
 
 }
