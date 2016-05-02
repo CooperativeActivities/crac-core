@@ -9,7 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+/**
+ * This controller customizes and handles error
+ */
 @Controller
 public class ErrorController implements EmbeddedServletContainerCustomizer {
 	@Override
@@ -19,6 +21,10 @@ public class ErrorController implements EmbeddedServletContainerCustomizer {
 		factory.addErrorPages(error401Page);
 	}
 
+	/**
+	 * Handles the error 401 Unauthorized
+	 * @return ResponseEntity
+	 */
 	@RequestMapping("/401")
 	public ResponseEntity<String> template401() {
 		HttpHeaders headers = new HttpHeaders();

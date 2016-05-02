@@ -116,7 +116,13 @@ public class Task {
 	 */
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Attachment> attachments;
-	
+
+	/**
+	 * defines a one to many relation with the attachment-entity
+	 */
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Comment> comments;
+
 	/**
 	 * constructors
 	 */
@@ -285,6 +291,14 @@ public class Task {
 
 	public void setAttachments(Set<Attachment> attachments) {
 		this.attachments = attachments;
+	}
+
+	public Set<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
 	}
 	
 }

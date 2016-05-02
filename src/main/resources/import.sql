@@ -1,2 +1,3 @@
 INSERT INTO users(user_id, name, email, password, last_name, first_name, phone, role) VALUES (1, 'dev', 'test@mail.at', '$2a$10$IfrX7uEH8zGjHVHSPfTe6uHrQewsMVSAkhHTYaV63GiG07Eh0WV5a', 'Mustermann', 'Max', 0664000000, 'ADMIN');
+INSERT INTO users(user_id, name, email, password, last_name, first_name, phone, role) VALUES (2, 'frontend', 'frontend@mail.at', '$2a$10$nTFgFeGvGTja5rXJjqq/oupkbGozYi/JEnD9Y.qcQodbrDA07zIPa', 'frontend', 'frontend', 0664000000, 'ADMIN');
 INSERT INTO tasks(task_id, name, description, location, start_time, end_time, urgency, amount_of_volunteers, creator_id) VALUES (1, 'mainTask', 'The basic task on initialization', 'Mustertown', '2016-04-01 00:00:00', '2016-04-01 00:01:00', 3, 35, 1);

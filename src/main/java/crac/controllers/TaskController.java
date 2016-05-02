@@ -21,9 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
 import crac.daos.AttachmentDAO;
+import crac.daos.CommentDAO;
 import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
 import crac.models.Attachment;
+import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
@@ -47,6 +49,9 @@ public class TaskController {
 
 	@Autowired
 	private AttachmentDAO attachmentDAO;
+
+	@Autowired
+	private CommentDAO commentDAO;
 
 	/**
 	 * GET / or blank -> get all tasks.
@@ -226,6 +231,45 @@ public class TaskController {
 		List<Task> taskList = taskDAO.findMultipleByNameLike("%"+task_name+"%");
 		ObjectMapper mapper = new ObjectMapper();
 		return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+	}
+	
+	/**
+	 * Add a comment to target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{task_id}/addComment", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addComment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Comment myComment = mapper.readValue(json, Comment.class);
+		myTask.getComments().add(myComment);
+		myComment.setTask(myTask);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"name\":\""+myComment.getName()+"\"}");
+	}
+	
+	/**
+	 * Remove a comment from target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{task_id}/removeComment/{comment_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeComment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "comment_id") Long comment_id) {
+		Task myTask = taskDAO.findOne(task_id);
+		Comment myComment = commentDAO.findOne(comment_id);
+		myTask.getAttachments().remove(myComment);
+		commentDAO.delete(myComment);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"removed\":\"true\",\"name\":\""+myComment.getName()+"\"}");
 	}
 
 }
