@@ -271,5 +271,19 @@ public class TaskController {
 		taskDAO.save(myTask);
 		return ResponseEntity.ok().body("{\"removed\":\"true\",\"name\":\""+myComment.getName()+"\"}");
 	}
+	
+	/**
+	 * Returns all comments of a task
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException 
+	 */
+	@RequestMapping(value = "/{task_id}/getComments", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getComments(@PathVariable(value = "task_id") Long task_id) throws JsonProcessingException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()));
+	}
 
 }

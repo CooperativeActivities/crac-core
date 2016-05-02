@@ -78,6 +78,15 @@ public class CracUser {
 	private Set<Task> createdTasks;
 
 	/**
+	 * defines a one to many relation with the task-entity
+	 */
+
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Project> createdProjects;
+
+	
+	/**
 	 * defines a one to many relation with the competence-entity
 	 */
 
@@ -328,6 +337,14 @@ public class CracUser {
 
 	public void setRole(Role role) {
 		this.role = role;
+	}
+
+	public Set<Project> getCreatedProjects() {
+		return createdProjects;
+	}
+
+	public void setCreatedProjects(Set<Project> createdProjects) {
+		this.createdProjects = createdProjects;
 	}
 	
 }

@@ -47,6 +47,16 @@ public class Task {
 	
 	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Task> childTasks;
+	
+	/**
+	 * Defines a one to many relationship to the project entity
+	 */
+
+	@ManyToOne
+	@NotNull
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "super_project")
+	private Project superProject;
 
 	
 	/**
@@ -114,12 +124,14 @@ public class Task {
 	/**
 	 * defines a one to many relation with the attachment-entity
 	 */
+	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Attachment> attachments;
 
 	/**
 	 * defines a one to many relation with the attachment-entity
 	 */
+	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Comment> comments;
 
@@ -299,6 +311,14 @@ public class Task {
 
 	public void setComments(Set<Comment> comments) {
 		this.comments = comments;
+	}
+
+	public Project getSuperProject() {
+		return superProject;
+	}
+
+	public void setSuperProject(Project superProject) {
+		this.superProject = superProject;
 	}
 	
 }
