@@ -64,13 +64,16 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
     	.antMatchers("/adminOnly").hasAuthority("ADMIN")
+    	//.antMatchers("/openAccess/*").permitAll()
     	.anyRequest().fullyAuthenticated()
     	.and()
 	    	.httpBasic()
+	    	/*
 	    .and()
 		    .logout()
 	        .logoutUrl("/logout")
 	        .logoutSuccessUrl("/test")
+	        */
 	    .and()
 	    	.csrf().disable();
   }

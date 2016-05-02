@@ -151,13 +151,7 @@ public class CracUser {
 	
 	public CracUser(String name, String password) {
 		this.name = name;
-		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
-		this.password = bcryptEncoder.encode(password);
-		this.email = "default";
-		this.firstName = "default";
-		this.lastName = "default";
-		this.phone = 1;
-		this.role = Role.USER;
+		this.password = password;
 	}
 
 	public CracUser() {
