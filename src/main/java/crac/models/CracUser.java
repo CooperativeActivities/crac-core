@@ -151,9 +151,13 @@ public class CracUser {
 	
 	public CracUser(String name, String password) {
 		this.name = name;
-		this.password = password;
-		this.competences = null;
-		this.openTasks = null;
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+		this.password = bcryptEncoder.encode(password);
+		this.email = "default";
+		this.firstName = "default";
+		this.lastName = "default";
+		this.phone = 1;
+		this.role = Role.USER;
 	}
 
 	public CracUser() {

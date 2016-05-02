@@ -349,4 +349,20 @@ public class CracUserController {
 				+ "\", \"removed\":\"true\"}");
 	}
 
+	/**
+	 * returns a json if the logged in user is valid
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> login() throws JsonMappingException, IOException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		return ResponseEntity.ok().body(
+				"{\"user\":\"" + myUser.getId() + "\",\"name\":\"" + myUser.getName() + "\",\"login\":\"true\"}");
+
+	}
+	
 }
