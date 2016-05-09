@@ -123,8 +123,29 @@ public class CracUserController {
 		if (updatedUser.getName() != null) {
 			oldUser.setName(updatedUser.getName());
 		}
-		if (updatedUser.getPassword() != null) {
-			oldUser.setPassword(updatedUser.getPassword());
+		if (updatedUser.getFirstName() != null) {
+			oldUser.setFirstName(updatedUser.getFirstName());
+		}
+		if (updatedUser.getLastName() != null) {
+			oldUser.setLastName(updatedUser.getLastName());
+		}
+		if (updatedUser.getBirthDate() != null) {
+			oldUser.setBirthDate(updatedUser.getBirthDate());
+		}
+		if (updatedUser.getEmail() != null) {
+			oldUser.setEmail(updatedUser.getEmail());
+		}
+		if (updatedUser.getAddress() != null) {
+			oldUser.setAddress(updatedUser.getAddress());
+		}
+		if (updatedUser.getPhone() != null) {
+			oldUser.setPhone(updatedUser.getPhone());
+		}
+		if (updatedUser.getRole() != null) {
+			oldUser.setRole(updatedUser.getRole());
+		}
+		if (updatedUser.getStatus() != null) {
+			oldUser.setStatus(updatedUser.getStatus());
 		}
 
 		userDAO.save(oldUser);

@@ -61,7 +61,7 @@ public class CracUser {
 	private String status;
 	
 	@NotNull
-	private int phone;
+	private String phone;
 	
 	private String address;
 	
@@ -170,7 +170,7 @@ public class CracUser {
 		this.email = "default";
 		this.firstName = "default";
 		this.lastName = "default";
-		this.phone = 1;
+		this.phone = "+43";
 		this.role = Role.USER;
 	}
 	
@@ -267,11 +267,11 @@ public class CracUser {
 		this.status = status;
 	}
 
-	public int getPhone() {
+	public String getPhone() {
 		return phone;
 	}
 
-	public void setPhone(int phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
 
