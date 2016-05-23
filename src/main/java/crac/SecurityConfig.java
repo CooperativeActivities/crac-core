@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -42,7 +43,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
     	CracUser account = accountRepository.findByName(name);
         if(account != null) {
         return new User(account.getName(), account.getPassword(), true, true, true, true,
-                AuthorityUtils.createAuthorityList(account.getRole().toString()));
+                AuthorityUtils.createAuthorityList("ROLE_"+account.getRole().toString()));
         } else {
           throw new UsernameNotFoundException("could not find the user '"
                   + name + "'");
@@ -57,13 +58,14 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
  * the security configuration for this web application
  */
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
  
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-    	.antMatchers("/adminOnly").hasAuthority("ADMIN")
+    	//.antMatchers("/adminOnly").hasAuthority("ADMIN")
     	//.antMatchers("/openAccess/*").permitAll()
     	.anyRequest().fullyAuthenticated()
     	.and()

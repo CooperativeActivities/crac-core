@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,6 +102,7 @@ public class ProjectController {
 	/**
 	 * DELETE /{project_id} -> delete the task with given ID.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{project_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "project_id") Long id) {
@@ -113,6 +115,7 @@ public class ProjectController {
 	/**
 	 * PUT /{project_id} -> update the task with given ID.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{project_id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "project_id") Long id)
@@ -149,6 +152,7 @@ public class ProjectController {
 
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{project_id}/removeTask/{task_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeTask(@PathVariable(value = "project_id") Long project_id, @PathVariable(value = "task_id") Long task_id) {

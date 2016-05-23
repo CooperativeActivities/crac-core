@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,6 +97,7 @@ public class TaskController {
 	/**
 	 * DELETE /{task_id} -> delete the task with given ID.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{task_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "task_id") Long id) {
@@ -150,6 +152,7 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{task_id}/addCompetence/{competence_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addCompetence(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "competence_id") Long competence_id) {

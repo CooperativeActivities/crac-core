@@ -164,14 +164,6 @@ public class CracUser {
 	}
 
 	public CracUser() {
-		this.name = "default";
-		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
-		this.password = bcryptEncoder.encode("default");
-		this.email = "default";
-		this.firstName = "default";
-		this.lastName = "default";
-		this.phone = "+43";
-		this.role = Role.USER;
 	}
 	
 	/**
@@ -199,8 +191,7 @@ public class CracUser {
 	}
 
 	public void setPassword(String password) {
-		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
-		this.password = bcryptEncoder.encode(password);
+		this.password = password;
 	}
 
 	public Set<Competence> getCompetences() {

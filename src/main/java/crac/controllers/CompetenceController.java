@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,6 +60,7 @@ public class CompetenceController {
 	/**
 	 * POST / or blank -> create a new competence, creator is the logged-in user.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
@@ -76,6 +78,7 @@ public class CompetenceController {
 	/**
 	 * DELETE /{competence_id} -> delete the competence with given ID.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{competence_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "competence_id") Long id) {
@@ -88,6 +91,7 @@ public class CompetenceController {
 	/**
 	 * PUT /{competence_id} -> update the competence with given ID.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{competence_id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "competence_id") Long id)
@@ -114,6 +118,7 @@ public class CompetenceController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{child_id}/addChild", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addChild(@RequestBody String json, @PathVariable(value = "child_id") Long child_id) throws JsonMappingException, IOException {

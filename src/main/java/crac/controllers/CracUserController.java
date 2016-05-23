@@ -4,8 +4,10 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,12 +76,16 @@ public class CracUserController {
 	/**
 	 * POST / or blank -> create a new user.
 	 */
-
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		CracUser myUser = mapper.readValue(json, CracUser.class);
+		
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+		myUser.setPassword(bcryptEncoder.encode(myUser.getPassword()));
+
 		if (userDAO.findByName(myUser.getName()) == null) {
 			userDAO.save(myUser);
 		} else {
@@ -95,6 +101,7 @@ public class CracUserController {
 	 * DELETE /{user_id} -> delete the user with given ID.
 	 */
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{user_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "user_id") Long id) {
@@ -118,7 +125,13 @@ public class CracUserController {
 		ObjectMapper mapper = new ObjectMapper();
 		CracUser updatedUser = mapper.readValue(json, CracUser.class);
 		CracUser oldUser = userDAO.findOne(id);
+		
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 
+		if (updatedUser.getPassword() != null) {
+			oldUser.setPassword(bcryptEncoder.encode(updatedUser.getPassword()));
+		}
+		
 		String oldName = oldUser.getName();
 		if (updatedUser.getName() != null) {
 			oldUser.setName(updatedUser.getName());
