@@ -9,6 +9,8 @@ If this is not the case, the server will just return an "unauthorized"-message!
 ####If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
 Eg.: A user without admin-rights tries to delete another user.
 
+-----------------------------------------------------------------
+
 **Get login response**
 
 #####*Request:*
@@ -36,6 +38,8 @@ else the standard unauthorized-message will appear:
 -----------------------------------------------------------------
 
 ###User-Functions
+
+-----------------------------------------------------------------
 
 **Get all users**
 
@@ -186,6 +190,8 @@ Json-data, either a success or a failure message
 
 ###Competence-Endpoints on logged in user
 
+-----------------------------------------------------------------
+
 **Add a competence with given ID to the currently logged in user**
 
 #####*Request:*
@@ -211,6 +217,8 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 
 ###Task-Endpoints on logged in user
+
+-----------------------------------------------------------------
 
 **Add a task with given ID to the open-tasks (kind of the to-do list) of the logged in user**
 
@@ -293,6 +301,8 @@ So while REST-functions on tasks are possible, it is highly recommended to use t
 Inconsistency producing REST-calls will also not be mentioned in this readme, they can be however looked up in the javadoc-documentation of the project if needed.
 
 ####First the endpoints of the projects themselves
+
+-----------------------------------------------------------------
 
 **Gets all projects**
 
@@ -443,6 +453,8 @@ Json-data, either a success or a failure message
 
 ####The endpoints of tasks
 
+-----------------------------------------------------------------
+
 **Returns an array containing all tasks**
 
 #####*Request:*
@@ -586,6 +598,8 @@ GET /task/getByName/{task_name}"
 
 ###Comment-handling
 
+-----------------------------------------------------------------
+
 **Creates and adds a comment to given task**
 
 #####*Request:*
@@ -640,6 +654,8 @@ GET task/{task_id}/getComments
 -----------------------------------------------------------------
 
 ###Competence-Endpoints
+
+-----------------------------------------------------------------
 
 **Returns an array containing all competences**
 
@@ -731,6 +747,8 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 
 ###Simple Taskfeed
+
+-----------------------------------------------------------------
 
 **Returns all Tasks, which neededCompetences match with the addedCompetences of the logged in user**
 
