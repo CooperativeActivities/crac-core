@@ -118,6 +118,7 @@ public class CracUserController {
 	 * PUT /{user_id} -> update the user with given ID.
 	 */
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/{user_id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "user_id") Long id)
@@ -180,6 +181,65 @@ public class CracUserController {
 		ObjectMapper mapper = new ObjectMapper();
 		return ResponseEntity.ok().body(mapper.writeValueAsString(myUser));
 	}
+	
+	/**
+	 * Update the currently logged in user
+	 * @param json
+	 * @param id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/updateMe", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> updateMe(@RequestBody String json)
+			throws JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		CracUser updatedUser = mapper.readValue(json, CracUser.class);
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser oldUser = userDAO.findByName(userDetails.getUsername());
+
+		
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+
+		if (updatedUser.getPassword() != null) {
+			oldUser.setPassword(bcryptEncoder.encode(updatedUser.getPassword()));
+		}
+		
+		String oldName = oldUser.getName();
+		if (updatedUser.getName() != null) {
+			oldUser.setName(updatedUser.getName());
+		}
+		if (updatedUser.getFirstName() != null) {
+			oldUser.setFirstName(updatedUser.getFirstName());
+		}
+		if (updatedUser.getLastName() != null) {
+			oldUser.setLastName(updatedUser.getLastName());
+		}
+		if (updatedUser.getBirthDate() != null) {
+			oldUser.setBirthDate(updatedUser.getBirthDate());
+		}
+		if (updatedUser.getEmail() != null) {
+			oldUser.setEmail(updatedUser.getEmail());
+		}
+		if (updatedUser.getAddress() != null) {
+			oldUser.setAddress(updatedUser.getAddress());
+		}
+		if (updatedUser.getPhone() != null) {
+			oldUser.setPhone(updatedUser.getPhone());
+		}
+		if (updatedUser.getStatus() != null) {
+			oldUser.setStatus(updatedUser.getStatus());
+		}
+
+		userDAO.save(oldUser);
+
+		return ResponseEntity.ok().body("{\"user\":\"" + oldUser.getId() + "\",\"old_name\":\"" + oldName
+				+ "\",\"new_name\":\"" + oldUser.getName() + "\",\"updated\":\"true\"}");
+
+	}
+
 
 	/**
 	 * Adds target competence to the currently logged-in user
