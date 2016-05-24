@@ -11,13 +11,13 @@ Eg.: A user without admin-rights tries to delete another user.
 
 **Get login response**
 
-*Request*
+#####*Request:*
 
 GET /user/login
 
 ->the name and password have to be added in the header as the basic-authentication
 
-#####*Response*
+#####*Response:*
 
 If the name and password transferred in the header are correct:
 
@@ -32,14 +32,18 @@ else the standard unauthorized-message will appear:
 		"status": 401, 
 		"error": "Unauthorized"
 	}
+	
+-----------------------------------------------------------------
 
 ###User-Functions
 
-**Request**
+**Get all users**
+
+#####*Request:*
 
 GET /user
 
-**Response**
+#####*Response:*
 
 An array containing all users
 
@@ -55,12 +59,16 @@ An array containing all users
 			...
 		}
 	]
+	
+-----------------------------------------------------------------
+	
+**Get one user by ID**
 
-**Request**
+#####*Request:*
 
 GET /user/{id}
 
-**Response**
+#####*Response:*
 
 A user object with given id
 
@@ -70,7 +78,11 @@ A user object with given id
 		...
 	}
 
-**Request**
+-----------------------------------------------------------------
+
+**Create a new user**
+
+#####*Request:*
 
 POST /user
 
@@ -86,20 +98,28 @@ POST /user
 	    "email":"asd@asd"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Delete a user with given ID**
+
+#####*Request:*
 
 DELETE /user/{id}
 ####This function requires ADMIN-rights!
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Update the data of a user with given ID**
+
+#####*Request:*
 
 PUT /user/{id}
 ####This function requires ADMIN-rights!
@@ -116,15 +136,19 @@ Updates a user by given ID
 	    "email":"asd@asd"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Get the data of the currently logged in user**
+
+#####*Request:*
 
 GET /user/me
 
-**Response**
+#####*Response:*
 
 The object of the currently logged in user
 
@@ -134,7 +158,11 @@ The object of the currently logged in user
 		...
 	}
 
-**Request**
+-----------------------------------------------------------------
+
+**Update the data of the currently logged in user**
+
+#####*Request:*
 
 PUT /user/updateMe
 
@@ -150,93 +178,112 @@ Updates the currently logged in user
 	    "email":"asd@asd"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 
 ###Competence-Endpoints on logged in user
 
-**Request**
+**Add a competence with given ID to the currently logged in user**
+
+#####*Request:*
 
 GET user/addCompetence/{competence_id}
 
-Adds the competence with given id to the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Remove a competence with given ID from the currently logged in user**
+
+#####*Request:*
 
 GET user/removeCompetence/{competence_id}
 
-Removes the competence with given id from the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 
 ###Task-Endpoints on logged in user
 
-**Request**
+**Add a task with given ID to the open-tasks (kind of the to-do list) of the logged in user**
+
+#####*Request:*
 
 GET user/addTask/{task_id}
 
-Adds the task with given id to the open-tasks of the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Removes the task with given id from the open-tasks of the currently logged in user**
+
+#####*Request:*
 
 GET user/removeTask/{task_id}
 
-Removes the task with given id from the open-tasks of the currently logged in user
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Adds the task with given id to the followed-tasks of the currently logged in user**
+
+#####*Request:*
 
 GET user/followTask/{task_id}
 
-Adds the task with given id to the followed-tasks of the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Removes the task with given id from the follow-tasks of the currently logged in user**
+
+#####*Request:*
 
 GET user/unfollowTask/{task_id}
 
-Removes the task with given id from the follow-tasks of the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Adds the task with given id to the leading-tasks of the currently logged in user**
+
+#####*Request:*
 
 GET user/leadTask/{task_id}
 
-Adds the task with given id to the leading-tasks of the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Removes the task with given id from the leading-tasks of the currently logged in user**
+
+#####*Request:*
 
 GET user/abandonTask/{task_id}
 
-Removes the task with given id from the leading-tasks of the currently logged in user
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 
 ###Project and Task-Endpoints
 
@@ -247,11 +294,13 @@ Inconsistency producing REST-calls will also not be mentioned in this readme, th
 
 ####First the endpoints of the projects themselves
 
-**Request**
+**Gets all projects**
+
+#####*Request:*
 
 GET /project
 
-**Response**
+#####*Response:*
 
 An array containing all projects
 
@@ -275,13 +324,15 @@ An array containing all projects
 		}
 	]
 
-**Request**
+-----------------------------------------------------------------
+
+**Gets one project with given ID**
+
+#####*Request:*
 
 GET /project/{project_id}
 
-**Response**
-
-A project object with given id
+#####*Response:*
 
 	{
 		"id": {id},
@@ -296,8 +347,12 @@ A project object with given id
 			...
 		...
 	}
+	
+-----------------------------------------------------------------
 
-**Request**
+**Creates a new project**
+
+#####*Request:*
 
 POST /project
 
@@ -309,27 +364,33 @@ POST /project
 	    "endTime": "2000-01-01T01:00:00"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Deletes a project with given id**
+
+#####*Request:*
 
 DELETE /project/{project_id}
 ####This function requires ADMIN-rights!
 
-Deletes a project by given id
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 	
-**Request**
+-----------------------------------------------------------------
+
+**Updates the project with given id**	
+
+#####*Request:*
 
 PUT /project/{project_id}
 ####This function requires ADMIN-rights!
 
-Updates the project with given id
 
 	{
 	    "name": "testProject",
@@ -339,15 +400,17 @@ Updates the project with given id
 	    "endTime": "2000-01-01T01:00:00"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Creates a task and adds it to the given project.**
+
+#####*Request:*
 
 POST /{project_id}/addTask
-
-Creates a task and adds it to the given project.
 
 	{
 	    "name": "testProject",
@@ -359,30 +422,34 @@ Creates a task and adds it to the given project.
 	    "amountOfVolunteers": 25
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Deletes a task by given id and removes it from the chosen project**
+
+#####*Request:*
 
 DELETE /project/{project_id}/removeTask/{task_id}
 ####This function requires ADMIN-rights!
 
-Deletes a task by given id and removes it from the chosen project
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
+-----------------------------------------------------------------
+
 ####The endpoints of tasks
 
-**Request**
+**Returns an array containing all tasks**
+
+#####*Request:*
 
 GET /task
 
-**Response**
-
-An array containing all tasks
+#####*Response:*
 
 	[
 		{
@@ -397,13 +464,15 @@ An array containing all tasks
 		}
 	]
 
-**Request**
+-----------------------------------------------------------------
+
+**Returns a project object with given id**
+
+#####*Request:*
 
 GET /task/{task_id}
 
-**Response**
-
-A project object with given id
+#####*Response:*
 
 	{
 		"id": {task_id},
@@ -411,12 +480,14 @@ A project object with given id
 		...
 	}
 	
-**Request**
+-----------------------------------------------------------------
+
+**Updates the task with given id**
+	
+#####*Request:*
 
 PUT /task/{task_id}
 ####This function requires ADMIN-rights!
-
-Updates the task with given id
 
 	{
 	    "name": "testTask",
@@ -428,35 +499,43 @@ Updates the task with given id
 	    "amountOfVolunteers": 30
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 	
-**Request**
+**Adds a competence by given id to a task by given id**
+	
+#####*Request:*
 
 GET /task/{task_id}/addCompetence/{competence_id}
 
-Adds a competence by given id to a task by given id
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Adds or updated the feedback of a task**
+
+#####*Request:*
 
 POST /task/{task_id}/addFeedback
-
-Adds or updated the feedback of a task
 
 	{
 		"feedback": "Some feedback"
 	}
 	
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Adds an attachment to a task by given ID**
+
+#####*Request:*
 
 POST /task/{task_id}/addAttachment
 
@@ -464,27 +543,31 @@ POST /task/{task_id}/addAttachment
 The file has to be sent via a multipart-form.
 It then is copied to the server and added to the given task
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Removes given attachment from given task and deletes the attached file from the server**
+
+#####*Request:*
 
 DELETE /task/{task_id}/removeAttachment/{attachment_id}
 
-Removes given attachment from given task and deletes the attached file from the server
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Returns an array with all tasks that contain given task_name in their name**
+
+#####*Request:*
 
 GET /task/getByName/{task_name}"
 
-Returns an array with all tasks that contain given task_name in their name
-
-**Response**
+#####*Response:*
 
 	[
 		{
@@ -498,41 +581,47 @@ Returns an array with all tasks that contain given task_name in their name
 			...
 		}
 	]
-	
+
+-----------------------------------------------------------------
+
 ###Comment-handling
 
-**Request**
+**Creates and adds a comment to given task**
+
+#####*Request:*
 
 POST /task/{task_id}/addComment
-
-Creates and adds a comment to given task
 
 	{
 		"name": "testComment",
 		"content": "this is test content"
 	}
 	
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Removes and deletes a given comment from a given task**
+
+#####*Request:*
 
 DELETE /task/{task_id}/removeComment/{comment_id}
 
-Removes and deletes a given comment from a given task
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Returns all comments of given task as array**
+
+#####*Request:*
 
 GET task/{task_id}/getComments
 
-Returns all comments of given task as array
-
-**Response**
+#####*Response:*
 
 	[
 	  {
@@ -547,16 +636,18 @@ Returns all comments of given task as array
 	  },
 	  ...
 	]
-	
+
+-----------------------------------------------------------------
+
 ###Competence-Endpoints
 
-**Request**
+**Returns an array containing all competences**
+
+#####*Request:*
 
 GET /competence
 
-**Response**
-
-An array containing all competences
+#####*Response:*
 
 	[
 		{
@@ -571,13 +662,15 @@ An array containing all competences
 		}
 	]
 
-**Request**
+-----------------------------------------------------------------
+
+**Returns a user object with given id**
+
+#####*Request:*
 
 GET /competence/{competence_id}
 
-**Response**
-
-A user object with given id
+#####*Response:*
 
 	{
 		"id": {competence_id},
@@ -585,7 +678,11 @@ A user object with given id
 		...
 	}
 
-**Request**
+-----------------------------------------------------------------
+
+**Creates a new competence**
+
+#####*Request:*
 
 POST /competence
 
@@ -596,46 +693,52 @@ POST /competence
 	    "description": "this is a competence"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Deletes competence by given ID**
+
+#####*Request:*
 
 DELETE /competence/{competence_id}
 ####This function requires ADMIN-rights!
 
-Deletes the given competence
-
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
-**Request**
+-----------------------------------------------------------------
+
+**Updates a competence by given ID**
+
+#####*Request:*
 
 PUT /competence/{competence_id}
 ####This function requires ADMIN-rights!
-
-Updates a competence by given ID
 
 	{
 	    "name":"testCompetence",
 	    "description": "this is a competence"
 	}
 
-**Response**
+#####*Response:*
 
 Json-data, either a success or a failure message
 
+-----------------------------------------------------------------
+
 ###Simple Taskfeed
 
-**Request**
+**Returns all Tasks, which neededCompetences match with the addedCompetences of the logged in user**
+
+#####*Request:*
 
 GET /newsfeed
 
-Returns all Tasks, which neededCompetences match with the addedCompetences of the logged in user
-
-**Response**
+#####*Response:*
 
 	[
 		{
