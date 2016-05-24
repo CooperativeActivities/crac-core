@@ -17,7 +17,7 @@ GET /user/login
 
 ->the name and password have to be added in the header as the basic-authentication
 
-*Response*
+#####*Response*
 
 If the name and password transferred in the header are correct:
 
