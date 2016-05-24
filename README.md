@@ -545,3 +545,83 @@ Returns all comments of given task as array
 	  },
 	  ...
 	]
+	
+###Competence-Endpoints
+
+**Request**
+
+GET /competence
+
+**Response**
+
+An array containing all users
+
+	[
+		{
+			"id": 1,
+			"name": "testCompetence",
+			...
+		},
+		{
+			"id": 2,
+			"name": "AnotherCompetence",
+			...
+		}
+	]
+
+**Request**
+
+GET /competence/{competence_id}
+
+**Response**
+
+A user object with given id
+
+	{
+		"id": {competence_id},
+		"name": "searchedCompetence",
+		...
+	}
+
+**Request**
+
+POST /competence
+
+####This function requires ADMIN-rights!
+
+	{
+	    "name":"testCompetence",
+	    "description": "this is a competence"
+	}
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+DELETE /competence/{competence_id}
+####This function requires ADMIN-rights!
+
+Deletes the given competence
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+PUT /competence/{competence_id}
+####This function requires ADMIN-rights!
+
+Updates a competence by given ID
+
+	{
+	    "name":"testCompetence",
+	    "description": "this is a competence"
+	}
+
+**Response**
+
+Json-data, either a success or a failure message
+
