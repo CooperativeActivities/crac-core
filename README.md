@@ -5,7 +5,7 @@
 ###Login-related
 
 ####THE CREDENTIALS (NAME AND PASSWORD) FOR ATHENTICATION MUST ALWAYS BE DELIVERED IN THE HEADER OF THE REQUEST AS BASIC AUTHENTICATION! 
-If this is not the case, the server will just return a message, containing an "unauthorized"-message!
+If this is not the case, the server will just return an "unauthorized"-message!
 ####If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
 Eg.: A user without admin-rights tries to delete another user.
 
@@ -19,17 +19,17 @@ GET /user/login
 
 If the name and password transferred in the header are correct:
 
-{
-	"user": "userName",
-	"login": "true
-}
+	{
+		"user": "userName",
+		"login": "true
+	}
 
 else the standard unauthorized-message will appear:
 
-{
-	"status": 401, 
-	"error": "Unauthorized"
-}
+	{
+		"status": 401, 
+		"error": "Unauthorized"
+	}
 
 ###User-Functions
 
@@ -41,18 +41,18 @@ GET /user
 
 An array containing all users
 
-[
-	{
-		"id": 1,
-		"name": "testUser",
-		...
-	},
-	{
-		"id": 2,
-		"name": "AnotherUser",
-		...
-	}
-]
+	[
+		{
+			"id": 1,
+			"name": "testUser",
+			...
+		},
+		{
+			"id": 2,
+			"name": "AnotherUser",
+			...
+		}
+	]
 
 **Request**
 
@@ -62,11 +62,11 @@ GET /user/{id}
 
 A user object with given id
 
-{
-	"id": {id},
-	"name": "searchedUser",
-	...
-}
+	{
+		"id": {id},
+		"name": "searchedUser",
+		...
+	}
 
 **Request**
 
@@ -74,15 +74,15 @@ POST /user
 
 ####This function requires ADMIN-rights!
 
-{
-    "name":"test",
-    "password": "test",
-    "role":"USER",
-    "firstName":"TestHans",
-    "lastName":"TestName",
-    "phone":"234",
-    "email":"asd@asd"
-}
+	{
+	    "name":"test",
+	    "password": "test",
+	    "role":"USER",
+	    "firstName":"TestHans",
+	    "lastName":"TestName",
+	    "phone":"234",
+	    "email":"asd@asd"
+	}
 
 **Response**
 
@@ -104,15 +104,15 @@ PUT /user/{id}
 
 Updates a user by given ID
 
-{
-    "name":"test",
-    "password": "test",
-    "role":"USER",
-    "firstName":"TestHans",
-    "lastName":"TestName",
-    "phone":"234",
-    "email":"asd@asd"
-}
+	{
+	    "name":"test",
+	    "password": "test",
+	    "role":"USER",
+	    "firstName":"TestHans",
+	    "lastName":"TestName",
+	    "phone":"234",
+	    "email":"asd@asd"
+	}
 
 **Response**
 
@@ -126,11 +126,11 @@ GET /user/me
 
 The object of the currently logged in user
 
-{
-	"id": 3,
-	"name": "currentUser",
-	...
-}
+	{
+		"id": 3,
+		"name": "currentUser",
+		...
+	}
 
 **Request**
 
@@ -138,15 +138,15 @@ PUT /user/updateMe
 
 Updates the currently logged in user
 
-{
-    "name":"currentUser",
-    "password": "test",
-    "role":"ADMIN",
-    "firstName":"TestHans",
-    "lastName":"TestName",
-    "phone":"234",
-    "email":"asd@asd"
-}
+	{
+	    "name":"currentUser",
+	    "password": "test",
+	    "role":"ADMIN",
+	    "firstName":"TestHans",
+	    "lastName":"TestName",
+	    "phone":"234",
+	    "email":"asd@asd"
+	}
 
 **Response**
 
