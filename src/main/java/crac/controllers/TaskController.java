@@ -211,7 +211,7 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/{task_id}/removeAttachment/{attachment_id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/{task_id}/removeAttachment/{attachment_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeAttachment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "attachment_id") Long attachment_id) {
 		Task myTask = taskDAO.findOne(task_id);
@@ -264,7 +264,7 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/{task_id}/removeComment/{comment_id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/{task_id}/removeComment/{comment_id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeComment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "comment_id") Long comment_id) {
 		Task myTask = taskDAO.findOne(task_id);

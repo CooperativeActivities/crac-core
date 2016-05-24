@@ -239,8 +239,8 @@ Json-data, either a success or a failure message
 ###Project and Task-Endpoints
 
 ####PROJECT IS THE SUPER-TYPE TO A TASK
-User-Interaction happens on the task-level, but ever task has to be assigned to a project.
-So while REST-functions are possible on tasks are possible, it is highly recommended to use the other comfort functions because of inconsistency reasons.
+User-Interaction happens on the task-level, but every task has to be assigned to a project.
+So while REST-functions on tasks are possible, it is highly recommended to use the other comfort functions for this, because of inconsistency reasons.
 Inconsistency producing REST-calls will also not be mentioned in this readme, they can be however looked up in the javadoc-documentation of the project if needed.
 
 ####First the endpoints of the projects themselves
@@ -257,6 +257,13 @@ An array containing all projects
 		{
 			"id": 1,
 			"name": "testProject",
+			"childTasks": [
+				{
+					"id": 1,
+					"name": "testTask"
+				},
+				...
+			],
 			...
 		},
 		{
@@ -277,6 +284,14 @@ A project object with given id
 	{
 		"id": {id},
 		"name": "searchedProject",
+		childTasks": [
+				{
+					"id": 1,
+					"name": "testTask"
+				},
+				...
+			],
+			...
 		...
 	}
 
@@ -288,8 +303,8 @@ POST /project
 	    "name": "testProject",
 	    "description": "this is a test",
 	    "location": "Vienna",
-	    "startTime": "2000-01-01 00:30:00",
-	    "endTime": "2000-01-01 01:00:00"
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00"
 	}
 
 **Response**
@@ -318,8 +333,8 @@ Updates the project with given id
 	    "name": "testProject",
 	    "description": "this is a test",
 	    "location": "Vienna",
-	    "startTime": "2000-01-01 00:30:00",
-	    "endTime": "2000-01-01 01:00:00"
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00"
 	}
 
 **Response**
@@ -336,8 +351,8 @@ Creates a task and adds it to the given project.
 	    "name": "testProject",
 	    "description": "this is a test",
 	    "location": "Vienna",
-	    "startTime": "2000-01-01 00:30:00",
-	    "endTime": "2000-01-01 01:00:00",
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00",
 	    "urgency": 4,
 	    "amountOfVolunteers": 25
 	}
@@ -359,5 +374,174 @@ Json-data, either a success or a failure message
 
 ####The endpoints of tasks
 
+**Request**
 
+GET /task
+
+**Response**
+
+An array containing all tasks
+
+	[
+		{
+			"id": 1,
+			"name": "testTask",
+			...
+		},
+		{
+			"id": 2,
+			"name": "AnotherTask",
+			...
+		}
+	]
+
+**Request**
+
+GET /task/{task_id}
+
+**Response**
+
+A project object with given id
+
+	{
+		"id": {task_id},
+		"name": "searchedTask",
+		...
+	}
 	
+**Request**
+
+PUT /task/{task_id}
+####This function requires ADMIN-rights!
+
+Updates the task with given id
+
+	{
+	    "name": "testTask",
+	    "description": "this is a test",
+	    "location": "Vienna",
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00"
+	    "urgency": 3,
+	    "amountOfVolunteers": 30
+	}
+
+**Response**
+
+Json-data, either a success or a failure message
+	
+**Request**
+
+GET /task/{task_id}/addCompetence/{competence_id}
+
+Adds a competence by given id to a task by given id
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+POST /task/{task_id}/addFeedback
+
+Adds or updated the feedback of a task
+
+	{
+		"feedback": "Some feedback"
+	}
+	
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+POST /task/{task_id}/addAttachment
+
+####THIS IS NOT A JSON-REQUEST!
+The file has to be sent via a multipart-form.
+It then is copied to the server and added to the given task
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+DELETE /task/{task_id}/removeAttachment/{attachment_id}
+
+Removes given attachment from given task and deletes the attached file from the server
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+GET /task/getByName/{task_name}"
+
+Returns an array with all tasks that contain given task_name in their name
+
+**Response**
+
+	[
+		{
+			"id": 1,
+			"name": "task_name",
+			...
+		},
+		{
+			"id": 2,
+			"name": "x_task_name_y",
+			...
+		}
+	]
+	
+###Comment-handling
+
+**Request**
+
+POST /task/{task_id}/addComment
+
+Creates and adds a comment to given task
+
+	{
+		"name": "testComment",
+		"content": "this is test content"
+	}
+	
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+DELETE /task/{task_id}/removeComment/{comment_id}
+
+Removes and deletes a given comment from a given task
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+GET task/{task_id}/getComments
+
+Returns all comments of given task as array
+
+**Response**
+
+	[
+	  {
+	    "id": 1,
+	    "name": "testComment",
+	    "content": "this is a comment",
+	    "task": 1
+	  },
+	  {
+	  	"id": 2,
+	  	...
+	  },
+	  ...
+	]
