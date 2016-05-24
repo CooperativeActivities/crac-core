@@ -554,7 +554,7 @@ GET /competence
 
 **Response**
 
-An array containing all users
+An array containing all competences
 
 	[
 		{
@@ -625,3 +625,25 @@ Updates a competence by given ID
 
 Json-data, either a success or a failure message
 
+###Simple Taskfeed
+
+**Request**
+
+GET /newsfeed
+
+Returns all Tasks, which neededCompetences match with the addedCompetences of the logged in user
+
+**Response**
+
+	[
+		{
+			"id": 1,
+			"name": "testTask",
+			...
+		},
+		{
+			"id": 2,
+			"name": "AnotherTask",
+			...
+		}
+	]
