@@ -152,6 +152,8 @@ Updates the currently logged in user
 
 Json-data, either a success or a failure message
 
+###Competence-Endpoints on logged in user
+
 **Request**
 
 GET user/addCompetence/{competence_id}
@@ -171,6 +173,8 @@ Removes the competence with given id from the currently logged in user
 **Response**
 
 Json-data, either a success or a failure message
+
+###Task-Endpoints on logged in user
 
 **Request**
 
@@ -231,3 +235,129 @@ Removes the task with given id from the leading-tasks of the currently logged in
 **Response**
 
 Json-data, either a success or a failure message
+
+###Project and Task-Endpoints
+
+####PROJECT IS THE SUPER-TYPE TO A TASK
+User-Interaction happens on the task-level, but ever task has to be assigned to a project.
+So while REST-functions are possible on tasks are possible, it is highly recommended to use the other comfort functions because of inconsistency reasons.
+Inconsistency producing REST-calls will also not be mentioned in this readme, they can be however looked up in the javadoc-documentation of the project if needed.
+
+####First the endpoints of the projects themselves
+
+**Request**
+
+GET /project
+
+**Response**
+
+An array containing all projects
+
+	[
+		{
+			"id": 1,
+			"name": "testProject",
+			...
+		},
+		{
+			"id": 2,
+			"name": "AnotherProject",
+			...
+		}
+	]
+
+**Request**
+
+GET /project/{project_id}
+
+**Response**
+
+A project object with given id
+
+	{
+		"id": {id},
+		"name": "searchedProject",
+		...
+	}
+
+**Request**
+
+POST /project
+
+	{
+	    "name": "testProject",
+	    "description": "this is a test",
+	    "location": "Vienna",
+	    "startTime": "2000-01-01 00:30:00",
+	    "endTime": "2000-01-01 01:00:00"
+	}
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+DELETE /project/{project_id}
+####This function requires ADMIN-rights!
+
+Deletes a project by given id
+
+**Response**
+
+Json-data, either a success or a failure message
+	
+**Request**
+
+PUT /project/{project_id}
+####This function requires ADMIN-rights!
+
+Updates the project with given id
+
+	{
+	    "name": "testProject",
+	    "description": "this is a test",
+	    "location": "Vienna",
+	    "startTime": "2000-01-01 00:30:00",
+	    "endTime": "2000-01-01 01:00:00"
+	}
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+POST /{project_id}/addTask
+
+Creates a task and adds it to the given project.
+
+	{
+	    "name": "testProject",
+	    "description": "this is a test",
+	    "location": "Vienna",
+	    "startTime": "2000-01-01 00:30:00",
+	    "endTime": "2000-01-01 01:00:00",
+	    "urgency": 4,
+	    "amountOfVolunteers": 25
+	}
+
+**Response**
+
+Json-data, either a success or a failure message
+
+**Request**
+
+DELETE /project/{project_id}/removeTask/{task_id}
+####This function requires ADMIN-rights!
+
+Deletes a task by given id and removes it from the chosen project
+
+**Response**
+
+Json-data, either a success or a failure message
+
+####The endpoints of tasks
+
+
+	
