@@ -9,13 +9,15 @@ If this is not the case, the server will just return an "unauthorized"-message!
 ####If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
 Eg.: A user without admin-rights tries to delete another user.
 
-**Request**
+**Get login response**
+
+*Request*
 
 GET /user/login
 
 ->the name and password have to be added in the header as the basic-authentication
 
-**Response**
+*Response*
 
 If the name and password transferred in the header are correct:
 
