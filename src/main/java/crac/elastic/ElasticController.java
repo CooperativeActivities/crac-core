@@ -2,6 +2,7 @@ package crac.elastic;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
@@ -22,6 +23,8 @@ import crac.models.CracUser;
 @RestController
 @RequestMapping("/elastic")
 public class ElasticController {
+	
+	private ElasticConnector ESConn = new ElasticConnector("localhost", 9300);
 
 	@RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -29,29 +32,23 @@ public class ElasticController {
 		ElasticTask myTask = new ElasticTask();
 		myTask.setDescription("blah");
 		myTask.setName(name);
-		ObjectMapper mapper = new ObjectMapper();
-		
-		Client client = null;
-		try {
-			client = TransportClient.builder().build()
-			        .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		myTask.setId(new Date().toString());
 
-		
-		IndexResponse response = client.prepareIndex("twitter", "tweet")
-		        .setSource(mapper.writeValueAsString(myTask))
-		        .get();
-
-		
-		if(response.isCreated()){
-			return ResponseEntity.ok().body("new entry");
+				
+		if(ESConn.indexOrUpdateElasticTask(myTask).isCreated()){
+			return ResponseEntity.ok().body("{\"entry\":\"true\"}");
 		}else{
-			return ResponseEntity.ok().body("updated");
+			return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 		}
 		
+		
+	}
+	
+	@RequestMapping(value = "/searchES", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> searchES() throws JsonProcessingException {
+
+		return ResponseEntity.ok().body(ESConn.queryElasticTask().toString());
 		
 	}
 
