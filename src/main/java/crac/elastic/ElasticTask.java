@@ -11,6 +11,8 @@ import crac.models.Project;
 import crac.models.Task;
 
 public class ElasticTask {
+	
+	private String id;
 
 	private long id;
 
@@ -79,6 +81,7 @@ public class ElasticTask {
 	public ElasticTask() {
 	}
 
+<<<<<<< HEAD
 	public long getId() {
 		return id;
 	}
@@ -143,6 +146,16 @@ public class ElasticTask {
 		this.followingUsers = followingUsers;
 	}
 
+=======
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+>>>>>>> origin/master
 	public String getName() {
 		return name;
 	}
