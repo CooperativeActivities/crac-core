@@ -14,14 +14,10 @@ public class ElasticTask {
 	
 	private String id;
 
-	private long id;
-
 	private Task superTask;
 	
 	private Set<Task> childTasks;
 	
-	private Project superProject;
-
 	private Set<Competence> neededCompetences;
 
 	private Set<CracUser> signedUsers;
@@ -52,7 +48,7 @@ public class ElasticTask {
 
 	private Set<Comment> comments;
 
-	public ElasticTask(long id, Task superTask, Set<Task> childTasks, Project superProject,
+	public ElasticTask(String id, Task superTask, Set<Task> childTasks,
 			Set<Competence> neededCompetences, Set<CracUser> signedUsers, Set<CracUser> responsibleUsers,
 			Set<CracUser> followingUsers, String name, String description, String location, Timestamp startTime,
 			Timestamp endTime, int urgency, int amountOfVolunteers, String feedback, CracUser creator,
@@ -60,7 +56,6 @@ public class ElasticTask {
 		this.id = id;
 		this.superTask = superTask;
 		this.childTasks = childTasks;
-		this.superProject = superProject;
 		this.neededCompetences = neededCompetences;
 		this.signedUsers = signedUsers;
 		this.responsibleUsers = responsibleUsers;
@@ -81,15 +76,6 @@ public class ElasticTask {
 	public ElasticTask() {
 	}
 
-<<<<<<< HEAD
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	public Task getSuperTask() {
 		return superTask;
 	}
@@ -104,14 +90,6 @@ public class ElasticTask {
 
 	public void setChildTasks(Set<Task> childTasks) {
 		this.childTasks = childTasks;
-	}
-
-	public Project getSuperProject() {
-		return superProject;
-	}
-
-	public void setSuperProject(Project superProject) {
-		this.superProject = superProject;
 	}
 
 	public Set<Competence> getNeededCompetences() {
@@ -146,7 +124,6 @@ public class ElasticTask {
 		this.followingUsers = followingUsers;
 	}
 
-=======
 	public String getId() {
 		return id;
 	}
@@ -155,7 +132,6 @@ public class ElasticTask {
 		this.id = id;
 	}
 
->>>>>>> origin/master
 	public String getName() {
 		return name;
 	}

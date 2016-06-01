@@ -9,7 +9,7 @@ public class SearchTransformer {
 	}
 	
 	private ElasticTask transformTaskInternDirectly(Task t){
-		return new ElasticTask(t.getId(), t.getSuperTask(), t.getChildTasks(), t.getSuperProject(), 
+		return new ElasticTask(""+t.getId(), t.getSuperTask(), t.getChildTasks(),
 				t.getNeededCompetences(), t.getSignedUsers(), t.getResponsibleUsers(), 
 				t.getFollowingUsers(), t.getName(), t.getDescription(), t.getLocation(), t.getStartTime(), 
 				t.getEndTime(), t.getUrgency(), t.getAmountOfVolunteers(), t.getFeedback(),
