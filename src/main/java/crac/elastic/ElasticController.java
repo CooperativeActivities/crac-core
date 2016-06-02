@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
@@ -59,6 +60,16 @@ public class ElasticController {
 		GetResponse response = ESConn.getElasticTask(task_id);
 
 		return ResponseEntity.ok().body(response.getSourceAsString());
+		
+	}
+	
+	@RequestMapping(value = "/deleteTask/{task_id}", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> deleteTask(@PathVariable(value = "task_id") String task_id) throws JsonProcessingException {
+		
+		DeleteResponse response = ESConn.deleteElasticTask(task_id);
+
+		return ResponseEntity.ok().body("{\"id\":\""+task_id+"\", \"deleted\": \""+response.isFound()+"\"}");
 		
 	}
 	
