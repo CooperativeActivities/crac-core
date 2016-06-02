@@ -63,6 +63,15 @@ public class Competence {
 	@ManyToMany(mappedBy = "competences", fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> users;
+	
+	@ManyToMany(mappedBy = "likes", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
+	private Set<CracUser> likedBy;
+
+	@ManyToMany(mappedBy = "dislikes", fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId=true)
+	private Set<CracUser> dislikedBy;
+
 
 	@NotNull
 	private String name;

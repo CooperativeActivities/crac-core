@@ -16,12 +16,14 @@ import org.elasticsearch.index.query.QueryBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ElasticConnector {
+public class ElasticConnector<T> {
 
 	private Client client;
 	private ObjectMapper mapper;
-
-	public ElasticConnector(String address, int port) {
+	private String index;
+	private String type;
+	
+	public ElasticConnector(String address, int port, String index, String type) {
 		mapper = new ObjectMapper();
 		try {
 			client = TransportClient.builder().build()
@@ -29,15 +31,17 @@ public class ElasticConnector {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
+		this.index = index;
+		this.type = type;
 	}
 
-	public IndexResponse indexOrUpdateElasticTask(ElasticTask task) {
+	public IndexResponse indexOrUpdate(String id, T obj) {
 
 		IndexResponse response = null;
 
 		try {
-			response = this.client.prepareIndex("crac_core", "elastic_task", task.getId())
-					.setSource(this.mapper.writeValueAsString(task)).get();
+			response = this.client.prepareIndex(index, type, id)
+					.setSource(this.mapper.writeValueAsString(obj)).get();
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
@@ -46,16 +50,16 @@ public class ElasticConnector {
 
 	}
 
-	public GetResponse getElasticTask(String id) {
-		return client.prepareGet("crac_core", "elastic_task", id).get();
+	public GetResponse get(String id) {
+		return client.prepareGet(index, type, id).get();
 	}
 	
-	public DeleteResponse deleteElasticTask(String id){
-		return client.prepareDelete("crac_core", "elastic_task", id).get();
+	public DeleteResponse delete(String id){
+		return client.prepareDelete(index, type, id).get();
 	}
 	
-	public SearchResponse queryElasticTask() {
-		SearchResponse response = client.prepareSearch("crac_core").setTypes("elastic_task")
+	public SearchResponse query() {
+		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				// .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				// .setQuery(QueryBuilders.termQuery("multi", "test")) // Query
 				// .setPostFilter(QueryBuilders.rangeQuery("age").from(12).to(18))

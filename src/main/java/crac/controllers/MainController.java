@@ -1,10 +1,27 @@
 package crac.controllers;
 
+import java.sql.Timestamp;
+import java.util.HashSet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import crac.daos.CompetenceDAO;
+import crac.daos.CracUserDAO;
+import crac.daos.ProjectDAO;
+import crac.daos.TaskDAO;
+import crac.models.Competence;
+import crac.models.CracUser;
+import crac.models.Project;
+import crac.models.Role;
+import crac.models.Task;
 
 /**
  * The main-controller used for hello world and testing
@@ -12,19 +29,189 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MainController {
 	
+	@Autowired
+	private CracUserDAO userDAO;
 
-  @RequestMapping("/test")
-  @ResponseBody
-  public String index() {
-	  return "Hello World! This is just a test!";
+	@Autowired
+	private CompetenceDAO competenceDAO;
 
-  }
-  
-  @RequestMapping("/testMe")
-  @ResponseBody
-  public String indexWord() {
-	  UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	  return "Logged in as "+userDetails.getUsername();
-  }
+	@Autowired
+	private TaskDAO taskDAO;
+	
+	@Autowired
+	private ProjectDAO projectDAO;
+
+	@RequestMapping("/test")
+	@ResponseBody
+	public String index() {
+		return "Hello World! This is just a test!";
+
+	}
+
+	@RequestMapping("/testMe")
+	@ResponseBody
+	public String indexWord() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return "Logged in as " + userDetails.getUsername();
+	}
+
+	@SuppressWarnings("deprecation")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/boot")
+	@ResponseBody
+	public ResponseEntity<String> boot() {
+		
+		if(userDAO.findByName("Webmaster") != null){
+			return ResponseEntity.ok().body("{\"booted\":\"false\", \"exception\":\"already_booted\"}");
+		}
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		
+		//Add competences
+		
+		Competence breathing = new Competence();
+		breathing.setCreator(myUser);
+		breathing.setDescription("Beeing to stay alive by inhaling air.");
+		breathing.setName("breathing");
+		
+		Competence walking = new Competence();
+		walking.setCreator(myUser);
+		walking.setDescription("Getting slowly from one point to another using human legs.");
+		walking.setName("walking");
+		
+		Competence swimming = new Competence();
+		swimming.setCreator(myUser);
+		swimming.setDescription("Not drowning while in water.");
+		swimming.setName("swimming");
+		
+		Competence programming = new Competence();
+		programming.setCreator(myUser);
+		programming.setDescription("Beeing able to write computer programs.");
+		programming.setName("programming");
+		
+		Competence javascriptProgramming = new Competence();
+		javascriptProgramming.setCreator(myUser);
+		javascriptProgramming.setDescription("Beeing able to write computer programs with/in JavaScript and it's libraries.");
+		javascriptProgramming.setName("javascript-programming");
+		
+		Competence phpProgramming = new Competence();
+		phpProgramming.setCreator(myUser);
+		phpProgramming.setDescription("Beeing able to write computer programs with/in PHP and it's libraries.");
+		phpProgramming.setName("php-programming");
+		
+		competenceDAO.save(breathing);
+		competenceDAO.save(walking);
+		competenceDAO.save(swimming);
+		competenceDAO.save(programming);
+		competenceDAO.save(javascriptProgramming);
+		competenceDAO.save(phpProgramming);
+		
+		//Add projects
+				
+		Project waterFlowers = new Project();
+		waterFlowers.setName("Water the flowers");
+		waterFlowers.setDescription("All about watering the different flowers in the garden.");
+		waterFlowers.setLocation("my garden");
+		waterFlowers.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));
+		waterFlowers.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
+		waterFlowers.setCreator(myUser);
+		
+		projectDAO.save(waterFlowers);
+		
+		//Add tasks
+		
+		Task waterRoses = new Task();
+		waterRoses.setName("Water the roses");
+		waterRoses.setDescription("Water the roses on the westside of the garden.");
+		waterRoses.setLocation("my garden");
+		waterRoses.setStartTime(new Timestamp(2016, 9, 10, 15, 00, 0, 0));
+		waterRoses.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
+		waterRoses.setUrgency(5);
+		waterRoses.setAmountOfVolunteers(2);
+		waterRoses.setNeededCompetences(new HashSet<Competence>());
+		waterRoses.getNeededCompetences().add(breathing);
+		waterRoses.getNeededCompetences().add(walking);
+		waterRoses.setCreator(myUser);
+		waterRoses.setSuperProject(waterFlowers);
+		
+		Task waterLilies = new Task();
+		waterLilies.setName("Water the roses");
+		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
+		waterLilies.setLocation("my garden");
+		waterLilies.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));
+		waterLilies.setEndTime(new Timestamp(2016, 9, 10, 16, 00, 0, 0));
+		waterLilies.setUrgency(2);
+		waterLilies.setAmountOfVolunteers(1);
+		waterLilies.setNeededCompetences(new HashSet<Competence>());
+		waterLilies.getNeededCompetences().add(breathing);
+		waterLilies.getNeededCompetences().add(walking);
+		waterLilies.setCreator(myUser);
+		waterLilies.setSuperProject(waterFlowers);
+		
+		Task programWateringTool = new Task();
+		programWateringTool.setName("Program a watering tool");
+		programWateringTool.setDescription("Program a web-tool that makes watering flowers easier.");
+		programWateringTool.setLocation("a desk in my garden");
+		programWateringTool.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));
+		programWateringTool.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
+		programWateringTool.setUrgency(10);
+		programWateringTool.setAmountOfVolunteers(1);
+		programWateringTool.setNeededCompetences(new HashSet<Competence>());
+		programWateringTool.getNeededCompetences().add(breathing);
+		programWateringTool.getNeededCompetences().add(walking);
+		programWateringTool.getNeededCompetences().add(programming);
+		programWateringTool.getNeededCompetences().add(phpProgramming);
+		programWateringTool.getNeededCompetences().add(javascriptProgramming);
+		programWateringTool.setCreator(myUser);
+		programWateringTool.setSuperProject(waterFlowers);
+		
+		waterFlowers.setChildTasks(new HashSet<Task>());
+		waterFlowers.getChildTasks().add(waterRoses);
+		waterFlowers.getChildTasks().add(waterLilies);
+		waterFlowers.getChildTasks().add(programWateringTool);
+		
+		projectDAO.save(waterFlowers);
+
+		//Add users
+		
+		CracUser Webmaster = new CracUser();
+		
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+		
+		Webmaster.setName("Webmaster");
+		Webmaster.setFirstName("Max");
+		Webmaster.setLastName("Mustermann");
+		Webmaster.setCompetences(new HashSet<Competence>());
+		Webmaster.getCompetences().add(breathing);
+		Webmaster.getCompetences().add(walking);
+		Webmaster.getCompetences().add(swimming);
+		Webmaster.getCompetences().add(programming);
+		Webmaster.getCompetences().add(phpProgramming);
+		Webmaster.getCompetences().add(javascriptProgramming);
+		Webmaster.setPassword(bcryptEncoder.encode("noOneKnowsThisPassword!1!1"));
+		Webmaster.setRole(Role.USER);
+		Webmaster.setPhone("0987656789098");
+		Webmaster.setEmail("Webmaster@internet.at");
+		
+		CracUser AverageHuman = new CracUser();
+		
+		AverageHuman.setName("AverageHuman");
+		AverageHuman.setFirstName("Hans");
+		AverageHuman.setLastName("Musterhans");
+		AverageHuman.setCompetences(new HashSet<Competence>());
+		AverageHuman.getCompetences().add(breathing);
+		AverageHuman.getCompetences().add(walking);
+		AverageHuman.getCompetences().add(swimming);
+		AverageHuman.setPassword(bcryptEncoder.encode("noOneKnowsThisPasswordAnyway!1!1"));
+		AverageHuman.setRole(Role.USER);
+		AverageHuman.setPhone("35678987654");
+		AverageHuman.setEmail("AverageHuman@internet.at");
+		
+		userDAO.save(Webmaster);
+		userDAO.save(AverageHuman);
+		
+		return ResponseEntity.ok().body("{\"booted\":\"true\"}");
+	}
 
 }

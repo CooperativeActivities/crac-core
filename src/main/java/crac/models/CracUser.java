@@ -110,6 +110,17 @@ public class CracUser {
 	@JoinTable(name = "user_competences", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "competence_id") })
 	private Set<Competence> competences;
+	
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	@JoinTable(name = "user_competences_likes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "liked_competence_id") })
+	private Set<Competence> likes;
+	
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	@JoinTable(name = "user_competences_dislikes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "disliked_competence_id") })
+	private Set<Competence> dislikes;
+
 
 	/**
 	 * defines a many to many relation with the task-entity
@@ -337,5 +348,23 @@ public class CracUser {
 	public void setCreatedProjects(Set<Project> createdProjects) {
 		this.createdProjects = createdProjects;
 	}
+
+	public Set<Competence> getLikes() {
+		return likes;
+	}
+
+	public void setLikes(Set<Competence> likes) {
+		this.likes = likes;
+	}
+
+	public Set<Competence> getDislikes() {
+		return dislikes;
+	}
+
+	public void setDislikes(Set<Competence> dislikes) {
+		this.dislikes = dislikes;
+	}
+	
+	
 	
 }
