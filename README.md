@@ -754,7 +754,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /newsfeed
+GET /news
 
 #####*Response:*
 

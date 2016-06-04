@@ -22,7 +22,7 @@ import crac.models.CracUser;
 import crac.models.Task;
 
 @RestController
-@RequestMapping("/newsfeed")
+@RequestMapping("/news")
 public class FeedController {
 
 	@Autowired
