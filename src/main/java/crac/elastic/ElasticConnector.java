@@ -38,7 +38,7 @@ public class ElasticConnector<T> {
 	public IndexResponse indexOrUpdate(String id, T obj) {
 
 		IndexResponse response = null;
-
+		
 		try {
 			response = this.client.prepareIndex(index, type, id)
 					.setSource(this.mapper.writeValueAsString(obj)).get();
@@ -61,7 +61,8 @@ public class ElasticConnector<T> {
 	public SearchResponse query() {
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				// .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				// .setQuery(QueryBuilders.termQuery("multi", "test")) // Query
+				   .setQuery(QueryBuilders.matchQuery( "neededCompetences.name", "programming")) // Query
+				   .setQuery(QueryBuilders.matchQuery( "neededCompetences.name", "breathing")) // Query
 				// .setPostFilter(QueryBuilders.rangeQuery("age").from(12).to(18))
 				// // Filter
 				// .setFrom(0).setSize(60).setExplain(true)

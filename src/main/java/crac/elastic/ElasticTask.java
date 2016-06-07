@@ -3,6 +3,10 @@ package crac.elastic;
 import java.sql.Timestamp;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.Competence;
@@ -12,18 +16,24 @@ import crac.models.Task;
 
 public class ElasticTask {
 	
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	private String id;
 
+	@JsonIdentityReference(alwaysAsId=true)
 	private Task superTask;
 	
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Task> childTasks;
 	
 	private Set<Competence> neededCompetences;
 
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> signedUsers;
 	
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> responsibleUsers;
 	
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> followingUsers;
 
 	private String name;
@@ -42,10 +52,13 @@ public class ElasticTask {
 	
 	private String feedback;
 	
+	@JsonIdentityReference(alwaysAsId=true)
 	private CracUser creator;
 
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Attachment> attachments;
 
+	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Comment> comments;
 
 	public ElasticTask(String id, Task superTask, Set<Task> childTasks,

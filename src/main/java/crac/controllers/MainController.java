@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -211,7 +213,10 @@ public class MainController {
 		userDAO.save(Webmaster);
 		userDAO.save(AverageHuman);
 		
-		return ResponseEntity.ok().body("{\"booted\":\"true\"}");
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+		return ResponseEntity.ok().headers(headers).body("{\"booted\":\"true\"}");
 	}
 
 }

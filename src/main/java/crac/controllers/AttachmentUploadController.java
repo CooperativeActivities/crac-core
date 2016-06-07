@@ -3,12 +3,16 @@ package crac.controllers;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,6 +73,40 @@ public class AttachmentUploadController {
 		return ResponseEntity.ok().body("{\"uploaded\":\"true\", \"img_name\":\"" + filename + "\"}");
 	} // method uploadFile
 
+	@RequestMapping(value = "/getImage/{image_path}/{image_size}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@ResponseBody
+	public ResponseEntity<byte[]> getUserImage(@PathVariable(value = "image_path") String image_path, @PathVariable(value = "image_size") String image_size) {
+
+		String path = "";
+		/*
+		
+		if(objImage.getUserId().getId() != myUser.getId()){
+			path = "uploadedFiles/bad_connection.jpg";
+		}else{
+			path = "uploadedFiles/"+objImage.getPath();
+		}*/
+		System.out.println(image_path);
+		path = "uploadedFiles/"+image_path;
+
+		System.out.println();
+		
+		File image = new File(path);
+		byte[] imageContent = null;
+		try {
+			imageContent = Files.readAllBytes(image.toPath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+		return ResponseEntity.ok().headers(headers).body(imageContent);
+	} // method uploadFile
+
+	
 	@RequestMapping(value = "/changeFile/{attachment_id}", headers = "content-type=multipart/*", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> changeFile(@PathVariable(value = "attachment_id") Long attachment_id,
