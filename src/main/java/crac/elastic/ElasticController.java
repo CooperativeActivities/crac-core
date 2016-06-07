@@ -81,7 +81,7 @@ public class ElasticController {
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
 		Set<Competence> competences = myUser.getCompetences();
 
-		return ResponseEntity.ok().body(ESConnTask.query(competences).toString());
+		return ResponseEntity.ok().body(ESConnTask.query("neededCompetences.name", competences).toString());
 		
 	}
 	
@@ -125,7 +125,7 @@ public class ElasticController {
 
 		Task task = taskDAO.findOne(task_id);
 		
-		return ResponseEntity.ok().body(ESConnUser.query(task.getNeededCompetences()).toString());
+		return ResponseEntity.ok().body(ESConnUser.query("competences.name", task.getNeededCompetences()).toString());
 		
 	}
 

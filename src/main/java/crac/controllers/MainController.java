@@ -138,7 +138,7 @@ public class MainController {
 		waterRoses.setSuperProject(waterFlowers);
 		
 		Task waterLilies = new Task();
-		waterLilies.setName("Water the roses");
+		waterLilies.setName("Water the lillies");
 		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
 		waterLilies.setLocation("my garden");
 		waterLilies.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));

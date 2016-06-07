@@ -61,24 +61,21 @@ public class ElasticConnector<T> {
 		return client.prepareDelete(index, type, id).get();
 	}
 
-	public SearchResponse query(Set<Competence> competences) {
+	public SearchResponse query(String matchField, Set<Competence> competences) {
 		SearchRequestBuilder search = client.prepareSearch(index).setTypes(type);
 		if (competences.size() != 0) {
 			System.out.println("COMPETENCES:");
 			String text = "";
 			for (Competence c : competences) {
 				System.out.println(c.getName());
-				// search.setQuery(QueryBuilders.multiMatchQuery(text,
-				// fieldNames)(
-				// "neededCompetences.name", c.getName()));
 				text += " " + c.getName();
 			}
-			System.out.println(text);
-			search.setQuery(QueryBuilders.multiMatchQuery(text, "neededCompetences.name"));
+			System.out.println("Query for:"+text);
+			search.setQuery(QueryBuilders.multiMatchQuery(text, matchField));
 		} else {
 			System.out.println("COMPETENCES EMPTY!!");
-			search.setQuery(QueryBuilders.matchQuery("neededCompetences.name", "NOCOMPETENCE"));
-			search.setQuery(QueryBuilders.matchQuery("neededCompetences.name", "FALSE"));
+			search.setQuery(QueryBuilders.matchQuery(matchField, "NOCOMPETENCE"));
+			search.setQuery(QueryBuilders.matchQuery(matchField, "FALSE"));
 		}
 		/*
 		.should(QueryBuilders.matchQuery("firstName", "Ben"))
