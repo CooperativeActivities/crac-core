@@ -1,9 +1,13 @@
 package crac.elastic;
 
+import java.util.Set;
+
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
+import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.SearchTransformer;
 import crac.models.Task;
@@ -71,8 +76,12 @@ public class ElasticController {
 	@RequestMapping(value = "/searchES/task", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> searchESTask() throws JsonProcessingException {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		Set<Competence> competences = myUser.getCompetences();
 
-		return ResponseEntity.ok().body(ESConnTask.query().toString());
+		return ResponseEntity.ok().body(ESConnTask.query(competences).toString());
 		
 	}
 	
@@ -110,11 +119,13 @@ public class ElasticController {
 		
 	}
 	
-	@RequestMapping(value = "/searchES/user", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/searchES/user/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> searchESUser() throws JsonProcessingException {
+	public ResponseEntity<String> searchESUser(@PathVariable(value = "task_id") long task_id) throws JsonProcessingException {
 
-		return ResponseEntity.ok().body(ESConnUser.query().toString());
+		Task task = taskDAO.findOne(task_id);
+		
+		return ResponseEntity.ok().body(ESConnUser.query(task.getNeededCompetences()).toString());
 		
 	}
 
