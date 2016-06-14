@@ -11,6 +11,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>crac.Application</start-class>
+		<java.version>1.8</java.version>
 	</properties>
 
 
@@ -24,7 +25,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.3.RELEASE</version>
+		<version>1.3.5.RELEASE</version>
 	</parent>
 
 	<dependencies>
