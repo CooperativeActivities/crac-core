@@ -169,7 +169,7 @@ public class Task {
 	public Task(String feedback) {
 		this.feedback = feedback;
 	}
-
+	
 	/**
 	 * getters and setters
 	 */
