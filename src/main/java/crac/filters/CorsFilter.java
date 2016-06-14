@@ -1,4 +1,4 @@
-package crac.models;
+package crac.filters;
 
 import java.io.IOException;
 
