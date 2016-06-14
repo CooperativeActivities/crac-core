@@ -113,6 +113,9 @@ public class Task {
 	
 	private String feedback;
 	
+	@NotNull
+	private boolean completed;
+	
 	/**
 	 * defines a one to many relation with the cracUser-entity
 	 */
@@ -148,6 +151,7 @@ public class Task {
 		this.endTime = new Timestamp(date.getTime());
 		this.urgency = 0;
 		this.amountOfVolunteers = 0;
+		this.completed = false;
 	}
 	
 	public Task(String name, String description) {
@@ -159,6 +163,7 @@ public class Task {
 		this.endTime = new Timestamp(date.getTime());
 		this.urgency = 0;
 		this.amountOfVolunteers = 0;
+		this.completed = false;
 	}
 	
 	public Task(String feedback) {
@@ -319,6 +324,14 @@ public class Task {
 
 	public void setSuperProject(Project superProject) {
 		this.superProject = superProject;
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
 	}
 	
 }

@@ -22,22 +22,22 @@ public class JSONConverter {
 		//System.out.println(node);
 		StmtIterator iter = i.listProperties();
 		
-		ArrayList<JSONObject> competencies = new ArrayList<JSONObject>();
+		ArrayList<JSONObject> competences = new ArrayList<JSONObject>();
 		while(iter.hasNext()){
 			Statement stat = iter.next();
-			if(stat.getPredicate().equals(model.getProperty(CompetenciesOntology.NS + "#hasCompetency"))){
+			if(stat.getPredicate().equals(model.getProperty(CompetenceOntology.NS + "#hasCompetency"))){
 				RDFNode blankNode = stat.getObject();
 				//System.out.println(blankNode);
-				Resource competency = blankNode.asResource().getPropertyResourceValue(model.getProperty(CompetenciesOntology.NS + "#isCompetency"));
-				Statement level = blankNode.asResource().getProperty(model.getProperty(CompetenciesOntology.NS + "#level"));
+				Resource competency = blankNode.asResource().getPropertyResourceValue(model.getProperty(CompetenceOntology.NS + "#isCompetency"));
+				Statement level = blankNode.asResource().getProperty(model.getProperty(CompetenceOntology.NS + "#level"));
 				//System.out.println(competency+":"+level.getLiteral().toString());
 				JSONObject c = new JSONObject();
 				c.put("competency", competency.getURI());
 				c.put("level", Integer.parseInt(level.getLiteral().toString()));
-				competencies.add(c);
+				competences.add(c);
 			}
 		}
-		person.put("competencies", competencies);
+		person.put("competences", competences);
 		//System.out.println(person);
 		return person;
 	}

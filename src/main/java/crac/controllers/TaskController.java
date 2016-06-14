@@ -1,7 +1,10 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
+
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -117,7 +120,41 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		Task updatedTask = mapper.readValue(json, Task.class);
 		Task oldTask = taskDAO.findOne(id);
-		oldTask = updatedTask;
+		
+		if(updatedTask.getName() != null){
+			oldTask.setName(updatedTask.getName());
+		}
+		
+		if(updatedTask.getDescription() != null){
+			oldTask.setDescription(updatedTask.getDescription());
+		}
+
+		if(updatedTask.getLocation() != null){
+			oldTask.setLocation(updatedTask.getLocation());
+		}
+
+		if(updatedTask.getStartTime() != null){
+			oldTask.setStartTime(updatedTask.getStartTime());
+		}
+		
+		if(updatedTask.getEndTime() != null){
+			oldTask.setEndTime(updatedTask.getEndTime());
+		}
+
+		if(updatedTask.getUrgency() > 0){
+			oldTask.setUrgency(updatedTask.getUrgency());
+		}
+		
+		if(updatedTask.getAmountOfVolunteers() > 0){
+			oldTask.setAmountOfVolunteers(updatedTask.getAmountOfVolunteers());
+		}
+		
+		if(updatedTask.getFeedback() != null){
+			oldTask.setFeedback(updatedTask.getFeedback());
+		}
+		
+		oldTask.setCompleted(updatedTask.isCompleted());
+		
 		taskDAO.save(oldTask);
 		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 
@@ -287,6 +324,34 @@ public class TaskController {
 		Task myTask = taskDAO.findOne(task_id);
 		ObjectMapper mapper = new ObjectMapper();
 		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()));
+	}
+	
+	@RequestMapping(value = "/{task_id}/complete", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> completeTask(@PathVariable(value = "task_id") Long task_id) {
+		
+		Task completedTask = taskDAO.findOne(task_id);
+		
+		completedTask.setCompleted(true);
+		
+		taskDAO.save(completedTask);
+
+		return ResponseEntity.ok().body("{\"task\":\""+completedTask.getId()+"\",\"completed\":\"true\"}");
+
+	}
+	
+	@RequestMapping(value = "/{task_id}/notComplete", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> notCompleteTask(@PathVariable(value = "task_id") Long task_id) {
+		
+		Task completedTask = taskDAO.findOne(task_id);
+		
+		completedTask.setCompleted(false);
+		
+		taskDAO.save(completedTask);
+
+		return ResponseEntity.ok().body("{\"task\":\""+completedTask.getId()+"\",\"completed\":\"false\"}");
+
 	}
 
 }

@@ -43,7 +43,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
     	CracUser account = accountRepository.findByName(name);
         if(account != null) {
         return new User(account.getName(), account.getPassword(), true, true, true, true,
-                AuthorityUtils.createAuthorityList(account.getRole().toString()));
+                AuthorityUtils.createAuthorityList("ROLE_"+account.getRole().toString()));
         } else {
           throw new UsernameNotFoundException("could not find the user '"
                   + name + "'");
