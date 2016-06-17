@@ -650,6 +650,30 @@ GET task/{task_id}/getComments
 	  },
 	  ...
 	]
+	
+-----------------------------------------------------------------
+	
+**Completes a task by setting the boolean**
+
+#####*Request:*
+
+GET task/{task_id}/complete
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Un-completes a task by setting the boolean**
+
+#####*Request:*
+
+GET task/{task_id}/notComplete
+
+#####*Response:*
+
+Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
