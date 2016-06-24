@@ -2,9 +2,12 @@ package crac.elastic;
 
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,9 +31,17 @@ import crac.models.Task;
 @RequestMapping("/elastic")
 public class ElasticController {
 	
-	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
-	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
+	@Value("${custom.elasticUrl}")
+    private String url;
+	
+	@Value("${custom.elasticPort}")
+    private int port;
+	
+	/*
+	private ElasticConnector<ElasticTask> ESConnTask;
+	private ElasticConnector<ElasticPerson> ESConnUser;
 	private SearchTransformer ST = new SearchTransformer();
+	*/
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
@@ -38,6 +49,17 @@ public class ElasticController {
 	
 	@Autowired
 	private CracUserDAO userDAO;
+	/*
+	
+	@PostConstruct
+	public void init(){
+		
+		System.out.println(url);
+		System.out.println(port);
+		ESConnTask = new ElasticConnector<ElasticTask>(url, port, "crac_core", "elastic_task");
+		ESConnUser = new ElasticConnector<ElasticPerson>(url, port, "crac_core", "elastic_user");
+
+	}
 
 	@RequestMapping(value = "/addTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -81,6 +103,9 @@ public class ElasticController {
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
 		Set<Competence> competences = myUser.getCompetences();
 
+		System.out.println(port);
+		System.out.println(url);
+		
 		return ResponseEntity.ok().body(ESConnTask.query("neededCompetences.name", competences).toString());
 		
 	}
@@ -129,6 +154,6 @@ public class ElasticController {
 		
 	}
 
-
+*/
 	
 }

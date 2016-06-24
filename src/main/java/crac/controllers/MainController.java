@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,9 +54,17 @@ public class MainController {
 	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
 */
 
+	@Value("${custom.elasticUrl}")
+    private String url;
+	
+	@Value("${custom.elasticPort}")
+    private int port;
+	
 	@RequestMapping("/test")
 	@ResponseBody
 	public String index() {
+		System.out.println("elastic url: "+url);
+		System.out.println("elastic port: "+port);
 		return "Hello World! This is just a test!";
 
 	}
