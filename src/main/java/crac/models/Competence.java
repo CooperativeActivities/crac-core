@@ -35,18 +35,7 @@ public class Competence {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "competence_id")
 	private long id;
-	
-	/**
-	 * Defines a one to many relationship to itself, to provide the possibility to add parent-child relationships to competences
-	 */
-	@ManyToOne
-	@JsonIdentityReference(alwaysAsId=true)
-	@JoinColumn(name = "parent_competence")
-	private Competence parentCompetence;
-	
-	@OneToMany(mappedBy = "parentCompetence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Competence> childCompetences;
-	
+		
 	
 	/**
 	 * defines a many to many relation with the task-entity
@@ -87,6 +76,15 @@ public class Competence {
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "competence1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<CompetenceRelationship> mappedCompetence1;
+
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "competence1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<CompetenceRelationship> mappedCompetence2;
+
 
 	/**
 	 * constructors
@@ -146,28 +144,44 @@ public class Competence {
 		this.connectedTasks = connectedTasks;
 	}
 
-	public Competence getParentCompetence() {
-		return parentCompetence;
-	}
-
-	public void setParentCompetence(Competence parentCompetence) {
-		this.parentCompetence = parentCompetence;
-	}
-
-	public Set<Competence> getChildCompetences() {
-		return childCompetences;
-	}
-
-	public void setChildCompetences(Set<Competence> childCompetences) {
-		this.childCompetences = childCompetences;
-	}
-
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Set<CracUser> getLikedBy() {
+		return likedBy;
+	}
+
+	public void setLikedBy(Set<CracUser> likedBy) {
+		this.likedBy = likedBy;
+	}
+
+	public Set<CracUser> getDislikedBy() {
+		return dislikedBy;
+	}
+
+	public void setDislikedBy(Set<CracUser> dislikedBy) {
+		this.dislikedBy = dislikedBy;
+	}
+
+	public Set<CompetenceRelationship> getMappedCompetence1() {
+		return mappedCompetence1;
+	}
+
+	public void setMappedCompetence1(Set<CompetenceRelationship> mappedCompetence1) {
+		this.mappedCompetence1 = mappedCompetence1;
+	}
+
+	public Set<CompetenceRelationship> getMappedCompetence2() {
+		return mappedCompetence2;
+	}
+
+	public void setMappedCompetence2(Set<CompetenceRelationship> mappedCompetence2) {
+		this.mappedCompetence2 = mappedCompetence2;
 	}
 
 }

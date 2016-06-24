@@ -21,12 +21,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
+import crac.elastic.ElasticConnector;
+import crac.elastic.ElasticPerson;
+import crac.elastic.ElasticTask;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.models.Competence;
 import crac.models.Task;
 import crac.models.CracUser;
 import crac.models.Group;
+import crac.models.SearchTransformer;
 
 /**
  * REST controller for managing users.
@@ -47,6 +51,11 @@ public class CracUserController {
 	
 	@Autowired
 	private GroupDAO groupDAO;
+	
+	/*
+	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
+	private SearchTransformer ST = new SearchTransformer();
+*/
 
 
 	/**
@@ -88,6 +97,7 @@ public class CracUserController {
 
 		if (userDAO.findByName(myUser.getName()) == null) {
 			userDAO.save(myUser);
+			//ESConnUser.indexOrUpdate(""+myUser.getId(), ST.transformUser(myUser));
 		} else {
 			return ResponseEntity.ok().body("{\"created\":\"false\", \"exception\":\"name already exists\"}");
 		}
@@ -109,6 +119,7 @@ public class CracUserController {
 		long userId = deleteUser.getId();
 		String userName = deleteUser.getName();
 		userDAO.delete(deleteUser);
+		//ESConnUser.delete(""+deleteUser.getId());
 		return ResponseEntity.ok()
 				.body("{\"user\":\"" + userId + "\",\"name\":\"" + userName + "\",\"deleted\":\"true\"}");
 
@@ -163,6 +174,7 @@ public class CracUserController {
 		}
 
 		userDAO.save(oldUser);
+		//ESConnUser.indexOrUpdate(""+oldUser.getId(), ST.transformUser(oldUser));
 
 		return ResponseEntity.ok().body("{\"user\":\"" + oldUser.getId() + "\",\"old_name\":\"" + oldName
 				+ "\",\"new_name\":\"" + oldUser.getName() + "\",\"updated\":\"true\"}");

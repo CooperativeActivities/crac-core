@@ -19,14 +19,17 @@ public class ElasticTask {
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	private String id;
 
+	/*
 	@JsonIdentityReference(alwaysAsId=true)
 	private Task superTask;
 	
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Task> childTasks;
+	*/
 	
 	private Set<Competence> neededCompetences;
 
+	/*
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> signedUsers;
 	
@@ -35,11 +38,13 @@ public class ElasticTask {
 	
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<CracUser> followingUsers;
+	*/
 
 	private String name;
 
 	private String description;
 
+	/*
 	private String location;
 	
 	private Timestamp startTime;
@@ -60,35 +65,37 @@ public class ElasticTask {
 
 	@JsonIdentityReference(alwaysAsId=true)
 	private Set<Comment> comments;
+	*/
 
-	public ElasticTask(String id, Task superTask, Set<Task> childTasks,
-			Set<Competence> neededCompetences, Set<CracUser> signedUsers, Set<CracUser> responsibleUsers,
-			Set<CracUser> followingUsers, String name, String description, String location, Timestamp startTime,
+	public ElasticTask(String id, /*Task superTask, Set<Task> childTasks,*/
+			Set<Competence> neededCompetences, /*Set<CracUser> signedUsers, Set<CracUser> responsibleUsers,
+			Set<CracUser> followingUsers, */String name, String description/*, String location, Timestamp startTime,
 			Timestamp endTime, int urgency, int amountOfVolunteers, String feedback, CracUser creator,
-			Set<Attachment> attachments, Set<Comment> comments) {
+			Set<Attachment> attachments, Set<Comment> comments*/) {
 		this.id = id;
-		this.superTask = superTask;
-		this.childTasks = childTasks;
+		//this.superTask = superTask;
+		//this.childTasks = childTasks;
 		this.neededCompetences = neededCompetences;
-		this.signedUsers = signedUsers;
-		this.responsibleUsers = responsibleUsers;
-		this.followingUsers = followingUsers;
+		//this.signedUsers = signedUsers;
+		//this.responsibleUsers = responsibleUsers;
+		//this.followingUsers = followingUsers;
 		this.name = name;
 		this.description = description;
-		this.location = location;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.urgency = urgency;
-		this.amountOfVolunteers = amountOfVolunteers;
-		this.feedback = feedback;
-		this.creator = creator;
-		this.attachments = attachments;
-		this.comments = comments;
+		//this.location = location;
+		//this.startTime = startTime;
+		//this.endTime = endTime;
+		//this.urgency = urgency;
+		//this.amountOfVolunteers = amountOfVolunteers;
+		//this.feedback = feedback;
+		//this.creator = creator;
+		//this.attachments = attachments;
+		//this.comments = comments;
 	}
 
 	public ElasticTask() {
 	}
 
+	/*
 	public Task getSuperTask() {
 		return superTask;
 	}
@@ -104,6 +111,8 @@ public class ElasticTask {
 	public void setChildTasks(Set<Task> childTasks) {
 		this.childTasks = childTasks;
 	}
+	
+	*/
 
 	public Set<Competence> getNeededCompetences() {
 		return neededCompetences;
@@ -112,7 +121,7 @@ public class ElasticTask {
 	public void setNeededCompetences(Set<Competence> neededCompetences) {
 		this.neededCompetences = neededCompetences;
 	}
-
+/*
 	public Set<CracUser> getSignedUsers() {
 		return signedUsers;
 	}
@@ -135,7 +144,7 @@ public class ElasticTask {
 
 	public void setFollowingUsers(Set<CracUser> followingUsers) {
 		this.followingUsers = followingUsers;
-	}
+	}*/
 
 	public String getId() {
 		return id;
@@ -160,7 +169,7 @@ public class ElasticTask {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+/*
 	public String getLocation() {
 		return location;
 	}
@@ -233,6 +242,6 @@ public class ElasticTask {
 		this.comments = comments;
 	}
 	
-	
+	*/
 	
 }

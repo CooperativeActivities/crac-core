@@ -16,6 +16,7 @@ public class ElasticPerson {
 
 	private String name;
 	
+	/*
 	private String email;
 	
 	private String lastName;
@@ -39,6 +40,7 @@ public class ElasticPerson {
 	private Set<Competence> createdCompetences;
 
 	private Set<Group> createdGroups;
+	*/
 
 	private Set<Competence> statedCompetences;
 	
@@ -47,6 +49,8 @@ public class ElasticPerson {
 	private Set<Competence> likes;
 	
 	private Set<Competence> dislikes;
+	
+	/*
 
 	private Set<Task> openTasks;
 	
@@ -57,14 +61,17 @@ public class ElasticPerson {
 	private Set<Group> groups;
 	
 	private Attachment userImage;
+	
+	*/
 
-	public ElasticPerson(long id, String name, String email, String lastName, String firstName,
+	public ElasticPerson(long id, String name, /*String email, String lastName, String firstName,
 			Date birthDate, String status, String phone, String address, Role role, Set<Task> createdTasks,
 			Set<Project> createdProjects, Set<Competence> createdCompetences, Set<Group> createdGroups,
-			Set<Competence> statedCompetences, Set<Competence> likes, Set<Competence> dislikes, Set<Task> openTasks,
-			Set<Task> responsibleForTasks, Set<Task> followingTasks, Set<Group> groups, Attachment userImage) {
+			*/Set<Competence> statedCompetences, Set<Competence> likes, Set<Competence> dislikes/*, Set<Task> openTasks,
+			Set<Task> responsibleForTasks, Set<Task> followingTasks, Set<Group> groups, Attachment userImage*/) {
 		this.id = id;
 		this.name = name;
+		/*
 		this.email = email;
 		this.lastName = lastName;
 		this.firstName = firstName;
@@ -77,14 +84,17 @@ public class ElasticPerson {
 		this.createdProjects = createdProjects;
 		this.createdCompetences = createdCompetences;
 		this.createdGroups = createdGroups;
+		*/
 		this.statedCompetences = statedCompetences;
 		this.likes = likes;
 		this.dislikes = dislikes;
+		/*
 		this.openTasks = openTasks;
 		this.responsibleForTasks = responsibleForTasks;
 		this.followingTasks = followingTasks;
 		this.groups = groups;
 		this.userImage = userImage;
+		*/
 	}
 
 	public ElasticPerson() {
@@ -105,7 +115,7 @@ public class ElasticPerson {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+/*
 	public String getEmail() {
 		return email;
 	}
@@ -201,7 +211,7 @@ public class ElasticPerson {
 	public void setCreatedGroups(Set<Group> createdGroups) {
 		this.createdGroups = createdGroups;
 	}
-
+*/
 	public Set<Competence> getStatedCompetences() {
 		return statedCompetences;
 	}
@@ -233,7 +243,7 @@ public class ElasticPerson {
 	public void setDislikes(Set<Competence> dislikes) {
 		this.dislikes = dislikes;
 	}
-
+/*
 	public Set<Task> getOpenTasks() {
 		return openTasks;
 	}
@@ -274,5 +284,5 @@ public class ElasticPerson {
 		this.userImage = userImage;
 	}
 
-	
+	*/
 }

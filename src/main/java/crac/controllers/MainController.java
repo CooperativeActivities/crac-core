@@ -19,10 +19,14 @@ import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.ProjectDAO;
 import crac.daos.TaskDAO;
+import crac.elastic.ElasticConnector;
+import crac.elastic.ElasticPerson;
+import crac.elastic.ElasticTask;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Project;
 import crac.models.Role;
+import crac.models.SearchTransformer;
 import crac.models.Task;
 
 /**
@@ -42,6 +46,12 @@ public class MainController {
 	
 	@Autowired
 	private ProjectDAO projectDAO;
+	
+	/*
+	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
+	private SearchTransformer ST = new SearchTransformer();
+	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
+*/
 
 	@RequestMapping("/test")
 	@ResponseBody
@@ -174,7 +184,11 @@ public class MainController {
 		waterFlowers.getChildTasks().add(programWateringTool);
 		
 		projectDAO.save(waterFlowers);
-
+		/*
+		for(Task t : waterFlowers.getChildTasks()){
+			ESConnTask.indexOrUpdate(""+t.getId(), ST.transformTask(t));
+		}
+*/
 		//Add users
 		
 		CracUser Webmaster = new CracUser();
@@ -211,7 +225,16 @@ public class MainController {
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		
 		userDAO.save(Webmaster);
+		//ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
 		userDAO.save(AverageHuman);
+		//ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
+		
+		/*
+		CracUser original1 = userDAO.findOne((long)1);
+		CracUser original2 = userDAO.findOne((long)2);
+		
+		ESConnUser.indexOrUpdate(""+original1.getId(), ST.transformUser(original1));
+		ESConnUser.indexOrUpdate(""+original2.getId(), ST.transformUser(original2));*/
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

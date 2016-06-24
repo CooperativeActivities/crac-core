@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
+import crac.elastic.ElasticConnector;
+import crac.elastic.ElasticTask;
 import crac.daos.AttachmentDAO;
 import crac.daos.CommentDAO;
 import crac.daos.CompetenceDAO;
@@ -32,6 +34,7 @@ import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.SearchTransformer;
 import crac.models.Task;
 
 /**
@@ -56,6 +59,11 @@ public class TaskController {
 
 	@Autowired
 	private CommentDAO commentDAO;
+	
+	/*
+	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
+	private SearchTransformer ST = new SearchTransformer();
+*/
 
 	/**
 	 * GET / or blank -> get all tasks.
@@ -92,6 +100,7 @@ public class TaskController {
 		Task myTask = mapper.readValue(json, Task.class);
 		myTask.setCreator(myUser);
 		taskDAO.save(myTask);
+		//ESConnTask.indexOrUpdate(""+myTask.getId(), ST.transformTask(myTask));
 
 		return ResponseEntity.ok().body("{\"created\":\"true\"}");
 
@@ -106,6 +115,7 @@ public class TaskController {
 	public ResponseEntity<String> destroy(@PathVariable(value = "task_id") Long id) {
 		Task deleteTask = taskDAO.findOne(id);
 		taskDAO.delete(deleteTask);
+		//ESConnTask.delete(""+deleteTask.getId());
 		return ResponseEntity.ok().body("{\"deleted\":\"true\"}");
 
 	}
@@ -156,6 +166,8 @@ public class TaskController {
 		oldTask.setCompleted(updatedTask.isCompleted());
 		
 		taskDAO.save(oldTask);
+		//ESConnTask.indexOrUpdate(""+oldTask.getId(), ST.transformTask(oldTask));
+
 		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 
 	}

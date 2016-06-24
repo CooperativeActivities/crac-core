@@ -19,8 +19,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
+import crac.daos.CompetenceRelationshipDAO;
+import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.models.Competence;
+import crac.models.CompetenceRelationship;
+import crac.models.CompetenceRelationshipType;
 import crac.models.CracUser;
 
 /**
@@ -34,6 +38,13 @@ public class CompetenceController {
 
 	@Autowired
 	private CracUserDAO userDAO;
+	
+	@Autowired
+	private CompetenceRelationshipTypeDAO typeDAO;
+
+	@Autowired
+	private CompetenceRelationshipDAO relationDAO;
+
 
 	/**
 	 * GET / or blank -> get all competences.
@@ -110,28 +121,29 @@ public class CompetenceController {
 
 	}
 	
-	/**
-	 * Creates a competence, that is set as the child of the chosen existing competence
-	 * @param json
-	 * @param child_id
-	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "/{child_id}/addChild", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/addType", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addChild(@RequestBody String json, @PathVariable(value = "child_id") Long child_id) throws JsonMappingException, IOException {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+	public ResponseEntity<String> conntect(@RequestBody String json) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		Competence myCompetence = mapper.readValue(json, Competence.class);
-		myCompetence.setCreator(myUser);
-		myCompetence.setParentCompetence(competenceDAO.findOne(child_id));
-		competenceDAO.save(myCompetence);
+		CompetenceRelationshipType t = mapper.readValue(json, CompetenceRelationshipType.class);
+		typeDAO.save(t);
+		return ResponseEntity.ok().body("{\"type_created\":\"true\", \"name\":\""+t.getName()+"\"}");
+	}
 
-		return ResponseEntity.ok().body("{\"created\":\"true\"}");
-
+	
+	@RequestMapping(value = "/{competence1_id}/conntect/{competence2_id}/type/{type_id}", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> conntect(@RequestBody String json, @PathVariable(value = "competence1_id") Long competence1_id, @PathVariable(value = "competence2_id") Long competence2_id, @PathVariable(value = "type_id") Long type_id) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		CompetenceRelationship cr = mapper.readValue(json, CompetenceRelationship.class);
+		Competence c1 = competenceDAO.findOne(competence1_id);
+		Competence c2 = competenceDAO.findOne(competence2_id);
+		CompetenceRelationshipType crt = typeDAO.findOne(type_id);
+		cr.setCompetence1(c1);
+		cr.setCompetence2(c2);
+		cr.setType(crt);
+		relationDAO.save(cr);
+		return ResponseEntity.ok().body("{\"relationship_created\":\"true\", \"competence1\":\""+c1.getName()+"\", \"competence2\":\""+c2.getName()+"\", \"type\":\""+crt.getName()+"\", \"distance\":\""+cr.getDistance()+"\"}");
 	}
 
 }
