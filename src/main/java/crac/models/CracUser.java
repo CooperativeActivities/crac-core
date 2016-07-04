@@ -74,7 +74,7 @@ public class CracUser {
 	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Task> createdTasks;
 
 	/**
@@ -82,7 +82,7 @@ public class CracUser {
 	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Project> createdProjects;
 
 	
@@ -91,7 +91,7 @@ public class CracUser {
 	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Competence> createdCompetences;
 
 	/**
@@ -99,55 +99,21 @@ public class CracUser {
 	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Group> createdGroups;
 
 	/**
 	 * defines a many to many relation with the competence-entity
 	 */
-
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "user_competences", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "competence_id") })
-	private Set<Competence> competences;
 	
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "user_competences_likes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "liked_competence_id") })
-	private Set<Competence> likes;
-	
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "user_competences_dislikes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "disliked_competence_id") })
-	private Set<Competence> dislikes;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserCompetenceRel> competenceRelationships;
 
 
-	/**
-	 * defines a many to many relation with the task-entity
-	 */
 
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "task_id") })
-	private Set<Task> openTasks;
-	
-	/**
-	 * defines a many to many relation with the task-entity
-	 */
-	
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "responsible_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "task_id") })
-	private Set<Task> responsibleForTasks;
-
-	/**
-	 * defines a many to many relation with the task-entity
-	 */
-	
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "following_user_tasks", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "task_id") })
-	private Set<Task> followingTasks;
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserTaskRel> taskRelationships;
 	
 	/**
 	 * defines a many to many relation with the group-entity
@@ -203,22 +169,6 @@ public class CracUser {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public Set<Competence> getCompetences() {
-		return competences;
-	}
-
-	public void setCompetences(Set<Competence> competences) {
-		this.competences = competences;
-	}
-
-	public Set<Task> getOpenTasks() {
-		return openTasks;
-	}
-
-	public void setOpenTasks(Set<Task> openTasks) {
-		this.openTasks = openTasks;
 	}
 
 	public Set<Task> getCreatedTasks() {
@@ -300,23 +250,7 @@ public class CracUser {
 	public void setCreatedGroups(Set<Group> createdGroups) {
 		this.createdGroups = createdGroups;
 	}
-
-	public Set<Task> getResponsibleForTasks() {
-		return responsibleForTasks;
-	}
-
-	public void setResponsibleForTasks(Set<Task> responsibleForTasks) {
-		this.responsibleForTasks = responsibleForTasks;
-	}
-
-	public Set<Task> getFollowingTasks() {
-		return followingTasks;
-	}
-
-	public void setFollowingTasks(Set<Task> followingTasks) {
-		this.followingTasks = followingTasks;
-	}
-
+	
 	public Set<Group> getGroups() {
 		return groups;
 	}
@@ -349,22 +283,20 @@ public class CracUser {
 		this.createdProjects = createdProjects;
 	}
 
-	public Set<Competence> getLikes() {
-		return likes;
+	public Set<UserCompetenceRel> getCompetenceRelationships() {
+		return competenceRelationships;
 	}
 
-	public void setLikes(Set<Competence> likes) {
-		this.likes = likes;
+	public void setCompetenceRelationships(Set<UserCompetenceRel> competenceRelationships) {
+		this.competenceRelationships = competenceRelationships;
 	}
 
-	public Set<Competence> getDislikes() {
-		return dislikes;
+	public Set<UserTaskRel> getTaskRelationships() {
+		return taskRelationships;
 	}
 
-	public void setDislikes(Set<Competence> dislikes) {
-		this.dislikes = dislikes;
+	public void setTaskRelationships(Set<UserTaskRel> taskRelationships) {
+		this.taskRelationships = taskRelationships;
 	}
-	
-	
-	
+
 }

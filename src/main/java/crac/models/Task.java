@@ -68,27 +68,11 @@ public class Task {
 			@JoinColumn(name = "competence_id") })
 	private Set<Competence> neededCompetences;
 
-	/**
-	 * defines a many to many relation with the cracUser-entity
-	 */
-	@ManyToMany(mappedBy = "openTasks", fetch = FetchType.LAZY)
-	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> signedUsers;
 	
-	/**
-	 * defines a many to many relation with the cracUser-entity
-	 */
-	@ManyToMany(mappedBy = "responsibleForTasks", fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> responsibleUsers;
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserTaskRel> userRelationships;
 	
-	/**
-	 * defines a many to many relation with the cracUser-entity
-	 */
-	@ManyToMany(mappedBy = "followingTasks", fetch = FetchType.LAZY)
-	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> followingUsers;
-
 	@NotNull
 	private String name;
 
@@ -278,30 +262,6 @@ public class Task {
 		this.feedback = feedback;
 	}
 
-	public Set<CracUser> getSignedUsers() {
-		return signedUsers;
-	}
-
-	public void setSignedUsers(Set<CracUser> signedUsers) {
-		this.signedUsers = signedUsers;
-	}
-
-	public Set<CracUser> getResponsibleUsers() {
-		return responsibleUsers;
-	}
-
-	public void setResponsibleUsers(Set<CracUser> responsibleUsers) {
-		this.responsibleUsers = responsibleUsers;
-	}
-
-	public Set<CracUser> getFollowingUsers() {
-		return followingUsers;
-	}
-
-	public void setFollowingUsers(Set<CracUser> followingUsers) {
-		this.followingUsers = followingUsers;
-	}
-
 	public Set<Attachment> getAttachments() {
 		return attachments;
 	}
@@ -332,6 +292,14 @@ public class Task {
 
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
+	}
+
+	public Set<UserTaskRel> getUserRelationships() {
+		return userRelationships;
+	}
+
+	public void setUserRelationships(Set<UserTaskRel> userRelationships) {
+		this.userRelationships = userRelationships;
 	}
 	
 }

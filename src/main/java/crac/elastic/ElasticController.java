@@ -37,11 +37,11 @@ public class ElasticController {
 	@Value("${custom.elasticPort}")
     private int port;
 	
-	/*
+	
 	private ElasticConnector<ElasticTask> ESConnTask;
 	private ElasticConnector<ElasticPerson> ESConnUser;
 	private SearchTransformer ST = new SearchTransformer();
-	*/
+	
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
@@ -49,7 +49,7 @@ public class ElasticController {
 	
 	@Autowired
 	private CracUserDAO userDAO;
-	/*
+	
 	
 	@PostConstruct
 	public void init(){
@@ -94,7 +94,7 @@ public class ElasticController {
 		return ResponseEntity.ok().body("{\"id\":\""+task_id+"\", \"deleted\": \""+response.isFound()+"\"}");
 		
 	}
-	
+	/*
 	@RequestMapping(value = "/searchES/task", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> searchESTask() throws JsonProcessingException {
@@ -109,7 +109,7 @@ public class ElasticController {
 		return ResponseEntity.ok().body(ESConnTask.query("neededCompetences.name", competences).toString());
 		
 	}
-	
+	*/
 	@RequestMapping(value = "/addUser/{user_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addUser(@PathVariable(value = "user_id") long user_id) throws JsonProcessingException {
@@ -154,6 +154,6 @@ public class ElasticController {
 		
 	}
 
-*/
+
 	
 }

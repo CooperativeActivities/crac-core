@@ -20,6 +20,7 @@ import crac.daos.CompetenceDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.ProjectDAO;
 import crac.daos.TaskDAO;
+import crac.daos.UserCompetenceRelDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticPerson;
 import crac.elastic.ElasticTask;
@@ -29,6 +30,8 @@ import crac.models.Project;
 import crac.models.Role;
 import crac.models.SearchTransformer;
 import crac.models.Task;
+import crac.models.UserCompetenceRel;
+import crac.models.UserTaskRel;
 
 /**
  * The main-controller used for hello world and testing
@@ -48,11 +51,14 @@ public class MainController {
 	@Autowired
 	private ProjectDAO projectDAO;
 	
-	/*
+	@Autowired
+	private UserCompetenceRelDAO userCompetenceRelDAO;
+	
+	
 	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
 	private SearchTransformer ST = new SearchTransformer();
 	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
-*/
+
 
 	@Value("${custom.elasticUrl}")
     private String url;
@@ -193,11 +199,11 @@ public class MainController {
 		waterFlowers.getChildTasks().add(programWateringTool);
 		
 		projectDAO.save(waterFlowers);
-		/*
+		
 		for(Task t : waterFlowers.getChildTasks()){
 			ESConnTask.indexOrUpdate(""+t.getId(), ST.transformTask(t));
 		}
-*/
+
 		//Add users
 		
 		CracUser Webmaster = new CracUser();
@@ -207,13 +213,13 @@ public class MainController {
 		Webmaster.setName("Webmaster");
 		Webmaster.setFirstName("Max");
 		Webmaster.setLastName("Mustermann");
-		Webmaster.setCompetences(new HashSet<Competence>());
-		Webmaster.getCompetences().add(breathing);
-		Webmaster.getCompetences().add(walking);
-		Webmaster.getCompetences().add(swimming);
-		Webmaster.getCompetences().add(programming);
-		Webmaster.getCompetences().add(phpProgramming);
-		Webmaster.getCompetences().add(javascriptProgramming);
+		Webmaster.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming));
 		Webmaster.setPassword(bcryptEncoder.encode("noOneKnowsThisPassword!1!1"));
 		Webmaster.setRole(Role.USER);
 		Webmaster.setPhone("0987656789098");
@@ -224,26 +230,26 @@ public class MainController {
 		AverageHuman.setName("AverageHuman");
 		AverageHuman.setFirstName("Hans");
 		AverageHuman.setLastName("Musterhans");
-		AverageHuman.setCompetences(new HashSet<Competence>());
-		AverageHuman.getCompetences().add(breathing);
-		AverageHuman.getCompetences().add(walking);
-		AverageHuman.getCompetences().add(swimming);
+		AverageHuman.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming));
 		AverageHuman.setPassword(bcryptEncoder.encode("noOneKnowsThisPasswordAnyway!1!1"));
 		AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		
 		userDAO.save(Webmaster);
-		//ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
+		ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
 		userDAO.save(AverageHuman);
-		//ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
+		ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
 		
-		/*
+		
 		CracUser original1 = userDAO.findOne((long)1);
 		CracUser original2 = userDAO.findOne((long)2);
 		
 		ESConnUser.indexOrUpdate(""+original1.getId(), ST.transformUser(original1));
-		ESConnUser.indexOrUpdate(""+original2.getId(), ST.transformUser(original2));*/
+		ESConnUser.indexOrUpdate(""+original2.getId(), ST.transformUser(original2));
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

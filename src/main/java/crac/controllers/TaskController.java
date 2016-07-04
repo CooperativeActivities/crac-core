@@ -60,10 +60,9 @@ public class TaskController {
 	@Autowired
 	private CommentDAO commentDAO;
 	
-	/*
+	
 	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
 	private SearchTransformer ST = new SearchTransformer();
-*/
 
 	/**
 	 * GET / or blank -> get all tasks.
@@ -100,7 +99,7 @@ public class TaskController {
 		Task myTask = mapper.readValue(json, Task.class);
 		myTask.setCreator(myUser);
 		taskDAO.save(myTask);
-		//ESConnTask.indexOrUpdate(""+myTask.getId(), ST.transformTask(myTask));
+		ESConnTask.indexOrUpdate(""+myTask.getId(), ST.transformTask(myTask));
 
 		return ResponseEntity.ok().body("{\"created\":\"true\"}");
 
@@ -114,8 +113,10 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "task_id") Long id) {
 		Task deleteTask = taskDAO.findOne(id);
+		deleteTask.getNeededCompetences().clear();
+		deleteTask.getUserRelationships().clear();
 		taskDAO.delete(deleteTask);
-		//ESConnTask.delete(""+deleteTask.getId());
+		ESConnTask.delete(""+deleteTask.getId());
 		return ResponseEntity.ok().body("{\"deleted\":\"true\"}");
 
 	}
@@ -166,7 +167,7 @@ public class TaskController {
 		oldTask.setCompleted(updatedTask.isCompleted());
 		
 		taskDAO.save(oldTask);
-		//ESConnTask.indexOrUpdate(""+oldTask.getId(), ST.transformTask(oldTask));
+		ESConnTask.indexOrUpdate(""+oldTask.getId(), ST.transformTask(oldTask));
 
 		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
 

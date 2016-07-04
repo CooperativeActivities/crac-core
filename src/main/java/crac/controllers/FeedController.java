@@ -33,6 +33,8 @@ public class FeedController {
 
 	@Autowired
 	private CompetenceDAO competenceDAO;
+	
+	/*
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -58,4 +60,6 @@ public class FeedController {
 		return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
 	}
 
+	*/
+	
 }

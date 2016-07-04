@@ -48,18 +48,10 @@ public class Competence {
 	/**
 	 * defines a many to many relation with the cracUser-entity
 	 */
-
-	@ManyToMany(mappedBy = "competences", fetch = FetchType.LAZY)
-	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> users;
 	
-	@ManyToMany(mappedBy = "likes", fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> likedBy;
-
-	@ManyToMany(mappedBy = "dislikes", fetch = FetchType.LAZY)
-	@JsonIdentityReference(alwaysAsId=true)
-	private Set<CracUser> dislikedBy;
+	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserCompetenceRel> userRelationships;
 
 
 	@NotNull
@@ -82,7 +74,7 @@ public class Competence {
 	private Set<CompetenceRelationship> mappedCompetence1;
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "competence1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "competence2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceRelationship> mappedCompetence2;
 
 
@@ -120,14 +112,6 @@ public class Competence {
 		this.name = name;
 	}
 
-	public Set<CracUser> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Set<CracUser> users) {
-		this.users = users;
-	}
-
 	public CracUser getCreator() {
 		return creator;
 	}
@@ -152,22 +136,6 @@ public class Competence {
 		this.description = description;
 	}
 
-	public Set<CracUser> getLikedBy() {
-		return likedBy;
-	}
-
-	public void setLikedBy(Set<CracUser> likedBy) {
-		this.likedBy = likedBy;
-	}
-
-	public Set<CracUser> getDislikedBy() {
-		return dislikedBy;
-	}
-
-	public void setDislikedBy(Set<CracUser> dislikedBy) {
-		this.dislikedBy = dislikedBy;
-	}
-
 	public Set<CompetenceRelationship> getMappedCompetence1() {
 		return mappedCompetence1;
 	}
@@ -183,5 +151,15 @@ public class Competence {
 	public void setMappedCompetence2(Set<CompetenceRelationship> mappedCompetence2) {
 		this.mappedCompetence2 = mappedCompetence2;
 	}
+
+	public Set<UserCompetenceRel> getUserRelationships() {
+		return userRelationships;
+	}
+
+	public void setUserRelationships(Set<UserCompetenceRel> userRelationships) {
+		this.userRelationships = userRelationships;
+	}
+	
+	
 
 }

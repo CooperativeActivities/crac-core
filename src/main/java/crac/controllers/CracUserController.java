@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
+import crac.daos.UserCompetenceRelDAO;
+import crac.daos.UserTaskRelDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticPerson;
 import crac.elastic.ElasticTask;
@@ -28,6 +30,9 @@ import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.models.Competence;
 import crac.models.Task;
+import crac.models.TaskParticipationType;
+import crac.models.UserCompetenceRel;
+import crac.models.UserTaskRel;
 import crac.models.CracUser;
 import crac.models.Group;
 import crac.models.SearchTransformer;
@@ -52,10 +57,16 @@ public class CracUserController {
 	@Autowired
 	private GroupDAO groupDAO;
 	
-	/*
+	@Autowired
+	private UserCompetenceRelDAO userCompetenceRelDAO;
+	
+	@Autowired
+	private UserTaskRelDAO userTaskRelDAO;
+
+	
 	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
 	private SearchTransformer ST = new SearchTransformer();
-*/
+
 
 
 	/**
@@ -97,7 +108,7 @@ public class CracUserController {
 
 		if (userDAO.findByName(myUser.getName()) == null) {
 			userDAO.save(myUser);
-			//ESConnUser.indexOrUpdate(""+myUser.getId(), ST.transformUser(myUser));
+			ESConnUser.indexOrUpdate(""+myUser.getId(), ST.transformUser(myUser));
 		} else {
 			return ResponseEntity.ok().body("{\"created\":\"false\", \"exception\":\"name already exists\"}");
 		}
@@ -118,8 +129,11 @@ public class CracUserController {
 		CracUser deleteUser = userDAO.findOne(id);
 		long userId = deleteUser.getId();
 		String userName = deleteUser.getName();
+		
+		deleteUser.getCompetenceRelationships().clear();
+		
 		userDAO.delete(deleteUser);
-		//ESConnUser.delete(""+deleteUser.getId());
+		ESConnUser.delete(""+deleteUser.getId());
 		return ResponseEntity.ok()
 				.body("{\"user\":\"" + userId + "\",\"name\":\"" + userName + "\",\"deleted\":\"true\"}");
 
@@ -174,7 +188,7 @@ public class CracUserController {
 		}
 
 		userDAO.save(oldUser);
-		//ESConnUser.indexOrUpdate(""+oldUser.getId(), ST.transformUser(oldUser));
+		ESConnUser.indexOrUpdate(""+oldUser.getId(), ST.transformUser(oldUser));
 
 		return ResponseEntity.ok().body("{\"user\":\"" + oldUser.getId() + "\",\"old_name\":\"" + oldName
 				+ "\",\"new_name\":\"" + oldUser.getName() + "\",\"updated\":\"true\"}");
@@ -246,6 +260,7 @@ public class CracUserController {
 		}
 
 		userDAO.save(oldUser);
+		ESConnUser.indexOrUpdate(""+oldUser.getId(), ST.transformUser(oldUser));
 
 		return ResponseEntity.ok().body("{\"user\":\"" + oldUser.getId() + "\",\"old_name\":\"" + oldName
 				+ "\",\"new_name\":\"" + oldUser.getName() + "\",\"updated\":\"true\"}");
@@ -268,8 +283,16 @@ public class CracUserController {
 
 		Competence myCompetence = competenceDAO.findOne(competenceId);
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getCompetences().add(myCompetence);
+		
+		UserCompetenceRel rel = new UserCompetenceRel();
+		
+		rel.setUser(myUser);
+		rel.setCompetence(myCompetence);
+		
+		myUser.getCompetenceRelationships().add(rel);
+		
 		userDAO.save(myUser);
+		
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
 				+ myCompetence.getName() + "\", \"assigned\":\"true\"}");
 	}
@@ -289,8 +312,9 @@ public class CracUserController {
 
 		Competence myCompetence = competenceDAO.findOne(competenceId);
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getCompetences().remove(myCompetence);
-		userDAO.save(myUser);
+		
+		userCompetenceRelDAO.delete(userCompetenceRelDAO.findByUserAndCompetence(myUser, myCompetence));
+		
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
 				+ myCompetence.getName() + "\", \"removed\":\"true\"}");
 	}
@@ -309,11 +333,93 @@ public class CracUserController {
 
 		Task myTask = taskDAO.findOne(taskId);
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getOpenTasks().add(myTask);
-		userDAO.save(myUser);
+		
+		UserTaskRel rel = userTaskRelDAO.findByUserAndTask(myUser, myTask);
+		
+		if(rel == null){
+			rel = new UserTaskRel();
+			rel.setUser(myUser);
+			rel.setTask(myTask);
+			rel.setParticipationType(TaskParticipationType.PARTICIPATING);
+			myUser.getTaskRelationships().add(rel);
+			userDAO.save(myUser);
+		}else{
+			rel.setParticipationType(TaskParticipationType.PARTICIPATING);
+			userTaskRelDAO.save(rel);
+		}
+		
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
 				+ "\", \"assigned\":\"true\"}");
 	}
+	
+	/**
+	 * Adds target task to the follow-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/followTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> followTask(@PathVariable(value = "task_id") Long taskId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		
+		UserTaskRel rel = userTaskRelDAO.findByUserAndTask(myUser, myTask);
+				
+		if(rel == null){
+			rel = new UserTaskRel();
+			rel.setUser(myUser);
+			rel.setTask(myTask);
+			rel.setParticipationType(TaskParticipationType.FOLLOWING);
+			myUser.getTaskRelationships().add(rel);
+			userDAO.save(myUser);
+		}else{
+			rel.setParticipationType(TaskParticipationType.FOLLOWING);
+			userTaskRelDAO.save(rel);
+		}
+		
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"assigned\":\"true\"}");
+	}
+	
+	
+	/**
+	 * Adds target task to the responsible-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/leadTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> leadTask(@PathVariable(value = "task_id") Long taskId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Task myTask = taskDAO.findOne(taskId);
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		UserTaskRel rel = userTaskRelDAO.findByUserAndTask(myUser, myTask);
+		
+		if(rel == null){
+			rel = new UserTaskRel();
+			rel.setUser(myUser);
+			rel.setTask(myTask);
+			rel.setParticipationType(TaskParticipationType.LEADING);
+			myUser.getTaskRelationships().add(rel);
+			userDAO.save(myUser);
+		}else{
+			rel.setParticipationType(TaskParticipationType.LEADING);
+			userTaskRelDAO.save(rel);
+		}
+		
+		userTaskRelDAO.save(rel);
+		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
+				+ "\", \"assigned\":\"true\"}");
+	}
+	
+
 	
 	/**
 	 * Removes target task from the open-tasks of the logged-in user
@@ -329,8 +435,9 @@ public class CracUserController {
 
 		Task myTask = taskDAO.findOne(taskId);
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getOpenTasks().remove(myTask);
-		userDAO.save(myUser);
+				
+		userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTask(myUser, myTask));
+		
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
 				+ "\", \"removed\":\"true\"}");
 	}
@@ -375,85 +482,6 @@ public class CracUserController {
 				+ "\", \"removed\":\"true\"}");
 	}
 	
-	/**
-	 * Adds target task to the follow-tasks of the logged-in user
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = "/followTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> followTask(@PathVariable(value = "task_id") Long taskId) {
-
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		Task myTask = taskDAO.findOne(taskId);
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getFollowingTasks().add(myTask);
-		userDAO.save(myUser);
-		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
-				+ "\", \"assigned\":\"true\"}");
-	}
-	
-	/**
-	 * Removes target task from the follow-tasks of the logged-in user
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = "/unfollowTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> unfollowTask(@PathVariable(value = "task_id") Long taskId) {
-
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		Task myTask = taskDAO.findOne(taskId);
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getFollowingTasks().remove(myTask);
-		userDAO.save(myUser);
-		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
-				+ "\", \"removed\":\"true\"}");
-	}
-	
-	/**
-	 * Adds target task to the responsible-tasks of the logged-in user
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = "/leadTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> leadTask(@PathVariable(value = "task_id") Long taskId) {
-
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		Task myTask = taskDAO.findOne(taskId);
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getResponsibleForTasks().add(myTask);
-		userDAO.save(myUser);
-		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
-				+ "\", \"assigned\":\"true\"}");
-	}
-	
-	/**
-	 * Removes target task from the responsible-tasks of the logged-in user
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = "/abandonTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> abandonTask(@PathVariable(value = "task_id") Long taskId) {
-
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		Task myTask = taskDAO.findOne(taskId);
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		myUser.getResponsibleForTasks().remove(myTask);
-		userDAO.save(myUser);
-		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"task\":\"" + myTask.getName()
-				+ "\", \"removed\":\"true\"}");
-	}
 
 	/**
 	 * returns a json if the logged in user is valid

@@ -62,10 +62,10 @@ public class ProjectController {
 	@Autowired
 	private ProjectDAO projectDAO;
 	
-	/*
+	
 	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
 	private SearchTransformer ST = new SearchTransformer();
-*/
+
 
 	/**
 	 * GET / or blank -> get all tasks.
@@ -155,7 +155,7 @@ public class ProjectController {
 		myTask.setCreator(myUser);
 		myTask.setSuperProject(projectDAO.findOne(project_id));
 		taskDAO.save(myTask);
-		//ESConnTask.indexOrUpdate(""+myTask.getId(), ST.transformTask(myTask));
+		ESConnTask.indexOrUpdate(""+myTask.getId(), ST.transformTask(myTask));
 
 		return ResponseEntity.ok().body("{\"created\":\"true\",\"project\":\""+myTask.getSuperProject().getId()+"\",\"task\":\""+myTask.getId()+"\"}");
 
