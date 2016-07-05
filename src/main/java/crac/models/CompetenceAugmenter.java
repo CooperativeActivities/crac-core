@@ -106,24 +106,17 @@ public class CompetenceAugmenter {
 			Set<ElasticCompetence> relatedCompetences) {
 
 		System.out.println("Augmenting |" + c.getName() + "| with |" + distanceToGo + "| units to go!");
-
-		relatedCompetences.add(
-				new ElasticCompetence(c.getId(), c.getName(), c.getDescription(), originalDistance - distanceToGo));
-
+		relatedCompetences.add(new ElasticCompetence(c.getId(), c.getName(), c.getDescription(), originalDistance - distanceToGo));
 		List<CompetenceRelationship> list1 = relationDAO.findByCompetence1(c);
-
 		List<CompetenceRelationship> list2 = relationDAO.findByCompetence2(c);
-
 		if (list1 != null) {
 			for (CompetenceRelationship cr : list1) {
 				Competence targetC = cr.getCompetence2();
-
 				calcCompIntern(targetC, originalDistance, distanceToGo, cr, relatedCompetences);
 			}
 		} else {
 			System.out.println("List1 of |" + c.getName() + "| is null!");
 		}
-
 		if (list2 != null) {
 			for (CompetenceRelationship cr : list2) {
 				Competence targetC = cr.getCompetence1();
