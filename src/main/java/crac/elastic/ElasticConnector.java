@@ -61,12 +61,12 @@ public class ElasticConnector<T> {
 		return client.prepareDelete(index, type, id).get();
 	}
 
-	public SearchResponse query(String matchField, Set<Competence> competences) {
+	public SearchResponse query(String matchField, Set<ElasticCompetence> competences) {
 		SearchRequestBuilder search = client.prepareSearch(index).setTypes(type);
 		if (competences.size() != 0) {
 			System.out.println("COMPETENCES:");
 			String text = "";
-			for (Competence c : competences) {
+			for (ElasticCompetence c : competences) {
 				System.out.println(c.getName());
 				text += " " + c.getName();
 			}

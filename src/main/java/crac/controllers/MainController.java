@@ -22,7 +22,7 @@ import crac.daos.ProjectDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.elastic.ElasticConnector;
-import crac.elastic.ElasticPerson;
+import crac.elastic.ElasticUser;
 import crac.elastic.ElasticTask;
 import crac.models.Competence;
 import crac.models.CracUser;
@@ -55,7 +55,7 @@ public class MainController {
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 	
 	
-	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
+	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core", "elastic_user");
 	private SearchTransformer ST = new SearchTransformer();
 	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
 

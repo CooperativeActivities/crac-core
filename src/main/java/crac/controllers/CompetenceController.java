@@ -143,7 +143,7 @@ public class CompetenceController {
 		cr.setCompetence2(c2);
 		cr.setType(crt);
 		relationDAO.save(cr);
-		return ResponseEntity.ok().body("{\"relationship_created\":\"true\", \"competence1\":\""+c1.getName()+"\", \"competence2\":\""+c2.getName()+"\", \"type\":\""+crt.getName()+"\", \"distance\":\""+cr.getDistance()+"\"}");
+		return ResponseEntity.ok().body("{\"relationship_created\":\"true\", \"competence1\":\""+c1.getName()+"\", \"competence2\":\""+c2.getName()+"\", \"type\":\""+crt.getName()+"\"}");
 	}
 
 }

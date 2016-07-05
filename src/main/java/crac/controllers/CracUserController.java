@@ -24,7 +24,7 @@ import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.elastic.ElasticConnector;
-import crac.elastic.ElasticPerson;
+import crac.elastic.ElasticUser;
 import crac.elastic.ElasticTask;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
@@ -64,7 +64,7 @@ public class CracUserController {
 	private UserTaskRelDAO userTaskRelDAO;
 
 	
-	private ElasticConnector<ElasticPerson> ESConnUser = new ElasticConnector<ElasticPerson>("localhost", 9300, "crac_core", "elastic_user");
+	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core", "elastic_user");
 	private SearchTransformer ST = new SearchTransformer();
 
 

@@ -11,7 +11,7 @@ import crac.models.Role;
 import crac.models.Task;
 import crac.models.UserCompetenceRel;
 
-public class ElasticPerson {
+public class ElasticUser {
 
 	private long id;
 
@@ -22,12 +22,12 @@ public class ElasticPerson {
 	private Set<ElasticCompetence> relatedCompetences;
 
 	
-	public ElasticPerson(long id, String name) {
+	public ElasticUser(long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
-	public ElasticPerson() {
+	public ElasticUser() {
 	}
 
 	public long getId() {

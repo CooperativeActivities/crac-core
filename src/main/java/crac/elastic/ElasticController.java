@@ -1,5 +1,6 @@
 package crac.elastic;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -23,9 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.models.Competence;
+import crac.models.CompetenceAugmenter;
 import crac.models.CracUser;
 import crac.models.SearchTransformer;
 import crac.models.Task;
+import crac.models.UserCompetenceRel;
 
 @RestController
 @RequestMapping("/elastic")
@@ -39,7 +42,7 @@ public class ElasticController {
 	
 	
 	private ElasticConnector<ElasticTask> ESConnTask;
-	private ElasticConnector<ElasticPerson> ESConnUser;
+	private ElasticConnector<ElasticUser> ESConnUser;
 	private SearchTransformer ST = new SearchTransformer();
 	
 	private ObjectMapper mapper = new ObjectMapper();
@@ -50,6 +53,9 @@ public class ElasticController {
 	@Autowired
 	private CracUserDAO userDAO;
 	
+	@Autowired
+	private CompetenceAugmenter caug;
+	
 	
 	@PostConstruct
 	public void init(){
@@ -57,7 +63,7 @@ public class ElasticController {
 		System.out.println(url);
 		System.out.println(port);
 		ESConnTask = new ElasticConnector<ElasticTask>(url, port, "crac_core", "elastic_task");
-		ESConnUser = new ElasticConnector<ElasticPerson>(url, port, "crac_core", "elastic_user");
+		ESConnUser = new ElasticConnector<ElasticUser>(url, port, "crac_core", "elastic_user");
 
 	}
 
@@ -94,22 +100,21 @@ public class ElasticController {
 		return ResponseEntity.ok().body("{\"id\":\""+task_id+"\", \"deleted\": \""+response.isFound()+"\"}");
 		
 	}
-	/*
+	
 	@RequestMapping(value = "/searchES/task", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> searchESTask() throws JsonProcessingException {
 		
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		Set<Competence> competences = myUser.getCompetences();
+		ElasticUser ep = ST.transformUser(myUser);
+		Set<ElasticCompetence> competences = ep.getSetCompetences();
 
-		System.out.println(port);
-		System.out.println(url);
 		
 		return ResponseEntity.ok().body(ESConnTask.query("neededCompetences.name", competences).toString());
 		
 	}
-	*/
+	
 	@RequestMapping(value = "/addUser/{user_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addUser(@PathVariable(value = "user_id") long user_id) throws JsonProcessingException {
@@ -150,10 +155,33 @@ public class ElasticController {
 
 		Task task = taskDAO.findOne(task_id);
 		
-		return ResponseEntity.ok().body(ESConnUser.query("competences.name", task.getNeededCompetences()).toString());
+		ElasticTask et = ST.transformTask(task);
+		
+		return ResponseEntity.ok().body(ESConnUser.query("competences.name", et.getNeededCompetences()).toString());
 		
 	}
 
-
+	@RequestMapping(value = "/testAugment/{steps}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> testAugment(@PathVariable(value = "steps") int steps) throws JsonProcessingException {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		
+		//ElasticUser eu = ST.transformUser(myUser);
+		
+		HashSet<ElasticCompetence> cSet = new HashSet<ElasticCompetence>();
+				
+		for(UserCompetenceRel r : myUser.getCompetenceRelationships()){
+			caug.augmentWithDistance(r.getCompetence(), steps, steps, cSet);
+		}
+		
+		for(ElasticCompetence c : cSet){
+			System.out.println(c.getName()+" | distance travelled: "+c.getTravelled()+" | bad path: "+c.isBadPath());
+		}
+		
+		return ResponseEntity.ok().body("{\"test\":\"done\"}");
+		
+	}
 	
 }

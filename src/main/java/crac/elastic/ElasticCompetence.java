@@ -7,11 +7,25 @@ public class ElasticCompetence {
 	private String name;
 	
 	private String description;
+	
+	private int travelled;
+	
+	private boolean badPath;
 
 	public ElasticCompetence(long id, String name, String description) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
+		this.travelled = 0;
+		this.badPath = false;
+	}
+	
+	public ElasticCompetence(long id, String name, String description, int travelled) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.travelled = travelled;
+		this.badPath = false;
 	}
 
 	public long getId() {
@@ -36,6 +50,22 @@ public class ElasticCompetence {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public int getTravelled() {
+		return travelled;
+	}
+
+	public void setTravelled(int travelled) {
+		this.travelled = travelled;
+	}
+
+	public boolean isBadPath() {
+		return badPath;
+	}
+
+	public void setBadPath(boolean badPath) {
+		this.badPath = badPath;
 	}
 	
 	

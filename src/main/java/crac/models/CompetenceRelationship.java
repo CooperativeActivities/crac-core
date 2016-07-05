@@ -38,8 +38,6 @@ public class CompetenceRelationship {
 	@JoinColumn(name = "competence_2")
 	private Competence competence2;
 	
-	private double distance;
-
 	public CompetenceRelationship() {
 	}
 
@@ -74,15 +72,6 @@ public class CompetenceRelationship {
 	public void setCompetence2(Competence competence2) {
 		this.competence2 = competence2;
 	}
-
-	public double getDistance() {
-		return distance;
-	}
-
-	public void setDistance(double distance) {
-		this.distance = distance;
-	}
-	
 	
 	
 }

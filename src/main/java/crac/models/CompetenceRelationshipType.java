@@ -32,6 +32,9 @@ public class CompetenceRelationshipType {
 	
 	private String description;
 	
+	@NotNull
+	private int distanceVal;
+	
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceRelationship> mappedRelationships;
@@ -69,6 +72,14 @@ public class CompetenceRelationshipType {
 
 	public void setMappedRelationships(Set<CompetenceRelationship> mappedRelationships) {
 		this.mappedRelationships = mappedRelationships;
+	}
+
+	public int getDistanceVal() {
+		return distanceVal;
+	}
+
+	public void setDistanceVal(int distanceVal) {
+		this.distanceVal = distanceVal;
 	}
 	
 	
