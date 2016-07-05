@@ -24,7 +24,8 @@ public class CompetenceAugmenter {
 	@Autowired
 	private SearchTransformer ST;
 
-	public void augmentWithNumber(Competence c, int originalDistance, int numberOfSteps, Set<ElasticCompetence> relatedCompetences) {
+	public void augmentWithNumber(Competence c, int originalDistance, int numberOfSteps,
+			Set<ElasticCompetence> relatedCompetences) {
 
 		System.out.println("Augmenting |" + c.getName() + "| with |" + numberOfSteps + "| steps to go!");
 
@@ -50,14 +51,13 @@ public class CompetenceAugmenter {
 					for (ElasticCompetence elc : relatedCompetences) {
 						if (elc.getId() == newElc.getId() && elc.getTravelled() > newElc.getTravelled()) {
 							elc.setBadPath(true);
-						}else if(elc.getId() == newElc.getId() && !(elc.getTravelled() > newElc.getTravelled())){
+						} else if (elc.getId() == newElc.getId() && !(elc.getTravelled() > newElc.getTravelled())) {
 							allow = false;
 							System.out.println("WORSE PATH");
 						}
 					}
 					if (allow) {
-						augmentWithNumber(targetC, originalDistance, numberOfSteps - 1,
-								relatedCompetences);
+						augmentWithNumber(targetC, originalDistance, numberOfSteps - 1, relatedCompetences);
 					}
 				} else {
 					System.out.println("Distance too big! Discard: " + targetC.getName());
@@ -83,14 +83,13 @@ public class CompetenceAugmenter {
 					for (ElasticCompetence elc : relatedCompetences) {
 						if (elc.getId() == newElc.getId() && elc.getTravelled() > newElc.getTravelled()) {
 							elc.setBadPath(true);
-						}else if(elc.getId() == newElc.getId() && !(elc.getTravelled() > newElc.getTravelled())){
+						} else if (elc.getId() == newElc.getId() && !(elc.getTravelled() > newElc.getTravelled())) {
 							allow = false;
 							System.out.println("WORSE PATH");
 						}
 					}
 					if (allow) {
-						augmentWithNumber(targetC, originalDistance, numberOfSteps - 1,
-								relatedCompetences);
+						augmentWithNumber(targetC, originalDistance, numberOfSteps - 1, relatedCompetences);
 					}
 				} else {
 					System.out.println("Distance too big! Discard: " + targetC.getName());
@@ -119,31 +118,7 @@ public class CompetenceAugmenter {
 			for (CompetenceRelationship cr : list1) {
 				Competence targetC = cr.getCompetence2();
 
-				System.out.println("Found competence: " + targetC.getName());
-				if (distanceToGo - cr.getType().getDistanceVal() >= 0) {
-
-					boolean allow = true;
-
-					ElasticCompetence newElc = new ElasticCompetence(targetC.getId(), targetC.getName(),
-							targetC.getDescription(), originalDistance - distanceToGo - cr.getType().getDistanceVal());
-
-					for (ElasticCompetence elc : relatedCompetences) {
-						if (elc.getId() == newElc.getId()) {
-							if(elc.getTravelled() > newElc.getTravelled()){
-								elc.setBadPath(true);
-							}else{
-								allow = false;
-							}
-						}
-					}
-					if (allow) {
-						augmentWithDistance(targetC, originalDistance, distanceToGo - cr.getType().getDistanceVal(),
-								relatedCompetences);
-					}
-				} else {
-					System.out.println("Distance too big! Discard: " + targetC.getName());
-				}
-
+				calcCompIntern(targetC, originalDistance, distanceToGo, cr, relatedCompetences);
 			}
 		} else {
 			System.out.println("List1 of |" + c.getName() + "| is null!");
@@ -152,36 +127,41 @@ public class CompetenceAugmenter {
 		if (list2 != null) {
 			for (CompetenceRelationship cr : list2) {
 				Competence targetC = cr.getCompetence1();
-
-				System.out.println("Found competence: " + targetC.getName());
-				if (distanceToGo - cr.getType().getDistanceVal() >= 0) {
-
-					boolean allow = true;
-
-					ElasticCompetence newElc = new ElasticCompetence(targetC.getId(), targetC.getName(),
-							targetC.getDescription(), originalDistance - distanceToGo - cr.getType().getDistanceVal());
-
-					for (ElasticCompetence elc : relatedCompetences) {
-						if (elc.getId() == newElc.getId()) {
-							if(elc.getTravelled() > newElc.getTravelled()){
-								elc.setBadPath(true);
-							}else{
-								allow = false;
-							}
-						}
-					}
-					if (allow) {
-						augmentWithDistance(targetC, originalDistance, distanceToGo - cr.getType().getDistanceVal(),
-								relatedCompetences);
-					}
-				} else {
-					System.out.println("Distance too big! Discard: " + targetC.getName());
-				}
-
+				calcCompIntern(targetC, originalDistance, distanceToGo, cr, relatedCompetences);
 			}
 		} else {
 			System.out.println("List2 |" + c.getName() + "| is null!");
 		}
 	}
-		
+	
+	private void calcCompIntern(Competence targetC, int originalDistance, int distanceToGo, CompetenceRelationship cr, Set<ElasticCompetence> relatedCompetences){
+		System.out.println("Found competence: " + targetC.getName());
+		if (distanceToGo - cr.getType().getDistanceVal() >= 0) {
+
+			boolean allow = true;
+
+			ElasticCompetence newElc = new ElasticCompetence(targetC.getId(), targetC.getName(),
+					targetC.getDescription(), originalDistance - distanceToGo + cr.getType().getDistanceVal());
+
+			for (ElasticCompetence elc : relatedCompetences) {
+				if (elc.getId() == newElc.getId()) {
+					if (elc.getTravelled() > newElc.getTravelled()) {
+						System.out.println("id: " + elc.getId() +" name: " + elc.getName() + " old: " + elc.getTravelled() + " new: "
+								+ newElc.getTravelled());
+						elc.setBadPath(true);
+					} else {
+						allow = false;
+						System.out.println("DISSALOWED id: " + elc.getId() +" name: " + elc.getName());
+					}
+				}
+			}
+			if (allow) {
+				augmentWithDistance(targetC, originalDistance, distanceToGo - cr.getType().getDistanceVal(),
+						relatedCompetences);
+			}
+		} else {
+			System.out.println("Distance too big! Discard: " + targetC.getName());
+		}
+	}
+
 }

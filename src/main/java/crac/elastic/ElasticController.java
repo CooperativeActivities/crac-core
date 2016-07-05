@@ -177,7 +177,7 @@ public class ElasticController {
 		}
 		
 		for(ElasticCompetence c : cSet){
-			System.out.println(c.getName()+" | distance travelled: "+c.getTravelled()+" | bad path: "+c.isBadPath());
+			System.out.println(c.getId() + " | "+c.getName()+" | distance travelled: "+c.getTravelled()+" | bad path: "+c.isBadPath());
 		}
 		
 		return ResponseEntity.ok().body("{\"test\":\"done\"}");
