@@ -53,6 +53,10 @@ public class Competence {
 	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserCompetenceRel> userRelationships;
 
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "permission_type_id")
+	private CompetencePermissionType permissionType;
 
 	@NotNull
 	private String name;
@@ -158,6 +162,14 @@ public class Competence {
 
 	public void setUserRelationships(Set<UserCompetenceRel> userRelationships) {
 		this.userRelationships = userRelationships;
+	}
+
+	public CompetencePermissionType getPermissionType() {
+		return permissionType;
+	}
+
+	public void setPermissionType(CompetencePermissionType permissionType) {
+		this.permissionType = permissionType;
 	}
 	
 	

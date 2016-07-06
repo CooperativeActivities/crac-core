@@ -2,6 +2,7 @@ package crac.models;
 
 import java.util.HashSet;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crac.elastic.ElasticCompetence;
@@ -10,6 +11,9 @@ import crac.elastic.ElasticTask;
 
 @Service
 public class SearchTransformer {
+	
+	@Autowired
+	private CompetenceAugmenter caug;
 	
 	public ElasticTask transformTask(Task originalTask){
 		return transformTaskInternDirectly(originalTask);
@@ -21,7 +25,7 @@ public class SearchTransformer {
 
 	private ElasticUser transformUserInternDirectly(CracUser c){
 		
-		ElasticUser p = new ElasticUser(c.getId(), c.getName());
+		ElasticUser eu = new ElasticUser(c.getId(), c.getName());
 		
 		HashSet<ElasticCompetence> cSet = new HashSet<ElasticCompetence>();
 				
@@ -32,11 +36,16 @@ public class SearchTransformer {
 			cSet.add(new ElasticCompetence(comp.getId(), comp.getName(), comp.getDescription()));
 		}
 		
+		for(UserCompetenceRel r : c.getCompetenceRelationships()){
+			caug.augmentWithDistance(r.getCompetence(), 8, 8, cSetAug);
+		}
 		//TODO - add augmenter
 		
-		p.setSetCompetences(cSet);
+		eu.setSetCompetences(cSet);
 		
-		return p;
+		eu.setRelatedCompetences(cSetAug);
+		
+		return eu;
 	}
 	
 	private ElasticTask transformTaskInternDirectly(Task t){

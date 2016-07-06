@@ -38,7 +38,10 @@ public class CompetenceRelationship {
 	@JoinColumn(name = "competence_2")
 	private Competence competence2;
 	
+	private boolean uniDirection;
+	
 	public CompetenceRelationship() {
+		this.uniDirection = false;
 	}
 
 	public long getId() {
@@ -71,6 +74,14 @@ public class CompetenceRelationship {
 
 	public void setCompetence2(Competence competence2) {
 		this.competence2 = competence2;
+	}
+
+	public boolean isUniDirection() {
+		return uniDirection;
+	}
+
+	public void setUniDirection(boolean uniDirection) {
+		this.uniDirection = uniDirection;
 	}
 	
 	

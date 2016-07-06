@@ -11,6 +11,9 @@ public class ElasticCompetence {
 	private int travelled;
 	
 	private boolean badPath;
+	
+	public ElasticCompetence() {
+	}
 
 	public ElasticCompetence(long id, String name, String description) {
 		this.id = id;

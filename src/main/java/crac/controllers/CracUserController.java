@@ -65,7 +65,9 @@ public class CracUserController {
 
 	
 	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core", "elastic_user");
-	private SearchTransformer ST = new SearchTransformer();
+	
+	@Autowired
+	private SearchTransformer ST;
 
 
 
@@ -292,6 +294,7 @@ public class CracUserController {
 		myUser.getCompetenceRelationships().add(rel);
 		
 		userDAO.save(myUser);
+		ESConnUser.indexOrUpdate(""+myUser.getId(), ST.transformUser(myUser));
 		
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
 				+ myCompetence.getName() + "\", \"assigned\":\"true\"}");
@@ -314,7 +317,8 @@ public class CracUserController {
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
 		
 		userCompetenceRelDAO.delete(userCompetenceRelDAO.findByUserAndCompetence(myUser, myCompetence));
-		
+		ESConnUser.indexOrUpdate(""+myUser.getId(), ST.transformUser(myUser));
+
 		return ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() + "\", \"competence\":\""
 				+ myCompetence.getName() + "\", \"removed\":\"true\"}");
 	}

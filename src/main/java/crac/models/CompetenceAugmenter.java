@@ -21,9 +21,6 @@ public class CompetenceAugmenter {
 	@Autowired
 	private CompetenceRelationshipDAO relationDAO;
 
-	@Autowired
-	private SearchTransformer ST;
-
 	public void augmentWithNumber(Competence c, int originalDistance, int numberOfSteps,
 			Set<ElasticCompetence> relatedCompetences) {
 

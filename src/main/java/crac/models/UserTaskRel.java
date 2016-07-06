@@ -38,6 +38,11 @@ public class UserTaskRel {
 	@Enumerated(EnumType.STRING)
 	private TaskParticipationType participationType;
 	
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "type_id")
+	private TaskRelationshipType type;
+	
 	public UserTaskRel() {
 	}
 

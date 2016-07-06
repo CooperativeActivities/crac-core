@@ -67,8 +67,9 @@ public class ElasticConnector<T> {
 			System.out.println("COMPETENCES:");
 			String text = "";
 			for (ElasticCompetence c : competences) {
-				System.out.println(c.getName());
+				//System.out.println(c.getName());
 				text += " " + c.getName();
+				//search.setQuery(QueryBuilders.matchQuery(matchField, c.getName()));
 			}
 			System.out.println("Query for:"+text);
 			search.setQuery(QueryBuilders.multiMatchQuery(text, matchField));
