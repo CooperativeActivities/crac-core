@@ -291,6 +291,9 @@ public class CracUserController {
 		rel.setUser(myUser);
 		rel.setCompetence(myCompetence);
 		
+		if(myUser.getCompetenceRelationships() == null){
+			return ResponseEntity.ok().body("kay");
+		}
 		myUser.getCompetenceRelationships().add(rel);
 		
 		userDAO.save(myUser);
