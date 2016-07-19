@@ -24,6 +24,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.enums.TaskState;
+import crac.enums.TaskType;
+import crac.relationmodels.UserTaskRel;
+
 /**
  * The task-entity.
  */
@@ -51,13 +55,6 @@ public class Task {
 	/**
 	 * Defines a one to many relationship to the project entity
 	 */
-
-	@ManyToOne
-	@NotNull
-	@JsonIdentityReference(alwaysAsId=true)
-	@JoinColumn(name = "super_project")
-	private Project superProject;
-
 	
 	/**
 	 * defines a many to many relation with the competence-entity
@@ -98,7 +95,10 @@ public class Task {
 	private String feedback;
 	
 	@NotNull
-	private boolean completed;
+	private TaskState taskState;
+	
+	@NotNull
+	private TaskType taskType;
 	
 	/**
 	 * defines a one to many relation with the cracUser-entity
@@ -135,7 +135,8 @@ public class Task {
 		this.endTime = new Timestamp(date.getTime());
 		this.urgency = 0;
 		this.amountOfVolunteers = 0;
-		this.completed = false;
+		this.taskState = TaskState.NOT_STARTED;
+		this.taskType = TaskType.PARALLEL;
 	}
 	
 	public Task(String name, String description) {
@@ -147,7 +148,8 @@ public class Task {
 		this.endTime = new Timestamp(date.getTime());
 		this.urgency = 0;
 		this.amountOfVolunteers = 0;
-		this.completed = false;
+		this.taskState = TaskState.NOT_STARTED;
+		this.taskType = TaskType.PARALLEL;
 	}
 	
 	public Task(String feedback) {
@@ -278,28 +280,28 @@ public class Task {
 		this.comments = comments;
 	}
 
-	public Project getSuperProject() {
-		return superProject;
-	}
-
-	public void setSuperProject(Project superProject) {
-		this.superProject = superProject;
-	}
-
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	public void setCompleted(boolean completed) {
-		this.completed = completed;
-	}
-
 	public Set<UserTaskRel> getUserRelationships() {
 		return userRelationships;
 	}
 
 	public void setUserRelationships(Set<UserTaskRel> userRelationships) {
 		this.userRelationships = userRelationships;
+	}
+
+	public TaskState getTaskState() {
+		return taskState;
+	}
+
+	public void setTaskState(TaskState taskState) {
+		this.taskState = taskState;
+	}
+
+	public TaskType getTaskType() {
+		return taskType;
+	}
+
+	public void setTaskType(TaskType taskType) {
+		this.taskType = taskType;
 	}
 	
 }

@@ -1,4 +1,4 @@
-package crac.models;
+package crac.relationmodels;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import crac.models.Competence;
 
 @Entity
 @Table(name = "competence_relationship")

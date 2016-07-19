@@ -3,13 +3,12 @@ package crac.elastic;
 import java.util.Date;
 import java.util.Set;
 
+import crac.enums.Role;
 import crac.models.Attachment;
 import crac.models.Competence;
 import crac.models.Group;
-import crac.models.Project;
-import crac.models.Role;
 import crac.models.Task;
-import crac.models.UserCompetenceRel;
+import crac.relationmodels.UserCompetenceRel;
 
 public class ElasticUser {
 

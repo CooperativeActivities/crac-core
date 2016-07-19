@@ -1,4 +1,4 @@
-package crac.models;
+package crac.utility;
 
 import java.util.List;
 import java.util.Set;
@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.elastic.ElasticCompetence;
+import crac.models.Competence;
+import crac.relationmodels.CompetenceRelationship;
 
 @Service
 public class CompetenceAugmenter {

@@ -21,22 +21,19 @@ import crac.daos.CompetencePermissionTypeDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
-import crac.daos.ProjectDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticUser;
+import crac.enums.Role;
 import crac.elastic.ElasticTask;
 import crac.models.Competence;
-import crac.models.CompetencePermissionType;
-import crac.models.CompetenceRelationship;
 import crac.models.CracUser;
-import crac.models.Project;
-import crac.models.Role;
-import crac.models.SearchTransformer;
 import crac.models.Task;
-import crac.models.UserCompetenceRel;
-import crac.models.UserTaskRel;
+import crac.relationmodels.CompetencePermissionType;
+import crac.relationmodels.CompetenceRelationship;
+import crac.relationmodels.UserCompetenceRel;
+import crac.utility.SearchTransformer;
 
 /**
  * The main-controller used for hello world and testing
@@ -52,9 +49,6 @@ public class MainController {
 
 	@Autowired
 	private TaskDAO taskDAO;
-	
-	@Autowired
-	private ProjectDAO projectDAO;
 	
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
@@ -205,7 +199,7 @@ public class MainController {
 		
 		//Add projects
 				
-		Project waterFlowers = new Project();
+		Task waterFlowers = new Task();
 		waterFlowers.setName("Water the flowers");
 		waterFlowers.setDescription("All about watering the different flowers in the garden.");
 		waterFlowers.setLocation("my garden");
@@ -213,7 +207,7 @@ public class MainController {
 		waterFlowers.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
 		waterFlowers.setCreator(myUser);
 		
-		projectDAO.save(waterFlowers);
+		taskDAO.save(waterFlowers);
 		
 		//Add tasks
 		
@@ -229,7 +223,7 @@ public class MainController {
 		waterRoses.getNeededCompetences().add(breathing);
 		waterRoses.getNeededCompetences().add(walking);
 		waterRoses.setCreator(myUser);
-		waterRoses.setSuperProject(waterFlowers);
+		waterRoses.setSuperTask(waterFlowers);
 		
 		Task waterLilies = new Task();
 		waterLilies.setName("Water the lillies");
@@ -243,7 +237,7 @@ public class MainController {
 		waterLilies.getNeededCompetences().add(breathing);
 		waterLilies.getNeededCompetences().add(walking);
 		waterLilies.setCreator(myUser);
-		waterLilies.setSuperProject(waterFlowers);
+		waterLilies.setSuperTask(waterFlowers);
 		
 		Task programWateringTool = new Task();
 		programWateringTool.setName("Program a watering tool");
@@ -260,14 +254,14 @@ public class MainController {
 		programWateringTool.getNeededCompetences().add(phpProgramming);
 		programWateringTool.getNeededCompetences().add(javascriptProgramming);
 		programWateringTool.setCreator(myUser);
-		programWateringTool.setSuperProject(waterFlowers);
+		programWateringTool.setSuperTask(waterFlowers);
 		
 		waterFlowers.setChildTasks(new HashSet<Task>());
 		waterFlowers.getChildTasks().add(waterRoses);
 		waterFlowers.getChildTasks().add(waterLilies);
 		waterFlowers.getChildTasks().add(programWateringTool);
 		
-		projectDAO.save(waterFlowers);
+		taskDAO.save(waterFlowers);
 		
 		for(Task t : waterFlowers.getChildTasks()){
 			ESConnTask.indexOrUpdate(""+t.getId(), ST.transformTask(t));

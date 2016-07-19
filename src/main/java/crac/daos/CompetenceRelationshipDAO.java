@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import crac.models.Competence;
-import crac.models.CompetenceRelationship;
 import crac.models.Task;
+import crac.relationmodels.CompetenceRelationship;
 
 
 /**

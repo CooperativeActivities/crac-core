@@ -11,7 +11,6 @@ import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
-import crac.models.Project;
 import crac.models.Task;
 
 public class ElasticTask {

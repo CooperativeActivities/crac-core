@@ -1,4 +1,4 @@
-package crac.models;
+package crac.relationmodels;
 
 import java.util.Set;
 
@@ -18,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name = "competence_relationship_type")
+@Table(name = "task_relationship_type")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class CompetenceRelationshipType {
+public class TaskRelationshipType {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,13 +33,13 @@ public class CompetenceRelationshipType {
 	private String description;
 	
 	@NotNull
-	private int distanceVal;
+	private int importanceVal;
 	
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<CompetenceRelationship> mappedRelationships;
+	private Set<UserTaskRel> mappedRelationships;
 
-	public CompetenceRelationshipType() {
+	public TaskRelationshipType() {
 	}
 
 	public long getId() {
@@ -66,22 +66,20 @@ public class CompetenceRelationshipType {
 		this.description = description;
 	}
 
-	public Set<CompetenceRelationship> getMappedRelationships() {
+	public int getImportanceVal() {
+		return importanceVal;
+	}
+
+	public void setImportanceVal(int importanceVal) {
+		this.importanceVal = importanceVal;
+	}
+
+	public Set<UserTaskRel> getMappedRelationships() {
 		return mappedRelationships;
 	}
 
-	public void setMappedRelationships(Set<CompetenceRelationship> mappedRelationships) {
+	public void setMappedRelationships(Set<UserTaskRel> mappedRelationships) {
 		this.mappedRelationships = mappedRelationships;
 	}
-
-	public int getDistanceVal() {
-		return distanceVal;
-	}
-
-	public void setDistanceVal(int distanceVal) {
-		this.distanceVal = distanceVal;
-	}
-	
-	
 	
 }

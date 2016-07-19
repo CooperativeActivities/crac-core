@@ -25,17 +25,17 @@ import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticUser;
+import crac.enums.TaskParticipationType;
 import crac.elastic.ElasticTask;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.models.Competence;
 import crac.models.Task;
-import crac.models.TaskParticipationType;
-import crac.models.UserCompetenceRel;
-import crac.models.UserTaskRel;
+import crac.relationmodels.UserCompetenceRel;
+import crac.relationmodels.UserTaskRel;
+import crac.utility.SearchTransformer;
 import crac.models.CracUser;
 import crac.models.Group;
-import crac.models.SearchTransformer;
 
 /**
  * REST controller for managing users.

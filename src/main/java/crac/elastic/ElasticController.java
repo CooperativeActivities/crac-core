@@ -27,11 +27,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.models.Competence;
-import crac.models.CompetenceAugmenter;
 import crac.models.CracUser;
-import crac.models.SearchTransformer;
 import crac.models.Task;
-import crac.models.UserCompetenceRel;
+import crac.relationmodels.UserCompetenceRel;
+import crac.utility.CompetenceAugmenter;
+import crac.utility.SearchTransformer;
 
 @RestController
 @RequestMapping("/elastic")

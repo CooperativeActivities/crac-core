@@ -1,4 +1,4 @@
-package crac.models;
+package crac.relationmodels;
 
 import java.util.Set;
 
@@ -18,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name = "competence_permission_type")
+@Table(name = "competence_relationship_type")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class CompetencePermissionType {
+public class CompetenceRelationshipType {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,15 +32,14 @@ public class CompetencePermissionType {
 	
 	private String description;
 	
-	private boolean self;
+	@NotNull
+	private int distanceVal;
 	
-	private Role neededRole;
-		
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "permissionType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Competence> permittedCompetences;
+	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<CompetenceRelationship> mappedRelationships;
 
-	public CompetencePermissionType() {
+	public CompetenceRelationshipType() {
 	}
 
 	public long getId() {
@@ -67,30 +66,22 @@ public class CompetencePermissionType {
 		this.description = description;
 	}
 
-	public boolean isSelf() {
-		return self;
+	public Set<CompetenceRelationship> getMappedRelationships() {
+		return mappedRelationships;
 	}
 
-	public void setSelf(boolean self) {
-		this.self = self;
+	public void setMappedRelationships(Set<CompetenceRelationship> mappedRelationships) {
+		this.mappedRelationships = mappedRelationships;
 	}
 
-
-	public Role getNeededRole() {
-		return neededRole;
+	public int getDistanceVal() {
+		return distanceVal;
 	}
 
-	public void setNeededRole(Role neededRole) {
-		this.neededRole = neededRole;
+	public void setDistanceVal(int distanceVal) {
+		this.distanceVal = distanceVal;
 	}
-
-	public Set<Competence> getPermittedCompetences() {
-		return permittedCompetences;
-	}
-
-	public void setPermittedCompetences(Set<Competence> permittedCompetences) {
-		this.permittedCompetences = permittedCompetences;
-	}
-
+	
+	
 	
 }

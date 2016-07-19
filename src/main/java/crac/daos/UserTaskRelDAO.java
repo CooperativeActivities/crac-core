@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
-import crac.models.UserCompetenceRel;
-import crac.models.UserTaskRel;
+import crac.relationmodels.UserCompetenceRel;
+import crac.relationmodels.UserTaskRel;
 
 
 /**

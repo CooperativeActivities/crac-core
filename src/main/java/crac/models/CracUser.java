@@ -27,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.enums.Role;
+import crac.relationmodels.UserCompetenceRel;
+import crac.relationmodels.UserTaskRel;
+
 /**
  * The cracUser-entity.
  */
@@ -76,15 +80,6 @@ public class CracUser {
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Task> createdTasks;
-
-	/**
-	 * defines a one to many relation with the task-entity
-	 */
-
-	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
-	private Set<Project> createdProjects;
-
 	
 	/**
 	 * defines a one to many relation with the competence-entity
@@ -273,14 +268,6 @@ public class CracUser {
 
 	public void setRole(Role role) {
 		this.role = role;
-	}
-
-	public Set<Project> getCreatedProjects() {
-		return createdProjects;
-	}
-
-	public void setCreatedProjects(Set<Project> createdProjects) {
-		this.createdProjects = createdProjects;
 	}
 
 	public Set<UserCompetenceRel> getCompetenceRelationships() {

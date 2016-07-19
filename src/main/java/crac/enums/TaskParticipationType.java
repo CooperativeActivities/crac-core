@@ -1,4 +1,4 @@
-package crac.models;
+package crac.enums;
 
 public enum TaskParticipationType {
 

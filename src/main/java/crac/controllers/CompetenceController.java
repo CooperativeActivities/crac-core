@@ -23,9 +23,9 @@ import crac.daos.CompetenceRelationshipDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.models.Competence;
-import crac.models.CompetenceRelationship;
-import crac.models.CompetenceRelationshipType;
 import crac.models.CracUser;
+import crac.relationmodels.CompetenceRelationship;
+import crac.relationmodels.CompetenceRelationshipType;
 
 /**
  * REST controller for managing competences.

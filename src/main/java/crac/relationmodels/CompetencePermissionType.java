@@ -1,4 +1,4 @@
-package crac.models;
+package crac.relationmodels;
 
 import java.util.Set;
 
@@ -17,10 +17,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.enums.Role;
+import crac.models.Competence;
+
 @Entity
-@Table(name = "task_relationship_type")
+@Table(name = "competence_permission_type")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class TaskRelationshipType {
+public class CompetencePermissionType {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,14 +35,15 @@ public class TaskRelationshipType {
 	
 	private String description;
 	
-	@NotNull
-	private int importanceVal;
+	private boolean self;
 	
+	private Role neededRole;
+		
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<UserTaskRel> mappedRelationships;
+	@OneToMany(mappedBy = "permissionType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Competence> permittedCompetences;
 
-	public TaskRelationshipType() {
+	public CompetencePermissionType() {
 	}
 
 	public long getId() {
@@ -66,20 +70,30 @@ public class TaskRelationshipType {
 		this.description = description;
 	}
 
-	public int getImportanceVal() {
-		return importanceVal;
+	public boolean isSelf() {
+		return self;
 	}
 
-	public void setImportanceVal(int importanceVal) {
-		this.importanceVal = importanceVal;
+	public void setSelf(boolean self) {
+		this.self = self;
 	}
 
-	public Set<UserTaskRel> getMappedRelationships() {
-		return mappedRelationships;
+
+	public Role getNeededRole() {
+		return neededRole;
 	}
 
-	public void setMappedRelationships(Set<UserTaskRel> mappedRelationships) {
-		this.mappedRelationships = mappedRelationships;
+	public void setNeededRole(Role neededRole) {
+		this.neededRole = neededRole;
 	}
+
+	public Set<Competence> getPermittedCompetences() {
+		return permittedCompetences;
+	}
+
+	public void setPermittedCompetences(Set<Competence> permittedCompetences) {
+		this.permittedCompetences = permittedCompetences;
+	}
+
 	
 }

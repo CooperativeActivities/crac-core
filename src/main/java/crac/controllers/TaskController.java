@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.TaskDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticTask;
+import crac.enums.TaskState;
 import crac.daos.AttachmentDAO;
 import crac.daos.CommentDAO;
 import crac.daos.CompetenceDAO;
@@ -34,8 +35,9 @@ import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
-import crac.models.SearchTransformer;
 import crac.models.Task;
+import crac.utility.JSonResponseHelper;
+import crac.utility.SearchTransformer;
 
 /**
  * REST controller for managing tasks.
@@ -164,7 +166,13 @@ public class TaskController {
 			oldTask.setFeedback(updatedTask.getFeedback());
 		}
 		
-		oldTask.setCompleted(updatedTask.isCompleted());
+		if(updatedTask.getTaskState() != null){
+			oldTask.setTaskState(updatedTask.getTaskState());
+		}
+		
+		if(updatedTask.getTaskType() != null){
+			oldTask.setTaskType(updatedTask.getTaskType());
+		}
 		
 		taskDAO.save(oldTask);
 		ESConnTask.indexOrUpdate(""+oldTask.getId(), ST.transformTask(oldTask));
@@ -339,32 +347,30 @@ public class TaskController {
 		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()));
 	}
 	
-	@RequestMapping(value = "/{task_id}/complete", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/state/{state_name}", "/{task_id}/state/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> completeTask(@PathVariable(value = "task_id") Long task_id) {
+	public ResponseEntity<String> changeTaskState(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "state_name") String stateName) {		
 		
-		Task completedTask = taskDAO.findOne(task_id);
+		TaskState state = TaskState.NOT_STARTED;
 		
-		completedTask.setCompleted(true);
+		if(stateName.equals("start")){
+			state = TaskState.STARTED;
+		}else if(stateName.equals("pause")){
+			state = TaskState.PAUSED;
+		}else if(stateName.equals("complete")){
+			state = TaskState.COMPLETED;
+		}else{
+			return JSonResponseHelper.stateNotAvailable(stateName);
+		}
 		
-		taskDAO.save(completedTask);
-
-		return ResponseEntity.ok().body("{\"task\":\""+completedTask.getId()+"\",\"completed\":\"true\"}");
-
+		Task task = taskDAO.findOne(task_id);		
+		if(task != null){
+			task.setTaskState(state);
+			taskDAO.save(task);
+			return JSonResponseHelper.successTaskStateChanged(task, state);
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
 	}
 	
-	@RequestMapping(value = "/{task_id}/notComplete", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> notCompleteTask(@PathVariable(value = "task_id") Long task_id) {
-		
-		Task completedTask = taskDAO.findOne(task_id);
-		
-		completedTask.setCompleted(false);
-		
-		taskDAO.save(completedTask);
-
-		return ResponseEntity.ok().body("{\"task\":\""+completedTask.getId()+"\",\"completed\":\"false\"}");
-
-	}
-
 }

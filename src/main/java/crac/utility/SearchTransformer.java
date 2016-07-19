@@ -1,4 +1,4 @@
-package crac.models;
+package crac.utility;
 
 import java.util.HashSet;
 
@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 
 import crac.elastic.ElasticCompetence;
 import crac.elastic.ElasticUser;
+import crac.models.Competence;
+import crac.models.CracUser;
+import crac.models.Task;
+import crac.relationmodels.UserCompetenceRel;
 import crac.elastic.ElasticTask;
 
 @Service
