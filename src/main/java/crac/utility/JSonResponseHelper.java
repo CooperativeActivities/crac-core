@@ -6,6 +6,7 @@ import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.relationmodels.CompetenceRelationshipType;
 
 public class JSonResponseHelper {
 	
@@ -23,6 +24,11 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> successFullyCreated(CompetenceRelationshipType crt){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+	}
+
+	
 	//Delete Helpers
 	
 	public static ResponseEntity<String> successFullyDeleted(CracUser u){
@@ -37,6 +43,11 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> successFullyDeleted(CompetenceRelationshipType crt){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+	}
+
+	
 	//Update Helpers
 	
 	public static ResponseEntity<String> successFullyUpdated(CracUser u){
@@ -50,6 +61,11 @@ public class JSonResponseHelper {
 	public static ResponseEntity<String> successFullyUpdated(Task t){
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"update\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
+	
+	public static ResponseEntity<String> successFullyUpdated(CompetenceRelationshipType crt){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"update\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+	}
+
 
 	//Error Helpers
 
@@ -69,7 +85,17 @@ public class JSonResponseHelper {
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_post_put_request\", \"cause\":\"can not map json to object\"}");
 	}
 	
-	//Task State-Change Helper
+	public static ResponseEntity<String> jsonWriteError(){
+		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"can not write generated json\"}");
+	}
+	
+	public static ResponseEntity<String> ressourceUnchangeable(){
+		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"this ressource is in an unchangeable state\"}");
+	}
+
+
+	
+	//Task State-Change Helpers
 	
 	public static ResponseEntity<String> successTaskStateChanged(Task t, TaskState ts){
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"state_change\", \"state\":\""+ts.toString()+"\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
@@ -77,6 +103,31 @@ public class JSonResponseHelper {
 	
 	public static ResponseEntity<String> stateNotAvailable(String name){
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"There is no such state "+name+"\"}");
+	}
+	
+	// Assign Helpers
+	
+	public static ResponseEntity<String> successFullyAssigned(CracUser u){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+	}
+	
+	public static ResponseEntity<String> successFullyAssigned(Competence c){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
+	}
+	
+	public static ResponseEntity<String> successFullyAssigned(Task t){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
+	}
+	
+	public static ResponseEntity<String> successFullyAssigned(CompetenceRelationshipType crt){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+	}
+
+	
+	//User Check Helpers
+	
+	public static ResponseEntity<String> checkUserSuccess(CracUser user){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"check_for_existence\", \"user\":\"" + user.getId() + "\",\"name\":\"" + user.getName() + "\"}");
 	}
 	
 }

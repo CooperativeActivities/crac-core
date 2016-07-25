@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
+import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.daos.TaskDAO;
@@ -32,6 +33,7 @@ import crac.elastic.ElasticUser;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.relationmodels.CompetenceRelationshipType;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchTransformer;
 import crac.utility.UpdateEntitiesHelper;
@@ -72,6 +74,10 @@ public class AdminController {
 	@Autowired
 	private SearchTransformer ST;
 
+	@Autowired
+	private CompetenceRelationshipTypeDAO typeDAO;
+
+	
 	// USER-SECTION
 
 	/**
@@ -157,34 +163,6 @@ public class AdminController {
 	// TASK-SECTION
 
 	/**
-	 * POST / or blank -> create a new task, creator is the logged-in user.
-	 */
-	@RequestMapping(value = { "/task/",
-			"/task" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> createTask(@RequestBody String json) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());
-		ObjectMapper mapper = new ObjectMapper();
-		Task myTask;
-		try {
-			myTask = mapper.readValue(json, Task.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonMapError();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonReadError();
-		}
-		myTask.setCreator(myUser);
-		taskDAO.save(myTask);
-		ESConnTask.indexOrUpdate("" + myTask.getId(), ST.transformTask(myTask));
-
-		return JSonResponseHelper.successFullyCreated(myTask);
-
-	}
-
-	/**
 	 * DELETE /{task_id} -> delete the task with given ID.
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
@@ -209,6 +187,7 @@ public class AdminController {
 	/**
 	 * PUT /{task_id} -> update the task with given ID.
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/task/{task_id}",
 			"/task/{task_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
@@ -319,5 +298,87 @@ public class AdminController {
 		}
 
 	}
+	
+	/**
+	 * Add a new relationship-type for competences
+	 * @param json
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "competence/type", "competence/type/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addCompRelType(@RequestBody String json) {
+		ObjectMapper mapper = new ObjectMapper();
+		CompetenceRelationshipType t;
+		try {
+			t = mapper.readValue(json, CompetenceRelationshipType.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonMapError();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+		typeDAO.save(t);
+		return JSonResponseHelper.successFullyCreated(t);
+	}
+
+	/**
+	 * Delete target relationship-type for competences
+	 * @param id
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "competence/type/{type_id}", "competence/type/{type_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> deleteCompRelType(@PathVariable(value = "type_id") Long id) {
+		
+		CompetenceRelationshipType type = typeDAO.findOne(id);
+
+		if (type != null) {
+			typeDAO.delete(type);
+			return JSonResponseHelper.successFullyDeleted(type);
+
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+		
+	}
+	
+	/**
+	 * Update target relationship-type for competences
+	 * @param json
+	 * @param id
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "competence/type/{type_id}", "/competence/type/{type_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> updateType(@RequestBody String json,
+			@PathVariable(value = "type_id") Long id) {
+		ObjectMapper mapper = new ObjectMapper();
+		CompetenceRelationshipType updatedCrt;
+		try {
+			updatedCrt = mapper.readValue(json, CompetenceRelationshipType.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonMapError();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+
+		CompetenceRelationshipType oldupdatedCrt = typeDAO.findOne(id);
+
+		if (oldupdatedCrt != null) {
+			UpdateEntitiesHelper.checkAndUpdateCompetenceRelType(oldupdatedCrt, updatedCrt);
+			typeDAO.save(oldupdatedCrt);
+			return JSonResponseHelper.successFullyUpdated(oldupdatedCrt);
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
 
 }

@@ -5,6 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.relationmodels.CompetenceRelationshipType;
 
 public class UpdateEntitiesHelper {
 
@@ -97,6 +98,19 @@ public class UpdateEntitiesHelper {
 		}
 		if (updated.getPermissionType() != null) {
 			old.setPermissionType(updated.getPermissionType());
+		}
+
+	}
+
+	public static void checkAndUpdateCompetenceRelType(CompetenceRelationshipType old, CompetenceRelationshipType updated){
+		if (updated.getName() != null) {
+			old.setName(updated.getName());
+		}
+		if (updated.getDescription() != null) {
+			old.setDescription(updated.getDescription());
+		}
+		if (updated.getDistanceVal() >= 0) {
+			old.setDistanceVal(updated.getDistanceVal());
 		}
 
 	}

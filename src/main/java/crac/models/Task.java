@@ -135,7 +135,7 @@ public class Task {
 		this.endTime = new Timestamp(date.getTime());
 		this.urgency = 0;
 		this.amountOfVolunteers = 0;
-		this.taskState = TaskState.NOT_STARTED;
+		this.taskState = TaskState.NOT_PUBLISHED;
 		this.taskType = TaskType.PARALLEL;
 	}
 	
@@ -148,7 +148,7 @@ public class Task {
 		this.endTime = new Timestamp(date.getTime());
 		this.urgency = 0;
 		this.amountOfVolunteers = 0;
-		this.taskState = TaskState.NOT_STARTED;
+		this.taskState = TaskState.NOT_PUBLISHED;
 		this.taskType = TaskType.PARALLEL;
 	}
 	

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.TaskDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticTask;
+import crac.enums.Role;
 import crac.enums.TaskState;
 import crac.daos.AttachmentDAO;
 import crac.daos.CommentDAO;
@@ -67,14 +68,19 @@ public class TaskController {
 	private SearchTransformer ST = new SearchTransformer();
 
 	/**
-	 * GET / or blank -> get all tasks.
+	 * GET / or blank -> get all tasks of the logged in user.
 	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> index() throws JsonProcessingException {
+	public ResponseEntity<String> index() {
 		Iterable<Task> taskList = taskDAO.findAll();
 		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
 	}
 
 	/**
@@ -82,11 +88,21 @@ public class TaskController {
 	 */
 	@RequestMapping(value = "/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> show(@PathVariable(value = "task_id") Long id) throws JsonProcessingException {
+	public ResponseEntity<String> show(@PathVariable(value = "task_id") Long id) {
 
 		ObjectMapper mapper = new ObjectMapper();
-		Task myTask = taskDAO.findOne(id);
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask));
+		Task task = taskDAO.findOne(id);
+		
+		if(task != null){
+			try {
+				return ResponseEntity.ok().body(mapper.writeValueAsString(task));
+			} catch (JsonProcessingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonWriteError();
+			}
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
 	}
 
 	/**
@@ -96,88 +112,23 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		CracUser user = userDAO.findByName(userDetails.getUsername());
 		ObjectMapper mapper = new ObjectMapper();
-		Task myTask = mapper.readValue(json, Task.class);
-		myTask.setCreator(myUser);
-		taskDAO.save(myTask);
-		ESConnTask.indexOrUpdate(""+myTask.getId(), ST.transformTask(myTask));
+		Task task;
+		try {
+			task = mapper.readValue(json, Task.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonMapError();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+		task.setCreator(user);
+		taskDAO.save(task);
+		ESConnTask.indexOrUpdate("" + task.getId(), ST.transformTask(task));
 
-		return ResponseEntity.ok().body("{\"created\":\"true\"}");
-
-	}
-
-	/**
-	 * DELETE /{task_id} -> delete the task with given ID.
-	 */
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "/{task_id}", method = RequestMethod.DELETE, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> destroy(@PathVariable(value = "task_id") Long id) {
-		Task deleteTask = taskDAO.findOne(id);
-		deleteTask.getNeededCompetences().clear();
-		deleteTask.getUserRelationships().clear();
-		taskDAO.delete(deleteTask);
-		ESConnTask.delete(""+deleteTask.getId());
-		return ResponseEntity.ok().body("{\"deleted\":\"true\"}");
-
-	}
-
-	/**
-	 * PUT /{task_id} -> update the task with given ID.
-	 */
-	@RequestMapping(value = "/{task_id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "task_id") Long id)
-			throws JsonMappingException, IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		Task updatedTask = mapper.readValue(json, Task.class);
-		Task oldTask = taskDAO.findOne(id);
-		
-		if(updatedTask.getName() != null){
-			oldTask.setName(updatedTask.getName());
-		}
-		
-		if(updatedTask.getDescription() != null){
-			oldTask.setDescription(updatedTask.getDescription());
-		}
-
-		if(updatedTask.getLocation() != null){
-			oldTask.setLocation(updatedTask.getLocation());
-		}
-
-		if(updatedTask.getStartTime() != null){
-			oldTask.setStartTime(updatedTask.getStartTime());
-		}
-		
-		if(updatedTask.getEndTime() != null){
-			oldTask.setEndTime(updatedTask.getEndTime());
-		}
-
-		if(updatedTask.getUrgency() > 0){
-			oldTask.setUrgency(updatedTask.getUrgency());
-		}
-		
-		if(updatedTask.getAmountOfVolunteers() > 0){
-			oldTask.setAmountOfVolunteers(updatedTask.getAmountOfVolunteers());
-		}
-		
-		if(updatedTask.getFeedback() != null){
-			oldTask.setFeedback(updatedTask.getFeedback());
-		}
-		
-		if(updatedTask.getTaskState() != null){
-			oldTask.setTaskState(updatedTask.getTaskState());
-		}
-		
-		if(updatedTask.getTaskType() != null){
-			oldTask.setTaskType(updatedTask.getTaskType());
-		}
-		
-		taskDAO.save(oldTask);
-		ESConnTask.indexOrUpdate(""+oldTask.getId(), ST.transformTask(oldTask));
-
-		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
+		return JSonResponseHelper.successFullyCreated(task);
 
 	}
 	
@@ -189,18 +140,36 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/{supertask_id}/addSubtask", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/{supertask_id}/extend", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addSubtask(@RequestBody String json, @PathVariable(value = "supertask_id") Long supertask_id) throws JsonMappingException, IOException {
+	public ResponseEntity<String> extendTask(@RequestBody String json, @PathVariable(value = "supertask_id") Long supertask_id) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
 		ObjectMapper mapper = new ObjectMapper();
-		Task myTask = mapper.readValue(json, Task.class);
-		myTask.setCreator(myUser);
-		myTask.setSuperTask(taskDAO.findOne(supertask_id));
-		taskDAO.save(myTask);
+		CracUser user = userDAO.findByName(userDetails.getUsername());	
+		
+		Task superTask = taskDAO.findOne(supertask_id);
+		
+		if(superTask != null){
+			Task task;
+			try {
+				task = mapper.readValue(json, Task.class);
+			} catch (JsonMappingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonMapError();
+			} catch (IOException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonReadError();
+			}
+			task.setCreator(user);
+			task.setSuperTask(superTask);
+			taskDAO.save(task);
 
-		return ResponseEntity.ok().body("{\"created\":\"true\",\"parent_task\":\""+myTask.getSuperTask().getId()+"\",\"child_task\":\""+myTask.getId()+"\"}");
+			return JSonResponseHelper.successFullyCreated(task);
+
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
+		
 
 	}
 	
@@ -210,75 +179,56 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "/{task_id}/addCompetence/{competence_id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/{task_id}/competence/{competence_id}/require", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addCompetence(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "competence_id") Long competence_id) {
-		Task myTask = taskDAO.findOne(task_id);
-		Competence myCompetence = competenceDAO.findOne(competence_id);
-		myTask.getNeededCompetences().add(myCompetence);
-		taskDAO.save(myTask);
-		return ResponseEntity.ok().body("{\"added\":\"true\",\"task\":\""+myTask.getId()+"\",\"competence\":\""+myCompetence.getId()+"\"}");
+	public ResponseEntity<String> requireCompetence(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "competence_id") Long competence_id) {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());	
+		
+		Task task = taskDAO.findOne(task_id);
+		Competence competence = competenceDAO.findOne(competence_id);
+		if(task  != null && competence != null){
+			if(user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED || user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED){
+				task.getNeededCompetences().add(competence);
+				taskDAO.save(task);
+				return JSonResponseHelper.successFullyAssigned(competence);
+			}else{
+				return JSonResponseHelper.ressourceUnchangeable();
+			}
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
 	}
 	
 	/**
-	 * Add feedback to target task
-	 * @param json
+	 * Adds target competence to target task
 	 * @param task_id
+	 * @param competence_id
 	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
 	 */
-	@RequestMapping(value = "/{task_id}/addFeedback", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/{task_id}/competence/{competence_id}/remove", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addFeedback(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
-		Task myTask = taskDAO.findOne(task_id);
-		ObjectMapper mapper = new ObjectMapper();
-		Task newTask = mapper.readValue(json, Task.class);
-		String feedback = newTask.getFeedback();
-		myTask.setFeedback(feedback);
-		taskDAO.save(myTask);
-		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+feedback+"\"}");
+	public ResponseEntity<String> removeCompetence(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "competence_id") Long competence_id) {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());	
+
+		Task task = taskDAO.findOne(task_id);
+		Competence competence = competenceDAO.findOne(competence_id);
+		if(task  != null && competence != null){
+			if(user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED || user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED){
+				task.getNeededCompetences().add(competence);
+				taskDAO.save(task);
+				return JSonResponseHelper.successFullyAssigned(competence);
+			}else{
+				return JSonResponseHelper.ressourceUnchangeable();
+			}
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
 	}
 
-	/**
-	 * Add an attachment to target task
-	 * @param json
-	 * @param task_id
-	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/{task_id}/addAttachment", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> addAttachment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
-		Task myTask = taskDAO.findOne(task_id);
-		ObjectMapper mapper = new ObjectMapper();
-		Attachment myAttachment = mapper.readValue(json, Attachment.class);
-		myTask.getAttachments().add(myAttachment);
-		myAttachment.setTask(myTask);
-		taskDAO.save(myTask);
-		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
-	}
-
-	/**
-	 * Remove an attachment from target task
-	 * @param json
-	 * @param task_id
-	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/{task_id}/removeAttachment/{attachment_id}", method = RequestMethod.DELETE, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> removeAttachment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "attachment_id") Long attachment_id) {
-		Task myTask = taskDAO.findOne(task_id);
-		Attachment myAttachment = attachmentDAO.findOne(attachment_id);
-		myTask.getAttachments().remove(myAttachment);
-		attachmentDAO.delete(myAttachment);
-		taskDAO.save(myTask);
-		return ResponseEntity.ok().body("{\"removed\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
-	}
 	
 	/**
 	 * Finds and returns all tasks that contain a given pattern
@@ -286,74 +236,34 @@ public class TaskController {
 	 * @return ResponseEntity
 	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = "/getByName/{task_name}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/search/{task_name}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> getByName(@PathVariable(value = "task_name") String task_name) throws JsonProcessingException {
+	public ResponseEntity<String> getByName(@PathVariable(value = "task_name") String task_name) {
 		List<Task> taskList = taskDAO.findMultipleByNameLike("%"+task_name+"%");
 		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
 	}
-	
+		
 	/**
-	 * Add a comment to target task
-	 * @param json
+	 * Change the state of target task
 	 * @param task_id
+	 * @param stateName
 	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
 	 */
-	@RequestMapping(value = "/{task_id}/addComment", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> addComment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
-		Task myTask = taskDAO.findOne(task_id);
-		ObjectMapper mapper = new ObjectMapper();
-		Comment myComment = mapper.readValue(json, Comment.class);
-		myTask.getComments().add(myComment);
-		myComment.setTask(myTask);
-		taskDAO.save(myTask);
-		return ResponseEntity.ok().body("{\"added\":\"true\",\"name\":\""+myComment.getName()+"\"}");
-	}
-	
-	/**
-	 * Remove a comment from target task
-	 * @param json
-	 * @param task_id
-	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/{task_id}/removeComment/{comment_id}", method = RequestMethod.DELETE, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> removeComment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "comment_id") Long comment_id) {
-		Task myTask = taskDAO.findOne(task_id);
-		Comment myComment = commentDAO.findOne(comment_id);
-		myTask.getAttachments().remove(myComment);
-		commentDAO.delete(myComment);
-		taskDAO.save(myTask);
-		return ResponseEntity.ok().body("{\"removed\":\"true\",\"name\":\""+myComment.getName()+"\"}");
-	}
-	
-	/**
-	 * Returns all comments of a task
-	 * @param task_id
-	 * @return ResponseEntity
-	 * @throws JsonProcessingException 
-	 */
-	@RequestMapping(value = "/{task_id}/getComments", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> getComments(@PathVariable(value = "task_id") Long task_id) throws JsonProcessingException {
-		Task myTask = taskDAO.findOne(task_id);
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()));
-	}
-	
 	@RequestMapping(value = { "/{task_id}/state/{state_name}", "/{task_id}/state/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> changeTaskState(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "state_name") String stateName) {		
 		
-		TaskState state = TaskState.NOT_STARTED;
+		TaskState state = TaskState.NOT_PUBLISHED;
 		
-		if(stateName.equals("start")){
+		if(stateName.equals("publish")){
+			state = TaskState.PUBLISHED;
+		}else if(stateName.equals("start")){
 			state = TaskState.STARTED;
 		}else if(stateName.equals("pause")){
 			state = TaskState.PAUSED;
@@ -372,5 +282,134 @@ public class TaskController {
 			return JSonResponseHelper.idNotFound();
 		}
 	}
+	
+	
+	//KEEP OR DELETE METHODS
+	
+	/**
+	 * Add feedback to target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	/*
+	@RequestMapping(value = "/{task_id}/addFeedback", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addFeedback(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Task newTask = mapper.readValue(json, Task.class);
+		String feedback = newTask.getFeedback();
+		myTask.setFeedback(feedback);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+feedback+"\"}");
+	}
+	*/
+
+	/**
+	 * Add an attachment to target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	/*
+	@RequestMapping(value = "/{task_id}/addAttachment", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addAttachment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Attachment myAttachment = mapper.readValue(json, Attachment.class);
+		myTask.getAttachments().add(myAttachment);
+		myAttachment.setTask(myTask);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
+	}
+	*/
+
+	/**
+	 * Remove an attachment from target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	/*
+	@RequestMapping(value = "/{task_id}/removeAttachment/{attachment_id}", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeAttachment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "attachment_id") Long attachment_id) {
+		Task myTask = taskDAO.findOne(task_id);
+		Attachment myAttachment = attachmentDAO.findOne(attachment_id);
+		myTask.getAttachments().remove(myAttachment);
+		attachmentDAO.delete(myAttachment);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"removed\":\"true\",\"feedback\":\""+myTask.getId()+"\",\"competence\":\""+myAttachment.getName()+"\"}");
+	}
+	*/
+
+	
+	/**
+	 * Add a comment to target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	/*
+	@RequestMapping(value = "/{task_id}/addComment", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addComment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id) throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Comment myComment = mapper.readValue(json, Comment.class);
+		myTask.getComments().add(myComment);
+		myComment.setTask(myTask);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"name\":\""+myComment.getName()+"\"}");
+	}
+	*/
+	
+	/**
+	 * Remove a comment from target task
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	/*
+	@RequestMapping(value = "/{task_id}/removeComment/{comment_id}", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeComment(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "comment_id") Long comment_id) {
+		Task myTask = taskDAO.findOne(task_id);
+		Comment myComment = commentDAO.findOne(comment_id);
+		myTask.getAttachments().remove(myComment);
+		commentDAO.delete(myComment);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"removed\":\"true\",\"name\":\""+myComment.getName()+"\"}");
+	}
+	*/
+	
+	/**
+	 * Returns all comments of a task
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException 
+	 */
+	/*
+	@RequestMapping(value = "/{task_id}/comments", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getComments(@PathVariable(value = "task_id") Long task_id) throws JsonProcessingException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()));
+	}
+	*/
+
 	
 }
