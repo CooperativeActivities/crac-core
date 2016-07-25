@@ -62,9 +62,6 @@ public class AdminController {
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 
-	@Autowired
-	private UserTaskRelDAO userTaskRelDAO;
-
 	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core",
 			"elastic_user");
 

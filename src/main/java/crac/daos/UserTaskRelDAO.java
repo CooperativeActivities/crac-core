@@ -1,13 +1,14 @@
 package crac.daos;
 
 
+import java.util.Set;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import crac.models.Competence;
+import crac.enums.TaskParticipationType;
 import crac.models.CracUser;
 import crac.models.Task;
-import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserTaskRel;
 
 
@@ -17,4 +18,5 @@ import crac.relationmodels.UserTaskRel;
 @Transactional
 public interface UserTaskRelDAO extends CrudRepository<UserTaskRel, Long> {
 	public UserTaskRel findByUserAndTask(CracUser user, Task task);
+	public Set<UserTaskRel> findByParticipationTypeAndTask(TaskParticipationType participationTyp, Task task);
 }

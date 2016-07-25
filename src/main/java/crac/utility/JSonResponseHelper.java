@@ -7,6 +7,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.relationmodels.CompetenceRelationshipType;
+import crac.relationmodels.UserTaskRel;
 
 public class JSonResponseHelper {
 	
@@ -122,6 +123,11 @@ public class JSonResponseHelper {
 	public static ResponseEntity<String> successFullyAssigned(CompetenceRelationshipType crt){
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
+	
+	public static ResponseEntity<String> successFullyAssigned(UserTaskRel utr){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"user_task_relationship\":\"" + utr.getId() + "\",\"user\":\"" + utr.getUser().getName() + "\",\"task\":\"" + utr.getTask().getName() + "\"}");
+	}
+
 
 	
 	//User Check Helpers

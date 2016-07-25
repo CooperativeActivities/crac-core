@@ -24,10 +24,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
+import crac.daos.UserTaskRelDAO;
 import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticTask;
 import crac.enums.Role;
+import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
+import crac.enums.TaskType;
 import crac.daos.AttachmentDAO;
 import crac.daos.CommentDAO;
 import crac.daos.CompetenceDAO;
@@ -37,6 +40,7 @@ import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchTransformer;
 
@@ -62,6 +66,10 @@ public class TaskController {
 
 	@Autowired
 	private CommentDAO commentDAO;
+	
+	@Autowired
+	private UserTaskRelDAO userTaskRelDAO;
+
 	
 	
 	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
@@ -162,6 +170,7 @@ public class TaskController {
 			}
 			task.setCreator(user);
 			task.setSuperTask(superTask);
+			task.setUserRelationships(userTaskRelDAO.findByParticipationTypeAndTask(TaskParticipationType.LEADING, superTask));
 			taskDAO.save(task);
 
 			return JSonResponseHelper.successFullyCreated(task);
@@ -170,7 +179,6 @@ public class TaskController {
 			return JSonResponseHelper.idNotFound();
 		}
 		
-
 	}
 	
 	/**
@@ -283,6 +291,77 @@ public class TaskController {
 		}
 	}
 	
+	@RequestMapping(value = { "/{task_id}/nominateLeader/{user_id}", "/{task_id}/nominateLeader/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> nominateLeader(@PathVariable(value = "user_id") Long userId, @PathVariable(value = "user_id") Long taskId) {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser loggedU = userDAO.findByName(userDetails.getUsername());
+		CracUser targetU = userDAO.findOne(userId);
+		Task task = taskDAO.findOne(taskId);
+				
+		if(targetU != null && task != null){
+
+			if (loggedU.getRole() == Role.ADMIN || loggedU.getCreatedTasks().contains(task)) {
+				//TODO
+				// This should become a notification asking the target-user instead of a direct
+				// allocation!
+				UserTaskRel newRel = new UserTaskRel();
+				newRel.setParticipationType(TaskParticipationType.LEADING);
+				newRel.setTask(task);
+				newRel.setUser(targetU);
+				userTaskRelDAO.save(newRel);
+				return JSonResponseHelper.successFullyAssigned(newRel);
+			} else {
+				return JSonResponseHelper.ressourceUnchangeable();
+			}
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
+		
+	}
+
+	@RequestMapping(value = "/taskParticipationTypes", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> taskParticipationTypes() {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskParticipationType.values()));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+	}
+
+	@RequestMapping(value = "/taskStates", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> taskStates() {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskState.values()));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+	}
+	
+	@RequestMapping(value = "/taskTypes", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> taskTypes() {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskType.values()));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+	}
 	
 	//KEEP OR DELETE METHODS
 	
