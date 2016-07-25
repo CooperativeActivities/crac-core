@@ -134,7 +134,7 @@ public class TaskController {
 		}
 		task.setCreator(user);
 		taskDAO.save(task);
-		ESConnTask.indexOrUpdate("" + task.getId(), ST.transformTask(task));
+		//ESConnTask.indexOrUpdate("" + task.getId(), ST.transformTask(task));
 
 		return JSonResponseHelper.successFullyCreated(task);
 
@@ -226,9 +226,9 @@ public class TaskController {
 		Competence competence = competenceDAO.findOne(competence_id);
 		if(task  != null && competence != null){
 			if(user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED || user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED){
-				task.getNeededCompetences().add(competence);
+				task.getNeededCompetences().remove(competence);
 				taskDAO.save(task);
-				return JSonResponseHelper.successFullyAssigned(competence);
+				return JSonResponseHelper.successFullyDeleted(competence);
 			}else{
 				return JSonResponseHelper.ressourceUnchangeable();
 			}
@@ -291,6 +291,12 @@ public class TaskController {
 		}
 	}
 	
+	/**
+	 * Declare someone the leader of a task as creator
+	 * @param userId
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/{task_id}/nominateLeader/{user_id}", "/{task_id}/nominateLeader/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> nominateLeader(@PathVariable(value = "user_id") Long userId, @PathVariable(value = "user_id") Long taskId) {
@@ -321,6 +327,10 @@ public class TaskController {
 		
 	}
 
+	/**
+	 * returns the values for the enum taskParticipationType
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = "/taskParticipationTypes", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> taskParticipationTypes() {
@@ -335,6 +345,10 @@ public class TaskController {
 		}
 	}
 
+	/**
+	 * returns the values for the enum taskStates
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = "/taskStates", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> taskStates() {
@@ -349,6 +363,10 @@ public class TaskController {
 		}
 	}
 	
+	/**
+	 * returns the values for the enum taskType
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = "/taskTypes", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> taskTypes() {

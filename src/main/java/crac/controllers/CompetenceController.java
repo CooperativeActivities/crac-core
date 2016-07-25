@@ -80,9 +80,14 @@ public class CompetenceController {
 		}
 	}
 
-	
-
-	
+	/**
+	 * Connect multiple competences via a type
+	 * @param json
+	 * @param competence1_id
+	 * @param competence2_id
+	 * @param type_id
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = "/{competence1_id}/connect/{competence2_id}/type/{type_id}", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> conntect(@RequestBody String json, @PathVariable(value = "competence1_id") Long competence1_id, @PathVariable(value = "competence2_id") Long competence2_id, @PathVariable(value = "type_id") Long type_id) {

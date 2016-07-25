@@ -30,6 +30,7 @@ import crac.elastic.ElasticConnector;
 import crac.elastic.ElasticUser;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
+import crac.enums.Role;
 import crac.elastic.ElasticTask;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
@@ -93,7 +94,7 @@ public class CracUserController {
 	 * GET /{user_id} -> get the user with given ID.
 	 */
 
-	@RequestMapping(value = "/{user_id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{user_id}", "/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "user_id") Long id) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -215,9 +216,14 @@ public class CracUserController {
 		Competence competence = competenceDAO.findOne(competenceId);
 		
 		if(competence != null){
-			userCompetenceRelDAO.delete(userCompetenceRelDAO.findByUserAndCompetence(user, competence));
-			ESConnUser.indexOrUpdate("" + user.getId(), ST.transformUser(user));
-			return JSonResponseHelper.successFullyDeleted(competence);
+			UserCompetenceRel rel = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
+			if(rel != null){
+				userCompetenceRelDAO.delete(rel);
+				ESConnUser.indexOrUpdate("" + user.getId(), ST.transformUser(user));
+				return JSonResponseHelper.successFullyDeleted(competence);
+			}else{
+				return JSonResponseHelper.idNotFound();
+			}
 		}else{
 			return JSonResponseHelper.idNotFound();
 		}
@@ -311,6 +317,24 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 		return JSonResponseHelper.checkUserSuccess(user);
 
+	}
+	
+	/**
+	 * returns the values for the enum taskParticipationType
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/roles", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> roles() {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(Role.values()));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
 	}
 	
 	//KEEP OR DELETE

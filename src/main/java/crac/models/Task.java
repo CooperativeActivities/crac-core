@@ -37,7 +37,7 @@ import crac.relationmodels.UserTaskRel;
 public class Task {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_id")
 	private long id;
 
@@ -73,31 +73,22 @@ public class Task {
 	@NotNull
 	private String name;
 
-	@NotNull
 	private String description;
 
-	@NotNull
 	private String location;
 	
-	@NotNull
 	private Timestamp startTime;
 	
-	@Autowired
-	@NotNull
 	private Timestamp endTime;
 	
-	@NotNull
 	private int urgency;
 	
-	@NotNull
 	private int amountOfVolunteers;
 	
 	private String feedback;
 	
-	@NotNull
 	private TaskState taskState;
 	
-	@NotNull
 	private TaskType taskType;
 	
 	/**
@@ -127,34 +118,10 @@ public class Task {
 	 */
 
 	public Task() {
-		java.util.Date date= new java.util.Date();
-		this.name = "default";
-		this.description = "default";
-		this.location = "default";
-		this.startTime = new Timestamp(date.getTime());
-		this.endTime = new Timestamp(date.getTime());
-		this.urgency = 0;
-		this.amountOfVolunteers = 0;
 		this.taskState = TaskState.NOT_PUBLISHED;
 		this.taskType = TaskType.PARALLEL;
 	}
 	
-	public Task(String name, String description) {
-		java.util.Date date= new java.util.Date();
-		this.name = name;
-		this.description = description;
-		this.location = "default";
-		this.startTime = new Timestamp(date.getTime());
-		this.endTime = new Timestamp(date.getTime());
-		this.urgency = 0;
-		this.amountOfVolunteers = 0;
-		this.taskState = TaskState.NOT_PUBLISHED;
-		this.taskType = TaskType.PARALLEL;
-	}
-	
-	public Task(String feedback) {
-		this.feedback = feedback;
-	}
 	
 	/**
 	 * getters and setters
