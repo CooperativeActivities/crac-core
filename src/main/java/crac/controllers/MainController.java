@@ -309,7 +309,7 @@ public class MainController {
 			userDAO.save(Webmaster);
 		} catch(Exception e){
 			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(Webmaster));
+				return ResponseEntity.ok().body(mapper.writeValueAsString(Webmaster)+"\n"+e.toString());
 			} catch (JsonProcessingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
