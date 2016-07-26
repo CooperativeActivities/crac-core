@@ -267,22 +267,22 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> changeTaskState(@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "state_name") String stateName) {		
 		
-		TaskState state = TaskState.NOT_PUBLISHED;
-		
-		if(stateName.equals("publish")){
-			state = TaskState.PUBLISHED;
-		}else if(stateName.equals("start")){
-			state = TaskState.STARTED;
-		}else if(stateName.equals("pause")){
-			state = TaskState.PAUSED;
-		}else if(stateName.equals("complete")){
-			state = TaskState.COMPLETED;
-		}else{
-			return JSonResponseHelper.stateNotAvailable(stateName);
-		}
 		
 		Task task = taskDAO.findOne(task_id);		
 		if(task != null){
+			
+			TaskState state = TaskState.NOT_PUBLISHED;
+			
+			if(stateName.equals("publish") && allowPublish(task)){
+				state = TaskState.PUBLISHED;
+			}else if(stateName.equals("start") && allowStart(task)){
+				state = TaskState.STARTED;
+			}else if(stateName.equals("complete")){
+				state = TaskState.COMPLETED;
+			}else{
+				return JSonResponseHelper.stateNotAvailable(stateName);
+			}
+
 			task.setTaskState(state);
 			taskDAO.save(task);
 			return JSonResponseHelper.successTaskStateChanged(task, state);
@@ -394,6 +394,45 @@ public class TaskController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
 		}
+	}
+	
+	private boolean allowPublish(Task t){
+		
+		if(t.getAmountOfVolunteers() > 0 && t.getDescription() != null && t.getStartTime() != null && 
+				t.getEndTime() != null && !t.getNeededCompetences().isEmpty() && t.getLocation() != null){
+			return true;
+		}return false;
+		
+	}
+	
+	private boolean allowStart(Task t){
+		if(t.getTaskType() == TaskType.SEQUENTIAL){
+			return previousTaskDone(t) && childrenDone(t);
+		}else{
+			return childrenDone(t);
+		}
+
+	}
+	
+	private boolean previousTaskDone(Task t){
+		if(t.getTaskType() == TaskType.SEQUENTIAL){
+			if(t.getPreviousTask().getTaskState() == TaskState.COMPLETED){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean childrenDone(Task t){
+		boolean childrenDone = true;
+		
+		for(Task ct : t.getChildTasks()){
+			if(ct.getTaskState() != TaskState.COMPLETED){
+				childrenDone = false;
+			}
+		}
+		
+		return childrenDone;
 	}
 	
 	//KEEP OR DELETE METHODS

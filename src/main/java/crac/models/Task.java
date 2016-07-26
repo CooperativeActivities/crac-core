@@ -15,6 +15,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -51,6 +52,16 @@ public class Task {
 	
 	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Task> childTasks;
+	
+	@OneToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "previous_task")
+	private Task previousTask;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToOne(mappedBy = "previousTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Task nextTask;
+
 	
 	/**
 	 * Defines a one to many relationship to the project entity
@@ -269,6 +280,26 @@ public class Task {
 
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
+	}
+
+
+	public Task getPreviousTask() {
+		return previousTask;
+	}
+
+
+	public void setPreviousTask(Task previousTask) {
+		this.previousTask = previousTask;
+	}
+
+
+	public Task getNextTask() {
+		return nextTask;
+	}
+
+
+	public void setNextTask(Task nextTask) {
+		this.nextTask = nextTask;
 	}
 	
 }

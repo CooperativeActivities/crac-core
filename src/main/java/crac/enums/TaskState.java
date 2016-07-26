@@ -2,6 +2,6 @@ package crac.enums;
 
 public enum TaskState {
 
-    NOT_PUBLISHED, PUBLISHED, STARTED, PAUSED, COMPLETED
+    NOT_PUBLISHED, PUBLISHED, STARTED, COMPLETED
 
 }

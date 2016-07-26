@@ -1,6 +1,7 @@
 package crac.models;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -131,12 +132,8 @@ public class CracUser {
 	 * constructors
 	 */
 	
-	public CracUser(String name, String password) {
-		this.name = name;
-		this.password = password;
-	}
-
 	public CracUser() {
+		this.competenceRelationships = new HashSet<UserCompetenceRel>();
 	}
 	
 	/**
