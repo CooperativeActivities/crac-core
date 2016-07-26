@@ -38,7 +38,7 @@ import crac.relationmodels.UserTaskRel;
 public class Task {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_id")
 	private long id;
 
