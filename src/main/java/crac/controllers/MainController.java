@@ -302,7 +302,11 @@ public class MainController {
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		
-		userDAO.save(Webmaster);
+		try{
+			userDAO.save(Webmaster);
+		} catch(Exception e){
+			return ResponseEntity.ok().body("here");
+		}
 		ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
 		userDAO.save(AverageHuman);
 		ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
