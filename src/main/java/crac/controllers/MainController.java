@@ -16,6 +16,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetencePermissionTypeDAO;
 import crac.daos.CompetenceRelationshipDAO;
@@ -301,11 +304,16 @@ public class MainController {
 		AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
-		
+		ObjectMapper mapper = new ObjectMapper();
 		try{
 			userDAO.save(Webmaster);
 		} catch(Exception e){
-			return ResponseEntity.ok().body("here");
+			try {
+				return ResponseEntity.ok().body(mapper.writeValueAsString(Webmaster));
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
 		userDAO.save(AverageHuman);
