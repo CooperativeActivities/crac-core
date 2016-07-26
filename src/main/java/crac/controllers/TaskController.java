@@ -381,6 +381,21 @@ public class TaskController {
 		}
 	}
 	
+	@RequestMapping(value = { "/parents", "/parents/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getChildren() {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		List<Task> tasks = taskDAO.findBySuperTaskNull();
+
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(tasks));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+	}
+	
 	//KEEP OR DELETE METHODS
 	
 	/**

@@ -101,6 +101,7 @@ public class CracUser {
 	 * defines a many to many relation with the competence-entity
 	 */
 	
+	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserCompetenceRel> competenceRelationships;
 
