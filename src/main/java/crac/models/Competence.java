@@ -36,7 +36,7 @@ import crac.relationmodels.UserCompetenceRel;
 public class Competence {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "competence_id")
 	private long id;
 		
