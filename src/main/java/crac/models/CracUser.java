@@ -133,9 +133,9 @@ public class CracUser {
 	 */
 	
 	public CracUser() {
-		this.id = Integer.MAX_VALUE;
+		//this.id = Integer.MAX_VALUE;
 		this.competenceRelationships = new HashSet<UserCompetenceRel>();
-		//debuf
+		//debug
 	}
 	
 	/**
