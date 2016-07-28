@@ -93,9 +93,11 @@ public class JSonResponseHelper {
 	public static ResponseEntity<String> ressourceUnchangeable(){
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"this ressource is in an unchangeable state\"}");
 	}
+	
+	//No-Result Helpers
 
 	public static ResponseEntity<String> emptyData(){
-		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"request returned empty data\"}");
+		return ResponseEntity.ok().body("{\"success\":\"false\", \"error\":\"no-data\", \"cause\":\"request returned empty data\"}");
 	}
 
 	
