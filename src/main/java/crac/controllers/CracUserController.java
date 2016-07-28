@@ -318,15 +318,23 @@ public class CracUserController {
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
 		
 		if(taskRels.size() != 0){
-			Set<Task> taskList = new HashSet<Task>();
+			Set<Task> taskListFollow = new HashSet<Task>();
+			Set<Task> taskListPart = new HashSet<Task>();
+			Set<Task> taskListLead = new HashSet<Task>();
 
 			for (UserTaskRel utr : taskRels) {
-				taskList.add(utr.getTask());
+				if(utr.getParticipationType() == TaskParticipationType.FOLLOWING){
+					taskListFollow.add(utr.getTask());
+				} else if(utr.getParticipationType() == TaskParticipationType.PARTICIPATING){
+					taskListPart.add(utr.getTask());
+				}else if(utr.getParticipationType() == TaskParticipationType.LEADING){
+					taskListLead.add(utr.getTask());
+				}
 			}
 			
 			ObjectMapper mapper = new ObjectMapper();
 			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+				return ResponseEntity.ok().body("{\"following\": "+mapper.writeValueAsString(taskListFollow) + ", \"participating\": " + mapper.writeValueAsString(taskListPart) + ", \"leading\": " + mapper.writeValueAsString(taskListLead) + "}");
 			} catch (JsonProcessingException e) {
 				System.out.println(e.toString());
 				return JSonResponseHelper.jsonWriteError();
