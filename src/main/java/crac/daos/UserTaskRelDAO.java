@@ -19,4 +19,5 @@ import crac.relationmodels.UserTaskRel;
 public interface UserTaskRelDAO extends CrudRepository<UserTaskRel, Long> {
 	public UserTaskRel findByUserAndTask(CracUser user, Task task);
 	public Set<UserTaskRel> findByParticipationTypeAndTask(TaskParticipationType participationTyp, Task task);
+	public Set<UserTaskRel> findByUser (CracUser user);
 }

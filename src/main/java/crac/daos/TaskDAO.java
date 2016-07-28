@@ -22,4 +22,5 @@ public interface TaskDAO extends CrudRepository<Task, Long> {
 	public List<Task> findByNeededCompetencesIn(Set<Competence> userCompetences);
 	
 	public List<Task> findBySuperTaskNull();
+	
 }

@@ -94,6 +94,9 @@ public class JSonResponseHelper {
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"this ressource is in an unchangeable state\"}");
 	}
 
+	public static ResponseEntity<String> emptyData(){
+		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"request returned empty data\"}");
+	}
 
 	
 	//Task State-Change Helpers
@@ -128,7 +131,11 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"user_task_relationship\":\"" + utr.getId() + "\",\"user\":\"" + utr.getUser().getName() + "\",\"task\":\"" + utr.getTask().getName() + "\"}");
 	}
 
-
+	//Notification Helpers
+	
+	public static ResponseEntity<String> successfullFriendRequest(CracUser c){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"friend_request\", \"receiver\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
+	}
 	
 	//User Check Helpers
 	

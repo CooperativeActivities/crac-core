@@ -1,6 +1,8 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.jena.atlas.json.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -304,6 +306,37 @@ public class CracUserController {
 			return JSonResponseHelper.idNotFound();
 		}
 				
+	}
+	
+	@RequestMapping(value = { "/task", "/task/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getTasks() {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+
+		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
+		
+		if(taskRels.size() != 0){
+			Set<Task> taskList = new HashSet<Task>();
+
+			for (UserTaskRel utr : taskRels) {
+				taskList.add(utr.getTask());
+			}
+			
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
+			} catch (JsonProcessingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonWriteError();
+			}
+
+		}else{
+			return JSonResponseHelper.emptyData();
+		}
+		
+						
 	}
 
 	/**

@@ -33,9 +33,13 @@ import crac.elastic.ElasticTask;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.notifier.NotificationWrapper;
+import crac.notifier.NotificationHelper;
+import crac.notifier.NotificationDistributor;
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
 import crac.relationmodels.UserCompetenceRel;
+import crac.utility.JSonResponseHelper;
 import crac.utility.SearchTransformer;
 
 /**
@@ -91,9 +95,22 @@ public class MainController {
 
 	@RequestMapping("/testMe")
 	@ResponseBody
-	public String indexWord() {
+	public ResponseEntity<String> indexWord() {
+		
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		return "Logged in as " + userDetails.getUsername();
+		CracUser creator = userDAO.findByName(userDetails.getUsername());
+
+		
+		NotificationHelper.createFriendRequest(creator, userDAO.findOne((long) 2));
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(NotificationHelper.getAllNotifications()));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+		
 	}
 
 	@SuppressWarnings("deprecation")
