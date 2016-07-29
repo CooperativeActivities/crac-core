@@ -32,24 +32,13 @@ public class NotificationController {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(NotificationHelper.getUserNotifications(user)));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
-		}
+		return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getUserNotifications(user)));
 	}
 	
 	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getAllNotifications() {
-	ObjectMapper mapper = new ObjectMapper();
-	try {
-		return ResponseEntity.ok().body(mapper.writeValueAsString(NotificationHelper.getAllNotifications()));
-	} catch (JsonProcessingException e) {
-		System.out.println(e.toString());
-		return JSonResponseHelper.jsonWriteError();
-	}
+	return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getAllNotifications()));
 	}
 	
 	@RequestMapping(value = { "/friend/{user_id}/add", "/friend/{user_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
