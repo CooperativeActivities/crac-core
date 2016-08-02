@@ -6,6 +6,7 @@ import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.notifier.Notification;
 import crac.relationmodels.CompetenceRelationshipType;
 import crac.relationmodels.UserTaskRel;
 
@@ -140,8 +141,17 @@ public class JSonResponseHelper {
 	}
 	
 	public static ResponseEntity<String> noSuchNotification(){
-		return ResponseEntity.ok().body("{\"success\":\"false\", \"action\":\"request\", \"cause\":\"no such notification found\"}");
+		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"action\":\"request\", \"cause\":\"no such notification found\"}");
 	}
+	
+	public static ResponseEntity<String> successfullyAccepted(Notification n){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"name\":\""+n.getName()+"\"}");
+	}
+	
+	public static ResponseEntity<String> successfullyDenied(Notification n){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"deny\", \"name\":\""+n.getName()+"\"}");
+	}
+
 
 	
 	//User Check Helpers

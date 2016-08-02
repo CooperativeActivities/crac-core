@@ -10,20 +10,20 @@ public class NotificationHelper {
 	
 	private NotificationHelper(){}
 
-	public static void createFriendRequest(CracUser sender, CracUser receiver) {
-		NotificationDistributor.getInstance().addNotification(receiver, new FriendRequest(sender.getId()));
+	public static void createFriendRequest(CracUser sender, CracUser target) {
+		NotificationDistributor.getInstance().addNotification(new FriendRequest(sender.getId(), target.getId()+""));
 	}
-
-	public static void delelteNotification(String id) {
-		NotificationDistributor.getInstance().deleteNotification(id);
+	
+	public static void deleteNotification(String id) {
+		NotificationDistributor.getInstance().deleteNotificationById(id);
 	}
 
 	public static ArrayList<Notification> getAllNotifications() {
-		return unwrap(NotificationDistributor.getInstance().getWrappedNotifications());
+		return NotificationDistributor.getInstance().getNotifications();
 	}
 	
 	public static Notification getNotificationByNotificationId(String notificationId){
-		ArrayList<Notification> notifications = unwrap(NotificationDistributor.getInstance().getWrappedNotifications());
+		ArrayList<Notification> notifications = NotificationDistributor.getInstance().getNotifications();
 		for(Notification n : notifications){
 			if(n.getNotificationId().equals(notificationId)){
 				return n;
@@ -35,15 +35,15 @@ public class NotificationHelper {
 	}
 
 	public static ArrayList<Notification> getUserNotifications(CracUser user) {
-		ArrayList<NotificationWrapper> list = new ArrayList<NotificationWrapper>();
+		ArrayList<Notification> list = new ArrayList<Notification>();
 
-		for (NotificationWrapper nw : NotificationDistributor.getInstance().getWrappedNotifications()) {
-			if (nw.getTarget().getId() == user.getId()) {
+		for (Notification nw : NotificationDistributor.getInstance().getNotifications()) {
+			if (nw.getTargetId().equals(user.getId()+"")) {
 				list.add(nw);
 			}
 		}
 
-		return unwrap(list);
+		return list;
 
 	}
 
@@ -63,15 +63,6 @@ public class NotificationHelper {
 	
 	public static String notificationsToString(Notification n) {
 		return "[" + n.toJSon() + "]";
-	}
-
-
-	private static ArrayList<Notification> unwrap(ArrayList<NotificationWrapper> wrapped) {
-		ArrayList<Notification> unwrapped = new ArrayList<Notification>();
-		for (NotificationWrapper wrappedElement : wrapped) {
-			unwrapped.add(wrappedElement.getNotification());
-		}
-		return unwrapped;
 	}
 	
 	public static String randomString(final int length) {

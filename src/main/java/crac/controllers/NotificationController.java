@@ -58,7 +58,7 @@ public class NotificationController {
 		
 		if(n != null){
 			n.accept();
-			return ResponseEntity.ok().body(NotificationHelper.notificationsToString(n));
+			return JSonResponseHelper.successfullyAccepted(n);
 		}else{
 			return JSonResponseHelper.noSuchNotification();
 		}
@@ -73,7 +73,7 @@ public class NotificationController {
 		
 		if(n != null){
 			n.deny();
-			return ResponseEntity.ok().body(NotificationHelper.notificationsToString(n));
+			return JSonResponseHelper.successfullyDenied(n);
 		}else{
 			return JSonResponseHelper.noSuchNotification();
 		}

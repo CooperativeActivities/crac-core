@@ -7,22 +7,24 @@ import crac.models.CracUser;
 
 public class NotificationDistributor {
 	
-	private ArrayList<NotificationWrapper> wrappedNotifications = new ArrayList<NotificationWrapper>();
+	private ArrayList<Notification> notifications = new ArrayList<Notification>();
 
-	public ArrayList<NotificationWrapper> getWrappedNotifications() {
-		return wrappedNotifications;
+	public ArrayList<Notification> getNotifications() {
+		return notifications;
 	}
 
-	public void addNotification(CracUser target, Notification notification) {
-		this.wrappedNotifications.add(new NotificationWrapper(target, notification, NotificationHelper.randomString(10)));
+	public void addNotification(Notification notification) {
+		this.notifications.add(notification);
 	}
 	
-	public void deleteNotification(String id){
-		for(NotificationWrapper note : wrappedNotifications){
-			if(id == note.getId()){
-				wrappedNotifications.remove(note);
+	public void deleteNotificationById(String notificationId){
+		Notification toRemove = null;
+		for(Notification note : notifications){
+			if(notificationId.equals(note.getNotificationId())){
+				toRemove = note;
 			}
 		}
+		notifications.remove(toRemove);
 	}
 
 	private static NotificationDistributor instance = new NotificationDistributor();

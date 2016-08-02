@@ -1,8 +1,12 @@
 package crac.notifier;
 
+import crac.models.CracUser;
+
 public abstract class Notification {
 	
 	private String notificationId;
+	
+	private String targetId;
 	
 	private String name;
 	
@@ -11,6 +15,8 @@ public abstract class Notification {
 	public abstract void accept();
 	
 	public abstract void deny();
+	
+	public abstract String toJSon();
 
 	public String getNotificationId() {
 		return notificationId;
@@ -35,9 +41,13 @@ public abstract class Notification {
 	public void setType(NotificationType type) {
 		this.type = type;
 	}
-	
-	public abstract String toJSon();
-	
-	
 
+	public String getTargetId() {
+		return targetId;
+	}
+
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
+	}
+	
 }
