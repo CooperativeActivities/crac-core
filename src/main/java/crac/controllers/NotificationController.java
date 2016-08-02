@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CracUserDAO;
 import crac.models.CracUser;
+import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.utility.JSonResponseHelper;
 
@@ -31,7 +32,6 @@ public class NotificationController {
 	public ResponseEntity<String> getNotifications() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
-		ObjectMapper mapper = new ObjectMapper();
 		return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getUserNotifications(user)));
 	}
 	
@@ -51,17 +51,32 @@ public class NotificationController {
 		return JSonResponseHelper.successfullFriendRequest(receiver);
 	}
 
-	@RequestMapping(value = { "/friend/accept", "/friend/accept/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{notification_id}/accept", "/friend/{notification_id}/accept/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> acceptFriend() {
-		return null;
+	public ResponseEntity<String> acceptFriend(@PathVariable(value = "notification_id") String notificationId) {
+		Notification n = NotificationHelper.getNotificationByNotificationId(notificationId);
+		
+		if(n != null){
+			n.accept();
+			return ResponseEntity.ok().body(NotificationHelper.notificationsToString(n));
+		}else{
+			return JSonResponseHelper.noSuchNotification();
+		}
+		
 
 	}
 	
-	@RequestMapping(value = { "/friend/deny", "/friend/deny/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{notification_id}/deny", "/{notification_id}/deny/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> denyFriend() {
-		return null;
+	public ResponseEntity<String> denyFriend(@PathVariable(value = "notification_id") String notificationId) {
+		Notification n = NotificationHelper.getNotificationByNotificationId(notificationId);
+		
+		if(n != null){
+			n.deny();
+			return ResponseEntity.ok().body(NotificationHelper.notificationsToString(n));
+		}else{
+			return JSonResponseHelper.noSuchNotification();
+		}
 	}
 	
 }

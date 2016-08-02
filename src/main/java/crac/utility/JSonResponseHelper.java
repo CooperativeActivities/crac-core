@@ -139,6 +139,11 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"friend_request\", \"receiver\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> noSuchNotification(){
+		return ResponseEntity.ok().body("{\"success\":\"false\", \"action\":\"request\", \"cause\":\"no such notification found\"}");
+	}
+
+	
 	//User Check Helpers
 	
 	public static ResponseEntity<String> checkUserSuccess(CracUser user){

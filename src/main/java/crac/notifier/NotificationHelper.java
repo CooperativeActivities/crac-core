@@ -1,38 +1,43 @@
 package crac.notifier;
 
 import java.util.ArrayList;
-
-import org.springframework.http.ResponseEntity;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Random;
 
 import crac.models.CracUser;
 import crac.notifier.notifications.FriendRequest;
-import crac.utility.JSonResponseHelper;
 
 public class NotificationHelper {
+	
+	private NotificationHelper(){}
 
 	public static void createFriendRequest(CracUser sender, CracUser receiver) {
-		NotificationDistributor n1 = NotificationDistributor.getInstance();
-		n1.addNotification(receiver, new FriendRequest(sender.getId()));
+		NotificationDistributor.getInstance().addNotification(receiver, new FriendRequest(sender.getId()));
 	}
 
 	public static void delelteNotification(String id) {
-		NotificationDistributor n1 = NotificationDistributor.getInstance();
-		n1.deleteNotification(id);
+		NotificationDistributor.getInstance().deleteNotification(id);
 	}
 
 	public static ArrayList<Notification> getAllNotifications() {
-		NotificationDistributor n = NotificationDistributor.getInstance();
-		return unwrap(n.getWrappedNotifications());
+		return unwrap(NotificationDistributor.getInstance().getWrappedNotifications());
+	}
+	
+	public static Notification getNotificationByNotificationId(String notificationId){
+		ArrayList<Notification> notifications = unwrap(NotificationDistributor.getInstance().getWrappedNotifications());
+		for(Notification n : notifications){
+			if(n.getNotificationId().equals(notificationId)){
+				return n;
+			}
+		}
+		
+		return null;
+		
 	}
 
 	public static ArrayList<Notification> getUserNotifications(CracUser user) {
-		NotificationDistributor n = NotificationDistributor.getInstance();
 		ArrayList<NotificationWrapper> list = new ArrayList<NotificationWrapper>();
 
-		for (NotificationWrapper nw : n.getWrappedNotifications()) {
+		for (NotificationWrapper nw : NotificationDistributor.getInstance().getWrappedNotifications()) {
 			if (nw.getTarget().getId() == user.getId()) {
 				list.add(nw);
 			}
@@ -55,6 +60,11 @@ public class NotificationHelper {
 
 		return "[" + s + "]";
 	}
+	
+	public static String notificationsToString(Notification n) {
+		return "[" + n.toJSon() + "]";
+	}
+
 
 	private static ArrayList<Notification> unwrap(ArrayList<NotificationWrapper> wrapped) {
 		ArrayList<Notification> unwrapped = new ArrayList<Notification>();
@@ -63,5 +73,16 @@ public class NotificationHelper {
 		}
 		return unwrapped;
 	}
+	
+	public static String randomString(final int length) {
+	    Random r = new Random(); // perhaps make it a class variable so you don't make a new one every time
+	    StringBuilder sb = new StringBuilder();
+	    for(int i = 0; i < length; i++) {
+	        int c = r.nextInt(9);
+	        sb.append(c);
+	    }
+	    return sb.toString();
+	}
+
 
 }
