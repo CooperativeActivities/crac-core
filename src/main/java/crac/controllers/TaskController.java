@@ -40,6 +40,7 @@ import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchTransformer;
@@ -299,25 +300,19 @@ public class TaskController {
 	 */
 	@RequestMapping(value = { "/{task_id}/nominateLeader/{user_id}", "/{task_id}/nominateLeader/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> nominateLeader(@PathVariable(value = "user_id") Long userId, @PathVariable(value = "user_id") Long taskId) {
+	public ResponseEntity<String> nominateLeader(@PathVariable(value = "user_id") Long userId, @PathVariable(value = "task_id") Long taskId) {
 		
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser loggedU = userDAO.findByName(userDetails.getUsername());
 		CracUser targetU = userDAO.findOne(userId);
 		Task task = taskDAO.findOne(taskId);
+		System.out.println(taskId);
 				
 		if(targetU != null && task != null){
 
-			if (loggedU.getRole() == Role.ADMIN || loggedU.getCreatedTasks().contains(task)) {
-				//TODO
-				// This should become a notification asking the target-user instead of a direct
-				// allocation!
-				UserTaskRel newRel = new UserTaskRel();
-				newRel.setParticipationType(TaskParticipationType.LEADING);
-				newRel.setTask(task);
-				newRel.setUser(targetU);
-				userTaskRelDAO.save(newRel);
-				return JSonResponseHelper.successFullyAssigned(newRel);
+			if (loggedU.getRole() == Role.ADMIN || loggedU.getCreatedTasks().contains(task)) {				
+				NotificationHelper.createLeadNomination(loggedU, targetU, task);		
+				return JSonResponseHelper.successfullySent();
 			} else {
 				return JSonResponseHelper.ressourceUnchangeable();
 			}

@@ -1,6 +1,9 @@
 package crac.controllers;
 
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +17,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CracUserDAO;
+import crac.daos.TaskDAO;
+import crac.daos.UserTaskRelDAO;
 import crac.models.CracUser;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
@@ -26,6 +31,12 @@ public class NotificationController {
 	
 	@Autowired
 	private CracUserDAO userDAO;
+	
+	@Autowired
+	private TaskDAO taskDAO;
+	
+	@Autowired
+	private UserTaskRelDAO userTaskRelDAO;
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -57,7 +68,11 @@ public class NotificationController {
 		Notification n = NotificationHelper.getNotificationByNotificationId(notificationId);
 		
 		if(n != null){
-			n.accept();
+			HashMap<String, CrudRepository> map = new HashMap<String, CrudRepository>();
+			map.put("taskDAO", taskDAO);
+			map.put("userTaskRelDAO", userTaskRelDAO);
+			map.put("userDAO", userDAO);
+			n.accept(map);
 			return JSonResponseHelper.successfullyAccepted(n);
 		}else{
 			return JSonResponseHelper.noSuchNotification();

@@ -1,5 +1,9 @@
 package crac.notifier.notifications;
 
+import java.util.HashMap;
+
+import org.springframework.data.repository.CrudRepository;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,7 +16,7 @@ public class FriendRequest extends Notification{
 	
 	private long senderId;
 	
-	public FriendRequest(Long senderId, String targetId){
+	public FriendRequest(Long senderId, Long targetId){
 		super.setTargetId(targetId);
 		super.setNotificationId(NotificationHelper.randomString(20));
 		this.senderId = senderId;
@@ -39,7 +43,7 @@ public class FriendRequest extends Notification{
 	}
 
 	@Override
-	public void accept() {
+	public void accept(HashMap<String, CrudRepository> map) {
 		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println("Friend-request accepted");
 		

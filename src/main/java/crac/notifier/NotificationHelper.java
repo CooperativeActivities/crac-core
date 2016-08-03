@@ -4,15 +4,22 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import crac.models.CracUser;
+import crac.models.Task;
 import crac.notifier.notifications.FriendRequest;
+import crac.notifier.notifications.LeadNomination;
 
 public class NotificationHelper {
 	
 	private NotificationHelper(){}
 
 	public static void createFriendRequest(CracUser sender, CracUser target) {
-		NotificationDistributor.getInstance().addNotification(new FriendRequest(sender.getId(), target.getId()+""));
+		NotificationDistributor.getInstance().addNotification(new FriendRequest(sender.getId(), target.getId()));
 	}
+	
+	public static void createLeadNomination(CracUser sender, CracUser target, Task task) {
+		NotificationDistributor.getInstance().addNotification(new LeadNomination(sender.getId(), target.getId(), task.getId()));
+	}
+
 	
 	public static void deleteNotification(String id) {
 		NotificationDistributor.getInstance().deleteNotificationById(id);
@@ -38,7 +45,7 @@ public class NotificationHelper {
 		ArrayList<Notification> list = new ArrayList<Notification>();
 
 		for (Notification nw : NotificationDistributor.getInstance().getNotifications()) {
-			if (nw.getTargetId().equals(user.getId()+"")) {
+			if (nw.getTargetId() == user.getId()) {
 				list.add(nw);
 			}
 		}

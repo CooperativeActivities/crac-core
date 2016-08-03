@@ -144,6 +144,10 @@ public class JSonResponseHelper {
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"action\":\"request\", \"cause\":\"no such notification found\"}");
 	}
 	
+	public static ResponseEntity<String> successfullySent(){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"send\"}");
+	}
+	
 	public static ResponseEntity<String> successfullyAccepted(Notification n){
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"name\":\""+n.getName()+"\"}");
 	}

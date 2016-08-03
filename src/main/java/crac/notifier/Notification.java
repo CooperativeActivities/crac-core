@@ -1,18 +1,22 @@
 package crac.notifier;
 
+import java.util.HashMap;
+
+import org.springframework.data.repository.CrudRepository;
+
 import crac.models.CracUser;
 
 public abstract class Notification {
 	
 	private String notificationId;
 	
-	private String targetId;
+	private Long targetId;
 	
 	private String name;
 	
 	private NotificationType type;
 	
-	public abstract void accept();
+	public abstract void accept(HashMap<String, CrudRepository> map);
 	
 	public abstract void deny();
 	
@@ -42,11 +46,11 @@ public abstract class Notification {
 		this.type = type;
 	}
 
-	public String getTargetId() {
+	public Long getTargetId() {
 		return targetId;
 	}
 
-	public void setTargetId(String targetId) {
+	public void setTargetId(Long targetId) {
 		this.targetId = targetId;
 	}
 	
