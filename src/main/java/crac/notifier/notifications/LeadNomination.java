@@ -11,18 +11,19 @@ import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.enums.TaskParticipationType;
+import crac.models.CracUser;
 import crac.models.Task;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
 import crac.relationmodels.UserTaskRel;
 
-public class LeadNomination extends Notification{
+public class LeadNomination extends Notification {
 
 	private long senderId;
 	private long taskId;
-	
-	public LeadNomination(Long senderId, Long targetId, Long taskId){
+
+	public LeadNomination(Long senderId, Long targetId, Long taskId) {
 		super.setTargetId(targetId);
 		super.setNotificationId(NotificationHelper.randomString(20));
 		this.senderId = senderId;
@@ -30,7 +31,7 @@ public class LeadNomination extends Notification{
 		super.setType(NotificationType.REQUEST);
 		this.taskId = taskId;
 	}
-	
+
 	public long getTaskId() {
 		return taskId;
 	}
@@ -51,36 +52,55 @@ public class LeadNomination extends Notification{
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return mapper.writeValueAsString((LeadNomination)this);
+			return mapper.writeValueAsString((LeadNomination) this);
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}
 	}
 
 	@Override
-	public void accept(HashMap<String, CrudRepository> map) {
-		//TODO search for existing relationship
+	public String accept(HashMap<String, CrudRepository> map) {
 		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
 		UserTaskRelDAO userTaskRelDAO = (UserTaskRelDAO) map.get("userTaskRelDAO");
 		CracUserDAO userDAO = (CracUserDAO) map.get("userDAO");
-		
+
 		Task task = taskDAO.findOne(taskId);
-		UserTaskRel newRel = new UserTaskRel();
-		newRel.setParticipationType(TaskParticipationType.LEADING);
-		newRel.setTask(task);
-		newRel.setUser(userDAO.findOne(super.getTargetId()));
-		userTaskRelDAO.save(newRel);
+		CracUser user = userDAO.findOne(super.getTargetId());
+
+		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
+		
+		String message = "";
+
+		if (utr != null) {
+			if (utr.getParticipationType() != TaskParticipationType.LEADING) {
+				utr.setParticipationType(TaskParticipationType.LEADING);
+				userTaskRelDAO.save(utr);
+				message = "Found and Changed";
+			}
+			else{
+				message = "Already Leading";
+			}
+		} else {
+			UserTaskRel newRel = new UserTaskRel();
+			newRel.setParticipationType(TaskParticipationType.LEADING);
+			newRel.setTask(task);
+			newRel.setUser(user);
+			userTaskRelDAO.save(newRel);
+			message = "New Relationship Created";
+		}
 
 		NotificationHelper.deleteNotification(this.getNotificationId());
-		System.out.println("Leader-Nomination accepted");
-		
+		System.out.println("Leader-Nomination accepted, "+message);
+		return message;
+
 	}
 
 	@Override
-	public void deny() {
+	public String deny() {
 		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println("Leader-Nomination denied");
-		
+		return "denied";
+
 	}
 
 }

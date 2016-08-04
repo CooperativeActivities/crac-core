@@ -148,12 +148,12 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"send\"}");
 	}
 	
-	public static ResponseEntity<String> successfullyAccepted(Notification n){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"name\":\""+n.getName()+"\"}");
+	public static ResponseEntity<String> successfullyAccepted(Notification n, String m){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"name\":\""+n.getName()+"\", \"message\":\""+m+"\"}");
 	}
 	
-	public static ResponseEntity<String> successfullyDenied(Notification n){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"deny\", \"name\":\""+n.getName()+"\"}");
+	public static ResponseEntity<String> successfullyDenied(Notification n, String m){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"deny\", \"name\":\""+n.getName()+"\", \"message\":\""+m+"\"}");
 	}
 
 

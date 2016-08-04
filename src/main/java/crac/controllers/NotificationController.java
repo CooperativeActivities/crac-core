@@ -72,8 +72,8 @@ public class NotificationController {
 			map.put("taskDAO", taskDAO);
 			map.put("userTaskRelDAO", userTaskRelDAO);
 			map.put("userDAO", userDAO);
-			n.accept(map);
-			return JSonResponseHelper.successfullyAccepted(n);
+			String message = n.accept(map);
+			return JSonResponseHelper.successfullyAccepted(n, message);
 		}else{
 			return JSonResponseHelper.noSuchNotification();
 		}
@@ -87,8 +87,8 @@ public class NotificationController {
 		Notification n = NotificationHelper.getNotificationByNotificationId(notificationId);
 		
 		if(n != null){
-			n.deny();
-			return JSonResponseHelper.successfullyDenied(n);
+			String message = n.deny();
+			return JSonResponseHelper.successfullyDenied(n, message);
 		}else{
 			return JSonResponseHelper.noSuchNotification();
 		}

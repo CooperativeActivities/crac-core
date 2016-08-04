@@ -16,9 +16,9 @@ public abstract class Notification {
 	
 	private NotificationType type;
 	
-	public abstract void accept(HashMap<String, CrudRepository> map);
+	public abstract String accept(HashMap<String, CrudRepository> map);
 	
-	public abstract void deny();
+	public abstract String deny();
 	
 	public abstract String toJSon();
 

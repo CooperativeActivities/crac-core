@@ -43,16 +43,17 @@ public class FriendRequest extends Notification{
 	}
 
 	@Override
-	public void accept(HashMap<String, CrudRepository> map) {
+	public String accept(HashMap<String, CrudRepository> map) {
 		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println("Friend-request accepted");
-		
+		return "accepted";
 	}
 
 	@Override
-	public void deny() {
+	public String deny() {
 		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println("Friend-request denied");
+		return "denied";
 		
 	}
 	
