@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.enums.Role;
 import crac.relationmodels.UserCompetenceRel;
+import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
 
 /**
@@ -106,6 +107,13 @@ public class CracUser {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserCompetenceRel> competenceRelationships;
 
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "c1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserRelationship> userRelationshipsAs1;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "c2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserRelationship> userRelationshipsAs2;
 
 
 	@JsonIdentityReference(alwaysAsId=true)
