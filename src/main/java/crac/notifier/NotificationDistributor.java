@@ -1,30 +1,30 @@
 package crac.notifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import crac.models.CracUser;
 
 public class NotificationDistributor {
 	
-	private ArrayList<Notification> notifications = new ArrayList<Notification>();
+	private HashMap<String, Notification> notifications = new HashMap<String, Notification>();
 
-	public ArrayList<Notification> getNotifications() {
+	public HashMap<String, Notification> getNotifications() {
 		return notifications;
 	}
 
 	public void addNotification(Notification notification) {
-		this.notifications.add(notification);
+		this.notifications.put(notification.getNotificationId(), notification);
 	}
 	
 	public void deleteNotificationById(String notificationId){
-		Notification toRemove = null;
-		for(Notification note : notifications){
-			if(notificationId.equals(note.getNotificationId())){
-				toRemove = note;
-			}
-		}
-		notifications.remove(toRemove);
+		this.notifications.remove(notificationId);
+	}
+	
+	public Notification getNotificationById(String notificationId){
+		return this.notifications.get(notificationId);
 	}
 
 	private static NotificationDistributor instance = new NotificationDistributor();

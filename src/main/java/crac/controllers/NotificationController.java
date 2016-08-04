@@ -65,7 +65,7 @@ public class NotificationController {
 	@RequestMapping(value = { "/{notification_id}/accept", "/friend/{notification_id}/accept/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> acceptFriend(@PathVariable(value = "notification_id") String notificationId) {
-		Notification n = NotificationHelper.getNotificationByNotificationId(notificationId);
+		Notification n = NotificationHelper.getNotificationById(notificationId);
 		
 		if(n != null){
 			HashMap<String, CrudRepository> map = new HashMap<String, CrudRepository>();
@@ -84,7 +84,7 @@ public class NotificationController {
 	@RequestMapping(value = { "/{notification_id}/deny", "/{notification_id}/deny/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> denyFriend(@PathVariable(value = "notification_id") String notificationId) {
-		Notification n = NotificationHelper.getNotificationByNotificationId(notificationId);
+		Notification n = NotificationHelper.getNotificationById(notificationId);
 		
 		if(n != null){
 			String message = n.deny();
