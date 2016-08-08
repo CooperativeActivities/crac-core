@@ -56,9 +56,8 @@ public class EvaluateSelf extends Notification {
 		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
 		Task task = taskDAO.findOne(taskId);
 
-		String message = "Self-Evaluation accepted for: "+task.getName();
+		String message = "Self-Evaluation accepted for: "+task.getName()+". Please fill out form.";
 		
-		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println(message);
 		return message;
 
@@ -67,8 +66,8 @@ public class EvaluateSelf extends Notification {
 	@Override
 	public String deny() {
 		NotificationHelper.deleteNotification(this.getNotificationId());
-		System.out.println("Leader-Nomination denied");
-		return "denied";
+		System.out.println("Self-Evaluation denied");
+		return "Self-Evaluation denied";
 
 	}
 

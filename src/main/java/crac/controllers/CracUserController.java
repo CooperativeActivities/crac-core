@@ -234,57 +234,6 @@ public class CracUserController {
 	}
 
 	/**
-	 * Adds target task to the open-tasks of the logged-in user or changes it's state
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/task/{task_id}/{state_name}", "/task/{task_id}/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName, @PathVariable(value = "task_id") Long taskId) {
-
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
-
-		Task task = taskDAO.findOne(taskId);
-		
-		if(task != null){
-			TaskParticipationType state = TaskParticipationType.PARTICIPATING;
-
-			if (stateName.equals("participate")) {
-				state = TaskParticipationType.PARTICIPATING;
-			} else if (stateName.equals("follow")) {
-				state = TaskParticipationType.FOLLOWING;
-			} else if (stateName.equals("lead")) {
-				state = TaskParticipationType.LEADING;
-			} else {
-				return JSonResponseHelper.stateNotAvailable(stateName);
-			}
-
-			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
-
-			if (rel == null) {
-				rel = new UserTaskRel();
-				rel.setUser(user);
-				rel.setTask(task);
-				rel.setParticipationType(state);
-				user.getTaskRelationships().add(rel);
-				userDAO.save(user);
-			} else {
-				rel.setParticipationType(state);
-				userTaskRelDAO.save(rel);
-			}
-
-			return JSonResponseHelper.successFullyAssigned(task);
-
-		}else{
-			return JSonResponseHelper.idNotFound();
-		}
-		
-	}
-	
-	
-	/**
 	 * Removes target task from the open-tasks of the logged-in user
 	 * 
 	 * @param taskId
