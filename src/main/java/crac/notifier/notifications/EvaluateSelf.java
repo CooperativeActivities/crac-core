@@ -19,12 +19,12 @@ import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
 import crac.relationmodels.UserTaskRel;
 
-public class LeadNomination extends Notification {
+public class EvaluateSelf extends Notification {
 
 	private long senderId;
 	private long taskId;
 
-	public LeadNomination(Long senderId, Long targetId, Long taskId) {
+	public EvaluateSelf(Long senderId, Long targetId, Long taskId) {
 		super("Lead Nomination", NotificationType.REQUEST, targetId);
 		this.senderId = senderId;
 		this.taskId = taskId;
@@ -50,7 +50,7 @@ public class LeadNomination extends Notification {
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return mapper.writeValueAsString((LeadNomination) this);
+			return mapper.writeValueAsString((EvaluateSelf) this);
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}

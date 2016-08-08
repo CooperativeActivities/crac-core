@@ -1,5 +1,7 @@
 package crac.notifier.notifications;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.springframework.data.repository.CrudRepository;
@@ -17,11 +19,8 @@ public class FriendRequest extends Notification{
 	private long senderId;
 	
 	public FriendRequest(Long senderId, Long targetId){
-		super.setTargetId(targetId);
-		super.setNotificationId(NotificationHelper.randomString(20));
+		super("Friend Request", NotificationType.REQUEST, targetId);
 		this.senderId = senderId;
-		super.setName("Friend Request");
-		super.setType(NotificationType.REQUEST);
 	}
 	
 	public long getSenderId() {

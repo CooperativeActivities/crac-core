@@ -1,6 +1,7 @@
 package crac.models;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -88,9 +89,9 @@ public class Task {
 
 	private String location;
 	
-	private Timestamp startTime;
+	private Calendar startTime;
 	
-	private Timestamp endTime;
+	private Calendar endTime;
 	
 	private int urgency;
 	
@@ -202,21 +203,25 @@ public class Task {
 		this.location = location;
 	}
 
-	public Timestamp getStartTime() {
+	public Calendar getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Timestamp startTime) {
+
+	public void setStartTime(Calendar startTime) {
 		this.startTime = startTime;
 	}
 
-	public Timestamp getEndTime() {
+
+	public Calendar getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(Timestamp endTime) {
+
+	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
 	}
+
 
 	public int getUrgency() {
 		return urgency;

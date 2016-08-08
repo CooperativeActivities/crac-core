@@ -1,6 +1,8 @@
 package crac.controllers;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,13 +218,16 @@ public class MainController {
 		competenceRelationshipDAO.save(programming_phpProgramming);
 		
 		//Add projects
-				
+		Calendar time = new GregorianCalendar();
+		
 		Task waterFlowers = new Task();
 		waterFlowers.setName("Water the flowers");
 		waterFlowers.setDescription("All about watering the different flowers in the garden.");
 		waterFlowers.setLocation("my garden");
-		waterFlowers.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));
-		waterFlowers.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
+		time.set(2016, 9, 10, 14, 30, 00);
+		waterFlowers.setStartTime(time);
+		time.set(2016, 9, 10, 17, 00, 00);
+		waterFlowers.setEndTime(time);
 		waterFlowers.setCreator(myUser);
 		
 		taskDAO.save(waterFlowers);
@@ -233,8 +238,10 @@ public class MainController {
 		waterRoses.setName("Water the roses");
 		waterRoses.setDescription("Water the roses on the westside of the garden.");
 		waterRoses.setLocation("my garden");
-		waterRoses.setStartTime(new Timestamp(2016, 9, 10, 15, 00, 0, 0));
-		waterRoses.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
+		time.set(2016, 9, 10, 16, 30, 00);
+		waterRoses.setStartTime(time);
+		time.set(2016, 9, 10, 17, 00, 00);
+		waterRoses.setEndTime(time);
 		waterRoses.setUrgency(5);
 		waterRoses.setAmountOfVolunteers(2);
 		waterRoses.setNeededCompetences(new HashSet<Competence>());
@@ -247,8 +254,10 @@ public class MainController {
 		waterLilies.setName("Water the lillies");
 		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
 		waterLilies.setLocation("my garden");
-		waterLilies.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));
-		waterLilies.setEndTime(new Timestamp(2016, 9, 10, 16, 00, 0, 0));
+		time.set(2016, 9, 10, 14, 30, 00);
+		waterLilies.setStartTime(time);
+		time.set(2016, 9, 10, 16, 00, 00);
+		waterLilies.setEndTime(time);
 		waterLilies.setUrgency(2);
 		waterLilies.setAmountOfVolunteers(1);
 		waterLilies.setNeededCompetences(new HashSet<Competence>());
@@ -261,8 +270,10 @@ public class MainController {
 		programWateringTool.setName("Program a watering tool");
 		programWateringTool.setDescription("Program a web-tool that makes watering flowers easier.");
 		programWateringTool.setLocation("a desk in my garden");
-		programWateringTool.setStartTime(new Timestamp(2016, 9, 10, 14, 30, 0, 0));
-		programWateringTool.setEndTime(new Timestamp(2016, 9, 10, 17, 00, 0, 0));
+		time.set(2016, 9, 10, 14, 30, 00);
+		programWateringTool.setStartTime(time);
+		time.set(2016, 9, 10, 17, 00, 00);
+		programWateringTool.setEndTime(time);
 		programWateringTool.setUrgency(10);
 		programWateringTool.setAmountOfVolunteers(1);
 		programWateringTool.setNeededCompetences(new HashSet<Competence>());

@@ -1,5 +1,6 @@
 package crac.notifier;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.springframework.data.repository.CrudRepository;
@@ -12,9 +13,20 @@ public abstract class Notification {
 	
 	private Long targetId;
 	
+	private Calendar creationTime;
+	
 	private String name;
 	
 	private NotificationType type;
+	
+	public Notification(String name, NotificationType type, Long targetId){
+		this.name = name;
+		this.type = type;
+		this.creationTime = Calendar.getInstance();
+		this.notificationId = NotificationHelper.randomString(20);
+		this.targetId = targetId;
+
+	}
 	
 	public abstract String accept(HashMap<String, CrudRepository> map);
 	
@@ -53,5 +65,14 @@ public abstract class Notification {
 	public void setTargetId(Long targetId) {
 		this.targetId = targetId;
 	}
+
+	public Calendar getCreationTime() {
+		return creationTime;
+	}
+
+	public void setCreationTime(Calendar creationTime) {
+		this.creationTime = creationTime;
+	}
+
 	
 }
