@@ -75,6 +75,10 @@ public class CracUser {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private Set<Evaluation> evaluations;
+	
 	/**
 	 * defines a one to many relation with the task-entity
 	 */
@@ -290,6 +294,30 @@ public class CracUser {
 
 	public void setTaskRelationships(Set<UserTaskRel> taskRelationships) {
 		this.taskRelationships = taskRelationships;
+	}
+
+	public Set<Evaluation> getEvaluations() {
+		return evaluations;
+	}
+
+	public void setEvaluations(Set<Evaluation> evaluations) {
+		this.evaluations = evaluations;
+	}
+
+	public Set<UserRelationship> getUserRelationshipsAs1() {
+		return userRelationshipsAs1;
+	}
+
+	public void setUserRelationshipsAs1(Set<UserRelationship> userRelationshipsAs1) {
+		this.userRelationshipsAs1 = userRelationshipsAs1;
+	}
+
+	public Set<UserRelationship> getUserRelationshipsAs2() {
+		return userRelationshipsAs2;
+	}
+
+	public void setUserRelationshipsAs2(Set<UserRelationship> userRelationshipsAs2) {
+		this.userRelationshipsAs2 = userRelationshipsAs2;
 	}
 
 }

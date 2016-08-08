@@ -1,6 +1,5 @@
 package crac.notifier.notifications;
 
-import java.util.Calendar;
 import java.util.HashMap;
 
 import org.springframework.data.repository.CrudRepository;
@@ -8,26 +7,21 @@ import org.springframework.data.repository.CrudRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
-import crac.daos.UserTaskRelDAO;
-import crac.enums.TaskParticipationType;
-import crac.models.CracUser;
 import crac.models.Task;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
-import crac.relationmodels.UserTaskRel;
 
 public class EvaluateSelf extends Notification {
 
-	private long senderId;
 	private long taskId;
+	private long evaluationId;
 
-	public EvaluateSelf(Long senderId, Long targetId, Long taskId) {
-		super("Lead Nomination", NotificationType.REQUEST, targetId);
-		this.senderId = senderId;
+	public EvaluateSelf(Long targetId, Long taskId, Long evaluationId) {
+		super("Self Evaluation", NotificationType.MESSAGE, targetId);
 		this.taskId = taskId;
+		this.evaluationId = evaluationId;
 	}
 
 	public long getTaskId() {
@@ -37,13 +31,13 @@ public class EvaluateSelf extends Notification {
 	public void setTaskId(long taskId) {
 		this.taskId = taskId;
 	}
-
-	public long getSenderId() {
-		return senderId;
+	
+	public long getEvaluationId() {
+		return evaluationId;
 	}
 
-	public void setSenderId(long senderId) {
-		this.senderId = senderId;
+	public void setEvaluationIdy(long evaluationId) {
+		this.evaluationId = evaluationId;
 	}
 
 	@Override
@@ -58,37 +52,14 @@ public class EvaluateSelf extends Notification {
 
 	@Override
 	public String accept(HashMap<String, CrudRepository> map) {
-		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
-		UserTaskRelDAO userTaskRelDAO = (UserTaskRelDAO) map.get("userTaskRelDAO");
-		CracUserDAO userDAO = (CracUserDAO) map.get("userDAO");
-
-		Task task = taskDAO.findOne(taskId);
-		CracUser user = userDAO.findOne(super.getTargetId());
-
-		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
 		
-		String message = "";
+		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
+		Task task = taskDAO.findOne(taskId);
 
-		if (utr != null) {
-			if (utr.getParticipationType() != TaskParticipationType.LEADING) {
-				utr.setParticipationType(TaskParticipationType.LEADING);
-				userTaskRelDAO.save(utr);
-				message = "Found and Changed";
-			}
-			else{
-				message = "Already Leading";
-			}
-		} else {
-			UserTaskRel newRel = new UserTaskRel();
-			newRel.setParticipationType(TaskParticipationType.LEADING);
-			newRel.setTask(task);
-			newRel.setUser(user);
-			userTaskRelDAO.save(newRel);
-			message = "New Relationship Created";
-		}
-
+		String message = "Self-Evaluation accepted for: "+task.getName();
+		
 		NotificationHelper.deleteNotification(this.getNotificationId());
-		System.out.println("Leader-Nomination accepted, "+message);
+		System.out.println(message);
 		return message;
 
 	}

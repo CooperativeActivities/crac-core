@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.Evaluation;
 import crac.models.Task;
 import crac.notifier.Notification;
 import crac.relationmodels.CompetenceRelationshipType;
@@ -30,7 +31,10 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
 
-	
+	public static ResponseEntity<String> successFullyCreated(Evaluation e){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"evaluation\":\"" + e.getId() + "\"}");
+	}
+
 	//Delete Helpers
 	
 	public static ResponseEntity<String> successFullyDeleted(CracUser u){
