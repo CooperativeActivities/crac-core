@@ -144,6 +144,10 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"friend_request\", \"receiver\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> successfullEvaluation(){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"evaluation\"}");
+	}
+	
 	public static ResponseEntity<String> noSuchNotification(){
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"action\":\"request\", \"cause\":\"no such notification found\"}");
 	}
@@ -153,11 +157,11 @@ public class JSonResponseHelper {
 	}
 	
 	public static ResponseEntity<String> successfullyAccepted(Notification n, String m){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"name\":\""+n.getName()+"\", \"message\":\""+m+"\"}");
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"notification\":"+n.toJSon()+", \"message\":\""+m+"\"}");
 	}
 	
 	public static ResponseEntity<String> successfullyDenied(Notification n, String m){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"deny\", \"name\":\""+n.getName()+"\", \"message\":\""+m+"\"}");
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"deny\", \"notification\":"+n.toJSon()+", \"message\":\""+m+"\"}");
 	}
 
 
