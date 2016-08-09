@@ -28,7 +28,7 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with, X-Custom-Header");
         //chain.doFilter(req, res);
         HttpServletRequest httpRequest = (HttpServletRequest) req;        
-        if(httpRequest.getMethod().equalsIgnoreCase("OPTIONS")){
+        if(!httpRequest.getMethod().equalsIgnoreCase("OPTIONS")){
         	chain.doFilter(req, res);
         }
     }
