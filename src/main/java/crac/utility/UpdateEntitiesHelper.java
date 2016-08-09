@@ -4,6 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.Evaluation;
 import crac.models.Task;
 import crac.relationmodels.CompetenceRelationshipType;
 
@@ -115,5 +116,16 @@ public class UpdateEntitiesHelper {
 
 	}
 
+	public static void checkAndUpdateEvaluation(Evaluation old, Evaluation updated){
+		
+		if(updated.getFeedback() != null){
+			old.setFeedback(updated.getFeedback());
+		}
+		
+		old.setGrade(updated.getGrade());
+		old.setLikeValOrganisation(updated.getLikeValOrganisation());
+		old.setLikeValOthers(updated.getLikeValOthers());
+		old.setLikeValTask(updated.getLikeValTask());
+	}
 	
 }

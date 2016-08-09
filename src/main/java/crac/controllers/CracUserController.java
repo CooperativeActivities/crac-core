@@ -38,6 +38,7 @@ import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.models.Competence;
 import crac.models.Task;
+import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
@@ -81,9 +82,9 @@ public class CracUserController {
 
 
 	/**
-	 * GET / or blank -> get all users.
+	 * Returns all users
+	 * @return ResponseEntity
 	 */
-
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
@@ -93,9 +94,9 @@ public class CracUserController {
 	}
 
 	/**
-	 * GET /{user_id} -> get the user with given ID.
+	 * Returns the user with given id
+	 * @return ResponseEntity
 	 */
-
 	@RequestMapping(value = { "/{user_id}", "/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "user_id") Long id) {
@@ -116,9 +117,9 @@ public class CracUserController {
 	}
 
 	/**
-	 * GET / -> get the logged-in user.
+	 * Returns the logged in user
+	 * @return ResponseEntity
 	 */
-
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getLogged() {
@@ -257,6 +258,10 @@ public class CracUserController {
 				
 	}
 	
+	/**
+	 * Returns all tasks of logged in user, divided in the TaskParticipationTypes
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/task", "/task/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getTasks() {
@@ -308,6 +313,22 @@ public class CracUserController {
 		return JSonResponseHelper.checkUserSuccess(user);
 
 	}
+	
+	/**
+	 * Issues a friend-request-notification to target user
+	 * @param id
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{user_id}/friend", "/{user_id}/friend/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addFriend(@PathVariable(value = "user_id") Long id) {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser sender = userDAO.findByName(userDetails.getUsername());
+		CracUser receiver = userDAO.findOne(id);
+		NotificationHelper.createFriendRequest(sender, receiver);
+		return JSonResponseHelper.successfullFriendRequest(receiver);
+	}
+
 	
 	/**
 	 * returns the values for the enum taskParticipationType

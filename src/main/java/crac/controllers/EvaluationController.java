@@ -30,6 +30,7 @@ import crac.notifier.NotificationHelper;
 import crac.notifier.notifications.EvaluationNotification;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
+import crac.utility.UpdateEntitiesHelper;
 
 @RestController
 @RequestMapping("/evaluation")
@@ -47,6 +48,11 @@ public class EvaluationController {
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
 
+	/**
+	 * Creates an evaluation (notification + entity) for the logged in user for target task
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/task/{task_id}/self",
 			"/task/{task_id}/self/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -68,6 +74,11 @@ public class EvaluationController {
 		}
 	}
 
+	/**
+	 * Creates an evaluation (notification + entity) for every user, participating in target task
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/task/{task_id}/all",
 			"/task/{task_id}/all/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -97,6 +108,12 @@ public class EvaluationController {
 		}
 	}
 
+	/**
+	 * Creates an evaluation (notification + entity) for target user, participating in target task
+	 * @param userId
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/task/{task_id}/user/{user_id}",
 			"/task/{task_id}/user/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -118,8 +135,14 @@ public class EvaluationController {
 		}
 	}
 
+	/**
+	 * Resolves the evaluation. Updates the empty evaluation with sent data and deletes the notification.
+	 * @param json
+	 * @param evaluationId
+	 * @return
+	 */
 	@RequestMapping(value = { "/{evaluation_id}",
-			"/{evaluation_id}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+			"/{evaluation_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> selfEvaluate(@RequestBody String json,
 			@PathVariable(value = "evaluation_id") Long evaluationId) {
@@ -139,10 +162,8 @@ public class EvaluationController {
 		Evaluation originalEval = evaluationDAO.findOne(evaluationId);
 		if (originalEval != null) {
 			String notificationId = originalEval.getNotificationId();
-			originalEval.setFeedback(newEval.getFeedback());
+			UpdateEntitiesHelper.checkAndUpdateEvaluation(originalEval, newEval);
 			originalEval.setFilled(true);
-			originalEval.setGrade(newEval.getGrade());
-			originalEval.setLikeVal(newEval.getLikeVal());
 			originalEval.setNotificationId("deleted");
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);

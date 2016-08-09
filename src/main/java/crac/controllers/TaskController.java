@@ -77,7 +77,8 @@ public class TaskController {
 	private SearchTransformer ST = new SearchTransformer();
 
 	/**
-	 * GET / or blank -> get all tasks of the logged in user.
+	 * Returns all tasks
+	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -93,7 +94,9 @@ public class TaskController {
 	}
 
 	/**
-	 * GET /{task_id} -> get the task with given ID.
+	 * Returns target task with given id
+	 * @param id
+	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -115,7 +118,11 @@ public class TaskController {
 	}
 
 	/**
-	 * POST / or blank -> create a new task, creator is the logged-in user.
+	 * Creates a new task
+	 * @param json
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
 	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
@@ -260,7 +267,6 @@ public class TaskController {
 	
 	/**
 	 * Adds target task to the open-tasks of the logged-in user or changes it's state
-	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -373,7 +379,7 @@ public class TaskController {
 	}
 
 	/**
-	 * returns the values for the enum taskParticipationType
+	 * Returns the values for the enum taskParticipationType
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/taskParticipationTypes", method = RequestMethod.GET, produces = "application/json")
@@ -391,7 +397,7 @@ public class TaskController {
 	}
 
 	/**
-	 * returns the values for the enum taskStates
+	 * Returns the values for the enum taskStates
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/taskStates", method = RequestMethod.GET, produces = "application/json")
@@ -409,7 +415,7 @@ public class TaskController {
 	}
 	
 	/**
-	 * returns the values for the enum taskType
+	 * Returns the values for the enum taskType
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/taskTypes", method = RequestMethod.GET, produces = "application/json")
@@ -426,9 +432,13 @@ public class TaskController {
 		}
 	}
 	
+	/**
+	 * Returns all tasks, that are supertasks
+	 * @return
+	 */
 	@RequestMapping(value = { "/parents", "/parents/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> getChildren() {
+	public ResponseEntity<String> getParents() {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		List<Task> tasks = taskDAO.findBySuperTaskNull();
@@ -441,6 +451,11 @@ public class TaskController {
 		}
 	}
 	
+	/**
+	 * Looks up, if the task is allowed to be published
+	 * @param t
+	 * @return boolean
+	 */
 	private boolean allowPublish(Task t){
 		
 		if(t.getAmountOfVolunteers() > 0 && t.getDescription() != null && t.getStartTime() != null && 
@@ -450,6 +465,11 @@ public class TaskController {
 		
 	}
 	
+	/**
+	 * Looks up, if the task is allowed to be started
+	 * @param t
+	 * @return boolean
+	 */
 	private boolean allowStart(Task t){
 		if(t.getTaskType() == TaskType.SEQUENTIAL){
 			return previousTaskDone(t) && childrenDone(t);
@@ -459,6 +479,11 @@ public class TaskController {
 
 	}
 	
+	/**
+	 * Looks up, if the previous task is done, if there is one
+	 * @param t
+	 * @return boolean
+	 */
 	private boolean previousTaskDone(Task t){
 		if(t.getTaskType() == TaskType.SEQUENTIAL){
 			if(t.getPreviousTask().getTaskState() == TaskState.COMPLETED){
@@ -468,6 +493,11 @@ public class TaskController {
 		return false;
 	}
 	
+	/**
+	 * Looks up, if the child-tasks is are, if there are some
+	 * @param t
+	 * @return boolean
+	 */
 	private boolean childrenDone(Task t){
 		boolean childrenDone = true;
 		

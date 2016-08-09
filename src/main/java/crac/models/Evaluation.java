@@ -29,8 +29,12 @@ public class Evaluation {
 	@JoinColumn(name = "user_id")
 	private CracUser user;
 	
-	private int likeVal;
+	private int likeValOthers;
 	
+	private int likeValTask;
+	
+	private int likeValOrganisation;
+
 	private int grade;
 	
 	private String feedback;
@@ -57,12 +61,36 @@ public class Evaluation {
 		this.id = id;
 	}
 
-	public int getLikeVal() {
-		return likeVal;
+	public CracUser getUser() {
+		return user;
 	}
 
-	public void setLikeVal(int likeVal) {
-		this.likeVal = likeVal;
+	public void setUser(CracUser user) {
+		this.user = user;
+	}
+
+	public int getLikeValOthers() {
+		return likeValOthers;
+	}
+
+	public void setLikeValOthers(int likeValOthers) {
+		this.likeValOthers = likeValOthers;
+	}
+
+	public int getLikeValTask() {
+		return likeValTask;
+	}
+
+	public void setLikeValTask(int likeValTask) {
+		this.likeValTask = likeValTask;
+	}
+
+	public int getLikeValOrganisation() {
+		return likeValOrganisation;
+	}
+
+	public void setLikeValOrganisation(int likeValOrganisation) {
+		this.likeValOrganisation = likeValOrganisation;
 	}
 
 	public int getGrade() {

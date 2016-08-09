@@ -51,16 +51,6 @@ public class NotificationController {
 	public ResponseEntity<String> getAllNotifications() {
 	return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getAllNotifications()));
 	}
-	
-	@RequestMapping(value = { "/friend/{user_id}/add", "/friend/{user_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> addFriend(@PathVariable(value = "user_id") Long id) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser sender = userDAO.findByName(userDetails.getUsername());
-		CracUser receiver = userDAO.findOne(id);
-		NotificationHelper.createFriendRequest(sender, receiver);
-		return JSonResponseHelper.successfullFriendRequest(receiver);
-	}
 
 	@RequestMapping(value = { "/{notification_id}/accept", "/friend/{notification_id}/accept/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody

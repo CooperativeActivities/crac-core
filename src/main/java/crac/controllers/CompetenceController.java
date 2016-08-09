@@ -49,7 +49,8 @@ public class CompetenceController {
 
 
 	/**
-	 * GET / or blank -> get all competences.
+	 * Returns all competences
+	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -65,7 +66,9 @@ public class CompetenceController {
 	}
 
 	/**
-	 * GET /{competence_id} -> get the competence with given ID.
+	 * Get target competence with given id
+	 * @param id
+	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/{competence_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody

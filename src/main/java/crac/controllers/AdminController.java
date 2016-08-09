@@ -78,7 +78,11 @@ public class AdminController {
 	// USER-SECTION
 
 	/**
-	 * POST / or blank -> create a new user.
+	 * Creates a new user
+	 * @param json
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/user/",
@@ -102,9 +106,10 @@ public class AdminController {
 	}
 
 	/**
-	 * DELETE /{user_id} -> delete the user with given ID.
+	 * Deletes target user
+	 * @param id
+	 * @return ResponseEntity
 	 */
-
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/user/{user_id}",
 			"/user/{user_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
@@ -124,9 +129,11 @@ public class AdminController {
 	}
 
 	/**
-	 * PUT /{user_id} -> update the user with given ID.
+	 * Updates target user
+	 * @param json
+	 * @param id
+	 * @return ResponseEntity
 	 */
-
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/user/{user_id}",
 			"/user/{user_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
@@ -160,7 +167,9 @@ public class AdminController {
 	// TASK-SECTION
 
 	/**
-	 * DELETE /{task_id} -> delete the task with given ID.
+	 * Deletes target task
+	 * @param id
+	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/task/{task_id}",
@@ -182,7 +191,10 @@ public class AdminController {
 	}
 
 	/**
-	 * PUT /{task_id} -> update the task with given ID.
+	 * Updates target task
+	 * @param json
+	 * @param id
+	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/task/{task_id}",
@@ -216,9 +228,10 @@ public class AdminController {
 	// COMPETENCE-SECTION
 
 	/**
-	 * POST / or blank -> create a new competence, creator is the logged-in
-	 * user.
-	 */
+	 * Creates a new competence
+	 * @param json
+	 * @return ResponseEntity
+	 */ 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/",
 			"/competence" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -244,7 +257,9 @@ public class AdminController {
 	}
 
 	/**
-	 * DELETE /{competence_id} -> delete the competence with given ID.
+	 * Deletes target competence
+	 * @param id
+	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/{competence_id}",
@@ -264,7 +279,10 @@ public class AdminController {
 	}
 
 	/**
-	 * PUT /{competence_id} -> update the competence with given ID.
+	 * Updates target competence
+	 * @param json
+	 * @param id
+	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/{competence_id}",
@@ -321,7 +339,7 @@ public class AdminController {
 	}
 
 	/**
-	 * Delete target relationship-type for competences
+	 * Deletes target relationship-type for competences
 	 * @param id
 	 * @return ResponseEntity
 	 */
@@ -343,7 +361,7 @@ public class AdminController {
 	}
 	
 	/**
-	 * Update target relationship-type for competences
+	 * Updates target relationship-type for competences
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
