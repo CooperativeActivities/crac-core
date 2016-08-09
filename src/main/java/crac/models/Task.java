@@ -42,45 +42,6 @@ public class Task {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_id")
 	private long id;
-
-	/**
-	 * Defines a one to many relationship to itself, to provide the possibility to add subtasks to tasks
-	 */
-	@ManyToOne
-	@JsonIdentityReference(alwaysAsId=true)
-	@JoinColumn(name = "super_task")
-	private Task superTask;
-	
-	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Task> childTasks;
-	
-	@OneToOne
-	@JsonIdentityReference(alwaysAsId=true)
-	@JoinColumn(name = "previous_task")
-	private Task previousTask;
-	
-	@JsonIdentityReference(alwaysAsId=true)
-	@OneToOne(mappedBy = "previousTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Task nextTask;
-
-	
-	/**
-	 * Defines a one to many relationship to the project entity
-	 */
-	
-	/**
-	 * defines a many to many relation with the competence-entity
-	 */
-	@JsonIdentityReference(alwaysAsId=true)
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "competence_id") })
-	private Set<Competence> neededCompetences;
-
-	
-	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<UserTaskRel> userRelationships;
 	
 	@NotNull
 	private String name;
@@ -102,6 +63,44 @@ public class Task {
 	private TaskState taskState;
 	
 	private TaskType taskType;
+
+	/**
+	 * Defines a different relationships to itself, providing the possibilities to add subtasks and nextTasks to tasks
+	 */
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "super_task")
+	private Task superTask;
+	
+	@OneToMany(mappedBy = "superTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Task> childTasks;
+	
+	@OneToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "previous_task")
+	private Task previousTask;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToOne(mappedBy = "previousTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Task nextTask;
+	
+	/**
+	 * defines a many to many relation with the competence-entity
+	 */
+	@JsonIdentityReference(alwaysAsId=true)
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "competence_id") })
+	private Set<Competence> neededCompetences;
+
+	/**
+	 * defines a one to many relationship with the userRelationship-entity
+	 */
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserTaskRel> userRelationships;
+	
 	
 	/**
 	 * defines a one to many relation with the cracUser-entity

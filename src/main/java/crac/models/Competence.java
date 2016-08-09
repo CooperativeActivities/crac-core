@@ -40,7 +40,12 @@ public class Competence {
 	@Column(name = "competence_id")
 	private long id;
 		
+	@NotNull
+	private String name;
 	
+	@NotNull
+	private String description;
+
 	/**
 	 * defines a many to many relation with the task-entity
 	 */
@@ -61,12 +66,6 @@ public class Competence {
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "permission_type_id")
 	private CompetencePermissionType permissionType;
-
-	@NotNull
-	private String name;
-	
-	@NotNull
-	private String description;
 
 	/**
 	 * defines a one to many relation with the cracUser-entity

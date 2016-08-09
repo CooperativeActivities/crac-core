@@ -74,6 +74,10 @@ public class CracUser {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	
+	/**
+	 * defines a one to many relation with the evaluation-entity
+	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -104,12 +108,16 @@ public class CracUser {
 	private Set<Group> createdGroups;
 
 	/**
-	 * defines a many to many relation with the competence-entity
+	 * defines a many to many relation with the UserCompetenceRel-entity
 	 */
 	
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserCompetenceRel> competenceRelationships;
+	
+	/**
+	 * defines two one-to-many relationships with the UserRelationship-entity
+	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "c1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -119,6 +127,9 @@ public class CracUser {
 	@OneToMany(mappedBy = "c2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserRelationship> userRelationshipsAs2;
 
+	/**
+	 * defines a one to many relation with the UserTaskRel-entity
+	 */
 
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

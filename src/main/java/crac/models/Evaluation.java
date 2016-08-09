@@ -24,11 +24,6 @@ public class Evaluation {
 	@Column(name = "evaluation_id")
 	private long id;
 	
-	@ManyToOne
-	@JsonIdentityReference(alwaysAsId=true)
-	@JoinColumn(name = "user_id")
-	private CracUser user;
-	
 	private int likeValOthers;
 	
 	private int likeValTask;
@@ -44,7 +39,20 @@ public class Evaluation {
 	
 	@NotNull
 	private boolean filled;
-
+	
+	/**
+	 * Defines a many to one relationship with the CracUser-entity
+	 */
+	
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "user_id")
+	private CracUser user;
+	
+	/**
+	 * constructors
+	 */
+	
 	public Evaluation(CracUser user) {
 		this.user = user;
 		this.filled = false;
@@ -53,6 +61,10 @@ public class Evaluation {
 	public Evaluation() {
 	}
 
+	/**
+	 * getters and setters
+	 */
+	
 	public long getId() {
 		return id;
 	}
