@@ -13,15 +13,17 @@ import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
 
-public class SelfEvaluation extends Notification {
+public class OtherUserEvaluation extends Notification {
 
-	private long taskId;
-	private long evaluationId;
+	private Long taskId;
+	private Long evaluationId;
+	private Long toEvaluateId;
 
-	public SelfEvaluation(Long targetId, Long taskId, Long evaluationId) {
-		super("Self Evaluation", NotificationType.MESSAGE, targetId);
+	public OtherUserEvaluation(Long targetId, Long taskId, Long evaluationId, Long toEvaluateId) {
+		super("Other User-Evaluation", NotificationType.MESSAGE, targetId);
 		this.taskId = taskId;
 		this.evaluationId = evaluationId;
+		this.toEvaluateId = toEvaluateId;
 	}
 
 	public long getTaskId() {
@@ -36,7 +38,7 @@ public class SelfEvaluation extends Notification {
 		return evaluationId;
 	}
 
-	public void setEvaluationIdy(long evaluationId) {
+	public void setEvaluationId(long evaluationId) {
 		this.evaluationId = evaluationId;
 	}
 
@@ -44,7 +46,7 @@ public class SelfEvaluation extends Notification {
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return mapper.writeValueAsString((SelfEvaluation) this);
+			return mapper.writeValueAsString((OtherUserEvaluation) this);
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}

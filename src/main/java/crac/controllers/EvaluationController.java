@@ -21,12 +21,14 @@ import crac.daos.CracUserDAO;
 import crac.daos.EvaluationDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
+import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
 import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Task;
 import crac.notifier.NotificationHelper;
-import crac.notifier.notifications.SelfEvaluation;
+import crac.notifier.notifications.EvaluationNotification;
+import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
 
 @RestController
@@ -45,8 +47,8 @@ public class EvaluationController {
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
 
-	@RequestMapping(value = { "/task/{task_id}",
-			"/task/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/task/{task_id}/self",
+			"/task/{task_id}/self/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> createSelfEvaluation(@PathVariable(value = "task_id") Long taskId) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -56,7 +58,57 @@ public class EvaluationController {
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user);
-			SelfEvaluation es = NotificationHelper.createSelfEvaluation(user, task, e);
+			EvaluationNotification es = NotificationHelper.createEvaluation(user, task, e);
+			e.setNotificationId(es.getNotificationId());
+			evaluationDAO.save(e);
+			es.setEvaluationIdy(e.getId());
+			return JSonResponseHelper.successFullyCreated(e);
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+	}
+
+	@RequestMapping(value = { "/task/{task_id}/all",
+			"/task/{task_id}/all/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> createTaskEvaluations(@PathVariable(value = "task_id") Long taskId) {
+
+		Task task = taskDAO.findOne(taskId);
+
+		if (task != null && task.getTaskState() == TaskState.COMPLETED) {
+			
+			CracUser user = null;
+			EvaluationNotification es = null;
+			
+			for(UserTaskRel utr : task.getUserRelationships()){
+				if(utr.getParticipationType() == TaskParticipationType.PARTICIPATING){
+					user = utr.getUser();
+					Evaluation e = new Evaluation(user);
+					es = NotificationHelper.createEvaluation(user, task, e);
+					e.setNotificationId(es.getNotificationId());
+					evaluationDAO.save(e);
+					es.setEvaluationIdy(e.getId());
+				}
+			}
+
+			return JSonResponseHelper.successfullySent();
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+	}
+
+	@RequestMapping(value = { "/task/{task_id}/user/{user_id}",
+			"/task/{task_id}/user/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> createUserEvaluation(@PathVariable(value = "user_id") Long userId,
+			@PathVariable(value = "task_id") Long taskId) {
+		CracUser user = userDAO.findOne(userId);
+		Task task = taskDAO.findOne(taskId);
+
+		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
+				&& task.getTaskState() == TaskState.COMPLETED) {
+			Evaluation e = new Evaluation(user);
+			EvaluationNotification es = NotificationHelper.createEvaluation(user, task, e);
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());

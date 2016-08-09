@@ -8,7 +8,7 @@ import java.util.Random;
 import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Task;
-import crac.notifier.notifications.SelfEvaluation;
+import crac.notifier.notifications.EvaluationNotification;
 import crac.notifier.notifications.FriendRequest;
 import crac.notifier.notifications.LeadNomination;
 
@@ -24,8 +24,8 @@ public class NotificationHelper {
 		NotificationDistributor.getInstance().addNotification(new LeadNomination(sender.getId(), target.getId(), task.getId()));
 	}
 
-	public static SelfEvaluation createSelfEvaluation(CracUser target, Task task, Evaluation evaluation) {
-		SelfEvaluation e = new SelfEvaluation(target.getId(), task.getId(), evaluation.getId());
+	public static EvaluationNotification createEvaluation(CracUser target, Task task, Evaluation evaluation) {
+		EvaluationNotification e = new EvaluationNotification(target.getId(), task.getId(), evaluation.getId());
 		NotificationDistributor.getInstance().addNotification(e);
 		return e;
 	}
