@@ -10,22 +10,27 @@ import crac.models.Evaluation;
 import crac.models.Task;
 import crac.notifier.notifications.EvaluationNotification;
 import crac.notifier.notifications.FriendRequest;
+import crac.notifier.notifications.FriendSuggestion;
 import crac.notifier.notifications.LeadNomination;
 
 public class NotificationHelper {
 	
 	private NotificationHelper(){}
 
-	public static void createFriendRequest(CracUser sender, CracUser target) {
-		NotificationDistributor.getInstance().addNotification(new FriendRequest(sender.getId(), target.getId()));
+	public static void createFriendRequest(Long sendingUserId, Long targetUserId) {
+		NotificationDistributor.getInstance().addNotification(new FriendRequest(sendingUserId, targetUserId));
 	}
 	
-	public static void createLeadNomination(CracUser sender, CracUser target, Task task) {
-		NotificationDistributor.getInstance().addNotification(new LeadNomination(sender.getId(), target.getId(), task.getId()));
+	public static void createFriendSuggestion(Long suggestedUserId, Long targetUserId) {
+		NotificationDistributor.getInstance().addNotification(new FriendSuggestion(suggestedUserId, targetUserId));
+	}
+	
+	public static void createLeadNomination(Long sendingUserId, Long targetUserId, Long taskId) {
+		NotificationDistributor.getInstance().addNotification(new LeadNomination(sendingUserId, targetUserId, taskId));
 	}
 
-	public static EvaluationNotification createEvaluation(CracUser target, Task task, Evaluation evaluation) {
-		EvaluationNotification e = new EvaluationNotification(target.getId(), task.getId(), evaluation.getId());
+	public static EvaluationNotification createEvaluation(Long targetUserId, Long taskId, Long evaluationId) {
+		EvaluationNotification e = new EvaluationNotification(targetUserId, taskId, evaluationId);
 		NotificationDistributor.getInstance().addNotification(e);
 		return e;
 	}

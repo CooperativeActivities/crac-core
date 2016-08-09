@@ -99,9 +99,6 @@ public class MainController {
 		
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser creator = userDAO.findByName(userDetails.getUsername());
-
-		
-		NotificationHelper.createFriendRequest(creator, userDAO.findOne((long) 2));
 		
 		ObjectMapper mapper = new ObjectMapper();
 		try {

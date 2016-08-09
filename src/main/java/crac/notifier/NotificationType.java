@@ -1,5 +1,5 @@
 package crac.notifier;
 
 public enum NotificationType {
-	REQUEST, MESSAGE, ALERT
+	REQUEST, MESSAGE, ALERT, SUGGESTION
 }

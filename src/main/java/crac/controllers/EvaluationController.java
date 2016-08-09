@@ -64,7 +64,7 @@ public class EvaluationController {
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user);
-			EvaluationNotification es = NotificationHelper.createEvaluation(user, task, e);
+			EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
@@ -95,7 +95,7 @@ public class EvaluationController {
 				if(utr.getParticipationType() == TaskParticipationType.PARTICIPATING){
 					user = utr.getUser();
 					Evaluation e = new Evaluation(user);
-					es = NotificationHelper.createEvaluation(user, task, e);
+					es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
 					e.setNotificationId(es.getNotificationId());
 					evaluationDAO.save(e);
 					es.setEvaluationIdy(e.getId());
@@ -125,7 +125,7 @@ public class EvaluationController {
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user);
-			EvaluationNotification es = NotificationHelper.createEvaluation(user, task, e);
+			EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());

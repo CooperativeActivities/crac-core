@@ -367,7 +367,7 @@ public class TaskController {
 		if(targetU != null && task != null){
 
 			if (loggedU.getRole() == Role.ADMIN || loggedU.getCreatedTasks().contains(task)) {				
-				NotificationHelper.createLeadNomination(loggedU, targetU, task);		
+				NotificationHelper.createLeadNomination(loggedU.getId(), targetU.getId(), task.getId());		
 				return JSonResponseHelper.successfullySent();
 			} else {
 				return JSonResponseHelper.ressourceUnchangeable();

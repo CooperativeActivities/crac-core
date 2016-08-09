@@ -325,7 +325,7 @@ public class CracUserController {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser sender = userDAO.findByName(userDetails.getUsername());
 		CracUser receiver = userDAO.findOne(id);
-		NotificationHelper.createFriendRequest(sender, receiver);
+		NotificationHelper.createFriendRequest(sender.getId(), receiver.getId());
 		return JSonResponseHelper.successfullFriendRequest(receiver);
 	}
 
