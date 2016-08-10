@@ -11,7 +11,7 @@ import crac.relationmodels.UserRelationship;
 public class EvaluationTriggers {
 
 	public static String lowerFriendship(CracUser c1, CracUser c2, UserRelationshipDAO userRelDAO) {
-		UserRelationship rel = userRelDAO.findByC1andC2(c1, c2);
+		UserRelationship rel = userRelDAO.findByC1AndC2(c1, c2);
 
 		if (rel == null) {
 			rel = new UserRelationship();
@@ -29,7 +29,7 @@ public class EvaluationTriggers {
 	}
 
 	public static String increaseFriendship(CracUser c1, CracUser c2, UserRelationshipDAO userRelDAO) {
-		UserRelationship rel = userRelDAO.findByC1andC2(c1, c2);
+		UserRelationship rel = userRelDAO.findByC1AndC2(c1, c2);
 
 		if (rel == null) {
 			rel = new UserRelationship();

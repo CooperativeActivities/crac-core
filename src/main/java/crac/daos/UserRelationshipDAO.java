@@ -12,5 +12,5 @@ import crac.relationmodels.UserRelationship;
  */
 @Transactional
 public interface UserRelationshipDAO extends CrudRepository<UserRelationship, Long> {
-	public UserRelationship findByC1andC2(CracUser c1, CracUser c2);
+	public UserRelationship findByC1AndC2(CracUser c1, CracUser c2);
 }
