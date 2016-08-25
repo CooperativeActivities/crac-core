@@ -1,4 +1,4 @@
-package crac.elastic;
+package crac.elastic_depricated;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -66,7 +66,7 @@ public class ElasticController {
 		ESConnUser = new ElasticConnector<ElasticUser>(url, port, "crac_core", "elastic_user");
 
 	}
-
+	/*
 	@RequestMapping(value = "/addTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addTask(@PathVariable(value = "task_id") long task_id)
@@ -81,7 +81,7 @@ public class ElasticController {
 		}
 
 	}
-
+*/
 	@RequestMapping(value = "/getTask/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getTask(@PathVariable(value = "task_id") String task_id)
@@ -132,7 +132,7 @@ public class ElasticController {
 						+ ", \"found_augmented\":"
 						+ ESConnTask.query("neededCompetences.name", me.getRelatedCompetences()).toString() + "}");
 	}
-
+/*
 	@RequestMapping(value = "/addUser/{user_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addUser(@PathVariable(value = "user_id") long user_id)
@@ -147,7 +147,7 @@ public class ElasticController {
 		}
 
 	}
-
+*/
 	@RequestMapping(value = "/getUser/{user_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getUser(@PathVariable(value = "user_id") String user_id)
@@ -169,7 +169,7 @@ public class ElasticController {
 		return ResponseEntity.ok().body("{\"id\":\"" + user_id + "\", \"deleted\": \"" + response.isFound() + "\"}");
 
 	}
-
+/*
 	@RequestMapping(value = "/searchES/user/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> searchESUser(@PathVariable(value = "task_id") long task_id)
@@ -182,7 +182,8 @@ public class ElasticController {
 		return ResponseEntity.ok().body(ESConnUser.query("competences.name", et.getNeededCompetences()).toString());
 
 	}
-
+	*/
+/*
 	@RequestMapping(value = "/testAugment/{steps}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> testAugment(@PathVariable(value = "steps") int steps) throws JsonProcessingException {
@@ -201,10 +202,10 @@ public class ElasticController {
 		 * +c.getName()+" | distance travelled: "+c.getTravelled()+
 		 * " | bad path: "+c.isBadPath()); }
 		 */
-
+/*
 		ObjectMapper mapper = new ObjectMapper();
 		return ResponseEntity.ok().body(mapper.writeValueAsString(ST.transformUser(myUser)));
 
 	}
-
+*/
 }

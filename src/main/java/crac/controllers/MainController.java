@@ -3,6 +3,7 @@ package crac.controllers;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -28,10 +30,10 @@ import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
-import crac.elastic.ElasticConnector;
-import crac.elastic.ElasticUser;
+import crac.elastic_depricated.ElasticConnector;
+import crac.elastic_depricated.ElasticTask;
+import crac.elastic_depricated.ElasticUser;
 import crac.enums.Role;
-import crac.elastic.ElasticTask;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
@@ -39,8 +41,10 @@ import crac.notifier.NotificationHelper;
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
 import crac.relationmodels.UserCompetenceRel;
+import crac.utility.CompetenceAugmenter;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchTransformer;
+import crac.utilityModels.TravelledCompetence;
 
 /**
  * The main-controller used for hello world and testing
@@ -68,6 +72,9 @@ public class MainController {
 
 	@Autowired
 	private CompetencePermissionTypeDAO competencePermissionTypeDAO;
+	
+	@Autowired
+	private CompetenceAugmenter competenceAugmenter;
 
 	
 	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core", "elastic_user");
@@ -93,16 +100,15 @@ public class MainController {
 
 	}
 
-	@RequestMapping("/testMe")
+	@RequestMapping("/testMe/{competence_id}/{distance}/go")
 	@ResponseBody
-	public ResponseEntity<String> indexWord() {
+	public ResponseEntity<String> indexWord(@PathVariable(value = "distance") Double distance, @PathVariable(value = "competence_id") Long competenceId) {
 		
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser creator = userDAO.findByName(userDetails.getUsername());
+		HashMap<Long, TravelledCompetence> relatedCompetences = competenceAugmenter.augment(competenceDAO.findOne(competenceId), distance);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(NotificationHelper.getAllNotifications()));
+			return ResponseEntity.ok().body(mapper.writeValueAsString(relatedCompetences));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
@@ -110,7 +116,6 @@ public class MainController {
 		
 	}
 
-	@SuppressWarnings("deprecation")
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/boot")
 	@ResponseBody
@@ -289,9 +294,10 @@ public class MainController {
 		
 		taskDAO.save(waterFlowers);
 		
+		/*
 		for(Task t : waterFlowers.getChildTasks()){
 			ESConnTask.indexOrUpdate(""+t.getId(), ST.transformTask(t));
-		}
+		}*/
 
 		//Add users
 		
@@ -330,7 +336,7 @@ public class MainController {
 		ObjectMapper mapper = new ObjectMapper();
 		userDAO.save(Webmaster);
 		try{
-			ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
+			//ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
 		} catch(Exception e){
 			try {
 				return ResponseEntity.ok().body(mapper.writeValueAsString(Webmaster)+"\n"+e.toString());
@@ -340,14 +346,14 @@ public class MainController {
 			}
 		}
 		userDAO.save(AverageHuman);
-		ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
+		//ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
 		
 		
 		CracUser original1 = userDAO.findOne((long)1);
 		CracUser original2 = userDAO.findOne((long)2);
 		
-		ESConnUser.indexOrUpdate(""+original1.getId(), ST.transformUser(original1));
-		ESConnUser.indexOrUpdate(""+original2.getId(), ST.transformUser(original2));
+		//ESConnUser.indexOrUpdate(""+original1.getId(), ST.transformUser(original1));
+		//ESConnUser.indexOrUpdate(""+original2.getId(), ST.transformUser(original2));
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

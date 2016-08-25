@@ -25,8 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
-import crac.elastic.ElasticConnector;
-import crac.elastic.ElasticTask;
+import crac.elastic_depricated.ElasticConnector;
+import crac.elastic_depricated.ElasticTask;
 import crac.enums.Role;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;

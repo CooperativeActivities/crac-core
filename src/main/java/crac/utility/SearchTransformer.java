@@ -5,17 +5,18 @@ import java.util.HashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import crac.elastic.ElasticCompetence;
-import crac.elastic.ElasticUser;
+import crac.elastic_depricated.ElasticCompetence;
+import crac.elastic_depricated.ElasticTask;
+import crac.elastic_depricated.ElasticUser;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.relationmodels.UserCompetenceRel;
-import crac.elastic.ElasticTask;
 
 @Service
 public class SearchTransformer {
 	
+	/*
 	@Autowired
 	private CompetenceAugmenter caug;
 	
@@ -66,5 +67,5 @@ public class SearchTransformer {
 		
 		return et;
 	}
-
+*/
 }

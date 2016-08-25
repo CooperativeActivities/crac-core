@@ -28,12 +28,12 @@ import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserTaskRelDAO;
-import crac.elastic.ElasticConnector;
-import crac.elastic.ElasticUser;
+import crac.elastic_depricated.ElasticConnector;
+import crac.elastic_depricated.ElasticTask;
+import crac.elastic_depricated.ElasticUser;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
 import crac.enums.Role;
-import crac.elastic.ElasticTask;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.models.Competence;
@@ -163,7 +163,7 @@ public class CracUserController {
 		if (oldUser != null) {
 			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
 			userDAO.save(oldUser);
-			ESConnUser.indexOrUpdate("" + oldUser.getId(), ST.transformUser(oldUser));
+			//ESConnUser.indexOrUpdate("" + oldUser.getId(), ST.transformUser(oldUser));
 			return JSonResponseHelper.successFullyUpdated(oldUser);
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -194,7 +194,7 @@ public class CracUserController {
 			rel.setCompetence(competence);
 			user.getCompetenceRelationships().add(rel);
 			userDAO.save(user);
-			ESConnUser.indexOrUpdate("" + user.getId(), ST.transformUser(user));
+			//ESConnUser.indexOrUpdate("" + user.getId(), ST.transformUser(user));
 			return JSonResponseHelper.successFullyAssigned(competence);
 		}else{
 			return JSonResponseHelper.idNotFound();
@@ -222,7 +222,7 @@ public class CracUserController {
 			UserCompetenceRel rel = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
 			if(rel != null){
 				userCompetenceRelDAO.delete(rel);
-				ESConnUser.indexOrUpdate("" + user.getId(), ST.transformUser(user));
+				//ESConnUser.indexOrUpdate("" + user.getId(), ST.transformUser(user));
 				return JSonResponseHelper.successFullyDeleted(competence);
 			}else{
 				return JSonResponseHelper.idNotFound();

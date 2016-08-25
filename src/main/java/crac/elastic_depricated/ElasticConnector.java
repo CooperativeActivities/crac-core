@@ -1,4 +1,4 @@
-package crac.elastic;
+package crac.elastic_depricated;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

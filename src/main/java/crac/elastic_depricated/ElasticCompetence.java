@@ -1,4 +1,4 @@
-package crac.elastic;
+package crac.elastic_depricated;
 
 public class ElasticCompetence {
 	

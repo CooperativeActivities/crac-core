@@ -27,9 +27,9 @@ import crac.daos.GroupDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserTaskRelDAO;
-import crac.elastic.ElasticConnector;
-import crac.elastic.ElasticTask;
-import crac.elastic.ElasticUser;
+import crac.elastic_depricated.ElasticConnector;
+import crac.elastic_depricated.ElasticTask;
+import crac.elastic_depricated.ElasticUser;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
@@ -97,7 +97,7 @@ public class AdminController {
 
 		if (userDAO.findByName(u.getName()) == null) {
 			userDAO.save(u);
-			ESConnUser.indexOrUpdate("" + u.getId(), ST.transformUser(u));
+			//ESConnUser.indexOrUpdate("" + u.getId(), ST.transformUser(u));
 			return JSonResponseHelper.successFullyCreated(u);
 		} else {
 			return JSonResponseHelper.alreadyExists();
@@ -156,7 +156,7 @@ public class AdminController {
 		if (oldUser != null) {
 			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
 			userDAO.save(oldUser);
-			ESConnUser.indexOrUpdate("" + oldUser.getId(), ST.transformUser(oldUser));
+			//ESConnUser.indexOrUpdate("" + oldUser.getId(), ST.transformUser(oldUser));
 			return JSonResponseHelper.successFullyUpdated(oldUser);
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -217,7 +217,7 @@ public class AdminController {
 		if (oldTask != null) {
 			UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
 			taskDAO.save(oldTask);
-			ESConnTask.indexOrUpdate("" + oldTask.getId(), ST.transformTask(oldTask));
+			//ESConnTask.indexOrUpdate("" + oldTask.getId(), ST.transformTask(oldTask));
 			return JSonResponseHelper.successFullyUpdated(oldTask);
 		} else {
 			return JSonResponseHelper.idNotFound();

@@ -1,4 +1,4 @@
-package crac.elastic;
+package crac.elastic_depricated;
 
 import java.util.Date;
 import java.util.Set;

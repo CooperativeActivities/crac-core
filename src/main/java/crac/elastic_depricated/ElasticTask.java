@@ -1,4 +1,4 @@
-package crac.elastic;
+package crac.elastic_depricated;
 
 import java.sql.Timestamp;
 import java.util.Set;
