@@ -36,6 +36,8 @@ public class UserCompetenceRel {
 	private Competence competence;
 	
 	private int likeValue;
+	
+	private double proficiencyValue;
 
 	public UserCompetenceRel() {
 	}
@@ -75,6 +77,14 @@ public class UserCompetenceRel {
 
 	public void setLikeValue(int likeValue) {
 		this.likeValue = likeValue;
+	}
+
+	public double getProficiencyValue() {
+		return proficiencyValue;
+	}
+
+	public void setProficiencyValue(double proficiencyValue) {
+		this.proficiencyValue = proficiencyValue;
 	}
 
 
