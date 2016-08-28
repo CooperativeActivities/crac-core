@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,16 +24,12 @@ import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
-import crac.daos.UserTaskRelDAO;
-import crac.elastic_depricated.ElasticConnector;
-import crac.elastic_depricated.ElasticTask;
-import crac.elastic_depricated.ElasticUser;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.relationmodels.CompetenceRelationshipType;
+import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchTransformer;
 import crac.utility.UpdateEntitiesHelper;
 
 /**
@@ -62,14 +56,8 @@ public class AdminController {
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 
-	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core",
-			"elastic_user");
-
-	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core",
-			"elastic_task");
-
-	@Autowired
-	private SearchTransformer ST;
+	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core",
+			"task");
 
 	@Autowired
 	private CompetenceRelationshipTypeDAO typeDAO;
@@ -97,7 +85,6 @@ public class AdminController {
 
 		if (userDAO.findByName(u.getName()) == null) {
 			userDAO.save(u);
-			//ESConnUser.indexOrUpdate("" + u.getId(), ST.transformUser(u));
 			return JSonResponseHelper.successFullyCreated(u);
 		} else {
 			return JSonResponseHelper.alreadyExists();
@@ -120,7 +107,6 @@ public class AdminController {
 		if (u != null) {
 			u.getCompetenceRelationships().clear();
 			userDAO.delete(u);
-			ESConnUser.delete("" + u.getId());
 			return JSonResponseHelper.successFullyDeleted(u);
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -156,7 +142,6 @@ public class AdminController {
 		if (oldUser != null) {
 			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
 			userDAO.save(oldUser);
-			//ESConnUser.indexOrUpdate("" + oldUser.getId(), ST.transformUser(oldUser));
 			return JSonResponseHelper.successFullyUpdated(oldUser);
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -217,7 +202,7 @@ public class AdminController {
 		if (oldTask != null) {
 			UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
 			taskDAO.save(oldTask);
-			//ESConnTask.indexOrUpdate("" + oldTask.getId(), ST.transformTask(oldTask));
+			ESConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
 			return JSonResponseHelper.successFullyUpdated(oldTask);
 		} else {
 			return JSonResponseHelper.idNotFound();

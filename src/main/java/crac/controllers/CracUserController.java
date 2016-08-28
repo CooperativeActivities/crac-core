@@ -28,9 +28,6 @@ import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserTaskRelDAO;
-import crac.elastic_depricated.ElasticConnector;
-import crac.elastic_depricated.ElasticTask;
-import crac.elastic_depricated.ElasticUser;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
 import crac.enums.Role;
@@ -41,8 +38,8 @@ import crac.models.Task;
 import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserTaskRel;
+import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchTransformer;
 import crac.utility.UpdateEntitiesHelper;
 import crac.models.CracUser;
 import crac.models.Group;
@@ -72,14 +69,6 @@ public class CracUserController {
 	
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
-
-	
-	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core", "elastic_user");
-	
-	@Autowired
-	private SearchTransformer ST;
-
-
 
 	/**
 	 * Returns all users

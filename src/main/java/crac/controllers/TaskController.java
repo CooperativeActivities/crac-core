@@ -25,8 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
-import crac.elastic_depricated.ElasticConnector;
-import crac.elastic_depricated.ElasticTask;
 import crac.enums.Role;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
@@ -42,8 +40,8 @@ import crac.models.CracUser;
 import crac.models.Task;
 import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserTaskRel;
+import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchTransformer;
 
 /**
  * REST controller for managing tasks.
@@ -71,10 +69,7 @@ public class TaskController {
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
 
-	
-	
-	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
-	private SearchTransformer ST = new SearchTransformer();
+	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 
 	/**
 	 * Returns all tasks
@@ -142,7 +137,7 @@ public class TaskController {
 		}
 		task.setCreator(user);
 		taskDAO.save(task);
-		//ESConnTask.indexOrUpdate("" + task.getId(), ST.transformTask(task));
+		ESConnTask.indexOrUpdate("" + task.getId(), task);
 
 		return JSonResponseHelper.successFullyCreated(task);
 

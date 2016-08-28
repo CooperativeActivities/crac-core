@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceRelationshipDAO;
-import crac.elastic_depricated.ElasticCompetence;
 import crac.models.Competence;
 import crac.relationmodels.CompetenceRelationship;
 import crac.utilityModels.TravelledCompetence;

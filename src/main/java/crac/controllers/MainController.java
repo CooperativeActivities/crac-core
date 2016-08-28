@@ -30,9 +30,6 @@ import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
-import crac.elastic_depricated.ElasticConnector;
-import crac.elastic_depricated.ElasticTask;
-import crac.elastic_depricated.ElasticUser;
 import crac.enums.Role;
 import crac.models.Competence;
 import crac.models.CracUser;
@@ -42,8 +39,8 @@ import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
 import crac.relationmodels.UserCompetenceRel;
 import crac.utility.CompetenceAugmenter;
+import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchTransformer;
 import crac.utilityModels.TravelledCompetence;
 
 /**
@@ -75,15 +72,8 @@ public class MainController {
 	
 	@Autowired
 	private CompetenceAugmenter competenceAugmenter;
-
 	
-	private ElasticConnector<ElasticUser> ESConnUser = new ElasticConnector<ElasticUser>("localhost", 9300, "crac_core", "elastic_user");
-	
-	@Autowired
-	private SearchTransformer ST;
-	
-	private ElasticConnector<ElasticTask> ESConnTask = new ElasticConnector<ElasticTask>("localhost", 9300, "crac_core", "elastic_task");
-
+	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 
 	@Value("${custom.elasticUrl}")
     private String url;
@@ -294,10 +284,11 @@ public class MainController {
 		
 		taskDAO.save(waterFlowers);
 		
-		/*
+		ESConnTask.indexOrUpdate(""+waterFlowers.getId(),waterFlowers);
+		
 		for(Task t : waterFlowers.getChildTasks()){
-			ESConnTask.indexOrUpdate(""+t.getId(), ST.transformTask(t));
-		}*/
+			ESConnTask.indexOrUpdate(""+t.getId(),t);
+		}
 
 		//Add users
 		
@@ -333,27 +324,8 @@ public class MainController {
 		AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
-		ObjectMapper mapper = new ObjectMapper();
 		userDAO.save(Webmaster);
-		try{
-			//ESConnUser.indexOrUpdate(""+Webmaster.getId(), ST.transformUser(Webmaster));
-		} catch(Exception e){
-			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(Webmaster)+"\n"+e.toString());
-			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
 		userDAO.save(AverageHuman);
-		//ESConnUser.indexOrUpdate(""+AverageHuman.getId(), ST.transformUser(AverageHuman));
-		
-		
-		CracUser original1 = userDAO.findOne((long)1);
-		CracUser original2 = userDAO.findOne((long)2);
-		
-		//ESConnUser.indexOrUpdate(""+original1.getId(), ST.transformUser(original1));
-		//ESConnUser.indexOrUpdate(""+original2.getId(), ST.transformUser(original2));
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -1,4 +1,4 @@
-package crac.elastic_depricated;
+package crac.utility;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -61,28 +61,8 @@ public class ElasticConnector<T> {
 		return client.prepareDelete(index, type, id).get();
 	}
 
-	public SearchResponse query(String matchField, Set<ElasticCompetence> competences) {
+	public SearchResponse query(String searchText) {
 		SearchRequestBuilder search = client.prepareSearch(index).setTypes(type);
-		if (competences.size() != 0) {
-			System.out.println("COMPETENCES:");
-			String text = "";
-			for (ElasticCompetence c : competences) {
-				//System.out.println(c.getName());
-				text += " " + c.getName();
-				//search.setQuery(QueryBuilders.matchQuery(matchField, c.getName()));
-			}
-			System.out.println("Query for:"+text);
-			search.setQuery(QueryBuilders.multiMatchQuery(text, matchField));
-		} else {
-			System.out.println("COMPETENCES EMPTY!!");
-			search.setQuery(QueryBuilders.matchQuery(matchField, "NOCOMPETENCE"));
-			search.setQuery(QueryBuilders.matchQuery(matchField, "FALSE"));
-		}
-		/*
-		.should(QueryBuilders.matchQuery("firstName", "Ben"))
-        .should(QueryBuilders.matchQuery("lastName", "McCann"))
-        .should(QueryBuilders.matchQuery("emails.canonical", "ben@ben.com"))
-        */
 		return search.execute().actionGet();
 	}
 

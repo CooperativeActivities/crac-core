@@ -18,11 +18,12 @@ import crac.models.CracUser;
 import crac.models.Task;
 import crac.notifier.Notification;
 import crac.relationmodels.UserCompetenceRel;
+import crac.utilityModels.EvaluatedTask;
 import crac.utilityModels.TravelledCompetence;
 import crac.utilityModels.TravelledCompetenceCollection;
 
 @Service
-public class MatchHelper {
+public class TaskSearchHelper {
 
 	@Autowired
 	CracUserDAO userDAO;
@@ -36,10 +37,8 @@ public class MatchHelper {
 	private static final double CRITERIA = 0.2;
 	private static final double PROFICIENCE_FACTOR = 0.9;
 
-	public HashMap<Long, Task> findMatch(CracUser user) {
+	public ArrayList<EvaluatedTask> findMatch(CracUser user) {
 		
-		HashMap<Long, TravelledCompetence> relatedCompetences = new HashMap<Long, TravelledCompetence>();
-
 		Set<Competence> userCompetences = new HashSet<Competence>();
 		
 		for(UserCompetenceRel ucr : user.getCompetenceRelationships()){
@@ -51,13 +50,7 @@ public class MatchHelper {
 		makeDependantOnUser(competenceStacks, user);
 
 
-		return null;
-
-	}
-
-	public HashMap<Long, CracUser> findMatch(Task task) {
-
-		return null;
+		return findBestTasks(competenceStacks);
 
 	}
 
@@ -81,6 +74,7 @@ public class MatchHelper {
 
 	}
 
+	//TODO implement a function, that uses relationship values of a group to influence the value
 	private void considerUserRelationships(ArrayList<TravelledCompetenceCollection> competenceCollections, CracUser user) {
 		
 	}
@@ -98,5 +92,13 @@ public class MatchHelper {
 		}
 
 	}
-
+	
+	private ArrayList<EvaluatedTask> findBestTasks(ArrayList<TravelledCompetenceCollection> competenceStacks){
+		ArrayList<EvaluatedTask> evaluatedTasks = new ArrayList<EvaluatedTask>();
+		
+		//TODO Math
+		
+		return evaluatedTasks;
+	}
+	
 }
