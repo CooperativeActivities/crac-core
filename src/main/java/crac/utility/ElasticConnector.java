@@ -2,6 +2,7 @@ package crac.utility;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -14,11 +15,16 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.daos.CracUserDAO;
+import crac.daos.TaskDAO;
 import crac.models.Competence;
+import crac.models.Task;
+import crac.utilityModels.EvaluatedTask;
 
 public class ElasticConnector<T> {
 
@@ -61,11 +67,23 @@ public class ElasticConnector<T> {
 		return client.prepareDelete(index, type, id).get();
 	}
 
-	public SearchResponse query(String searchText) {
+	public ArrayList<EvaluatedTask> query(String searchText, TaskDAO taskDAO) {
 		SearchRequestBuilder search = client.prepareSearch(index).setTypes(type);
-		return search.execute().actionGet();
+		search.setQuery(QueryBuilders.matchQuery("name", searchText));
+		search.setQuery(QueryBuilders.matchQuery("description", searchText));
+		SearchResponse sr = search.execute().actionGet();
+		ArrayList<EvaluatedTask> foundTasks = new ArrayList<EvaluatedTask>();
+		
+		System.out.println(sr.toString());
+		for (SearchHit hit : sr.getHits()) {
+			Long id =  Long.decode(hit.getId());
+			System.out.println(id);
+			EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), hit.getScore());
+	        foundTasks.add(evTask);
+	    }
+		return foundTasks;
 	}
-
+	
 	public String getIndex() {
 		return index;
 	}

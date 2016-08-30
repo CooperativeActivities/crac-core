@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +43,7 @@ import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
+import crac.utilityModels.SimpleQuery;
 
 /**
  * REST controller for managing tasks.
@@ -445,6 +447,31 @@ public class TaskController {
 			return JSonResponseHelper.jsonWriteError();
 		}
 	}
+	
+	@RequestMapping(value = { "/query", "/query/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> queryES(@RequestBody String json) {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		SimpleQuery query;
+		try {
+			query = mapper.readValue(json, SimpleQuery.class);
+		}  catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonMapError();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(ESConnTask.query(query.getText(), taskDAO)));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+	}
+
 	
 	/**
 	 * Looks up, if the task is allowed to be published
