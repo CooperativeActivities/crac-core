@@ -42,9 +42,10 @@ public class UserCompetenceRel {
 	public UserCompetenceRel() {
 	}
 	
-	public UserCompetenceRel(CracUser user, Competence competence) {
+	public UserCompetenceRel(CracUser user, Competence competence, double proficiencyValue) {
 		this.user = user;
 		this.competence = competence;
+		this.proficiencyValue = proficiencyValue;
 	}
 
 	public long getId() {

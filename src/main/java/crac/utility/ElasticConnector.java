@@ -32,6 +32,8 @@ public class ElasticConnector<T> {
 	private ObjectMapper mapper;
 	private String index;
 	private String type;
+	
+	private static final double ES_THRESHOLD = 0.05;
 
 	public ElasticConnector(String address, int port, String index, String type) {
 		mapper = new ObjectMapper();
@@ -77,9 +79,11 @@ public class ElasticConnector<T> {
 		System.out.println(sr.toString());
 		for (SearchHit hit : sr.getHits()) {
 			Long id =  Long.decode(hit.getId());
-			System.out.println(id);
-			EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), hit.getScore());
-	        foundTasks.add(evTask);
+			double score = hit.getScore();
+			if(score >= ES_THRESHOLD){
+				EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), score);
+		        foundTasks.add(evTask);
+			}
 	    }
 		return foundTasks;
 	}

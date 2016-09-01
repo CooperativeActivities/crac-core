@@ -41,6 +41,7 @@ import crac.relationmodels.UserCompetenceRel;
 import crac.utility.CompetenceAugmenter;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
+import crac.utility.TaskSearchHelper;
 import crac.utilityModels.TravelledCompetence;
 
 /**
@@ -73,6 +74,9 @@ public class MainController {
 	@Autowired
 	private CompetenceAugmenter competenceAugmenter;
 	
+	@Autowired
+	private TaskSearchHelper taskSearchHelper;
+	
 	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 
 	@Value("${custom.elasticUrl}")
@@ -99,6 +103,24 @@ public class MainController {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(relatedCompetences));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+		
+	}
+	
+	@RequestMapping("/testThat")
+	@ResponseBody
+	public ResponseEntity<String> testThat() {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(taskSearchHelper.findMatch(userDAO.findOne((long)3))));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
@@ -300,12 +322,12 @@ public class MainController {
 		Webmaster.setFirstName("Max");
 		Webmaster.setLastName("Mustermann");
 		Webmaster.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing, 0.9));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking, 0.9));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming, 0.9));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming, 0.9));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming, 0.9));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming, 0.9));
 		Webmaster.setPassword(bcryptEncoder.encode("noOneKnowsThisPassword!1!1"));
 		Webmaster.setRole(Role.USER);
 		Webmaster.setPhone("0987656789098");
@@ -317,9 +339,9 @@ public class MainController {
 		AverageHuman.setFirstName("Hans");
 		AverageHuman.setLastName("Musterhans");
 		AverageHuman.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing));
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking));
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing, 0.9));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking, 0.9));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming, 0.9));
 		AverageHuman.setPassword(bcryptEncoder.encode("noOneKnowsThisPasswordAnyway!1!1"));
 		AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");

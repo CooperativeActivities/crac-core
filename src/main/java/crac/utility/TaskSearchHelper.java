@@ -11,7 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import crac.daos.CracUserDAO;
+import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
@@ -19,6 +23,7 @@ import crac.models.Task;
 import crac.notifier.Notification;
 import crac.relationmodels.UserCompetenceRel;
 import crac.utilityModels.EvaluatedTask;
+import crac.utilityModels.TaskSearchLogger;
 import crac.utilityModels.TravelledCompetence;
 import crac.utilityModels.TravelledCompetenceCollection;
 
@@ -27,6 +32,9 @@ public class TaskSearchHelper {
 
 	@Autowired
 	CracUserDAO userDAO;
+	
+	@Autowired
+	TaskDAO taskDAO;
 
 	@Autowired
 	UserCompetenceRelDAO userCompetenceRelDAO;
@@ -46,10 +54,7 @@ public class TaskSearchHelper {
 		}
 		
 		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(userCompetences);
-
 		makeDependantOnUser(competenceStacks, user);
-
-
 		return findBestTasks(competenceStacks);
 
 	}
@@ -57,12 +62,12 @@ public class TaskSearchHelper {
 	private ArrayList<TravelledCompetenceCollection> augmentAll(Set<Competence> competences) {
 
 		ArrayList<TravelledCompetenceCollection> competenceCollections = new ArrayList<TravelledCompetenceCollection>();
-
-		for (Competence c : competences) {
+		
+		for (Competence c : competences) {	
 			HashMap<Long, TravelledCompetence> cMap = competenceAugmenter.augment(c, CRITERIA);
 			competenceCollections.add(new TravelledCompetenceCollection(c.getId(), cMap));
 		}
-
+		
 		return competenceCollections;
 
 	}
@@ -96,9 +101,53 @@ public class TaskSearchHelper {
 	private ArrayList<EvaluatedTask> findBestTasks(ArrayList<TravelledCompetenceCollection> competenceStacks){
 		ArrayList<EvaluatedTask> evaluatedTasks = new ArrayList<EvaluatedTask>();
 		
-		//TODO Math
+		for(Task task : taskDAO.findAll()){
+			evaluatedTasks.add(new EvaluatedTask(task, compareTaskWithUser(competenceStacks, task.getNeededCompetences())));
+		}
 		
 		return evaluatedTasks;
+	}
+	
+	private double compareTaskWithUser(ArrayList<TravelledCompetenceCollection> userCompetenceStacks, Set<Competence> taskCompetences){
+		double completeValue = 0;
+		double rowCount = 1;
+		TaskSearchLogger logger = TaskSearchLogger.getInstance();
+		TaskSearchLogger.emptyInstance();
+		logger.setTitlePerson("dummyPerson");
+		logger.setTitleTask("dummyTask");
+		for(Competence taskC : taskCompetences){
+			double rowValue = 0;
+			
+			//DATA GETS LOGGED
+			logger.addColumnTitle(taskC.getName());
+		
+			for(TravelledCompetenceCollection userStack : userCompetenceStacks){
+				double additionalValue = compareCompetenceWithAugmented(taskC, userStack);
+				rowValue += additionalValue;
+				
+				//DATA GETS LOGGED		
+				logger.addRowTitle(userStack.getStackedCompetences().get(userStack.getMainId()).getCompetence().getName());
+				logger.addValue(additionalValue, (int) rowCount);
+			}
+			completeValue += rowValue;
+			rowCount++;
+			
+			//DATA GETS PRINTED
+		}
+		logger.print();
+		return completeValue/rowCount;
+	}
+	
+	private double compareCompetenceWithAugmented(Competence taskC, TravelledCompetenceCollection userCStack){
+		
+		HashMap<Long, TravelledCompetence> userC = userCStack.getStackedCompetences();
+		
+		if(userC.containsKey(taskC.getId())){
+			return userC.get(taskC.getId()).getTravelled();
+		}else{
+			return 0.0;
+		}
+		
 	}
 	
 }
