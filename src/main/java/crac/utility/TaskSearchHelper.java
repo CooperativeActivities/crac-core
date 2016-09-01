@@ -47,6 +47,11 @@ public class TaskSearchHelper {
 
 	public ArrayList<EvaluatedTask> findMatch(CracUser user) {
 		
+		TaskSearchLogger logger = TaskSearchLogger.getInstance();
+		
+		//LOG THE NAME
+		logger.setTitlePerson(user.getName());
+
 		Set<Competence> userCompetences = new HashSet<Competence>();
 		
 		for(UserCompetenceRel ucr : user.getCompetenceRelationships()){
@@ -102,6 +107,8 @@ public class TaskSearchHelper {
 		ArrayList<EvaluatedTask> evaluatedTasks = new ArrayList<EvaluatedTask>();
 		
 		for(Task task : taskDAO.findAll()){
+			TaskSearchLogger logger = TaskSearchLogger.getInstance();
+			logger.setTitleTask(task.getName());
 			evaluatedTasks.add(new EvaluatedTask(task, compareTaskWithUser(competenceStacks, task.getNeededCompetences())));
 		}
 		
@@ -113,8 +120,6 @@ public class TaskSearchHelper {
 		double rowCount = 1;
 		TaskSearchLogger logger = TaskSearchLogger.getInstance();
 		TaskSearchLogger.emptyInstance();
-		logger.setTitlePerson("dummyPerson");
-		logger.setTitleTask("dummyTask");
 		for(Competence taskC : taskCompetences){
 			double rowValue = 0;
 			
@@ -127,14 +132,15 @@ public class TaskSearchHelper {
 				
 				//DATA GETS LOGGED		
 				logger.addRowTitle(userStack.getStackedCompetences().get(userStack.getMainId()).getCompetence().getName());
-				logger.addValue(additionalValue, (int) rowCount);
+				logger.addValue(additionalValue, (int) rowCount - 1);
 			}
 			completeValue += rowValue;
 			rowCount++;
 			
-			//DATA GETS PRINTED
 		}
+		//DATA GETS PRINTED
 		logger.print();
+		
 		return completeValue/rowCount;
 	}
 	
