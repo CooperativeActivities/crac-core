@@ -110,24 +110,6 @@ public class MainController {
 		
 	}
 	
-	@RequestMapping("/testThat")
-	@ResponseBody
-	public ResponseEntity<String> testThat() {
-		
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
-
-		
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(taskSearchHelper.findMatch(userDAO.findOne((long)3))));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
-		}
-		
-	}
-
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/boot")
 	@ResponseBody

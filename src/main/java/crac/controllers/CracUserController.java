@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +42,7 @@ import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
+import crac.utility.TaskSearchHelper;
 import crac.utility.UpdateEntitiesHelper;
 import crac.models.CracUser;
 import crac.models.Group;
@@ -69,6 +72,10 @@ public class CracUserController {
 	
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
+	
+	@Autowired
+	private TaskSearchHelper taskSearchHelper;
+
 
 	/**
 	 * Returns all users
@@ -302,6 +309,27 @@ public class CracUserController {
 		return JSonResponseHelper.checkUserSuccess(user);
 
 	}
+	
+	@RequestMapping(value = { "/findMatchingTasks", "/findMatchingTasks/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> findTasks() {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(taskSearchHelper.findMatch(user)));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+		
+	}
+
 	
 	/**
 	 * Issues a friend-request-notification to target user
