@@ -2,7 +2,7 @@ package crac.utilityModels;
 
 import crac.models.Task;
 
-public class EvaluatedTask {
+public class EvaluatedTask implements Comparable{
 	
 	private Task task;
 	
@@ -27,6 +27,17 @@ public class EvaluatedTask {
 
 	public void setAssessment(double assessment) {
 		this.assessment = assessment;
+	}
+
+	@Override
+	public int compareTo(Object task) {
+		if(((EvaluatedTask) task).getAssessment() > this.getAssessment()){
+			return 1;
+		}else if(((EvaluatedTask) task).getAssessment() == this.getAssessment()){
+			return 0;
+		}else{
+			return -1;
+		}
 	}
 	
 }

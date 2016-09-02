@@ -1,6 +1,7 @@
 package crac.utility;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +46,7 @@ public class TaskSearchHelper {
 	private static final double CRITERIA = 0.2;
 	private static final double PROFICIENCE_FACTOR = 0.9;
 
+	@SuppressWarnings("unchecked")
 	public ArrayList<EvaluatedTask> findMatch(CracUser user) {
 		
 		TaskSearchLogger logger = TaskSearchLogger.getInstance();
@@ -60,7 +62,9 @@ public class TaskSearchHelper {
 		
 		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(userCompetences);
 		makeDependantOnUser(competenceStacks, user);
-		return findBestTasks(competenceStacks);
+		ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(competenceStacks);
+		Collections.sort(evaluatedTasks);
+		return evaluatedTasks;
 
 	}
 
@@ -109,7 +113,10 @@ public class TaskSearchHelper {
 		for(Task task : taskDAO.findAll()){
 			TaskSearchLogger logger = TaskSearchLogger.getInstance();
 			logger.setTitleTask(task.getName());
-			evaluatedTasks.add(new EvaluatedTask(task, compareTaskWithUser(competenceStacks, task.getNeededCompetences())));
+			double comparationValue = compareTaskWithUser(competenceStacks, task.getNeededCompetences());
+			if(comparationValue > 0){
+				evaluatedTasks.add(new EvaluatedTask(task, comparationValue));
+			}
 		}
 		
 		return evaluatedTasks;
