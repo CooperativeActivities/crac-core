@@ -303,13 +303,17 @@ public class CracUserController {
 	 */
 	@RequestMapping(value = "/check", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> login() {
+	public ResponseEntity<String> checkLoginData() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 		return JSonResponseHelper.checkUserSuccess(user);
 
 	}
 	
+	/**
+	 * Return a sorted list of elements with the best fitting tasks for the logged in user
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/findMatchingTasks", "/findMatchingTasks/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> findTasks() {

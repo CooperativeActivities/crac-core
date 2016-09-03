@@ -1,6 +1,6 @@
 ##CrAc
 
-##Endpoints
+##Endpoints (This documentation is not up-to-date!)
 
 ###Login-related
 
@@ -15,7 +15,7 @@ Eg.: A user without admin-rights tries to delete another user.
 
 #####*Request:*
 
-GET /user/login
+GET /user/check
 
 ->the name and password have to be added in the header as the basic-authentication
 
@@ -88,7 +88,7 @@ A user object with given id
 
 #####*Request:*
 
-POST /user
+POST /admin/user
 
 ####This function requires ADMIN-rights!
 
@@ -112,7 +112,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-DELETE /user/{id}
+DELETE /admin/user/{id}
 ####This function requires ADMIN-rights!
 
 #####*Response:*
@@ -125,7 +125,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-PUT /user/{id}
+PUT /admin/user/{id}
 ####This function requires ADMIN-rights!
 
 Updates a user by given ID
@@ -150,7 +150,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /user/me
+GET /user
 
 #####*Response:*
 
@@ -168,7 +168,7 @@ The object of the currently logged in user
 
 #####*Request:*
 
-PUT /user/updateMe
+PUT /user
 
 Updates the currently logged in user
 
@@ -196,7 +196,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/addCompetence/{competence_id}
+GET user/competence/{competence_id}/add
 
 #####*Response:*
 
@@ -208,7 +208,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/removeCompetence/{competence_id}
+GET user/competence/{competence_id}/remove
 
 #####*Response:*
 
@@ -220,11 +220,12 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Add a task with given ID to the open-tasks (kind of the to-do list) of the logged in user**
+**Removes the task with given id from the open-tasks of the currently logged in user**
 
 #####*Request:*
 
-GET user/addTask/{task_id}
+GET user/task/{task_id}/remove
+
 
 #####*Response:*
 
@@ -236,60 +237,56 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/removeTask/{task_id}
-
+GET user/task
 
 #####*Response:*
 
-Json-data, either a success or a failure message
+	{
+	  "following": [],
+	  "participating": [
+	    {
+	      "id": 1,
+	      "name": "Water the flowers",
+	      "description": "All about watering the different flowers in the garden.",
+			...
+	    }
+	  ],
+	  "leading": []
+	}
 
 -----------------------------------------------------------------
 
-**Adds the task with given id to the followed-tasks of the currently logged in user**
+**Returns a sorted list of elements with the best fitting tasks for the logged in user**
 
 #####*Request:*
 
-GET user/followTask/{task_id}
+GET user/findMatchingTasks
 
 #####*Response:*
 
-Json-data, either a success or a failure message
+	{
+	  "following": [],
+	  "participating": [
+	    {
+	      "id": 1,
+	      "name": "Water the flowers",
+	      "description": "All about watering the different flowers in the garden.",
+			...
+	    }
+	  ],
+	  "leading": []
+	}
 
 -----------------------------------------------------------------
-
-**Removes the task with given id from the follow-tasks of the currently logged in user**
-
-#####*Request:*
-
-GET user/unfollowTask/{task_id}
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Adds the task with given id to the leading-tasks of the currently logged in user**
+**Issues a friend-request-notification to target user**
 
 #####*Request:*
 
-GET user/leadTask/{task_id}
+GET user/{user_id}/friend
 
 #####*Response:*
 
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Removes the task with given id from the leading-tasks of the currently logged in user**
-
-#####*Request:*
-
-GET user/abandonTask/{task_id}
-
-#####*Response:*
-
-Json-data, either a success or a failure message
+Json-data, a success
 
 -----------------------------------------------------------------
 
