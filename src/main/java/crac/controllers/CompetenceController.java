@@ -84,7 +84,7 @@ public class CompetenceController {
 	}
 
 	/**
-	 * Connect multiple competences via a type
+	 * Connects two competences via a type and additional values
 	 * @param json
 	 * @param competence1_id
 	 * @param competence2_id

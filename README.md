@@ -1,6 +1,6 @@
 ##CrAc
 
-##Endpoints (This documentation is not up-to-date!)
+##Endpoints (This is a work in progress! The documentation may be not up-to-date from time to time!)
 
 ###Login-related
 
@@ -264,18 +264,32 @@ GET user/findMatchingTasks
 
 #####*Response:*
 
-	{
-	  "following": [],
-	  "participating": [
-	    {
-	      "id": 1,
-	      "name": "Water the flowers",
-	      "description": "All about watering the different flowers in the garden.",
-			...
-	    }
-	  ],
-	  "leading": []
-	}
+	[
+	  {
+	    "task": {
+	      "id": 3,
+	      "name": "Program a watering tool",
+	      ...
+	    },
+	    "assessment": 0.945
+	  },
+	  {
+	    "task": {
+	      "id": 2,
+	      "name": "Water the roses",
+	      ...
+	    },
+	    "assessment": 0.54
+	  },
+	  {
+	    "task": {
+	      "id": 4,
+	      "name": "Water the lillies",
+	      ...
+	    },
+	    "assessment": 0.54
+	  }
+	]
 
 -----------------------------------------------------------------
 **Issues a friend-request-notification to target user**
@@ -290,165 +304,24 @@ Json-data, a success
 
 -----------------------------------------------------------------
 
-###Project and Task-Endpoints
-
-####PROJECT IS THE SUPER-TYPE TO A TASK
-User-Interaction happens on the task-level, but every task has to be assigned to a project.
-So while REST-functions on tasks are possible, it is highly recommended to use the other comfort functions for this, because of inconsistency reasons.
-Inconsistency producing REST-calls will also not be mentioned in this readme, they can be however looked up in the javadoc-documentation of the project if needed.
-
-####First the endpoints of the projects themselves
-
------------------------------------------------------------------
-
-**Gets all projects**
+**Returns the values for the enum taskParticipationType**
 
 #####*Request:*
 
-GET /project
+GET user/roles
 
 #####*Response:*
 
-An array containing all projects
-
 	[
-		{
-			"id": 1,
-			"name": "testProject",
-			"childTasks": [
-				{
-					"id": 1,
-					"name": "testTask"
-				},
-				...
-			],
-			...
-		},
-		{
-			"id": 2,
-			"name": "AnotherProject",
-			...
-		}
+	  "USER",
+	  "ADMIN"
 	]
 
 -----------------------------------------------------------------
 
-**Gets one project with given ID**
+###Task-Endpoints
 
-#####*Request:*
-
-GET /project/{project_id}
-
-#####*Response:*
-
-	{
-		"id": {id},
-		"name": "searchedProject",
-		childTasks": [
-				{
-					"id": 1,
-					"name": "testTask"
-				},
-				...
-			],
-			...
-		...
-	}
-	
------------------------------------------------------------------
-
-**Creates a new project**
-
-#####*Request:*
-
-POST /project
-
-	{
-	    "name": "testProject",
-	    "description": "this is a test",
-	    "location": "Vienna",
-	    "startTime": "2000-01-01T00:30:00",
-	    "endTime": "2000-01-01T01:00:00"
-	}
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Deletes a project with given id**
-
-#####*Request:*
-
-DELETE /project/{project_id}
-####This function requires ADMIN-rights!
-
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-	
------------------------------------------------------------------
-
-**Updates the project with given id**	
-
-#####*Request:*
-
-PUT /project/{project_id}
-####This function requires ADMIN-rights!
-
-
-	{
-	    "name": "testProject",
-	    "description": "this is a test",
-	    "location": "Vienna",
-	    "startTime": "2000-01-01T00:30:00",
-	    "endTime": "2000-01-01T01:00:00"
-	}
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Creates a task and adds it to the given project.**
-
-#####*Request:*
-
-POST /{project_id}/addTask
-
-	{
-	    "name": "testProject",
-	    "description": "this is a test",
-	    "location": "Vienna",
-	    "startTime": "2000-01-01T00:30:00",
-	    "endTime": "2000-01-01T01:00:00",
-	    "urgency": 4,
-	    "amountOfVolunteers": 25
-	}
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Deletes a task by given id and removes it from the chosen project**
-
-#####*Request:*
-
-DELETE /project/{project_id}/removeTask/{task_id}
-####This function requires ADMIN-rights!
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-####The endpoints of tasks
+####EXTEND TASKS FOR SUBTASKS
 
 -----------------------------------------------------------------
 
@@ -475,7 +348,7 @@ GET /task
 
 -----------------------------------------------------------------
 
-**Returns a project object with given id**
+**Returns a task object with given id**
 
 #####*Request:*
 
@@ -495,7 +368,7 @@ GET /task/{task_id}
 	
 #####*Request:*
 
-PUT /task/{task_id}
+PUT /admin/task/{task_id}
 ####This function requires ADMIN-rights!
 
 	{
@@ -513,56 +386,59 @@ PUT /task/{task_id}
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
+
+**Creates a new task**
+	
+#####*Request:*
+
+POST /admin/task/{task_id}
+
+	{
+	    "name": "testTask",
+	    "description": "this is a test",
+	    "location": "Vienna",
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00"
+	    "urgency": 3,
+	    "amountOfVolunteers": 30
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Deletes the task with given id**
+	
+#####*Request:*
+
+DELETE /admin/task/{task_id}
+####This function requires ADMIN-rights!
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 	
 **Adds a competence by given id to a task by given id**
 	
 #####*Request:*
 
-GET /task/{task_id}/addCompetence/{competence_id}
+GET /task/{task_id}/competence/{competence_id}/require
 
 #####*Response:*
 
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
-
-**Adds or updated the feedback of a task**
-
-#####*Request:*
-
-POST /task/{task_id}/addFeedback
-
-	{
-		"feedback": "Some feedback"
-	}
 	
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Adds an attachment to a task by given ID**
-
+**Removes a competence by given id to a task by given id**
+	
 #####*Request:*
 
-POST /task/{task_id}/addAttachment
-
-####THIS IS NOT A JSON-REQUEST!
-The file has to be sent via a multipart-form.
-It then is copied to the server and added to the given task
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Removes given attachment from given task and deletes the attached file from the server**
-
-#####*Request:*
-
-DELETE /task/{task_id}/removeAttachment/{attachment_id}
+GET /task/{task_id}/competence/{competence_id}/remove
 
 #####*Response:*
 
@@ -574,7 +450,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/getByName/{task_name}"
+GET /task/search/{task_name}"
 
 #####*Response:*
 
@@ -590,35 +466,48 @@ GET /task/getByName/{task_name}"
 			...
 		}
 	]
-
+	
 -----------------------------------------------------------------
 
-###Comment-handling
-
------------------------------------------------------------------
-
-**Creates and adds a comment to given task**
+**Creates a task, that is set as the child of the chosen existing task**
 
 #####*Request:*
 
-POST /task/{task_id}/addComment
+GET /task/{supertask_id}/extend"
 
 	{
-		"name": "testComment",
-		"content": "this is test content"
+	    "name": "testTask",
+	    "description": "this is a test",
+	    "location": "Vienna",
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00"
+	    "urgency": 3,
+	    "amountOfVolunteers": 30
 	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
 	
+-----------------------------------------------------------------
+
+**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate', 'follow', or 'lead'**
+
+#####*Request:*
+
+GET /task/{task_id}/{state_name}"
+
 #####*Response:*
 
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Removes and deletes a given comment from a given task**
+**Change the state of target task; Choose either 'publish', 'start', or 'complete'**
 
 #####*Request:*
 
-DELETE /task/{task_id}/removeComment/{comment_id}
+GET /task/{task_id}/state/{state_name}"
 
 #####*Response:*
 
@@ -626,51 +515,115 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Returns all comments of given task as array**
+**Nominate someone as the leader of a task as creator**
 
 #####*Request:*
 
-GET task/{task_id}/getComments
+GET /task/{task_id}/nominateLeader/{user_id}"
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Returns the values for the enum taskParticipationType**
+
+#####*Request:*
+
+GET /task/taskParticipationTypes"
 
 #####*Response:*
 
 	[
-	  {
-	    "id": 1,
-	    "name": "testComment",
-	    "content": "this is a comment",
-	    "task": 1
-	  },
-	  {
-	  	"id": 2,
-	  	...
-	  },
-	  ...
+	  "PARTICIPATING",
+	  "FOLLOWING",
+	  "LEADING"
 	]
-	
------------------------------------------------------------------
-	
-**Completes a task by setting the boolean**
-
-#####*Request:*
-
-GET task/{task_id}/complete
-
-#####*Response:*
-
-Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Un-completes a task by setting the boolean**
+**Returns the values for the enum taskState**
 
 #####*Request:*
 
-GET task/{task_id}/notComplete
+GET /task/taskStates"
 
 #####*Response:*
 
-Json-data, either a success or a failure message
+	[
+	  "NOT_PUBLISHED",
+	  "PUBLISHED",
+	  "STARTED",
+	  "COMPLETED"
+	]
+
+-----------------------------------------------------------------
+
+**Returns the values for the enum taskType**
+
+#####*Request:*
+
+GET /task/taskTypes"
+
+#####*Response:*
+
+	[
+	  "PARALLEL",
+	  "SEQUENTIAL"
+	]
+
+-----------------------------------------------------------------
+
+**Returns all tasks, that are supertasks**
+
+#####*Request:*
+
+GET /task/parents"
+
+#####*Response:*
+
+	[
+		{
+			"id": 1,
+			"name": "supertask_1",
+			...
+		},
+		{
+			"id": 2,
+			"name": "supertask_2",
+			...
+		}
+	]
+
+-----------------------------------------------------------------
+
+**Fulltext-queries all tasks with Elasticsearch and returns the found ones**
+
+#####*Request:*
+
+POST /task/queryES"
+
+	{
+		"text": "This is a fulltext-query!"
+	}
+
+#####*Response:*
+
+	[
+		{ "task": {
+			"id": 1,
+			"name": "task_1",
+			...
+			}, 
+		"assessment" : 0.5 },
+		{ "task": {
+			"id": 2,
+			"name": "task_2",
+			...
+			}, 
+		"assessment" : 0.7 },
+	]
 
 -----------------------------------------------------------------
 
@@ -721,7 +674,7 @@ GET /competence/{competence_id}
 
 #####*Request:*
 
-POST /competence
+POST /admin/competence
 
 ####This function requires ADMIN-rights!
 
@@ -740,7 +693,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-DELETE /competence/{competence_id}
+DELETE /admin/competence/{competence_id}
 ####This function requires ADMIN-rights!
 
 #####*Response:*
@@ -753,12 +706,28 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-PUT /competence/{competence_id}
+PUT /admin/competence/{competence_id}
 ####This function requires ADMIN-rights!
 
 	{
 	    "name":"testCompetence",
 	    "description": "this is a competence"
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Connects two competences via a type and additional values**
+
+#####*Request:*
+
+POST /competence/{competence1_id}/connect/{competence2_id}/type/{type_id}
+
+	{
+	    "uniDirection": true
 	}
 
 #####*Response:*

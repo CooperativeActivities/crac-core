@@ -346,7 +346,7 @@ public class TaskController {
 	}
 	
 	/**
-	 * Declare someone the leader of a task as creator
+	 * Nominate someone as the leader of a task as creator
 	 * @param userId
 	 * @param taskId
 	 * @return ResponseEntity
@@ -448,7 +448,12 @@ public class TaskController {
 		}
 	}
 	
-	@RequestMapping(value = { "/query", "/query/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	/**
+	 * Fulltext-queries all tasks with Elasticsearch and returns the found ones
+	 * @param json
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/queryES", "/queryES/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> queryES(@RequestBody String json) {
 		
