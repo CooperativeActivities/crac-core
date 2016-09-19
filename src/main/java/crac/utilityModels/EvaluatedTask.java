@@ -7,10 +7,13 @@ public class EvaluatedTask implements Comparable{
 	private Task task;
 	
 	private double assessment;
+	
+	private boolean doable;
 
 	public EvaluatedTask(Task task, double assessment) {
 		this.task = task;
 		this.assessment = assessment;
+		this.doable = true;
 	}
 
 	public Task getTask() {
@@ -27,6 +30,14 @@ public class EvaluatedTask implements Comparable{
 
 	public void setAssessment(double assessment) {
 		this.assessment = assessment;
+	}
+
+	public boolean isDoable() {
+		return doable;
+	}
+
+	public void setDoable(boolean doable) {
+		this.doable = doable;
 	}
 
 	@Override

@@ -2,12 +2,14 @@ package crac.controllers;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +45,8 @@ import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
+import crac.utility.TaskSearchHelper;
+import crac.utilityModels.EvaluatedTask;
 import crac.utilityModels.SimpleQuery;
 
 /**
@@ -70,8 +74,14 @@ public class TaskController {
 	
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
+	
+	@Autowired
+	private TaskSearchHelper taskSearchHelper;
 
 	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
+	
+	@Value("${custom.bindES}")
+    private boolean bindES;
 
 	/**
 	 * Returns all tasks
@@ -469,8 +479,29 @@ public class TaskController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonReadError();
 		}
+		
+		ArrayList<EvaluatedTask> et = ESConnTask.query(query.getText(), taskDAO);
+		
+		System.out.println("testing bindES: "+bindES);
+		
+		if(bindES){
+			
+			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			CracUser user = userDAO.findByName(userDetails.getUsername());
+			ArrayList<EvaluatedTask> doables = taskSearchHelper.findMatch(user);
+	
+			for(EvaluatedTask ets : et){
+				ets.setDoable(false);
+				for(EvaluatedTask etd : doables){
+					if(etd.getTask().getId() == ets.getTask().getId()){
+						ets.setDoable(true);
+					}
+				}
+			}
+		}
+		
 		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(ESConnTask.query(query.getText(), taskDAO)));
+			return ResponseEntity.ok().body(mapper.writeValueAsString(et));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
