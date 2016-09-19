@@ -41,7 +41,7 @@ import crac.relationmodels.UserCompetenceRel;
 import crac.utility.CompetenceAugmenter;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.TaskSearchHelper;
+import crac.utility.SearchHelper;
 import crac.utilityModels.TravelledCompetence;
 
 /**
@@ -73,9 +73,6 @@ public class MainController {
 	
 	@Autowired
 	private CompetenceAugmenter competenceAugmenter;
-	
-	@Autowired
-	private TaskSearchHelper taskSearchHelper;
 	
 	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 

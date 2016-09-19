@@ -24,12 +24,13 @@ import crac.models.Task;
 import crac.notifier.Notification;
 import crac.relationmodels.UserCompetenceRel;
 import crac.utilityModels.EvaluatedTask;
+import crac.utilityModels.EvaluatedUser;
 import crac.utilityModels.TaskSearchLogger;
 import crac.utilityModels.TravelledCompetence;
 import crac.utilityModels.TravelledCompetenceCollection;
 
 @Service
-public class TaskSearchHelper {
+public class SearchHelper {
 
 	@Autowired
 	CracUserDAO userDAO;
@@ -45,6 +46,8 @@ public class TaskSearchHelper {
 
 	private static final double CRITERIA = 0.2;
 	private static final double PROFICIENCE_FACTOR = 0.9;
+	
+	//SECTION FOR TASK-SEARCH
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<EvaluatedTask> findMatch(CracUser user) {
@@ -67,7 +70,7 @@ public class TaskSearchHelper {
 		return evaluatedTasks;
 
 	}
-
+	
 	private ArrayList<TravelledCompetenceCollection> augmentAll(Set<Competence> competences) {
 
 		ArrayList<TravelledCompetenceCollection> competenceCollections = new ArrayList<TravelledCompetenceCollection>();
@@ -122,18 +125,18 @@ public class TaskSearchHelper {
 		return evaluatedTasks;
 	}
 	
-	private double compareTaskWithUser(ArrayList<TravelledCompetenceCollection> userCompetenceStacks, Set<Competence> taskCompetences){
+	private double compareTaskWithUser(ArrayList<TravelledCompetenceCollection> competenceStacks, Set<Competence> singleCompetences){
 		double completeValue = 0;
 		double rowCount = 1;
 		TaskSearchLogger logger = TaskSearchLogger.getInstance();
 		TaskSearchLogger.emptyInstance();
-		for(Competence taskC : taskCompetences){
+		for(Competence taskC : singleCompetences){
 			double rowValue = 0;
 			
 			//DATA GETS LOGGED
 			logger.addColumnTitle(taskC.getName());
 		
-			for(TravelledCompetenceCollection userStack : userCompetenceStacks){
+			for(TravelledCompetenceCollection userStack : competenceStacks){
 				double additionalValue = compareCompetenceWithAugmented(taskC, userStack);
 				rowValue += additionalValue;
 				
@@ -161,6 +164,48 @@ public class TaskSearchHelper {
 			return 0.0;
 		}
 		
+	}
+	
+	//SECTION FOR USER-SEARCH
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<EvaluatedUser> findMatch(Task task) {
+		
+		TaskSearchLogger logger = TaskSearchLogger.getInstance();
+		
+		//LOG THE NAME
+		logger.setTitleTask(task.getName());
+
+		Set<Competence> taskCompetences = task.getNeededCompetences();
+		
+		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(taskCompetences);
+		//makeDependantOnTask(competenceStacks, task);
+		ArrayList<EvaluatedUser> evaluatedUsers = findBestUsers(competenceStacks);
+		Collections.sort(evaluatedUsers);
+		return evaluatedUsers;
+
+	}
+
+	private ArrayList<EvaluatedUser> findBestUsers(ArrayList<TravelledCompetenceCollection> competenceStacks){
+		ArrayList<EvaluatedUser> evaluatedUsers = new ArrayList<EvaluatedUser>();
+		
+		for(CracUser user : userDAO.findAll()){
+			TaskSearchLogger logger = TaskSearchLogger.getInstance();
+			logger.setTitlePerson(user.getName());
+			
+			Set<Competence> userCompetences = new HashSet<Competence>();
+			
+			for(UserCompetenceRel ucr : user.getCompetenceRelationships()){
+				userCompetences.add(ucr.getCompetence());
+			}
+			
+			double comparationValue = compareTaskWithUser(competenceStacks, userCompetences);
+			if(comparationValue > 0){
+				evaluatedUsers.add(new EvaluatedUser(user, comparationValue));
+			}
+		}
+		
+		return evaluatedUsers;
 	}
 	
 }

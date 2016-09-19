@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,7 +47,7 @@ import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.TaskSearchHelper;
+import crac.utility.SearchHelper;
 import crac.utilityModels.EvaluatedTask;
 import crac.utilityModels.SimpleQuery;
 
@@ -76,7 +78,7 @@ public class TaskController {
 	private UserTaskRelDAO userTaskRelDAO;
 	
 	@Autowired
-	private TaskSearchHelper taskSearchHelper;
+	private SearchHelper searchHelper;
 
 	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 	
@@ -488,7 +490,7 @@ public class TaskController {
 			
 			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			CracUser user = userDAO.findByName(userDetails.getUsername());
-			ArrayList<EvaluatedTask> doables = taskSearchHelper.findMatch(user);
+			ArrayList<EvaluatedTask> doables = searchHelper.findMatch(user);
 	
 			for(EvaluatedTask ets : et){
 				ets.setDoable(false);
@@ -506,6 +508,26 @@ public class TaskController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
 		}
+	}
+
+	/**
+	 * Return a sorted list of elements with the best fitting users for the given task
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/findMatchingUsers/{task_id}", "/findMatchingUsers/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(searchHelper.findMatch(taskDAO.findOne(taskId))));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+		
 	}
 
 	

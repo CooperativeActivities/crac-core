@@ -42,7 +42,7 @@ import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.TaskSearchHelper;
+import crac.utility.SearchHelper;
 import crac.utility.UpdateEntitiesHelper;
 import crac.models.CracUser;
 import crac.models.Group;
@@ -74,7 +74,7 @@ public class CracUserController {
 	private UserTaskRelDAO userTaskRelDAO;
 	
 	@Autowired
-	private TaskSearchHelper taskSearchHelper;
+	private SearchHelper searchHelper;
 
 
 	/**
@@ -326,7 +326,7 @@ public class CracUserController {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 	        headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(taskSearchHelper.findMatch(user)));
+			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(searchHelper.findMatch(user)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
