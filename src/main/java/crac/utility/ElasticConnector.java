@@ -5,6 +5,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -86,6 +89,12 @@ public class ElasticConnector<T> {
 			}
 	    }
 		return foundTasks;
+	}
+	
+	public DeleteIndexResponse deleteIndex(){
+		DeleteIndexResponse response = client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
+		//client.admin().indices().flush(new FlushRequest(index)).actionGet();
+		return response;
 	}
 	
 	public String getIndex() {

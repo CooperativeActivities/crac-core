@@ -69,21 +69,19 @@ public class TaskController {
 	private CompetenceDAO competenceDAO;
 
 	@Autowired
-	private AttachmentDAO attachmentDAO;
-
-	@Autowired
-	private CommentDAO commentDAO;
-	
-	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
 	
 	@Autowired
 	private SearchHelper searchHelper;
-
-	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 	
 	@Value("${custom.bindES}")
     private boolean bindES;
+	
+	@Value("${custom.elasticUrl}")
+    private String url;
+	
+	@Value("${custom.elasticPort}")
+    private int port;
 
 	/**
 	 * Returns all tasks
@@ -151,7 +149,10 @@ public class TaskController {
 		}
 		task.setCreator(user);
 		taskDAO.save(task);
-		ESConnTask.indexOrUpdate("" + task.getId(), task);
+		
+		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+
+		eSConnTask.indexOrUpdate("" + task.getId(), task);
 
 		return JSonResponseHelper.successFullyCreated(task);
 
@@ -482,7 +483,9 @@ public class TaskController {
 			return JSonResponseHelper.jsonReadError();
 		}
 		
-		ArrayList<EvaluatedTask> et = ESConnTask.query(query.getText(), taskDAO);
+		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+		
+		ArrayList<EvaluatedTask> et = eSConnTask.query(query.getText(), taskDAO);
 		
 		System.out.println("testing bindES: "+bindES);
 		

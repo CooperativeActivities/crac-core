@@ -2,7 +2,11 @@ package crac.controllers;
 
 import java.io.IOException;
 
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,17 +60,20 @@ public class AdminController {
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 
-	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core",
-			"task");
+	@Value("${custom.elasticUrl}")
+	private String url;
+
+	@Value("${custom.elasticPort}")
+	private int port;
 
 	@Autowired
 	private CompetenceRelationshipTypeDAO typeDAO;
 
-	
 	// USER-SECTION
 
 	/**
 	 * Creates a new user
+	 * 
 	 * @param json
 	 * @return ResponseEntity
 	 * @throws JsonMappingException
@@ -94,6 +101,7 @@ public class AdminController {
 
 	/**
 	 * Deletes target user
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 */
@@ -116,6 +124,7 @@ public class AdminController {
 
 	/**
 	 * Updates target user
+	 * 
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
@@ -153,6 +162,7 @@ public class AdminController {
 
 	/**
 	 * Deletes target task
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 */
@@ -167,7 +177,8 @@ public class AdminController {
 			deleteTask.getNeededCompetences().clear();
 			deleteTask.getUserRelationships().clear();
 			taskDAO.delete(deleteTask);
-			ESConnTask.delete("" + deleteTask.getId());
+			ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+			eSConnTask.delete("" + deleteTask.getId());
 			return JSonResponseHelper.successFullyDeleted(deleteTask);
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -177,6 +188,7 @@ public class AdminController {
 
 	/**
 	 * Updates target task
+	 * 
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
@@ -202,7 +214,8 @@ public class AdminController {
 		if (oldTask != null) {
 			UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
 			taskDAO.save(oldTask);
-			ESConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
+			ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+			eSConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
 			return JSonResponseHelper.successFullyUpdated(oldTask);
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -214,9 +227,10 @@ public class AdminController {
 
 	/**
 	 * Creates a new competence
+	 * 
 	 * @param json
 	 * @return ResponseEntity
-	 */ 
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/",
 			"/competence" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -243,6 +257,7 @@ public class AdminController {
 
 	/**
 	 * Deletes target competence
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 */
@@ -265,6 +280,7 @@ public class AdminController {
 
 	/**
 	 * Updates target competence
+	 * 
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
@@ -298,14 +314,16 @@ public class AdminController {
 		}
 
 	}
-	
+
 	/**
 	 * Add a new relationship-type for competences
+	 * 
 	 * @param json
 	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "competence/type", "competence/type/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "competence/type",
+			"competence/type/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addCompRelType(@RequestBody String json) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -325,14 +343,16 @@ public class AdminController {
 
 	/**
 	 * Deletes target relationship-type for competences
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "competence/type/{type_id}", "competence/type/{type_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = { "competence/type/{type_id}",
+			"competence/type/{type_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> deleteCompRelType(@PathVariable(value = "type_id") Long id) {
-		
+
 		CompetenceRelationshipType type = typeDAO.findOne(id);
 
 		if (type != null) {
@@ -342,20 +362,21 @@ public class AdminController {
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
-		
+
 	}
-	
+
 	/**
 	 * Updates target relationship-type for competences
+	 * 
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "competence/type/{type_id}", "/competence/type/{type_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "competence/type/{type_id}",
+			"/competence/type/{type_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateType(@RequestBody String json,
-			@PathVariable(value = "type_id") Long id) {
+	public ResponseEntity<String> updateType(@RequestBody String json, @PathVariable(value = "type_id") Long id) {
 		ObjectMapper mapper = new ObjectMapper();
 		CompetenceRelationshipType updatedCrt;
 		try {
@@ -380,5 +401,20 @@ public class AdminController {
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/refreshESTasks",
+			"/refreshESTasks/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> refreshESTasks() {
+
+		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+
+		DeleteIndexResponse deleted = eSConnTask.deleteIndex();
+		if (deleted.isAcknowledged()) {
+			return JSonResponseHelper.indexSuccessFullyDeleted(url);
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+	}
 
 }

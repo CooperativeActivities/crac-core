@@ -53,6 +53,10 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
 
+	public static ResponseEntity<String> indexSuccessFullyDeleted(String index){
+		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"index\":\"" + index + "\"}");
+	}
+
 	
 	//Update Helpers
 	
