@@ -504,6 +504,11 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 
 **Change the state of target task; Choose either 'publish', 'start', or 'complete'**
+*For each state different prerequisite have to be fullfilled:*
+*NOT_PUBLISHED: Default state*
+*PUBLISHED: Only allowed when the task-fields are all filled*
+*STARTED: Only allowed when the parent task is started and if sequential, the previous task is completed*
+*COMPLETED: A task can only be completed when its children are all completed or if it has none*
 
 #####*Request:*
 
@@ -598,7 +603,7 @@ GET /task/parents"
 
 -----------------------------------------------------------------
 
-**Fulltext-queries all tasks with Elasticsearch and returns the found ones**
+**Fulltext-queries all tasks with Elasticsearch and returns the found ones. If bound to competence-system, compares if tasks are doable**
 
 #####*Request:*
 
@@ -624,6 +629,35 @@ POST /task/queryES"
 			}, 
 		"assessment" : 0.7 },
 	]
+	
+-----------------------------------------------------------------
+
+**Return a sorted list of elements with the best fitting users for the given task**
+
+#####*Request:*
+
+GET /task/findMatchingUsers/{task_id}"
+
+#####*Response:*
+
+	[
+		{ "task": {
+			"id": 1,
+			"name": "task_1",
+			...
+			}, 
+		"assessment" : 0.5,
+		"doable" : true },
+		{ "task": {
+			"id": 2,
+			"name": "task_2",
+			...
+			}, 
+		"assessment" : 0.7 ,
+		"doable" : true },
+		...
+	]
+
 
 -----------------------------------------------------------------
 

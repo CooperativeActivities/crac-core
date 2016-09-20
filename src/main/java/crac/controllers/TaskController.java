@@ -75,13 +75,13 @@ public class TaskController {
 	@Autowired
 	private SearchHelper searchHelper;
 
-	@Value("${custom.bindES}")
+	@Value("${crac.bindES}")
 	private boolean bindES;
 
-	@Value("${custom.elasticUrl}")
+	@Value("${crac.elasticUrl}")
 	private String url;
 
-	@Value("${custom.elasticPort}")
+	@Value("${crac.elasticPort}")
 	private int port;
 
 	/**
@@ -343,7 +343,12 @@ public class TaskController {
 	}
 
 	/**
-	 * Change the state of target task
+	 * Change the state of target task, for each state different prerequisite have to be fullfilled:
+	 * 
+	 * NOT_PUBLISHED: Default state
+	 * PUBLISHED: Only allowed when the task-fields are all filled
+	 * STARTED: Only allowed when the parent task is started and if sequential, the previous task is completed
+	 * COMPLETED: A task can only be completed when its children are all completed or if it has none
 	 * 
 	 * @param task_id
 	 * @param stateName
@@ -489,7 +494,7 @@ public class TaskController {
 	}
 
 	/**
-	 * Fulltext-queries all tasks with Elasticsearch and returns the found ones
+	 * Fulltext-queries all tasks with Elasticsearch and returns the found ones. If bound to competence-system, compares if tasks are doable
 	 * 
 	 * @param json
 	 * @return ResponseEntity

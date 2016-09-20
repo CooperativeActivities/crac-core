@@ -76,13 +76,13 @@ public class MainController {
 	
 	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
 
-	@Value("${custom.elasticUrl}")
+	@Value("${crac.elasticUrl}")
     private String url;
 	
-	@Value("${custom.elasticPort}")
+	@Value("${crac.elasticPort}")
     private int port;
 	
-	@Value("${custom.bootMode}")
+	@Value("${crac.bootMode}")
     private boolean bootMode;
 	
 	@RequestMapping("/test")
@@ -114,9 +114,7 @@ public class MainController {
 	@RequestMapping("/boot")
 	@ResponseBody
 	public ResponseEntity<String> boot() {
-		
-		System.out.println("val: "+bootMode);
-		
+				
 		if(!bootMode){
 			return JSonResponseHelper.bootOff();
 		}
