@@ -82,6 +82,9 @@ public class MainController {
 	@Value("${custom.elasticPort}")
     private int port;
 	
+	@Value("${custom.bootMode}")
+    private boolean bootMode;
+	
 	@RequestMapping("/test")
 	@ResponseBody
 	public String index() {
@@ -112,8 +115,14 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> boot() {
 		
+		System.out.println("val: "+bootMode);
+		
+		if(!bootMode){
+			return JSonResponseHelper.bootOff();
+		}
+		
 		if(userDAO.findByName("Webmaster") != null){
-			return ResponseEntity.ok().body("{\"booted\":\"false\", \"exception\":\"already_booted\"}");
+			return JSonResponseHelper.alreadyBooted();
 		}
 		
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -328,10 +337,7 @@ public class MainController {
 		userDAO.save(Webmaster);
 		userDAO.save(AverageHuman);
 		
-		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-		return ResponseEntity.ok().headers(headers).body("{\"booted\":\"true\"}");
+		return JSonResponseHelper.bootSuccess();
 	}
 
 }

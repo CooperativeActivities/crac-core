@@ -1,5 +1,7 @@
 package crac.utility;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import crac.enums.TaskState;
@@ -16,64 +18,64 @@ public class JSonResponseHelper {
 	//Creation Helpers
 		
 	public static ResponseEntity<String> successFullyCreated(CracUser u){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyCreated(Competence c){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyCreated(Task t){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyCreated(CompetenceRelationshipType crt){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
 
 	public static ResponseEntity<String> successFullyCreated(Evaluation e){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"create\", \"evaluation\":\"" + e.getId() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"evaluation\":\"" + e.getId() + "\"}");
 	}
 
 	//Delete Helpers
 	
 	public static ResponseEntity<String> successFullyDeleted(CracUser u){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyDeleted(Competence c){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyDeleted(Task t){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyDeleted(CompetenceRelationshipType crt){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
 
 	public static ResponseEntity<String> indexSuccessFullyDeleted(String index){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"delete\", \"index\":\"" + index + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"index\":\"" + index + "\"}");
 	}
 
 	
 	//Update Helpers
 	
 	public static ResponseEntity<String> successFullyUpdated(CracUser u){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"update\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyUpdated(Competence c){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"update\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyUpdated(Task t){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"update\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyUpdated(CompetenceRelationshipType crt){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"update\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
 
 
@@ -106,14 +108,14 @@ public class JSonResponseHelper {
 	//No-Result Helpers
 
 	public static ResponseEntity<String> emptyData(){
-		return ResponseEntity.ok().body("{\"success\":\"false\", \"error\":\"no-data\", \"cause\":\"request returned empty data\"}");
+		return addEntity("{\"success\":\"false\", \"error\":\"no-data\", \"cause\":\"request returned empty data\"}");
 	}
 
 	
 	//Task State-Change Helpers
 	
 	public static ResponseEntity<String> successTaskStateChanged(Task t, TaskState ts){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"state_change\", \"state\":\""+ts.toString()+"\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"state_change\", \"state\":\""+ts.toString()+"\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> stateNotAvailable(String name){
@@ -123,33 +125,33 @@ public class JSonResponseHelper {
 	// Assign Helpers
 	
 	public static ResponseEntity<String> successFullyAssigned(CracUser u){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyAssigned(Competence c){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyAssigned(Task t){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"task\":\"" + t.getId() + "\",\"name\":\"" + t.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyAssigned(CompetenceRelationshipType crt){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"competence_relationship_type\":\"" + crt.getId() + "\",\"name\":\"" + crt.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyAssigned(UserTaskRel utr){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"assign\", \"user_task_relationship\":\"" + utr.getId() + "\",\"user\":\"" + utr.getUser().getName() + "\",\"task\":\"" + utr.getTask().getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"user_task_relationship\":\"" + utr.getId() + "\",\"user\":\"" + utr.getUser().getName() + "\",\"task\":\"" + utr.getTask().getName() + "\"}");
 	}
 
 	//Notification Helpers
 	
 	public static ResponseEntity<String> successfullFriendRequest(CracUser c){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"friend_request\", \"receiver\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"friend_request\", \"receiver\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successfullEvaluation(){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"evaluation\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"evaluation\"}");
 	}
 	
 	public static ResponseEntity<String> noSuchNotification(){
@@ -157,15 +159,15 @@ public class JSonResponseHelper {
 	}
 	
 	public static ResponseEntity<String> successfullySent(){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"send\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"send\"}");
 	}
 	
 	public static ResponseEntity<String> successfullyAccepted(Notification n, String m){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"accept\", \"notification\":"+n.toJSon()+", \"message\":\""+m+"\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"accept\", \"notification\":"+n.toJSon()+", \"message\":\""+m+"\"}");
 	}
 	
 	public static ResponseEntity<String> successfullyDenied(Notification n, String m){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"deny\", \"notification\":"+n.toJSon()+", \"message\":\""+m+"\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"deny\", \"notification\":"+n.toJSon()+", \"message\":\""+m+"\"}");
 	}
 
 
@@ -173,7 +175,30 @@ public class JSonResponseHelper {
 	//User Check Helpers
 	
 	public static ResponseEntity<String> checkUserSuccess(CracUser user){
-		return ResponseEntity.ok().body("{\"success\":\"true\", \"action\":\"check_for_existence\", \"user\":\"" + user.getId() + "\",\"name\":\"" + user.getName() + "\"}");
+		return addEntity("{\"success\":\"true\", \"action\":\"check_for_existence\", \"user\":\"" + user.getId() + "\",\"name\":\"" + user.getName() + "\"}");
+	}
+	
+	//Boot_Mode Helpers
+	
+	public static ResponseEntity<String> bootSuccess(){
+		return addEntity("{\"success\":\"true\", \"action\":\"boot\"}");
+	}
+	
+	public static ResponseEntity<String> alreadyBooted(){
+		return addEntity("{\"success\":\"false\", \"action\":\"boot\", \"cause\":\"already booted\"}");
+	}
+	
+	public static ResponseEntity<String> bootOff(){
+		return addEntity("{\"success\":\"false\", \"action\":\"boot\", \"cause\":\"bootMode is off\"}");
+	}
+	
+	private static ResponseEntity<String> addEntity(String response){
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+		return ResponseEntity.ok().headers(headers).body(response);
+				
 	}
 	
 }
