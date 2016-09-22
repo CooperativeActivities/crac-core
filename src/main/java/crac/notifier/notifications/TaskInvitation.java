@@ -12,19 +12,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserRelationshipDAO;
+import crac.daos.UserTaskRelDAO;
+import crac.enums.TaskParticipationType;
 import crac.models.CracUser;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
 import crac.relationmodels.UserRelationship;
+import crac.relationmodels.UserTaskRel;
 
-public class FriendRequest extends Notification{
+public class TaskInvitation extends Notification{
 	
 	private long senderId;
 	
-	public FriendRequest(Long senderId, Long targetId){
-		super("Friend Request", NotificationType.REQUEST, targetId);
+	private long taskId;
+	
+	public TaskInvitation(Long senderId, Long targetId, Long taskId){
+		super("Task Invitation", NotificationType.SUGGESTION, targetId);
 		this.senderId = senderId;
+		this.taskId = taskId;
 	}
 	
 	public long getSenderId() {
@@ -35,11 +41,19 @@ public class FriendRequest extends Notification{
 		this.senderId = senderId;
 	}
 
+	public long getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(long taskId) {
+		this.taskId = taskId;
+	}
+
 	@Override
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return mapper.writeValueAsString((FriendRequest)this);
+			return mapper.writeValueAsString((TaskInvitation)this);
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}
@@ -48,20 +62,20 @@ public class FriendRequest extends Notification{
 	@Override
 	public String accept(HashMap<String, CrudRepository> map) {
 		
-		UserRelationshipDAO userRelationshipDAO = (UserRelationshipDAO) map.get("userRelationshipDAO");
+		UserTaskRelDAO userTaskRelDAO = (UserTaskRelDAO) map.get("userTaskRelDAO");
 		CracUserDAO userDAO = (CracUserDAO) map.get("userDAO");
+		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
+
+		UserTaskRel utl = new UserTaskRel();
 		
-		UserRelationship ur = new UserRelationship();
+		utl.setTask(taskDAO.findOne(taskId));
+		utl.setUser(userDAO.findOne(getTargetId()));
+		utl.setParticipationType(TaskParticipationType.PARTICIPATING);
 		
-		ur.setC1(userDAO.findOne(senderId));
-		ur.setC2(userDAO.findOne(getTargetId()));
-		ur.setFriends(true);
-		ur.setLikeValue(1.2);
-		
-		userRelationshipDAO.save(ur);
+		userTaskRelDAO.save(utl);
 		
 		NotificationHelper.deleteNotification(this.getNotificationId());
-		System.out.println("Friend-request accepted");
+		System.out.println("Task-invitation accepted");
 		return "accepted";
 	}
 

@@ -35,7 +35,7 @@ public class UserRelationship {
 	@JoinColumn(name = "user2")
 	private CracUser c2;
 	
-	private int likeValue;
+	private double likeValue;
 	
 	private boolean friends;
 
@@ -68,11 +68,11 @@ public class UserRelationship {
 		this.c2 = c2;
 	}
 
-	public int getLikeValue() {
+	public double getLikeValue() {
 		return likeValue;
 	}
 
-	public void setLikeValue(int likeValue) {
+	public void setLikeValue(double likeValue) {
 		this.likeValue = likeValue;
 	}
 

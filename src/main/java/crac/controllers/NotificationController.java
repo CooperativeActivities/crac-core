@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
+import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.models.CracUser;
 import crac.notifier.Notification;
@@ -37,6 +38,9 @@ public class NotificationController {
 	
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
+	
+	@Autowired
+	private UserRelationshipDAO userRelationshipDAO;
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -62,6 +66,7 @@ public class NotificationController {
 			map.put("taskDAO", taskDAO);
 			map.put("userTaskRelDAO", userTaskRelDAO);
 			map.put("userDAO", userDAO);
+			map.put("userRelationshipDAO", userRelationshipDAO);
 			String message = n.accept(map);
 			return JSonResponseHelper.successfullyAccepted(n, message);
 		}else{

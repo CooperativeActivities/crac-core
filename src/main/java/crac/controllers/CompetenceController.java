@@ -1,6 +1,7 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.relationmodels.CompetenceRelationship;
 import crac.relationmodels.CompetenceRelationshipType;
+import crac.relationmodels.UserCompetenceRel;
 import crac.utility.JSonResponseHelper;
 
 /**
@@ -52,7 +54,7 @@ public class CompetenceController {
 	 * Returns all competences
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/all", "/all/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
 		Iterable<Competence> competenceList = competenceDAO.findAll();
@@ -70,7 +72,7 @@ public class CompetenceController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = "/{competence_id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{competence_id}", "/{competence_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "competence_id") Long id) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -82,6 +84,24 @@ public class CompetenceController {
 			return JSonResponseHelper.jsonWriteError();
 		}
 	}
+	
+	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getUserCompetences() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+
+		Set<UserCompetenceRel> rels = user.getCompetenceRelationships();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(rels));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+	}
+
 
 	/**
 	 * Connects two competences via a type and additional values
@@ -91,7 +111,7 @@ public class CompetenceController {
 	 * @param type_id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = "/{competence1_id}/connect/{competence2_id}/type/{type_id}", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{competence1_id}/connect/{competence2_id}/type/{type_id}", "/{competence1_id}/connect/{competence2_id}/type/{type_id}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> conntect(@RequestBody String json, @PathVariable(value = "competence1_id") Long competence1_id, @PathVariable(value = "competence2_id") Long competence2_id, @PathVariable(value = "type_id") Long type_id) {
 		ObjectMapper mapper = new ObjectMapper();

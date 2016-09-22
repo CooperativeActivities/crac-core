@@ -3,11 +3,14 @@ package crac.controllers;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.jena.atlas.json.JSON;
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +36,7 @@ import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.enums.Role;
 import crac.enums.TaskParticipationType;
+import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.daos.AttachmentDAO;
@@ -172,7 +176,8 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/{supertask_id}/extend", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{supertask_id}/extend",
+			"/{supertask_id}/extend/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> extendTask(@RequestBody String json,
 			@PathVariable(value = "supertask_id") Long supertask_id) {
@@ -205,6 +210,46 @@ public class TaskController {
 			return JSonResponseHelper.idNotFound();
 		}
 
+	}
+
+	/**
+	 * Copy target task
+	 * 
+	 * @param task_id
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/copy",
+			"/{task_id}/copy/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> copyTask(@PathVariable(value = "task_id") Long task_id) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+
+		Task original = taskDAO.findOne(task_id);
+
+		Task copy = original;
+		copy.setCreator(user);
+
+		copyChildren(copy, user);
+
+		return JSonResponseHelper.successFullyCreated(copy);
+
+	}
+
+	private void copyChildren(Task t, CracUser creator) {
+		Set<Task> copiedChildren = new HashSet<Task>();
+		Set<Task> originalChildren = t.getChildTasks();
+		if (originalChildren != null) {
+			for (Task task : originalChildren) {
+				Task copy = task;
+				copy.setCreator(creator);
+				copiedChildren.add(copy);
+				taskDAO.save(copy);
+				copyChildren(copy, creator);
+			}
+			t.setChildTasks(copiedChildren);
+		}
 	}
 
 	/**
@@ -343,12 +388,13 @@ public class TaskController {
 	}
 
 	/**
-	 * Change the state of target task, for each state different prerequisite have to be fullfilled:
+	 * Change the state of target task, for each state different prerequisite
+	 * have to be fullfilled:
 	 * 
-	 * NOT_PUBLISHED: Default state
-	 * PUBLISHED: Only allowed when the task-fields are all filled
-	 * STARTED: Only allowed when the parent task is started and if sequential, the previous task is completed
-	 * COMPLETED: A task can only be completed when its children are all completed or if it has none
+	 * NOT_PUBLISHED: Default state PUBLISHED: Only allowed when the task-fields
+	 * are all filled STARTED: Only allowed when the parent task is started and
+	 * if sequential, the previous task is completed COMPLETED: A task can only
+	 * be completed when its children are all completed or if it has none
 	 * 
 	 * @param task_id
 	 * @param stateName
@@ -370,7 +416,11 @@ public class TaskController {
 			} else if (stateName.equals("start") && allowStart(task)) {
 				state = TaskState.STARTED;
 			} else if (stateName.equals("complete") && childrenDone(task)) {
-				state = TaskState.COMPLETED;
+				if (isPeriodicalTask(task)) {
+					state = TaskState.NOT_PUBLISHED;
+				} else {
+					state = TaskState.COMPLETED;
+				}
 			} else {
 				return JSonResponseHelper.stateNotAvailable(stateName);
 			}
@@ -380,6 +430,20 @@ public class TaskController {
 			return JSonResponseHelper.successTaskStateChanged(task, state);
 		} else {
 			return JSonResponseHelper.idNotFound();
+		}
+	}
+
+	private boolean isPeriodicalTask(Task t){
+		if(t.getTaskRepetitionState() == TaskRepetitionState.MULTIPLE){
+			Calendar start = t.getStartTime();
+			Calendar end = t.getEndTime();
+			while(start.getTimeInMillis() < Calendar.getInstance().getTimeInMillis()){
+				start.setTimeInMillis(start.getTimeInMillis() + t.getRepetitionTime().getTimeInMillis());
+				end.setTimeInMillis(end.getTimeInMillis() + t.getRepetitionTime().getTimeInMillis());
+			}
+			return true;
+		}else{
+			return false;
 		}
 	}
 
@@ -409,6 +473,37 @@ public class TaskController {
 				return JSonResponseHelper.successfullySent();
 			} else {
 				return JSonResponseHelper.ressourceUnchangeable();
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	/**
+	 * Issues an invite-notification to the target-user
+	 * 
+	 * @param userId
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/invite/{user_id}",
+			"/{task_id}/invite/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> invitePerson(@PathVariable(value = "user_id") Long userId,
+			@PathVariable(value = "task_id") Long taskId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser logged = userDAO.findByName(userDetails.getUsername());
+
+		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(logged, taskDAO.findOne(taskId));
+
+		if (utr != null) {
+			if (utr.getParticipationType() == TaskParticipationType.LEADING) {
+				NotificationHelper.createTaskInvitation(logged.getId(), userId, taskId);
+				return JSonResponseHelper.successfullySent();
+			} else {
+				return JSonResponseHelper.actionNotPossible("locked in user is not leading the task");
 			}
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -494,7 +589,8 @@ public class TaskController {
 	}
 
 	/**
-	 * Fulltext-queries all tasks with Elasticsearch and returns the found ones. If bound to competence-system, compares if tasks are doable
+	 * Fulltext-queries all tasks with Elasticsearch and returns the found ones.
+	 * If bound to competence-system, compares if tasks are doable
 	 * 
 	 * @param json
 	 * @return ResponseEntity
@@ -622,7 +718,8 @@ public class TaskController {
 	}
 
 	/**
-	 * Looks up, if the child-tasks (if there are some) are all completed. If there are none, returns always true
+	 * Looks up, if the child-tasks (if there are some) are all completed. If
+	 * there are none, returns always true
 	 * 
 	 * @param t
 	 * @return boolean

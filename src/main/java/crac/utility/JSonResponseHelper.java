@@ -105,6 +105,11 @@ public class JSonResponseHelper {
 		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\"this ressource is in an unchangeable state\"}");
 	}
 	
+	public static ResponseEntity<String> actionNotPossible(String msg){
+		return ResponseEntity.badRequest().body("{\"success\":\"false\", \"error\":\"bad_request\", \"cause\":\""+msg+"\"}");
+	}
+
+	
 	//No-Result Helpers
 
 	public static ResponseEntity<String> emptyData(){
@@ -149,6 +154,11 @@ public class JSonResponseHelper {
 	public static ResponseEntity<String> successfullFriendRequest(CracUser c){
 		return addEntity("{\"success\":\"true\", \"action\":\"friend_request\", \"receiver\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
 	}
+	
+	public static ResponseEntity<String> successfullUnfriend(CracUser c){
+		return addEntity("{\"success\":\"true\", \"action\":\"unfriend\", \"user_id\":\"" + c.getId() + "\",\"user_name\":\"" + c.getName() + "\"}");
+	}
+
 	
 	public static ResponseEntity<String> successfullEvaluation(){
 		return addEntity("{\"success\":\"true\", \"action\":\"evaluation\"}");

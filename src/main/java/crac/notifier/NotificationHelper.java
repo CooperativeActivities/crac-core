@@ -12,6 +12,7 @@ import crac.notifier.notifications.EvaluationNotification;
 import crac.notifier.notifications.FriendRequest;
 import crac.notifier.notifications.FriendSuggestion;
 import crac.notifier.notifications.LeadNomination;
+import crac.notifier.notifications.TaskInvitation;
 
 public class NotificationHelper {
 	
@@ -24,6 +25,11 @@ public class NotificationHelper {
 	public static void createFriendSuggestion(Long suggestedUserId, Long targetUserId) {
 		NotificationDistributor.getInstance().addNotification(new FriendSuggestion(suggestedUserId, targetUserId));
 	}
+	
+	public static void createTaskInvitation(Long sendingUserId, Long targetUserId, Long taskId) {
+		NotificationDistributor.getInstance().addNotification(new TaskInvitation(sendingUserId, targetUserId, taskId));
+	}
+
 	
 	public static void createLeadNomination(Long sendingUserId, Long targetUserId, Long taskId) {
 		NotificationDistributor.getInstance().addNotification(new LeadNomination(sendingUserId, targetUserId, taskId));

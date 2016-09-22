@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.relationmodels.UserTaskRel;
@@ -63,6 +64,10 @@ public class Task {
 	private TaskState taskState;
 	
 	private TaskType taskType;
+	
+	private TaskRepetitionState taskRepetitionState;
+	
+	private Calendar repetitionTime;
 
 	/**
 	 * Defines a different relationships to itself, providing the possibilities to add subtasks and nextTasks to tasks
@@ -131,6 +136,9 @@ public class Task {
 	public Task() {
 		this.taskState = TaskState.NOT_PUBLISHED;
 		this.taskType = TaskType.PARALLEL;
+		this.taskRepetitionState = TaskRepetitionState.ONCE;
+		this.repetitionTime = Calendar.getInstance();
+		this.repetitionTime.set(0, 0, 0, 0, 0, 0);
 	}
 	
 	
@@ -304,6 +312,26 @@ public class Task {
 
 	public void setNextTask(Task nextTask) {
 		this.nextTask = nextTask;
+	}
+
+
+	public TaskRepetitionState getTaskRepetitionState() {
+		return taskRepetitionState;
+	}
+
+
+	public void setTaskRepetitionState(TaskRepetitionState taskRepetitionState) {
+		this.taskRepetitionState = taskRepetitionState;
+	}
+
+
+	public Calendar getRepetitionTime() {
+		return repetitionTime;
+	}
+
+
+	public void setRepetitionTime(Calendar repetitionTime) {
+		this.repetitionTime = repetitionTime;
 	}
 	
 }
