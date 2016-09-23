@@ -227,29 +227,18 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 
 		Task original = taskDAO.findOne(task_id);
+		
+		if(original.getSuperTask() != null){
+			return JSonResponseHelper.actionNotPossible("child-tasks can't be copied");
+		}
 
-		Task copy = original;
+		Task copy = original.copy(null);
 		copy.setCreator(user);
-
-		copyChildren(copy, user);
+		
+		taskDAO.save(copy);
 
 		return JSonResponseHelper.successFullyCreated(copy);
 
-	}
-
-	private void copyChildren(Task t, CracUser creator) {
-		Set<Task> copiedChildren = new HashSet<Task>();
-		Set<Task> originalChildren = t.getChildTasks();
-		if (originalChildren != null) {
-			for (Task task : originalChildren) {
-				Task copy = task;
-				copy.setCreator(creator);
-				copiedChildren.add(copy);
-				taskDAO.save(copy);
-				copyChildren(copy, creator);
-			}
-			t.setChildTasks(copiedChildren);
-		}
 	}
 
 	/**
@@ -388,6 +377,50 @@ public class TaskController {
 	}
 
 	/**
+	 * Sets the TaskRepetitionState from  once to periodic if possible
+	 * @param task_id
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/periodic/set",
+			"/{task_id}/priodic/set/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> setTaskPeriodical(@PathVariable(value = "task_id") Long task_id) {
+
+		Task toSet = taskDAO.findOne(task_id);
+
+		if (toSet.getSuperTask() != null) {
+			return JSonResponseHelper.actionNotPossible("child-tasks can't be set periodical");
+		} else {
+			toSet.setTaskRepetitionState(TaskRepetitionState.PERIODIC);
+			taskDAO.save(toSet);
+			return JSonResponseHelper.successFullAction("task set to periodical");
+		}
+
+	}
+
+	/**
+	 * Sets the TaskRepetitionState from periodic to once
+	 * @param task_id
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/periodic/undo",
+			"/{task_id}/priodic/undo/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> undoTaskPeriodical(@PathVariable(value = "task_id") Long task_id) {
+
+		Task toSet = taskDAO.findOne(task_id);
+
+		if (toSet.getTaskRepetitionState() != TaskRepetitionState.PERIODIC) {
+			return JSonResponseHelper.actionNotPossible("task is not periodic");
+		} else {
+			toSet.setTaskRepetitionState(TaskRepetitionState.ONCE);
+			taskDAO.save(toSet);
+			return JSonResponseHelper.successFullAction("task set to once");
+		}
+
+	}
+
+	/**
 	 * Change the state of target task, for each state different prerequisite
 	 * have to be fullfilled:
 	 * 
@@ -413,10 +446,11 @@ public class TaskController {
 
 			if (stateName.equals("publish") && allowPublish(task)) {
 				state = TaskState.PUBLISHED;
-			} else if (stateName.equals("start") && allowStart(task)) {
+			} else if (task.getTaskState() == TaskState.PUBLISHED && stateName.equals("start") && allowStart(task)) {
 				state = TaskState.STARTED;
-			} else if (stateName.equals("complete") && childrenDone(task)) {
-				if (isPeriodicalTask(task)) {
+			} else if (task.getTaskState() == TaskState.STARTED && stateName.equals("complete") && childrenDone(task)) {
+				if (task.getTaskRepetitionState() == TaskRepetitionState.PERIODIC) {
+					adjustTaskTime(task, task.getRepetitionTime());
 					state = TaskState.NOT_PUBLISHED;
 				} else {
 					state = TaskState.COMPLETED;
@@ -433,18 +467,20 @@ public class TaskController {
 		}
 	}
 
-	private boolean isPeriodicalTask(Task t){
-		if(t.getTaskRepetitionState() == TaskRepetitionState.MULTIPLE){
-			Calendar start = t.getStartTime();
-			Calendar end = t.getEndTime();
-			while(start.getTimeInMillis() < Calendar.getInstance().getTimeInMillis()){
-				start.setTimeInMillis(start.getTimeInMillis() + t.getRepetitionTime().getTimeInMillis());
-				end.setTimeInMillis(end.getTimeInMillis() + t.getRepetitionTime().getTimeInMillis());
-			}
-			return true;
-		}else{
-			return false;
+	private void adjustTaskTime(Task t, Calendar repetitionTime) {
+		Calendar start = t.getStartTime();
+		Calendar end = t.getEndTime();
+		while (start.getTimeInMillis() < Calendar.getInstance().getTimeInMillis()) {
+			start.setTimeInMillis(start.getTimeInMillis() + repetitionTime.getTimeInMillis());
+			end.setTimeInMillis(end.getTimeInMillis() + repetitionTime.getTimeInMillis());
 		}
+
+		taskDAO.save(t);
+
+		for (Task child : t.getChildTasks()) {
+			adjustTaskTime(child, repetitionTime);
+		}
+
 	}
 
 	/**
@@ -676,8 +712,8 @@ public class TaskController {
 	 */
 	private boolean allowPublish(Task t) {
 
-		if (t.getAmountOfVolunteers() > 0 && t.getDescription() != null && t.getStartTime() != null
-				&& t.getEndTime() != null && !t.getNeededCompetences().isEmpty() && t.getLocation() != null) {
+		if (t.getAmountOfVolunteers() > 0 && !t.getDescription().equals("") && t.getStartTime() != null
+				&& t.getEndTime() != null && !t.getNeededCompetences().isEmpty() && !t.getLocation().equals("")) {
 			return true;
 		}
 		return false;
@@ -692,7 +728,14 @@ public class TaskController {
 	 */
 	private boolean allowStart(Task t) {
 
-		boolean startedParent = t.getSuperTask().getTaskState() == TaskState.STARTED;
+		Task parent = t.getSuperTask();
+		
+		boolean startedParent = true;
+		
+		if(parent != null){
+			startedParent = t.getSuperTask().getTaskState() == TaskState.STARTED;
+		}
+		
 
 		if (t.getTaskType() == TaskType.SEQUENTIAL) {
 			return previousTaskDone(t) && startedParent;
@@ -737,6 +780,7 @@ public class TaskController {
 			}
 
 			return childrenDone;
+			//return true;
 		} else {
 			return true;
 		}

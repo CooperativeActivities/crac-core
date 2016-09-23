@@ -2,6 +2,7 @@ package crac.models;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -139,6 +140,49 @@ public class Task {
 		this.taskRepetitionState = TaskRepetitionState.ONCE;
 		this.repetitionTime = Calendar.getInstance();
 		this.repetitionTime.set(0, 0, 0, 0, 0, 0);
+	}
+	
+	public Task copy(Task superTask){
+		//t.setUserRelationships(userRelationships);
+		//t.setAttachments(attachments);
+		//t.setComments(comments);
+		//t.setEndTime(endTime);
+		//t.setFeedback(feedback);
+		//t.setNextTask(t);
+		//t.setPreviousTask(t);
+		//t.setRepetitionTime(repetitionTime);
+		//t.setStartTime(startTime);
+		//t.setTaskRepetitionState(taskRepetitionState);
+		//t.setTaskState(taskState);
+		Task t = new Task();
+		t.setAmountOfVolunteers(amountOfVolunteers);
+		t.setCreator(creator);
+		t.setDescription(description);
+		t.setLocation(location);
+		t.setName(name);
+		
+		Set<Competence> competences = new HashSet<Competence>();
+		
+		for(Competence c : neededCompetences){
+			competences.add(c);
+		}
+		
+		t.setNeededCompetences(competences);
+		t.setSuperTask(superTask);
+		t.setTaskType(taskType);
+		t.setUrgency(urgency);
+		
+		Set<Task> copiedChildren = new HashSet<Task>();
+		
+		if(childTasks != null){
+			for (Task tc : childTasks) {
+				copiedChildren.add(tc.copy(t));
+			}
+		}
+
+		t.setChildTasks(copiedChildren);
+
+		return t;
 	}
 	
 	

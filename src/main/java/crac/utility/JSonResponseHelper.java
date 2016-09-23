@@ -188,6 +188,11 @@ public class JSonResponseHelper {
 		return addEntity("{\"success\":\"true\", \"action\":\"check_for_existence\", \"user\":\"" + user.getId() + "\",\"name\":\"" + user.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> successFullAction(String msg){
+		return addEntity("{\"success\":\"true\" , \"msg\":\""+msg+"\"}");
+	}
+
+	
 	//Boot_Mode Helpers
 	
 	public static ResponseEntity<String> bootSuccess(){

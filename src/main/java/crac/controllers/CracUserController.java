@@ -39,6 +39,7 @@ import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchHelper;
 import crac.utility.UpdateEntitiesHelper;
+import crac.utilityModels.SimpleUserRelationship;
 import crac.models.CracUser;
 
 /**
@@ -432,21 +433,21 @@ public class CracUserController {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 
-		Set<CracUser> friends = new HashSet<CracUser>();
+		Set<SimpleUserRelationship> rels = new HashSet<SimpleUserRelationship>();
 
 		for (UserRelationship ur : user.getUserRelationshipsAs1()) {
-			friends.add(ur.getC2());
+			rels.add(new SimpleUserRelationship(ur.getC2(), ur.getLikeValue(), ur.isFriends()));
 		}
 
 		for (UserRelationship ur : user.getUserRelationshipsAs2()) {
-			friends.add(ur.getC1());
+			rels.add(new SimpleUserRelationship(ur.getC1(), ur.getLikeValue(), ur.isFriends()));
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(friends));
+			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(rels));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
