@@ -26,7 +26,7 @@ import crac.notifier.NotificationHelper;
 import crac.utility.JSonResponseHelper;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/notification")
 
 public class NotificationController {
 	

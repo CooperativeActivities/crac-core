@@ -233,7 +233,7 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Removes the task with given id from the open-tasks of the currently logged in user**
+**Returns all tasks of logged in user, divided in the TaskParticipationTypes**
 
 #####*Request:*
 

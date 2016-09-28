@@ -35,17 +35,19 @@ public class UserCompetenceRel {
 	@JoinColumn(name = "competence_id")
 	private Competence competence;
 	
-	private int likeValue;
+	private double likeValue;
 	
 	private double proficiencyValue;
 
 	public UserCompetenceRel() {
+		this.likeValue = 1;
 	}
 	
-	public UserCompetenceRel(CracUser user, Competence competence, double proficiencyValue) {
+	public UserCompetenceRel(CracUser user, Competence competence, double proficiencyValue, double likeValue) {
 		this.user = user;
 		this.competence = competence;
 		this.proficiencyValue = proficiencyValue;
+		this.likeValue = likeValue;
 	}
 
 	public long getId() {
@@ -72,11 +74,11 @@ public class UserCompetenceRel {
 		this.competence = competence;
 	}
 
-	public int getLikeValue() {
+	public double getLikeValue() {
 		return likeValue;
 	}
 
-	public void setLikeValue(int likeValue) {
+	public void setLikeValue(double likeValue) {
 		this.likeValue = likeValue;
 	}
 

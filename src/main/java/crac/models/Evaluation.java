@@ -24,13 +24,16 @@ public class Evaluation {
 	@Column(name = "evaluation_id")
 	private long id;
 	
-	private int likeValOthers;
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "task_id")
+	private Task task;
 	
-	private int likeValTask;
+	private double likeValOthers;
 	
-	private int likeValOrganisation;
-
-	private int grade;
+	private double likeValTask;
+	
+	private double likeValOrganisation;
 	
 	private String feedback;
 	
@@ -53,9 +56,10 @@ public class Evaluation {
 	 * constructors
 	 */
 	
-	public Evaluation(CracUser user) {
+	public Evaluation(CracUser user, Task task) {
 		this.user = user;
 		this.filled = false;
+		this.task = task;
 	}
 
 	public Evaluation() {
@@ -81,36 +85,28 @@ public class Evaluation {
 		this.user = user;
 	}
 
-	public int getLikeValOthers() {
+	public double getLikeValOthers() {
 		return likeValOthers;
 	}
 
-	public void setLikeValOthers(int likeValOthers) {
+	public void setLikeValOthers(double likeValOthers) {
 		this.likeValOthers = likeValOthers;
 	}
 
-	public int getLikeValTask() {
+	public double getLikeValTask() {
 		return likeValTask;
 	}
 
-	public void setLikeValTask(int likeValTask) {
+	public void setLikeValTask(double likeValTask) {
 		this.likeValTask = likeValTask;
 	}
 
-	public int getLikeValOrganisation() {
+	public double getLikeValOrganisation() {
 		return likeValOrganisation;
 	}
 
-	public void setLikeValOrganisation(int likeValOrganisation) {
+	public void setLikeValOrganisation(double likeValOrganisation) {
 		this.likeValOrganisation = likeValOrganisation;
-	}
-
-	public int getGrade() {
-		return grade;
-	}
-
-	public void setGrade(int grade) {
-		this.grade = grade;
 	}
 
 	public String getFeedback() {
@@ -135,6 +131,14 @@ public class Evaluation {
 
 	public void setFilled(boolean filled) {
 		this.filled = filled;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
 	}
 		
 }

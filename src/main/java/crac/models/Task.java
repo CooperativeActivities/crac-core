@@ -31,6 +31,7 @@ import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.relationmodels.UserTaskRel;
+import crac.utilityModels.RepetitionDate;
 
 /**
  * The task-entity.
@@ -67,8 +68,6 @@ public class Task {
 	private TaskType taskType;
 	
 	private TaskRepetitionState taskRepetitionState;
-	
-	private Calendar repetitionTime;
 
 	/**
 	 * Defines a different relationships to itself, providing the possibilities to add subtasks and nextTasks to tasks
@@ -115,6 +114,16 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "creator_id")
 	private CracUser creator;
+	
+	/**
+	 * defines a one to many relation with the repetitionDate-entity
+	 */
+	
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "repetitionDate_id")
+	private RepetitionDate repetitionDate;
+
 
 	/**
 	 * defines a one to many relation with the attachment-entity
@@ -129,6 +138,10 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Comment> comments;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+	private Set<Evaluation> mappedEvaluations;
 
 	/**
 	 * constructors
@@ -138,8 +151,6 @@ public class Task {
 		this.taskState = TaskState.NOT_PUBLISHED;
 		this.taskType = TaskType.PARALLEL;
 		this.taskRepetitionState = TaskRepetitionState.ONCE;
-		this.repetitionTime = Calendar.getInstance();
-		this.repetitionTime.set(0, 0, 0, 0, 0, 0);
 	}
 	
 	public Task copy(Task superTask){
@@ -368,14 +379,20 @@ public class Task {
 		this.taskRepetitionState = taskRepetitionState;
 	}
 
-
-	public Calendar getRepetitionTime() {
-		return repetitionTime;
+	public RepetitionDate getRepetitionDate() {
+		return repetitionDate;
 	}
 
-
-	public void setRepetitionTime(Calendar repetitionTime) {
-		this.repetitionTime = repetitionTime;
+	public void setRepetitionDate(RepetitionDate repetitionDate) {
+		this.repetitionDate = repetitionDate;
 	}
-	
+
+	public Set<Evaluation> getMappedEvaluations() {
+		return mappedEvaluations;
+	}
+
+	public void setMappedEvaluations(Set<Evaluation> mappedEvaluations) {
+		this.mappedEvaluations = mappedEvaluations;
+	}
+
 }

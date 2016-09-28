@@ -3,6 +3,7 @@ package crac.controllers;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,14 +21,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.CracUserDAO;
 import crac.daos.EvaluationDAO;
 import crac.daos.TaskDAO;
+import crac.daos.UserCompetenceRelDAO;
+import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.enums.TaskParticipationType;
+import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
+import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Task;
 import crac.notifier.NotificationHelper;
 import crac.notifier.notifications.EvaluationNotification;
+import crac.relationmodels.UserCompetenceRel;
+import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
@@ -48,8 +55,19 @@ public class EvaluationController {
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
 
+	@Autowired
+	UserCompetenceRelDAO userCompetenceRelDAO;
+
+	@Autowired
+	UserRelationshipDAO userRelationshipDAO;
+
+	@Value("${crac.eval.decreaseValues}")
+	private int decreaseValuesFactor;
+
 	/**
-	 * Creates an evaluation (notification + entity) for the logged in user for target task
+	 * Creates an evaluation (notification + entity) for the logged in user for
+	 * target task
+	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -63,7 +81,7 @@ public class EvaluationController {
 
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
-			Evaluation e = new Evaluation(user);
+			Evaluation e = new Evaluation(user, task);
 			EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
@@ -75,7 +93,9 @@ public class EvaluationController {
 	}
 
 	/**
-	 * Creates an evaluation (notification + entity) for every user, participating in target task
+	 * Creates an evaluation (notification + entity) for every user,
+	 * participating in target task
+	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -86,30 +106,35 @@ public class EvaluationController {
 
 		Task task = taskDAO.findOne(taskId);
 
-		if (task != null && task.getTaskState() == TaskState.COMPLETED) {
-			
-			CracUser user = null;
-			EvaluationNotification es = null;
-			
-			for(UserTaskRel utr : task.getUserRelationships()){
-				if(utr.getParticipationType() == TaskParticipationType.PARTICIPATING){
-					user = utr.getUser();
-					Evaluation e = new Evaluation(user);
-					es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
-					e.setNotificationId(es.getNotificationId());
-					evaluationDAO.save(e);
-					es.setEvaluationIdy(e.getId());
-				}
-			}
+		if (task != null) {
+			if (task.getTaskRepetitionState() == TaskRepetitionState.PERIODIC
+					|| task.getTaskState() == TaskState.COMPLETED) {
+				CracUser user = null;
+				EvaluationNotification es = null;
 
-			return JSonResponseHelper.successfullySent();
+				for (UserTaskRel utr : task.getUserRelationships()) {
+					if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+						user = utr.getUser();
+						Evaluation e = new Evaluation(user, task);
+						es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
+						e.setNotificationId(es.getNotificationId());
+						evaluationDAO.save(e);
+						es.setEvaluationIdy(e.getId());
+					}
+				}
+				return JSonResponseHelper.successfullySent();
+			} else {
+				return JSonResponseHelper.actionNotPossible("wrong type of task");
+			}
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
 	}
 
 	/**
-	 * Creates an evaluation (notification + entity) for target user, participating in target task
+	 * Creates an evaluation (notification + entity) for target user,
+	 * participating in target task
+	 * 
 	 * @param userId
 	 * @param taskId
 	 * @return ResponseEntity
@@ -124,7 +149,7 @@ public class EvaluationController {
 
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
-			Evaluation e = new Evaluation(user);
+			Evaluation e = new Evaluation(user, task);
 			EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
@@ -136,7 +161,9 @@ public class EvaluationController {
 	}
 
 	/**
-	 * Resolves the evaluation. Updates the empty evaluation with sent data and deletes the notification.
+	 * Resolves the evaluation. Updates the empty evaluation with sent data and
+	 * deletes the notification.
+	 * 
 	 * @param json
 	 * @param evaluationId
 	 * @return
@@ -147,31 +174,81 @@ public class EvaluationController {
 	public ResponseEntity<String> selfEvaluate(@RequestBody String json,
 			@PathVariable(value = "evaluation_id") Long evaluationId) {
 
-		ObjectMapper mapper = new ObjectMapper();
-		Evaluation newEval;
-		try {
-			newEval = mapper.readValue(json, Evaluation.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonMapError();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonReadError();
-		}
-
 		Evaluation originalEval = evaluationDAO.findOne(evaluationId);
 		if (originalEval != null) {
+			
+			if(originalEval.isFilled()){
+				return JSonResponseHelper.actionNotPossible("this evaluation is already filled");
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+			Evaluation newEval;
+			try {
+				newEval = mapper.readValue(json, Evaluation.class);
+			} catch (JsonMappingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonMapError();
+			} catch (IOException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonReadError();
+			}
+
 			String notificationId = originalEval.getNotificationId();
 			UpdateEntitiesHelper.checkAndUpdateEvaluation(originalEval, newEval);
 			originalEval.setFilled(true);
+			postProcessEvaluation(originalEval);
 			originalEval.setNotificationId("deleted");
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);
 			return JSonResponseHelper.successfullEvaluation();
+
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
 
+	}
+
+	private void postProcessEvaluation(Evaluation e) {
+		Task task = e.getTask();
+
+		for (Competence c : task.getNeededCompetences()) {
+			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUser(), c);
+
+			if (uc != null) {
+				uc.setLikeValue(uc.getLikeValue() * adjustValues(e.getLikeValTask()));
+			}
+
+			userCompetenceRelDAO.save(uc);
+
+		}
+
+		for (UserTaskRel utr : task.getUserRelationships()) {
+			UserRelationship ur = userRelationshipDAO.findByC1AndC2(e.getUser(), utr.getUser());
+
+			if (ur != null) {
+				ur.setLikeValue(ur.getLikeValue() * adjustValues(e.getLikeValOthers()));
+			} else {
+				ur = new UserRelationship();
+				ur.setC1(e.getUser());
+				ur.setC2(utr.getUser());
+				ur.setFriends(false);
+				ur.setLikeValue(adjustValues(e.getLikeValOthers()));
+			}
+
+			userRelationshipDAO.save(ur);
+
+		}
+
+	}
+
+	private double adjustValues(double val) {
+		double result = val;
+
+		for (int i = 0; i < decreaseValuesFactor; i++) {
+			result = (result + 1) / 2;
+		}
+
+		return result;
 	}
 
 }

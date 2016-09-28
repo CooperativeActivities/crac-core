@@ -60,10 +60,10 @@ public class AdminController {
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 
-	@Value("${crac.elasticUrl}")
+	@Value("${crac.elastic.url}")
 	private String url;
 
-	@Value("${crac.elasticPort}")
+	@Value("${crac.elastic.port}")
 	private int port;
 
 	@Autowired

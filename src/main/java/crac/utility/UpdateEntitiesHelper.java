@@ -122,7 +122,6 @@ public class UpdateEntitiesHelper {
 			old.setFeedback(updated.getFeedback());
 		}
 		
-		old.setGrade(updated.getGrade());
 		old.setLikeValOrganisation(updated.getLikeValOrganisation());
 		old.setLikeValOthers(updated.getLikeValOthers());
 		old.setLikeValTask(updated.getLikeValTask());

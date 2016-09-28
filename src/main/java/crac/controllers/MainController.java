@@ -1,6 +1,5 @@
 package crac.controllers;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -8,8 +7,6 @@ import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,20 +25,20 @@ import crac.daos.CompetencePermissionTypeDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
+import crac.daos.RepetitionDateDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.enums.Role;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
-import crac.notifier.NotificationHelper;
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
 import crac.relationmodels.UserCompetenceRel;
 import crac.utility.CompetenceAugmenter;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchHelper;
+import crac.utilityModels.RepetitionDate;
 import crac.utilityModels.TravelledCompetence;
 
 /**
@@ -56,6 +53,10 @@ public class MainController {
 	@Autowired
 	private CompetenceDAO competenceDAO;
 
+	@Autowired
+	private RepetitionDateDAO repetitionDateDAO;
+
+	
 	@Autowired
 	private TaskDAO taskDAO;
 	
@@ -74,16 +75,14 @@ public class MainController {
 	@Autowired
 	private CompetenceAugmenter competenceAugmenter;
 	
-	private ElasticConnector<Task> ESConnTask = new ElasticConnector<Task>("localhost", 9300, "crac_core", "task");
-
-	@Value("${crac.elasticUrl}")
+	@Value("${crac.elastic.url}")
     private String url;
 	
-	@Value("${crac.elasticPort}")
+	@Value("${crac.elastic.port}")
     private int port;
 	
-	@Value("${crac.bootMode}")
-    private boolean bootMode;
+	@Value("${crac.boot.enable}")
+    private boolean bootEnabled;
 	
 	@RequestMapping("/test")
 	@ResponseBody
@@ -115,7 +114,7 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> boot() {
 				
-		if(!bootMode){
+		if(!bootEnabled){
 			return JSonResponseHelper.bootOff();
 		}
 		
@@ -292,10 +291,12 @@ public class MainController {
 		
 		taskDAO.save(waterFlowers);
 		
-		ESConnTask.indexOrUpdate(""+waterFlowers.getId(),waterFlowers);
+		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+
+		eSConnTask.indexOrUpdate(""+waterFlowers.getId(),waterFlowers);
 		
 		for(Task t : waterFlowers.getChildTasks()){
-			ESConnTask.indexOrUpdate(""+t.getId(),t);
+			eSConnTask.indexOrUpdate(""+t.getId(),t);
 		}
 
 		//Add users
@@ -308,12 +309,12 @@ public class MainController {
 		Webmaster.setFirstName("Max");
 		Webmaster.setLastName("Mustermann");
 		Webmaster.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing, 0.9));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking, 0.9));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming, 0.9));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming, 0.9));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming, 0.9));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming, 0.9));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing, 0.9, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking, 0.9, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming, 0.9, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming, 0.9, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming, 0.9, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming, 0.9, 1));
 		Webmaster.setPassword(bcryptEncoder.encode("noOneKnowsThisPassword!1!1"));
 		Webmaster.setRole(Role.USER);
 		Webmaster.setPhone("0987656789098");
@@ -325,15 +326,18 @@ public class MainController {
 		AverageHuman.setFirstName("Hans");
 		AverageHuman.setLastName("Musterhans");
 		AverageHuman.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing, 0.9));
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking, 0.9));
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming, 0.9));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing, 0.9, 1));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking, 0.9, 1));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming, 0.9, 1));
 		AverageHuman.setPassword(bcryptEncoder.encode("noOneKnowsThisPasswordAnyway!1!1"));
 		AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		userDAO.save(Webmaster);
 		userDAO.save(AverageHuman);
+		
+		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);
+		repetitionDateDAO.save(date1);
 		
 		return JSonResponseHelper.bootSuccess();
 	}
