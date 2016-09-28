@@ -189,35 +189,40 @@ public class SearchHelper {
 			Set<Competence> singleCompetences) {
 		double completeValue = 0;
 		double rowCount = 0;
+		double count = 0;
 		TaskSearchLogger logger = TaskSearchLogger.getInstance();
 		TaskSearchLogger.emptyInstance();
 		for (Competence taskC : singleCompetences) {
 			double rowValue = 0;
-			double count = 0;
 
 			// DATA GETS LOGGED
 			logger.addColumnTitle(taskC.getName());
 
 			for (TravelledCompetenceCollection userStack : competenceStacks) {
 				double additionalValue = compareCompetenceWithAugmented(taskC, userStack);
-				rowValue += additionalValue;
-				if(additionalValue > 0) count++;
+				if (additionalValue > 0) {
+					count++;
+					if (additionalValue > rowValue) {
+						rowValue = additionalValue;
+					}
+				}
 
 				// DATA GETS LOGGED
 				logger.addRowTitle(
 						userStack.getStackedCompetences().get(userStack.getMainId()).getCompetence().getName());
 				logger.addValue(additionalValue, (int) rowCount);
 			}
-			System.out.println("COUNT: "+count);
-			if(count == 0) count = 1;
 			completeValue += rowValue /* / count */;
 			rowCount++;
 
 		}
 		// DATA GETS PRINTED
 		logger.print();
-		System.out.println("VALS: " + completeValue + " | " + rowCount);
-		if(rowCount == 0) rowCount = 1;
+		System.out.println("VALS: " + completeValue + " divided by " + rowCount);
+		if (rowCount == 0)
+			rowCount = 1;
+		if (count == 0)
+			count = 1;
 		return completeValue / rowCount;
 	}
 
