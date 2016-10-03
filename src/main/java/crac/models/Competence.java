@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
+import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserCompetenceRel;
 
 /**
@@ -45,14 +46,6 @@ public class Competence {
 	
 	@NotNull
 	private String description;
-
-	/**
-	 * defines a many to many relation with the task-entity
-	 */
-
-	@ManyToMany(mappedBy = "neededCompetences", fetch = FetchType.LAZY)
-	@JsonIdentityReference(alwaysAsId=true)
-	private Set<Task> connectedTasks;
 
 	/**
 	 * defines a many to many relation with the cracUser-entity
@@ -83,6 +76,10 @@ public class Competence {
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "competence2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceRelationship> mappedCompetence2;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<CompetenceTaskRel> competenceTaskRels;
 
 
 	/**
@@ -127,14 +124,6 @@ public class Competence {
 		this.creator = creator;
 	}
 
-	public Set<Task> getConnectedTasks() {
-		return connectedTasks;
-	}
-
-	public void setConnectedTasks(Set<Task> connectedTasks) {
-		this.connectedTasks = connectedTasks;
-	}
-
 	public String getDescription() {
 		return description;
 	}
@@ -174,7 +163,13 @@ public class Competence {
 	public void setPermissionType(CompetencePermissionType permissionType) {
 		this.permissionType = permissionType;
 	}
-	
-	
 
+	public Set<CompetenceTaskRel> getCompetenceTaskRels() {
+		return competenceTaskRels;
+	}
+
+	public void setCompetenceTaskRels(Set<CompetenceTaskRel> competenceTaskRels) {
+		this.competenceTaskRels = competenceTaskRels;
+	}
+	
 }

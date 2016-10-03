@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.daos.CompetenceTaskRelDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
@@ -25,6 +26,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.notifier.Notification;
+import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
@@ -51,6 +53,9 @@ public class SearchHelper {
 
 	@Autowired
 	UserRelationshipDAO userRelationshipDAO;
+
+	@Autowired
+	CompetenceTaskRelDAO competenceTaskRelDAO;
 
 	@Autowired
 	CompetenceAugmenter competenceAugmenter;
@@ -84,9 +89,10 @@ public class SearchHelper {
 		}
 
 		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(userCompetences);
-		if (bindUserExperience)
-			makeDependantOnUser(competenceStacks, user);
-		ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(competenceStacks);
+		/*
+		 * if (bindUserExperience) makeDependantOnUser(competenceStacks, user);
+		 */
+		ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(user, competenceStacks);
 		if (bindUserRelations)
 			considerUserRelationships(evaluatedTasks, user);
 		Collections.sort(evaluatedTasks);
@@ -107,28 +113,27 @@ public class SearchHelper {
 
 	}
 
-	private void makeDependantOnUser(ArrayList<TravelledCompetenceCollection> competenceCollections, CracUser user) {
-
-		for (TravelledCompetenceCollection collection : competenceCollections) {
-
-			UserCompetenceRel rel = userCompetenceRelDAO.findByUserAndCompetence(user,
-					collection.getStackedCompetences().get(collection.getMainId()).getCompetence());
-
-			double proficiencyValue = rel.getProficiencyValue();
-			double likeValue = rel.getLikeValue();
-
-			for (Entry<Long, TravelledCompetence> entry : collection.getStackedCompetences().entrySet()) {
-				entry.getValue().setTravelled(entry.getValue().getTravelled() * proficiencyValue * likeValue);
-			}
-		}
-
-		/*
-		 * considerProficiency(competenceCollections, user);
-		 * considerLikeValue(competenceCollections, user);
-		 * considerUserRelationships(competenceCollections, user);
-		 */
-	}
-
+	/*
+	 * private void makeDependantOnUser(ArrayList<TravelledCompetenceCollection>
+	 * competenceCollections, CracUser user) {
+	 * 
+	 * for (TravelledCompetenceCollection collection : competenceCollections) {
+	 * 
+	 * UserCompetenceRel rel =
+	 * userCompetenceRelDAO.findByUserAndCompetence(user,
+	 * collection.getStackedCompetences().get(collection.getMainId()).
+	 * getCompetence());
+	 * 
+	 * int proficiencyValue = rel.getProficiencyValue(); int likeValue =
+	 * rel.getLikeValue();
+	 * 
+	 * for (Entry<Long, TravelledCompetence> entry :
+	 * collection.getStackedCompetences().entrySet()) {
+	 * entry.getValue().setTravelled(addLikeLevel(addProficiencyLevel(entry.
+	 * getValue().getTravelled(), proficiencyValue), likeValue)); } }
+	 * 
+	 * }
+	 */
 	private void considerUserRelationships(ArrayList<EvaluatedTask> tasks, CracUser user) {
 		for (EvaluatedTask task : tasks) {
 			Set<UserTaskRel> rels = task.getTask().getUserRelationships();
@@ -170,13 +175,23 @@ public class SearchHelper {
 	 * }
 	 */
 
-	private ArrayList<EvaluatedTask> findBestTasks(ArrayList<TravelledCompetenceCollection> competenceStacks) {
+	private ArrayList<EvaluatedTask> findBestTasks(CracUser user,
+			ArrayList<TravelledCompetenceCollection> competenceStacks) {
 		ArrayList<EvaluatedTask> evaluatedTasks = new ArrayList<EvaluatedTask>();
 
 		for (Task task : taskDAO.findAll()) {
+
+			addAdditionalData(task, user, competenceStacks);
+
 			TaskSearchLogger logger = TaskSearchLogger.getInstance();
 			logger.setTitleTask(task.getName());
-			double comparationValue = compareTaskWithUser(competenceStacks, task.getNeededCompetences());
+
+			Set<Competence> singleCompetences = new HashSet<Competence>();
+			for (CompetenceTaskRel ctr : task.getCompetenceTaskRels()) {
+				singleCompetences.add(ctr.getCompetence());
+			}
+
+			double comparationValue = compareStacksWithSingle(competenceStacks, singleCompetences);
 			if (comparationValue > 0) {
 				evaluatedTasks.add(new EvaluatedTask(task, comparationValue));
 			}
@@ -185,7 +200,49 @@ public class SearchHelper {
 		return evaluatedTasks;
 	}
 
-	private double compareTaskWithUser(ArrayList<TravelledCompetenceCollection> competenceStacks,
+	private void addAdditionalData(Task task, CracUser user,
+			ArrayList<TravelledCompetenceCollection> competenceStacks) {
+		for (TravelledCompetenceCollection collection : competenceStacks) {
+
+			Competence mainc = collection.getStackedCompetences().get(collection.getMainId()).getCompetence();
+
+			UserCompetenceRel urel = userCompetenceRelDAO.findByUserAndCompetence(user, mainc);
+
+			CompetenceTaskRel trel = competenceTaskRelDAO.findByTaskAndCompetence(task, mainc);
+
+			int proficiencyValue = urel.getProficiencyValue();
+			int likeValue = urel.getLikeValue();
+			int neededProficiency = 0;
+			if (trel != null) {
+				neededProficiency = trel.getNeededProficiencyLevel();
+			}
+
+			for (Entry<Long, TravelledCompetence> entry : collection.getStackedCompetences().entrySet()) {
+				double oVal = entry.getValue().getTravelled();
+				double cVal1 = addProficiencyLevel(oVal, neededProficiency, proficiencyValue);
+				double cVal2 = addLikeLevel(cVal1, likeValue);
+				entry.getValue().setCalculatedScore(cVal2);
+			}
+		}
+	}
+
+	private double addProficiencyLevel(double value, int neededProficiency, int proficiencyValue) {
+		double newVal = value;
+		if (proficiencyValue < neededProficiency) {
+			System.out.println("TRIGGERED!!!");
+			newVal = value * ((double)1 - (((double)neededProficiency / 100) - ((double)proficiencyValue / 100)));
+		}
+		return newVal;
+	}
+
+	private double addLikeLevel(double value, int likeValue) {
+		
+		//Markus formually
+		return value;
+
+	}
+
+	private double compareStacksWithSingle(ArrayList<TravelledCompetenceCollection> competenceStacks,
 			Set<Competence> singleCompetences) {
 		double completeValue = 0;
 		double rowCount = 0;
@@ -231,7 +288,7 @@ public class SearchHelper {
 		HashMap<Long, TravelledCompetence> userC = userCStack.getStackedCompetences();
 
 		if (userC.containsKey(taskC.getId())) {
-			return userC.get(taskC.getId()).getTravelled();
+			return userC.get(taskC.getId()).getCalculatedScore();
 		} else {
 			return 0.0;
 		}
@@ -248,7 +305,11 @@ public class SearchHelper {
 		// LOG THE NAME
 		logger.setTitleTask(task.getName());
 
-		Set<Competence> taskCompetences = task.getNeededCompetences();
+		Set<Competence> taskCompetences = new HashSet<Competence>();
+
+		for (CompetenceTaskRel ctr : task.getCompetenceTaskRels()) {
+			taskCompetences.add(ctr.getCompetence());
+		}
 
 		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(taskCompetences);
 		// makeDependantOnTask(competenceStacks, task);
@@ -271,7 +332,7 @@ public class SearchHelper {
 				userCompetences.add(ucr.getCompetence());
 			}
 
-			double comparationValue = compareTaskWithUser(competenceStacks, userCompetences);
+			double comparationValue = compareStacksWithSingle(competenceStacks, userCompetences);
 			if (comparationValue > 0) {
 				evaluatedUsers.add(new EvaluatedUser(user, comparationValue));
 			}

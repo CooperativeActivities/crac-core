@@ -14,42 +14,42 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.Competence;
-import crac.models.CracUser;
+import crac.models.Task;
 
 @Entity
-@Table(name = "user_competence_relationship")
+@Table(name = "competence_task_relationship")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class UserCompetenceRel {
+public class CompetenceTaskRel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
 	private long id;
-
-	@ManyToOne
-	@JsonIdentityReference(alwaysAsId=true)
-	@JoinColumn(name = "user_id")
-	private CracUser user;
 	
 	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "competence_id")
 	private Competence competence;
 	
-	//-100 - 100
-	private int likeValue;
+	@ManyToOne
+	@JsonIdentityReference(alwaysAsId=true)
+	@JoinColumn(name = "task_id")
+	private Task task;
 	
-	//0 - 100
-	private int proficiencyValue;
+	//0-100
+	private int neededProficiencyLevel;
+	
+	//0-100
+	private int importanceLevel;
 
-	public UserCompetenceRel() {
-		this.likeValue = 1;
+	public CompetenceTaskRel() {
 	}
 	
-	public UserCompetenceRel(CracUser user, Competence competence, int proficiencyValue, int likeValue) {
-		this.user = user;
+	public CompetenceTaskRel(Competence competence, Task task, int neededProficiencyLevel, int importanceLevel) {
 		this.competence = competence;
-		this.proficiencyValue = proficiencyValue;
-		this.likeValue = likeValue;
+		this.task = task;
+		this.neededProficiencyLevel = neededProficiencyLevel;
+		this.importanceLevel = importanceLevel;
 	}
 
 	public long getId() {
@@ -60,14 +60,6 @@ public class UserCompetenceRel {
 		this.id = id;
 	}
 
-	public CracUser getUser() {
-		return user;
-	}
-
-	public void setUser(CracUser user) {
-		this.user = user;
-	}
-
 	public Competence getCompetence() {
 		return competence;
 	}
@@ -76,20 +68,28 @@ public class UserCompetenceRel {
 		this.competence = competence;
 	}
 
-	public int getLikeValue() {
-		return likeValue;
+	public Task getTask() {
+		return task;
 	}
 
-	public void setLikeValue(int likeValue) {
-		this.likeValue = likeValue;
+	public void setTask(Task task) {
+		this.task = task;
 	}
 
-	public int getProficiencyValue() {
-		return proficiencyValue;
+	public int getNeededProficiencyLevel() {
+		return neededProficiencyLevel;
 	}
 
-	public void setProficiencyValue(int proficiencyValue) {
-		this.proficiencyValue = proficiencyValue;
+	public void setNeededProficiencyLevel(int neededProficiencyLevel) {
+		this.neededProficiencyLevel = neededProficiencyLevel;
 	}
 
+	public int getImportanceLevel() {
+		return importanceLevel;
+	}
+
+	public void setImportanceLevel(int importanceLevel) {
+		this.importanceLevel = importanceLevel;
+	}
+	
 }

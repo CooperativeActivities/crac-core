@@ -42,6 +42,7 @@ import crac.enums.TaskType;
 import crac.daos.AttachmentDAO;
 import crac.daos.CommentDAO;
 import crac.daos.CompetenceDAO;
+import crac.daos.CompetenceTaskRelDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.RepetitionDateDAO;
 import crac.models.Attachment;
@@ -50,6 +51,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.notifier.NotificationHelper;
+import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
@@ -76,8 +78,11 @@ public class TaskController {
 	private CompetenceDAO competenceDAO;
 
 	@Autowired
+	private CompetenceTaskRelDAO competenceTaskRelDAO;
+
+	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
-	
+
 	@Autowired
 	private RepetitionDateDAO repetitionDateDAO;
 
@@ -253,10 +258,12 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = "/{task_id}/competence/{competence_id}/require", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}",
+			"/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> requireCompetence(@PathVariable(value = "task_id") Long task_id,
-			@PathVariable(value = "competence_id") Long competence_id) {
+			@PathVariable(value = "competence_id") Long competence_id,
+			@PathVariable(value = "proficiency") int proficiency, @PathVariable(value = "importance") int importance) {
 
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
@@ -266,8 +273,7 @@ public class TaskController {
 		if (task != null && competence != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED) {
-				task.getNeededCompetences().add(competence);
-				taskDAO.save(task);
+				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, proficiency, importance));
 				return JSonResponseHelper.successFullyAssigned(competence);
 			} else {
 				return JSonResponseHelper.ressourceUnchangeable();
@@ -284,7 +290,7 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = "/{task_id}/competence/{competence_id}/remove", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/remove", "/{task_id}/competence/{competence_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeCompetence(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "competence_id") Long competence_id) {
@@ -294,11 +300,11 @@ public class TaskController {
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
-		if (task != null && competence != null) {
+		CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
+		if (task != null && competence != null && ctr != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED) {
-				task.getNeededCompetences().remove(competence);
-				taskDAO.save(task);
+				competenceTaskRelDAO.delete(ctr);
 				return JSonResponseHelper.successFullyDeleted(competence);
 			} else {
 				return JSonResponseHelper.ressourceUnchangeable();
@@ -419,7 +425,7 @@ public class TaskController {
 				repetitionDateDAO.delete(ord);
 				return JSonResponseHelper.successFullAction("task set to periodical");
 			}
-		}else{
+		} else {
 			return JSonResponseHelper.idNotFound();
 		}
 	}
@@ -786,7 +792,7 @@ public class TaskController {
 	private boolean allowPublish(Task t) {
 
 		if (t.getAmountOfVolunteers() > 0 && !t.getDescription().equals("") && t.getStartTime() != null
-				&& t.getEndTime() != null && !t.getNeededCompetences().isEmpty() && !t.getLocation().equals("")) {
+				&& t.getEndTime() != null && !t.getCompetenceTaskRels().isEmpty() && !t.getLocation().equals("")) {
 			return true;
 		}
 		return false;

@@ -40,7 +40,7 @@ public class CompetenceAugmenter {
 	private void augmentIntern(Competence c, double criteria, double distance,
 			HashMap<Long, TravelledCompetence> relatedCompetences) {
 
-		relatedCompetences.put(c.getId(), new TravelledCompetence(c, distance));
+		relatedCompetences.put(c.getId(), new TravelledCompetence(c, distance, distance));
 
 		List<CompetenceRelationship> list1 = relationDAO.findByCompetence1(c);
 		List<CompetenceRelationship> list2 = relationDAO.findByCompetence2(c);

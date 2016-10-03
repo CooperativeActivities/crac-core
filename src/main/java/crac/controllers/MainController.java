@@ -24,6 +24,7 @@ import crac.daos.CompetenceDAO;
 import crac.daos.CompetencePermissionTypeDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
+import crac.daos.CompetenceTaskRelDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.RepetitionDateDAO;
 import crac.daos.TaskDAO;
@@ -34,6 +35,7 @@ import crac.models.CracUser;
 import crac.models.Task;
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
+import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserCompetenceRel;
 import crac.utility.CompetenceAugmenter;
 import crac.utility.ElasticConnector;
@@ -56,6 +58,8 @@ public class MainController {
 	@Autowired
 	private RepetitionDateDAO repetitionDateDAO;
 
+	@Autowired
+	private CompetenceTaskRelDAO competenceTaskRelDAO;
 	
 	@Autowired
 	private TaskDAO taskDAO;
@@ -242,10 +246,7 @@ public class MainController {
 		time.set(2016, 9, 10, 17, 00, 00);
 		waterRoses.setEndTime(time);
 		waterRoses.setUrgency(5);
-		waterRoses.setAmountOfVolunteers(2);
-		waterRoses.setNeededCompetences(new HashSet<Competence>());
-		waterRoses.getNeededCompetences().add(breathing);
-		waterRoses.getNeededCompetences().add(walking);
+		waterRoses.setAmountOfVolunteers(2);		
 		waterRoses.setCreator(myUser);
 		waterRoses.setSuperTask(waterFlowers);
 		
@@ -259,9 +260,6 @@ public class MainController {
 		waterLilies.setEndTime(time);
 		waterLilies.setUrgency(2);
 		waterLilies.setAmountOfVolunteers(1);
-		waterLilies.setNeededCompetences(new HashSet<Competence>());
-		waterLilies.getNeededCompetences().add(breathing);
-		waterLilies.getNeededCompetences().add(walking);
 		waterLilies.setCreator(myUser);
 		waterLilies.setSuperTask(waterFlowers);
 		
@@ -275,12 +273,7 @@ public class MainController {
 		programWateringTool.setEndTime(time);
 		programWateringTool.setUrgency(10);
 		programWateringTool.setAmountOfVolunteers(1);
-		programWateringTool.setNeededCompetences(new HashSet<Competence>());
-		programWateringTool.getNeededCompetences().add(breathing);
-		programWateringTool.getNeededCompetences().add(walking);
-		programWateringTool.getNeededCompetences().add(programming);
-		programWateringTool.getNeededCompetences().add(phpProgramming);
-		programWateringTool.getNeededCompetences().add(javascriptProgramming);
+		
 		programWateringTool.setCreator(myUser);
 		programWateringTool.setSuperTask(waterFlowers);
 		
@@ -290,6 +283,22 @@ public class MainController {
 		waterFlowers.getChildTasks().add(programWateringTool);
 		
 		taskDAO.save(waterFlowers);
+		taskDAO.save(waterRoses);
+		taskDAO.save(waterLilies);
+		taskDAO.save(programWateringTool);
+		
+		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, waterRoses, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, waterRoses, 10, 10));
+		
+		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, waterLilies, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, waterLilies, 10, 10));
+		
+		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, programWateringTool, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, programWateringTool, 100, 100));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(programming, programWateringTool, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(phpProgramming, programWateringTool, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(javascriptProgramming, programWateringTool, 10, 10));
+
 		
 		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
 
@@ -309,12 +318,12 @@ public class MainController {
 		Webmaster.setFirstName("Max");
 		Webmaster.setLastName("Mustermann");
 		Webmaster.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing, 0.9, 1));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking, 0.9, 1));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming, 0.9, 1));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming, 0.9, 1));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming, 0.9, 1));
-		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming, 0.9, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, breathing, 50, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, walking, 50, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, swimming, 50, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, programming, 50, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming, 50, 1));
+		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming, 50, 1));
 		Webmaster.setPassword(bcryptEncoder.encode("noOneKnowsThisPassword!1!1"));
 		Webmaster.setRole(Role.USER);
 		Webmaster.setPhone("0987656789098");
@@ -326,9 +335,9 @@ public class MainController {
 		AverageHuman.setFirstName("Hans");
 		AverageHuman.setLastName("Musterhans");
 		AverageHuman.setCompetenceRelationships(new HashSet<UserCompetenceRel>());
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing, 0.9, 1));
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking, 0.9, 1));
-		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming, 0.9, 1));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, breathing, 50, 1));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking, 50, 1));
+		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming, 50, 1));
 		AverageHuman.setPassword(bcryptEncoder.encode("noOneKnowsThisPasswordAnyway!1!1"));
 		AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");

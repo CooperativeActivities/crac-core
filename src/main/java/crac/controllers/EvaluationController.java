@@ -33,6 +33,7 @@ import crac.models.Evaluation;
 import crac.models.Task;
 import crac.notifier.NotificationHelper;
 import crac.notifier.notifications.EvaluationNotification;
+import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
@@ -208,14 +209,15 @@ public class EvaluationController {
 
 	}
 
+	//TODO redo when search is done
 	private void postProcessEvaluation(Evaluation e) {
 		Task task = e.getTask();
 
-		for (Competence c : task.getNeededCompetences()) {
-			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUser(), c);
+		for (CompetenceTaskRel c : task.getCompetenceTaskRels()) {
+			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUser(), c.getCompetence());
 
 			if (uc != null) {
-				uc.setLikeValue(uc.getLikeValue() * adjustValues(e.getLikeValTask()));
+				//uc.setLikeValue(uc.getLikeValue() * adjustValues(e.getLikeValTask()));
 			}
 
 			userCompetenceRelDAO.save(uc);

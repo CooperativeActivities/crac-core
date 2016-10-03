@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
+import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserTaskRel;
 import crac.utilityModels.RepetitionDate;
 
@@ -90,15 +91,6 @@ public class Task {
 	private Task nextTask;
 	
 	/**
-	 * defines a many to many relation with the competence-entity
-	 */
-	@JsonIdentityReference(alwaysAsId=true)
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinTable(name = "task_competences", joinColumns = { @JoinColumn(name = "task_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "competence_id") })
-	private Set<Competence> neededCompetences;
-
-	/**
 	 * defines a one to many relationship with the userRelationship-entity
 	 */
 	
@@ -142,6 +134,10 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
 	private Set<Evaluation> mappedEvaluations;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<CompetenceTaskRel> competenceTaskRels;
 
 	/**
 	 * constructors
@@ -172,13 +168,13 @@ public class Task {
 		t.setLocation(location);
 		t.setName(name);
 		
-		Set<Competence> competences = new HashSet<Competence>();
+		Set<CompetenceTaskRel> competences = new HashSet<CompetenceTaskRel>();
 		
-		for(Competence c : neededCompetences){
-			competences.add(c);
+		for(CompetenceTaskRel c : competenceTaskRels){
+			competences.add(new CompetenceTaskRel(c.getCompetence(), c.getTask(), c.getNeededProficiencyLevel(), c.getImportanceLevel()));
 		}
 		
-		t.setNeededCompetences(competences);
+		t.setCompetenceTaskRels(competences);
 		t.setSuperTask(superTask);
 		t.setTaskType(taskType);
 		t.setUrgency(urgency);
@@ -231,14 +227,6 @@ public class Task {
 
 	public void setCreator(CracUser creator) {
 		this.creator = creator;
-	}
-
-	public Set<Competence> getNeededCompetences() {
-		return neededCompetences;
-	}
-
-	public void setNeededCompetences(Set<Competence> neededCompetences) {
-		this.neededCompetences = neededCompetences;
 	}
 
 	public Task getSuperTask() {
@@ -393,6 +381,14 @@ public class Task {
 
 	public void setMappedEvaluations(Set<Evaluation> mappedEvaluations) {
 		this.mappedEvaluations = mappedEvaluations;
+	}
+
+	public Set<CompetenceTaskRel> getCompetenceTaskRels() {
+		return competenceTaskRels;
+	}
+
+	public void setCompetenceTaskRels(Set<CompetenceTaskRel> competenceTaskRels) {
+		this.competenceTaskRels = competenceTaskRels;
 	}
 
 }
