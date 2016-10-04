@@ -304,6 +304,72 @@ Json-data, a success
 
 -----------------------------------------------------------------
 
+**Shows the friends of the logged in user**
+
+#####*Request:*
+
+GET user/friends
+
+#####*Response:*
+
+	[
+		{
+			"id": 1,
+			"name": "friend1",
+			...
+		},
+		{
+			"id": 2,
+			"name": "friend2",
+			...
+		}
+	]
+
+-----------------------------------------------------------------
+
+**Unfriends target user**
+
+#####*Request:*
+
+GET user/{user_id}/unfriend
+
+#####*Response:*
+
+Json-data, a success
+
+-----------------------------------------------------------------
+
+**Shows the relationships of the logged in user**
+
+#####*Request:*
+
+GET user/relationships
+
+#####*Response:*
+
+	[
+	  {
+	    "relatedUser": {
+	      "id": 2,
+	      "name": "user1",
+	      ...
+	    },
+	    "likeValue": 20,
+	    "friends": true
+	  },
+	  {
+	    "relatedUser": {
+	      "id": 4,
+	      "name": "user2",
+	      ...
+	    },
+	    "likeValue": -10,
+	    "friends": false
+	  }
+	]
+
+-----------------------------------------------------------------
+
 **Returns the values for the enum taskParticipationType**
 
 #####*Request:*
@@ -422,11 +488,11 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
-**Adds a competence by given id to a task by given id**
+**Adds target competence to target task, it is mandatory to add the proficiency and importanceLvl**
 	
 #####*Request:*
 
-GET /task/{task_id}/competence/{competence_id}/require
+GET /task/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}
 
 #####*Response:*
 
@@ -450,7 +516,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/search/{task_name}"
+GET /task/searchDirect/{task_name}"
 
 #####*Response:*
 
@@ -488,6 +554,64 @@ GET /task/{supertask_id}/extend"
 #####*Response:*
 
 Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Copy target task (work in progress)**
+
+#####*Request:*
+
+GET /task/{task_id}/copy"
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Sets the TaskRepetitionState from once to periodic if possible, mandatory to add a date as json**
+
+#####*Request:*
+
+GET /task/{task_id}/periodic/set"
+
+	{
+		"year": 0,
+		"month": 0,
+		"day": 2,
+	   "hour": 2,
+	   "minute": 2
+	   
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Resets the TaskRepetitionState from periodic to once**
+
+#####*Request:*
+
+GET /task/{task_id}/periodic/undo"
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Issues an invite-notification to the target-user**
+
+#####*Request:*
+
+GET /task//{task_id}/invite/{user_id}"
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
 	
 -----------------------------------------------------------------
 
@@ -770,27 +894,83 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-###Simple Taskfeed
+###Notifications-Endpoints
+These endpoint handle already issued notifications for the most parts
 
 -----------------------------------------------------------------
 
-**Returns all Tasks, which neededCompetences match with the addedCompetences of the logged in user**
+**Returns all notifications, which target the logged in user**
 
 #####*Request:*
 
-GET /news
+GET /notification
 
 #####*Response:*
 
 	[
-		{
-			"id": 1,
-			"name": "testTask",
-			...
-		},
-		{
-			"id": 2,
-			"name": "AnotherTask",
-			...
-		}
+	  {
+	    "notificationId": "22517116313100323167",
+	    "targetId": 3,
+	    ...
+	  },
+	  {
+	    "notificationId": "528924t6523027823167",
+	    "targetId": 3,
+	    ...
+	  }
 	]
+	
+-----------------------------------------------------------------
+
+**Returns all notifications in the system**
+
+#####*Request:*
+
+GET /notification/admin
+
+####This function requires ADMIN-rights!
+
+#####*Response:*
+
+	[
+	  {
+	    "notificationId": "22517116313100323167",
+	    "targetId": 3,
+	    ...
+	  },
+	  {
+	    "notificationId": "528924t6523027823167",
+	    "targetId": 1,
+	    ...
+	  },
+	  {
+	    "notificationId": "528924o2347235287821",
+	    "targetId": 2,
+	    ...
+	  }
+	]
+	
+-----------------------------------------------------------------
+
+**Triggers the accept-method of the notification and deletes it**
+
+#####*Request:*
+
+GET /notification/{notification_id}/accept
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Triggers the deny-method of the notification and deletes it**
+
+#####*Request:*
+
+GET /notification/{notification_id}/deny
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+	

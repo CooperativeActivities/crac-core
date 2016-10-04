@@ -422,7 +422,7 @@ public class CracUserController {
 	}
 
 	/**
-	 * Shows the friends of the logged in user
+	 * Shows the relationships of the logged in user
 	 * 
 	 * @return ResponseEntity
 	 */

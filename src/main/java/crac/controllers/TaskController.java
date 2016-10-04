@@ -252,7 +252,7 @@ public class TaskController {
 	}
 
 	/**
-	 * Adds target competence to target task
+	 * Adds target competence to target task, it is mandatory to add the proficiency and importanceLvl
 	 * 
 	 * @param task_id
 	 * @param competence_id
@@ -321,7 +321,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = "/search/{task_name}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/searchDirect/{task_name}", "/searchDirect/{task_name}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getByName(@PathVariable(value = "task_name") String task_name) {
 		List<Task> taskList = taskDAO.findMultipleByNameLike("%" + task_name + "%");
@@ -388,7 +388,7 @@ public class TaskController {
 	}
 
 	/**
-	 * Sets the TaskRepetitionState from once to periodic if possible
+	 * Sets the TaskRepetitionState from once to periodic if possible, mandatory to add a date as json
 	 * 
 	 * @param task_id
 	 * @return ResponseEntity

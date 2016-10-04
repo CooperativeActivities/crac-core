@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,10 @@ public class NotificationController {
 	@Autowired
 	private UserRelationshipDAO userRelationshipDAO;
 
+	/**
+	 * Returns all notifications, which target the logged in user
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getNotifications() {
@@ -50,12 +55,22 @@ public class NotificationController {
 		return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getUserNotifications(user)));
 	}
 	
+	/**
+	 * Returns all notifications in the system
+	 * @return
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getAllNotifications() {
 	return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getAllNotifications()));
 	}
 
+	/**
+	 * Triggers the accept-method of the notification and deletes it
+	 * @param notificationId
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/{notification_id}/accept", "/friend/{notification_id}/accept/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> acceptFriend(@PathVariable(value = "notification_id") String notificationId) {
@@ -76,6 +91,11 @@ public class NotificationController {
 
 	}
 	
+	/**
+	 * Triggers the deny-method of the notification and deletes it
+	 * @param notificationId
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/{notification_id}/deny", "/{notification_id}/deny/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> denyFriend(@PathVariable(value = "notification_id") String notificationId) {
