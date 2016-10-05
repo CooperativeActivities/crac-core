@@ -45,7 +45,7 @@ else the standard unauthorized-message will appear:
 
 #####*Request:*
 
-GET /user
+GET /user/all
 
 #####*Response:*
 
