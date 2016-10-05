@@ -175,10 +175,11 @@ public class CracUserController {
 	 * @return ResponseEntity
 	 */
 
-	@RequestMapping(value = { "/competence/{competence_id}/add",
-			"/competence/{competence_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/competence/{competence_id}/add/{likeValue}/{proficiencyValue}",
+			"/competence/{competence_id}/add/{likeValue}/{proficiencyValue}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addCompetence(@PathVariable(value = "competence_id") Long competenceId) {
+	public ResponseEntity<String> addCompetence(@PathVariable(value = "competence_id") Long competenceId,
+			@PathVariable(value = "likeValue") int likeValue, @PathVariable(value = "proficiencyValue") int proficiencyValue) {
 
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
@@ -189,6 +190,8 @@ public class CracUserController {
 		if (competence != null) {
 			rel.setUser(user);
 			rel.setCompetence(competence);
+			rel.setLikeValue(likeValue);
+			rel.setProficiencyValue(proficiencyValue);
 			user.getCompetenceRelationships().add(rel);
 			userDAO.save(user);
 			return JSonResponseHelper.successFullyAssigned(competence);

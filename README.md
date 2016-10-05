@@ -192,11 +192,11 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Add a competence with given ID to the currently logged in user**
+**Add a competence with given ID to the currently logged in user, likeValue and proficiencyValue are mandatory**
 
 #####*Request:*
 
-GET user/competence/{competence_id}/add
+GET user/competence/{competence_id}/add/{likeValue}/{proficiencyValue}
 
 #####*Response:*
 
