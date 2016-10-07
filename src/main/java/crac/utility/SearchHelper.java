@@ -212,6 +212,7 @@ public class SearchHelper {
 
 			int proficiencyValue = urel.getProficiencyValue();
 			int likeValue = urel.getLikeValue();
+			int importancyLevel = trel.getImportanceLevel();
 			int neededProficiency = 0;
 			if (trel != null) {
 				neededProficiency = trel.getNeededProficiencyLevel();
@@ -221,7 +222,8 @@ public class SearchHelper {
 				double oVal = entry.getValue().getTravelled();
 				double cVal1 = addProficiencyLevel(oVal, neededProficiency, proficiencyValue);
 				double cVal2 = addLikeLevel(cVal1, likeValue);
-				entry.getValue().setCalculatedScore(cVal2);
+				double cVal3 = addImportancyLevel(cVal2, importancyLevel);
+				entry.getValue().setCalculatedScore(cVal3);
 			}
 		}
 	}
@@ -229,17 +231,28 @@ public class SearchHelper {
 	private double addProficiencyLevel(double value, int neededProficiency, int proficiencyValue) {
 		double newVal = value;
 		if (proficiencyValue < neededProficiency) {
-			System.out.println("TRIGGERED!!!");
-			newVal = value * ((double)1 - (((double)neededProficiency / 100) - ((double)proficiencyValue / 100)));
+			newVal = value * ((double) 1 - (((double) neededProficiency / 100) - ((double) proficiencyValue / 100)));
 		}
 		return newVal;
 	}
 
 	private double addLikeLevel(double value, int likeValue) {
-		
-		//Markus formually
-		return value;
 
+		double newVal = value * (1 + (1 - value/2) * (double) likeValue / 100);
+		
+		if(newVal > 1){
+			newVal = 1;
+		}else if(newVal < 0){
+			newVal = 0;
+		}
+		
+		return newVal;
+
+	}
+	
+	private double addImportancyLevel(double value, int importancyValue){
+		double newVal = value * (1 - ((double)importancyValue / 3));
+		return newVal;
 	}
 
 	private double compareStacksWithSingle(ArrayList<TravelledCompetenceCollection> competenceStacks,
