@@ -174,7 +174,7 @@ public class AdminController {
 		Task deleteTask = taskDAO.findOne(id);
 
 		if (deleteTask != null) {
-			deleteTask.getCompetenceTaskRels().clear();
+			deleteTask.getMappedCompetences().clear();
 			deleteTask.getUserRelationships().clear();
 			taskDAO.delete(deleteTask);
 			ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");

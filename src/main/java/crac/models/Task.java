@@ -135,9 +135,8 @@ public class Task {
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
 	private Set<Evaluation> mappedEvaluations;
 	
-	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<CompetenceTaskRel> competenceTaskRels;
+	private Set<CompetenceTaskRel> mappedCompetences;
 
 	/**
 	 * constructors
@@ -170,11 +169,11 @@ public class Task {
 		
 		Set<CompetenceTaskRel> competences = new HashSet<CompetenceTaskRel>();
 		
-		for(CompetenceTaskRel c : competenceTaskRels){
+		for(CompetenceTaskRel c : mappedCompetences){
 			competences.add(new CompetenceTaskRel(c.getCompetence(), c.getTask(), c.getNeededProficiencyLevel(), c.getImportanceLevel()));
 		}
 		
-		t.setCompetenceTaskRels(competences);
+		t.setMappedCompetences(competences);
 		t.setSuperTask(superTask);
 		t.setTaskType(taskType);
 		t.setUrgency(urgency);
@@ -383,12 +382,12 @@ public class Task {
 		this.mappedEvaluations = mappedEvaluations;
 	}
 
-	public Set<CompetenceTaskRel> getCompetenceTaskRels() {
-		return competenceTaskRels;
+	public Set<CompetenceTaskRel> getMappedCompetences() {
+		return mappedCompetences;
 	}
 
-	public void setCompetenceTaskRels(Set<CompetenceTaskRel> competenceTaskRels) {
-		this.competenceTaskRels = competenceTaskRels;
+	public void setMappedCompetences(Set<CompetenceTaskRel> mappedCompetences) {
+		this.mappedCompetences = mappedCompetences;
 	}
 
 }

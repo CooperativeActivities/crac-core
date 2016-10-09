@@ -792,7 +792,7 @@ public class TaskController {
 	private boolean allowPublish(Task t) {
 
 		if (t.getAmountOfVolunteers() > 0 && !t.getDescription().equals("") && t.getStartTime() != null
-				&& t.getEndTime() != null && !t.getCompetenceTaskRels().isEmpty() && !t.getLocation().equals("")) {
+				&& t.getEndTime() != null && !t.getMappedCompetences().isEmpty() && !t.getLocation().equals("")) {
 			return true;
 		}
 		return false;

@@ -187,7 +187,7 @@ public class SearchHelper {
 			logger.setTitleTask(task.getName());
 
 			Set<Competence> singleCompetences = new HashSet<Competence>();
-			for (CompetenceTaskRel ctr : task.getCompetenceTaskRels()) {
+			for (CompetenceTaskRel ctr : task.getMappedCompetences()) {
 				singleCompetences.add(ctr.getCompetence());
 			}
 
@@ -320,7 +320,7 @@ public class SearchHelper {
 
 		Set<Competence> taskCompetences = new HashSet<Competence>();
 
-		for (CompetenceTaskRel ctr : task.getCompetenceTaskRels()) {
+		for (CompetenceTaskRel ctr : task.getMappedCompetences()) {
 			taskCompetences.add(ctr.getCompetence());
 		}
 

@@ -232,9 +232,7 @@ public class MainController {
 		time.set(2016, 9, 10, 17, 00, 00);
 		waterFlowers.setEndTime(time);
 		waterFlowers.setCreator(myUser);
-		
-		taskDAO.save(waterFlowers);
-		
+				
 		//Add tasks
 		
 		Task waterRoses = new Task();

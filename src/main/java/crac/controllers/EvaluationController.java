@@ -213,7 +213,7 @@ public class EvaluationController {
 	private void postProcessEvaluation(Evaluation e) {
 		Task task = e.getTask();
 
-		for (CompetenceTaskRel c : task.getCompetenceTaskRels()) {
+		for (CompetenceTaskRel c : task.getMappedCompetences()) {
 			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUser(), c.getCompetence());
 
 			if (uc != null) {
