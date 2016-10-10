@@ -90,10 +90,10 @@ public class SearchHelper {
 
 		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(userCompetences);
 				 
-		/*ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(user, competenceStacks);
+		ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(user, competenceStacks);
 		if (bindUserRelations)
 			considerUserRelationships(evaluatedTasks, user);
-		Collections.sort(evaluatedTasks);*/
+		Collections.sort(evaluatedTasks);
 		//return evaluatedTasks;
 		return null;
 
