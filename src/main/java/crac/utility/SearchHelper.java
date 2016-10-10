@@ -88,10 +88,8 @@ public class SearchHelper {
 			userCompetences.add(ucr.getCompetence());
 		}
 
-		ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(userCompetences);
-		/*
-		 * if (bindUserExperience) makeDependantOnUser(competenceStacks, user);
-		 */
+		//ArrayList<TravelledCompetenceCollection> competenceStacks = augmentAll(userCompetences);
+				 
 		/*ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(user, competenceStacks);
 		if (bindUserRelations)
 			considerUserRelationships(evaluatedTasks, user);
