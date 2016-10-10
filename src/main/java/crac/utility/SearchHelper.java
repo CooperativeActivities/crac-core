@@ -143,7 +143,7 @@ public class SearchHelper {
 
 		for (Task task : taskDAO.findAll()) {
 
-			addAdditionalData(task, user, competenceStacks);
+			//addAdditionalData(task, user, competenceStacks);
 
 			TaskSearchLogger logger = TaskSearchLogger.getInstance();
 			logger.setTitleTask(task.getName());
