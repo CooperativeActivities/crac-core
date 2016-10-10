@@ -137,23 +137,6 @@ public class SearchHelper {
 		return result;
 	}
 
-	/*
-	 * private void considerProficiency(ArrayList<TravelledCompetenceCollection>
-	 * competenceCollections, CracUser user) {
-	 * 
-	 * for (TravelledCompetenceCollection collection : competenceCollections) {
-	 * double proficiencyValue = userCompetenceRelDAO
-	 * .findByUserAndCompetence(user,
-	 * collection.getStackedCompetences().get(collection.getMainId()).
-	 * getCompetence()) .getProficiencyValue(); for (Entry<Long,
-	 * TravelledCompetence> entry :
-	 * collection.getStackedCompetences().entrySet()) {
-	 * entry.getValue().setTravelled(entry.getValue().getTravelled() *
-	 * PROFICIENCE_FACTOR * proficiencyValue); } }
-	 * 
-	 * }
-	 */
-
 	private ArrayList<EvaluatedTask> findBestTasks(CracUser user,
 			ArrayList<TravelledCompetenceCollection> competenceStacks) {
 		ArrayList<EvaluatedTask> evaluatedTasks = new ArrayList<EvaluatedTask>();
@@ -171,9 +154,9 @@ public class SearchHelper {
 			}
 
 			double comparationValue = compareStacksWithSingle(competenceStacks, singleCompetences);
-			if (checkMandatoryViolation(user, singleCompetences, task)) {
+			/*if (checkMandatoryViolation(user, singleCompetences, task)) {
 				comparationValue = 0;
-			}
+			}*/
 			if (comparationValue > 0) {
 				evaluatedTasks.add(new EvaluatedTask(task, comparationValue));
 			}
