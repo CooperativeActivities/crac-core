@@ -44,7 +44,7 @@ public class CompetenceAugmenter {
 
 		List<CompetenceRelationship> list1 = relationDAO.findByCompetence1(c);
 		List<CompetenceRelationship> list2 = relationDAO.findByCompetence2(c);
-
+/*
 		if (list1 != null) {
 			for (CompetenceRelationship cr : list1) {
 				Competence targetC = cr.getCompetence2();
@@ -52,7 +52,7 @@ public class CompetenceAugmenter {
 				augmentSingle(targetC, criteria, newDistance, relatedCompetences);
 			}
 		}
-		
+		*/
 		if (list2 != null) {
 			for (CompetenceRelationship cr : list1) {
 				Competence targetC = cr.getCompetence1();
