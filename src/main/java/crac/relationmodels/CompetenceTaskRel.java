@@ -41,15 +41,18 @@ public class CompetenceTaskRel {
 	
 	//0-100
 	private int importanceLevel;
+	
+	private boolean mandatory;
 
 	public CompetenceTaskRel() {
 	}
 	
-	public CompetenceTaskRel(Competence competence, Task task, int neededProficiencyLevel, int importanceLevel) {
+	public CompetenceTaskRel(Competence competence, Task task, int neededProficiencyLevel, int importanceLevel, boolean mandatory) {
 		this.competence = competence;
 		this.task = task;
 		this.neededProficiencyLevel = neededProficiencyLevel;
 		this.importanceLevel = importanceLevel;
+		this.mandatory = mandatory;
 	}
 
 	public long getId() {
@@ -90,6 +93,14 @@ public class CompetenceTaskRel {
 
 	public void setImportanceLevel(int importanceLevel) {
 		this.importanceLevel = importanceLevel;
+	}
+
+	public boolean isMandatory() {
+		return mandatory;
+	}
+
+	public void setMandatory(boolean mandatory) {
+		this.mandatory = mandatory;
 	}
 	
 }

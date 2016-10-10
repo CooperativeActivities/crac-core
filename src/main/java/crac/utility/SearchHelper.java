@@ -113,27 +113,6 @@ public class SearchHelper {
 
 	}
 
-	/*
-	 * private void makeDependantOnUser(ArrayList<TravelledCompetenceCollection>
-	 * competenceCollections, CracUser user) {
-	 * 
-	 * for (TravelledCompetenceCollection collection : competenceCollections) {
-	 * 
-	 * UserCompetenceRel rel =
-	 * userCompetenceRelDAO.findByUserAndCompetence(user,
-	 * collection.getStackedCompetences().get(collection.getMainId()).
-	 * getCompetence());
-	 * 
-	 * int proficiencyValue = rel.getProficiencyValue(); int likeValue =
-	 * rel.getLikeValue();
-	 * 
-	 * for (Entry<Long, TravelledCompetence> entry :
-	 * collection.getStackedCompetences().entrySet()) {
-	 * entry.getValue().setTravelled(addLikeLevel(addProficiencyLevel(entry.
-	 * getValue().getTravelled(), proficiencyValue), likeValue)); } }
-	 * 
-	 * }
-	 */
 	private void considerUserRelationships(ArrayList<EvaluatedTask> tasks, CracUser user) {
 		for (EvaluatedTask task : tasks) {
 			Set<UserTaskRel> rels = task.getTask().getUserRelationships();
@@ -192,6 +171,9 @@ public class SearchHelper {
 			}
 
 			double comparationValue = compareStacksWithSingle(competenceStacks, singleCompetences);
+			if (checkMandatoryViolation(user, singleCompetences, task)) {
+				comparationValue = 0;
+			}
 			if (comparationValue > 0) {
 				evaluatedTasks.add(new EvaluatedTask(task, comparationValue));
 			}
@@ -210,20 +192,29 @@ public class SearchHelper {
 
 			CompetenceTaskRel trel = competenceTaskRelDAO.findByTaskAndCompetence(task, mainc);
 
+			int importancyLevel = 0;
+
 			int proficiencyValue = urel.getProficiencyValue();
 			int likeValue = urel.getLikeValue();
-			int importancyLevel = trel.getImportanceLevel();
+			if (trel != null) {
+				importancyLevel = trel.getImportanceLevel();
+			}
 			int neededProficiency = 0;
 			if (trel != null) {
 				neededProficiency = trel.getNeededProficiencyLevel();
 			}
 
 			for (Entry<Long, TravelledCompetence> entry : collection.getStackedCompetences().entrySet()) {
+				// check if the competence is mandatory and kick out the task if
+				// user doesn't have mandatory
 				double oVal = entry.getValue().getTravelled();
 				double cVal1 = addProficiencyLevel(oVal, neededProficiency, proficiencyValue);
 				double cVal2 = addLikeLevel(cVal1, likeValue);
 				double cVal3 = addImportancyLevel(cVal2, importancyLevel);
 				entry.getValue().setCalculatedScore(cVal3);
+
+				System.out.println("checked-competence!: " + entry.getValue().getCompetence().getName());
+
 			}
 		}
 	}
@@ -238,21 +229,43 @@ public class SearchHelper {
 
 	private double addLikeLevel(double value, int likeValue) {
 
-		double newVal = value * (1 + (1 - value/2) * (double) likeValue / 100);
-		
-		if(newVal > 1){
+		double newVal = value * (1 + (1 - value / 2) * (double) likeValue / 100);
+
+		if (newVal > 1) {
 			newVal = 1;
-		}else if(newVal < 0){
+		} else if (newVal < 0) {
 			newVal = 0;
 		}
-		
+
 		return newVal;
 
 	}
-	
-	private double addImportancyLevel(double value, int importancyValue){
-		double newVal = value * (1 - ((double)importancyValue / 3));
+
+	private double addImportancyLevel(double value, int importancyValue) {
+
+		double newVal = value;
+
+		// do only if the value is not 1, since 1 means that the user possesses
+		// the competence
+		if (value != 1) {
+			newVal = value * (1 - ((double) importancyValue / 300));
+			System.out.println("orig-value: " + value + " import-value: " + importancyValue + " new-value: " + newVal);
+		} else {
+			System.out.println("orig-value: " + value + " import-value: " + importancyValue + " new-value: unchanged");
+		}
 		return newVal;
+	}
+
+	public boolean checkMandatoryViolation(CracUser u, Set<Competence> singleCompetences, Task task) {
+		for (Competence c : singleCompetences) {
+			CompetenceTaskRel trel = competenceTaskRelDAO.findByTaskAndCompetence(task, c);
+			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(u, c);
+			if (trel.isMandatory() && ucr == null) {
+				return true;
+			}
+			System.out.println("mandatoryCheck: comp: " + c.getName() + " | task: " + task.getName());
+		}
+		return false;
 	}
 
 	private double compareStacksWithSingle(ArrayList<TravelledCompetenceCollection> competenceStacks,
@@ -269,6 +282,7 @@ public class SearchHelper {
 			logger.addColumnTitle(taskC.getName());
 
 			for (TravelledCompetenceCollection userStack : competenceStacks) {
+
 				double additionalValue = compareCompetenceWithAugmented(taskC, userStack);
 				if (additionalValue > 0) {
 					count++;

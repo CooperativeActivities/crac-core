@@ -170,7 +170,7 @@ public class Task {
 		Set<CompetenceTaskRel> competences = new HashSet<CompetenceTaskRel>();
 		
 		for(CompetenceTaskRel c : mappedCompetences){
-			competences.add(new CompetenceTaskRel(c.getCompetence(), c.getTask(), c.getNeededProficiencyLevel(), c.getImportanceLevel()));
+			competences.add(new CompetenceTaskRel(c.getCompetence(), c.getTask(), c.getNeededProficiencyLevel(), c.getImportanceLevel(), c.isMandatory()));
 		}
 		
 		t.setMappedCompetences(competences);

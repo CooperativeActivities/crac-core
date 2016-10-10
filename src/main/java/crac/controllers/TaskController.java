@@ -258,12 +258,13 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}",
-			"/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}",
+			"/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> requireCompetence(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "competence_id") Long competence_id,
-			@PathVariable(value = "proficiency") int proficiency, @PathVariable(value = "importance") int importance) {
+			@PathVariable(value = "proficiency") int proficiency, @PathVariable(value = "importance") int importance,
+			@PathVariable(value = "mandatory") boolean mandatory) {
 
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
@@ -273,7 +274,7 @@ public class TaskController {
 		if (task != null && competence != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED) {
-				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, proficiency, importance));
+				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, proficiency, importance, mandatory));
 				return JSonResponseHelper.successFullyAssigned(competence);
 			} else {
 				return JSonResponseHelper.ressourceUnchangeable();

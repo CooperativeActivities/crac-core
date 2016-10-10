@@ -285,17 +285,17 @@ public class MainController {
 		taskDAO.save(waterLilies);
 		taskDAO.save(programWateringTool);
 		
-		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, waterRoses, 10, 10));
-		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, waterRoses, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, waterRoses, 10, 10, true));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, waterRoses, 10, 10, false));
 		
-		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, waterLilies, 10, 10));
-		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, waterLilies, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, waterLilies, 10, 10, true));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, waterLilies, 10, 10, false));
 		
-		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, programWateringTool, 10, 10));
-		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, programWateringTool, 100, 100));
-		competenceTaskRelDAO.save(new CompetenceTaskRel(programming, programWateringTool, 10, 10));
-		competenceTaskRelDAO.save(new CompetenceTaskRel(phpProgramming, programWateringTool, 10, 10));
-		competenceTaskRelDAO.save(new CompetenceTaskRel(javascriptProgramming, programWateringTool, 10, 10));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(breathing, programWateringTool, 10, 10, true));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(walking, programWateringTool, 100, 100, false));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(programming, programWateringTool, 10, 10, false));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(phpProgramming, programWateringTool, 10, 10, false));
+		competenceTaskRelDAO.save(new CompetenceTaskRel(javascriptProgramming, programWateringTool, 10, 10, false));
 
 		
 		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");

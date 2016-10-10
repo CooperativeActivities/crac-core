@@ -255,6 +255,33 @@ public class CracUserController {
 		}
 
 	}
+	
+	@RequestMapping(value = { "/competence", "/competence/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getCompetences() {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+
+		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
+		
+		if (competenceRels.size() != 0) {
+
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				return ResponseEntity.ok().body(mapper.writeValueAsString(competenceRels));
+			} catch (JsonProcessingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonWriteError();
+			}
+
+		} else {
+			return JSonResponseHelper.emptyData();
+		}
+
+	}
+
+	
 
 	/**
 	 * Returns all tasks of logged in user, divided in the
