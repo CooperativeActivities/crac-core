@@ -92,11 +92,12 @@ public class SearchHelper {
 		/*
 		 * if (bindUserExperience) makeDependantOnUser(competenceStacks, user);
 		 */
-		ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(user, competenceStacks);
+		/*ArrayList<EvaluatedTask> evaluatedTasks = findBestTasks(user, competenceStacks);
 		if (bindUserRelations)
 			considerUserRelationships(evaluatedTasks, user);
-		Collections.sort(evaluatedTasks);
-		return evaluatedTasks;
+		Collections.sort(evaluatedTasks);*/
+		//return evaluatedTasks;
+		return null;
 
 	}
 
@@ -143,7 +144,7 @@ public class SearchHelper {
 
 		for (Task task : taskDAO.findAll()) {
 
-			//addAdditionalData(task, user, competenceStacks);
+			addAdditionalData(task, user, competenceStacks);
 
 			TaskSearchLogger logger = TaskSearchLogger.getInstance();
 			logger.setTitleTask(task.getName());
@@ -154,9 +155,9 @@ public class SearchHelper {
 			}
 
 			double comparationValue = compareStacksWithSingle(competenceStacks, singleCompetences);
-			/*if (checkMandatoryViolation(user, singleCompetences, task)) {
+			if (checkMandatoryViolation(user, singleCompetences, task)) {
 				comparationValue = 0;
-			}*/
+			}
 			if (comparationValue > 0) {
 				evaluatedTasks.add(new EvaluatedTask(task, comparationValue));
 			}
