@@ -256,6 +256,10 @@ public class CracUserController {
 
 	}
 	
+	/**
+	 * Returns the competences of the currently logged in user, wrapped in the relationship-object
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/competence", "/competence/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getCompetences() {

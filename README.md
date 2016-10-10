@@ -253,6 +253,44 @@ GET user/task
 	  ],
 	  "leading": []
 	}
+-----------------------------------------------------------------
+
+**Returns the competences of the currently logged in user, wrapped in the relationship-object**
+
+#####*Request:*
+
+GET user/competence
+
+#####*Response:*
+
+	[
+	  {
+	    "id": 16,
+	    "user": 3,
+	    "competence": {
+	      "id": 6,
+	      "name": "javascript-programming",
+	      ...
+	      ]
+	    },
+	    "likeValue": 1,
+	    "proficiencyValue": 50
+	  },
+	  {
+	    "id": 17,
+	    "user": 3,
+	    "competence": {
+	      "id": 7,
+	      "name": "php-programming",
+	      ...
+	      ]
+	    },
+	    "likeValue": 1,
+	    "proficiencyValue": 50
+	  },
+	  ...
+	]
+
 
 -----------------------------------------------------------------
 
