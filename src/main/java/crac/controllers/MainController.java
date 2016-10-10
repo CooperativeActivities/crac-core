@@ -35,6 +35,7 @@ import crac.models.CracUser;
 import crac.models.Task;
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
+import crac.relationmodels.CompetenceRelationshipType;
 import crac.relationmodels.CompetenceTaskRel;
 import crac.relationmodels.UserCompetenceRel;
 import crac.utility.CompetenceAugmenter;
@@ -128,6 +129,29 @@ public class MainController {
 		
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		
+		//Add relationship types
+		
+		CompetenceRelationshipType t1 = new CompetenceRelationshipType(); 
+		t1.setDescription("Basic type SMALL");
+		t1.setDistanceVal(0.9);
+		t1.setName("small");
+		
+		competenceRelationshipTypeDAO.save(t1);
+		
+		CompetenceRelationshipType t2 = new CompetenceRelationshipType(); 
+		t2.setDescription("Competences are synonym to each other");
+		t2.setDistanceVal(1.0);
+		t2.setName("isSynonym");
+		
+		competenceRelationshipTypeDAO.save(t2);
+		
+		CompetenceRelationshipType t3 = new CompetenceRelationshipType(); 
+		t3.setDescription("Competences are closely related to each other");
+		t3.setDistanceVal(0.9);
+		t3.setName("isSimilar");
+		
+		competenceRelationshipTypeDAO.save(t3);
 		
 		//Add competences
 		
