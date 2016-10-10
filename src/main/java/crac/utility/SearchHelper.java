@@ -94,8 +94,8 @@ public class SearchHelper {
 		if (bindUserRelations)
 			considerUserRelationships(evaluatedTasks, user);
 		Collections.sort(evaluatedTasks);
-		//return evaluatedTasks;
-		return null;
+		return evaluatedTasks;
+		//return null;
 
 	}
 
