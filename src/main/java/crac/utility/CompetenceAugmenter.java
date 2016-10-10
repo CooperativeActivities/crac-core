@@ -23,17 +23,15 @@ public class CompetenceAugmenter {
 
 	@Autowired
 	private CompetenceRelationshipDAO relationDAO;
-
-	public HashMap<Long, TravelledCompetence> augment(Competence c, double criteria) {
+	
+	public HashMap<Long, TravelledCompetence> augment(Competence c, double criteria){
 		HashMap<Long, TravelledCompetence> relatedCompetences = new HashMap<Long, TravelledCompetence>();
 		augmentIntern(c, criteria, 1.0, relatedCompetences);
 		return relatedCompetences;
 	}
 
 	/**
-	 * Augments a single competence with all linked once. They get stored in the
-	 * HashMap that is forwarded as a parameter.
-	 * 
+	 * Augments a single competence with all linked once. They get stored in the HashMap that is forwarded as a parameter.
 	 * @param c
 	 * @param criteria
 	 * @param distance
@@ -49,47 +47,40 @@ public class CompetenceAugmenter {
 
 		if (list1 != null) {
 			for (CompetenceRelationship cr : list1) {
-				if (cr != null) {
-					Competence targetC = cr.getCompetence2();
-					double newDistance = distance * cr.getType().getDistanceVal();
-					augmentSingle(targetC, criteria, newDistance, relatedCompetences);
-				}
+				Competence targetC = cr.getCompetence2();
+				double newDistance = distance * cr.getType().getDistanceVal();
+				//augmentSingle(targetC, criteria, newDistance, relatedCompetences);
 			}
 		}
-
+		
 		if (list2 != null) {
 			for (CompetenceRelationship cr : list1) {
-				if (cr != null) {
-					Competence targetC = cr.getCompetence1();
-					double newDistance = distance * cr.getType().getDistanceVal();
-					augmentSingle(targetC, criteria, newDistance, relatedCompetences);
-				}
+				Competence targetC = cr.getCompetence1();
+				double newDistance = distance * cr.getType().getDistanceVal();
+				//augmentSingle(targetC, criteria, newDistance, relatedCompetences);
 			}
 		}
 
 	}
-
+	
 	private void augmentSingle(Competence targetC, double criteria, double newDistance,
-			HashMap<Long, TravelledCompetence> relatedCompetences) {
+			HashMap<Long, TravelledCompetence> relatedCompetences){
 		System.out.println("////////////////////////////");
-		System.out.println("name: " + targetC.getName() + " | distance: " + newDistance + " | criteria " + criteria);
+		System.out.println("name: "+targetC.getName()+" | distance: "+newDistance+" | criteria "+criteria);
 		if (newDistance >= criteria) {
 			if (relatedCompetences.containsKey(targetC.getId())) {
 				if (newDistance > relatedCompetences.get(targetC.getId()).getTravelled()) {
 					double oldVal = relatedCompetences.get(targetC.getId()).getTravelled();
 					relatedCompetences.get(targetC.getId()).setTravelled(newDistance);
-					System.out.println("Updated in Hashset -> success | existing value: " + oldVal + " | new value: "
-							+ relatedCompetences.get(targetC.getId()).getTravelled());
-				} else {
-					System.out.println("Updated in Hashset -> failure | existing value: "
-							+ relatedCompetences.get(targetC.getId()).getTravelled() + " | attempted value: "
-							+ newDistance);
+					System.out.println("Updated in Hashset -> success | existing value: "+oldVal+" | new value: "+relatedCompetences.get(targetC.getId()).getTravelled());
+				}else{
+					System.out.println("Updated in Hashset -> failure | existing value: "+relatedCompetences.get(targetC.getId()).getTravelled()+" | attempted value: "+newDistance);
 				}
 			} else {
 				augmentIntern(targetC, criteria, newDistance, relatedCompetences);
 				System.out.println("Added to HashSet");
 			}
-		} else {
+		}else{
 			System.out.println("value smaller than criteria!");
 		}
 	}
