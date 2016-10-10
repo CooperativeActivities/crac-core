@@ -366,7 +366,8 @@ public class CracUserController {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(searchHelper.findMatch(user)));
+			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(null));
+			//return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(searchHelper.findMatch(user)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
