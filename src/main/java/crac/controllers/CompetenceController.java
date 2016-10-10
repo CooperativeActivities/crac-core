@@ -24,6 +24,7 @@ import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
+import crac.daos.UserCompetenceRelDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.relationmodels.CompetenceRelationship;
@@ -48,6 +49,9 @@ public class CompetenceController {
 
 	@Autowired
 	private CompetenceRelationshipDAO relationDAO;
+	
+	@Autowired 
+	UserCompetenceRelDAO userCompetenceRelDAO;
 
 
 	/**
@@ -140,6 +144,19 @@ public class CompetenceController {
 			return JSonResponseHelper.idNotFound();
 		}
 		
+	}
+	
+	@RequestMapping(value = { "/userrels", "/userrels/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> userrels() {
+		Iterable<UserCompetenceRel> competenceList = userCompetenceRelDAO.findAll();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return ResponseEntity.ok().body(mapper.writeValueAsString(competenceList));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
 	}
 
 }
