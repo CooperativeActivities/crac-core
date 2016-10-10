@@ -48,8 +48,8 @@ public class CompetenceAugmenter {
 		if (list1 != null) {
 			for (CompetenceRelationship cr : list1) {
 				Competence targetC = cr.getCompetence2();
-				//double newDistance = distance * cr.getType().getDistanceVal();
-				double newDistance = distance;
+				double newDistance = distance * cr.getType().getDistanceVal();
+				//double newDistance = distance;
 				augmentSingle(targetC, criteria, newDistance, relatedCompetences);
 			}
 		}
@@ -57,8 +57,8 @@ public class CompetenceAugmenter {
 		if (list2 != null) {
 			for (CompetenceRelationship cr : list1) {
 				Competence targetC = cr.getCompetence1();
-				//double newDistance = distance * cr.getType().getDistanceVal();
-				double newDistance = distance;
+				double newDistance = distance * cr.getType().getDistanceVal();
+				//double newDistance = distance;
 				augmentSingle(targetC, criteria, newDistance, relatedCompetences);
 			}
 		}
