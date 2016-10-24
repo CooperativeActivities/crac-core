@@ -2,8 +2,8 @@ package crac.controllers;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,8 @@ import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
+import crac.token.Token;
+import crac.token.TokenDAO;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchHelper;
 import crac.utility.UpdateEntitiesHelper;
@@ -79,6 +81,9 @@ public class CracUserController {
 
 	@Autowired
 	private RoleDAO roleDAO;
+	
+	@Autowired
+	private TokenDAO tokenDAO;
 
 	/**
 	 * Returns all users
@@ -353,6 +358,45 @@ public class CracUserController {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 		return JSonResponseHelper.checkUserSuccess(user);
+
+	}
+	
+	@RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> loginUser() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+		Token t = tokenDAO.findByUser(user);
+		if(t != null){
+			return JSonResponseHelper.tokenFailure(user, t);
+		}else{
+			Token token = new Token();
+
+			SecureRandom random = new SecureRandom();
+			String code = new BigInteger(130, random).toString(32);
+			
+			token.setCode(code);
+			token.setUser(user);
+			tokenDAO.save(token);
+			return JSonResponseHelper.tokenSuccess(user, token);
+		}
+
+	}
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> logoutUser() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+		Token t = tokenDAO.findByUser(user);
+		if(t != null){
+			user.setToken(null);
+			userDAO.save(user);
+			tokenDAO.delete(t);
+			return JSonResponseHelper.tokenDestroySuccess(user);
+		}else{
+			return JSonResponseHelper.tokenDestroyFailure(user);
+		}
 
 	}
 
