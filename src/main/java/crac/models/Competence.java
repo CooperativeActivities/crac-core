@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -46,7 +47,13 @@ public class Competence {
 	
 	@NotNull
 	private String description;
-
+	
+	//Defines the KOMET-ID this competence is from
+	private int kometId;
+	
+	//Defines the ID of the competence in the KOMET DB
+	private int sourceId;
+	
 	/**
 	 * defines a many to many relation with the cracUser-entity
 	 */
@@ -80,6 +87,17 @@ public class Competence {
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceTaskRel> competenceTaskRels;
+
+	@JsonIdentityReference(alwaysAsId=true)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "mapping_competencearea_competence", joinColumns={@JoinColumn(name="competence_id")}, inverseJoinColumns={@JoinColumn(name="competenceArea_id")})
+	Set<CompetenceArea> competenceAreas;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "mapping_question_competence", joinColumns={@JoinColumn(name="competence_id")}, inverseJoinColumns={@JoinColumn(name="question_id")})
+	Set<Question> mappedQuestions;
+	
 
 
 	/**
@@ -170,6 +188,38 @@ public class Competence {
 
 	public void setCompetenceTaskRels(Set<CompetenceTaskRel> competenceTaskRels) {
 		this.competenceTaskRels = competenceTaskRels;
+	}
+
+	public Set<CompetenceArea> getCompetenceAreas() {
+		return competenceAreas;
+	}
+
+	public void setCompetenceAreas(Set<CompetenceArea> competenceAreas) {
+		this.competenceAreas = competenceAreas;
+	}
+
+	public int getKometId() {
+		return kometId;
+	}
+
+	public void setKometId(int kometId) {
+		this.kometId = kometId;
+	}
+
+	public int getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(int sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public Set<Question> getMappedQuestions() {
+		return mappedQuestions;
+	}
+
+	public void setMappedQuestions(Set<Question> mappedQuestions) {
+		this.mappedQuestions = mappedQuestions;
 	}
 	
 }

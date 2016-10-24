@@ -8,6 +8,7 @@ import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Evaluation;
+import crac.models.Role;
 import crac.models.Task;
 import crac.notifier.Notification;
 import crac.relationmodels.CompetenceRelationshipType;
@@ -19,7 +20,12 @@ public class JSonResponseHelper {
 		
 	public static ResponseEntity<String> successFullyCreated(CracUser u){
 		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+	}	
+	
+	public static ResponseEntity<String> successFullyCreated(Role r){
+		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"user\":\"" + r.getId() + "\",\"name\":\"" + r.getName() + "\"}");
 	}
+
 	
 	public static ResponseEntity<String> successFullyCreated(Competence c){
 		return addEntity("{\"success\":\"true\", \"action\":\"create\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
@@ -43,6 +49,10 @@ public class JSonResponseHelper {
 		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> successFullyDeleted(Role r){
+		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"user\":\"" + r.getId() + "\",\"name\":\"" + r.getName() + "\"}");
+	}
+
 	public static ResponseEntity<String> successFullyDeleted(Competence c){
 		return addEntity("{\"success\":\"true\", \"action\":\"delete\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
 	}
@@ -66,6 +76,10 @@ public class JSonResponseHelper {
 		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
 	}
 	
+	public static ResponseEntity<String> successFullyUpdated(Role r){
+		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"user\":\"" + r.getId() + "\",\"name\":\"" + r.getName() + "\"}");
+	}
+
 	public static ResponseEntity<String> successFullyUpdated(Competence c){
 		return addEntity("{\"success\":\"true\", \"action\":\"update\", \"competence\":\"" + c.getId() + "\",\"name\":\"" + c.getName() + "\"}");
 	}
@@ -131,6 +145,10 @@ public class JSonResponseHelper {
 	
 	public static ResponseEntity<String> successFullyAssigned(CracUser u){
 		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"user\":\"" + u.getId() + "\",\"name\":\"" + u.getName() + "\"}");
+	}
+	
+	public static ResponseEntity<String> successFullyAssigned(Role r){
+		return addEntity("{\"success\":\"true\", \"action\":\"assign\", \"role\":\"" + r.getId() + "\",\"name\":\"" + r.getName() + "\"}");
 	}
 	
 	public static ResponseEntity<String> successFullyAssigned(Competence c){

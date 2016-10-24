@@ -2,6 +2,7 @@ package crac.controllers;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,9 @@ import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.enums.TaskParticipationType;
-import crac.enums.Role;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
+import crac.daos.RoleDAO;
 import crac.models.Competence;
 import crac.models.Task;
 import crac.notifier.NotificationHelper;
@@ -41,6 +42,7 @@ import crac.utility.SearchHelper;
 import crac.utility.UpdateEntitiesHelper;
 import crac.utilityModels.SimpleUserRelationship;
 import crac.models.CracUser;
+import crac.models.Role;
 
 /**
  * REST controller for managing users.
@@ -73,6 +75,9 @@ public class CracUserController {
 
 	@Autowired
 	private SearchHelper searchHelper;
+
+	@Autowired
+	private RoleDAO roleDAO;
 
 	/**
 	 * Returns all users
@@ -179,7 +184,8 @@ public class CracUserController {
 			"/competence/{competence_id}/add/{likeValue}/{proficiencyValue}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addCompetence(@PathVariable(value = "competence_id") Long competenceId,
-			@PathVariable(value = "likeValue") int likeValue, @PathVariable(value = "proficiencyValue") int proficiencyValue) {
+			@PathVariable(value = "likeValue") int likeValue,
+			@PathVariable(value = "proficiencyValue") int proficiencyValue) {
 
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
@@ -255,12 +261,15 @@ public class CracUserController {
 		}
 
 	}
-	
+
 	/**
-	 * Returns the competences of the currently logged in user, wrapped in the relationship-object
+	 * Returns the competences of the currently logged in user, wrapped in the
+	 * relationship-object
+	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/competence", "/competence/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/competence",
+			"/competence/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getCompetences() {
 
@@ -268,7 +277,7 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 
 		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
-		
+
 		if (competenceRels.size() != 0) {
 
 			ObjectMapper mapper = new ObjectMapper();
@@ -284,8 +293,6 @@ public class CracUserController {
 		}
 
 	}
-
-	
 
 	/**
 	 * Returns all tasks of logged in user, divided in the
@@ -488,22 +495,36 @@ public class CracUserController {
 		}
 	}
 
-	/**
-	 * returns the values for the enum taskParticipationType
-	 * 
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = "/roles", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/role/{role_id}/add", "/role/{role_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> roles() {
+	public ResponseEntity<String> addRole(@PathVariable(value = "role_id") Long roleId) {
 
-		ObjectMapper mapper = new ObjectMapper();
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+		Role role = roleDAO.findOne(roleId);
 
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(Role.values()));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+		if (role != null) {
+			user.getRoles().add(role);
+			userDAO.save(user);
+			return JSonResponseHelper.successFullyAssigned(role);
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+	
+	@RequestMapping(value = { "/role/{role_id}/remove", "/role/{role_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeRole(@PathVariable(value = "role_id") Long roleId) {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+		Role role = roleDAO.findOne(roleId);
+		
+		if(user.getRoles().contains(role)){
+			user.getRoles().remove(role);
+			return JSonResponseHelper.successFullyDeleted(role);
+		}else{
+			return JSonResponseHelper.idNotFound();
 		}
 	}
 

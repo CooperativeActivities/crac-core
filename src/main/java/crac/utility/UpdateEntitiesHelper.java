@@ -39,9 +39,6 @@ public class UpdateEntitiesHelper {
 		if (updated.getPhone() != null) {
 			old.setPhone(updated.getPhone());
 		}
-		if (updated.getRole() != null) {
-			old.setRole(updated.getRole());
-		}
 		if (updated.getStatus() != null) {
 			old.setStatus(updated.getStatus());
 		}

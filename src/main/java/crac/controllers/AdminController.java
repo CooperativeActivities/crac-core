@@ -26,10 +26,12 @@ import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
+import crac.daos.RoleDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.Role;
 import crac.models.Task;
 import crac.relationmodels.CompetenceRelationshipType;
 import crac.utility.ElasticConnector;
@@ -54,6 +56,9 @@ public class AdminController {
 	@Autowired
 	private TaskDAO taskDAO;
 
+	@Autowired
+	private RoleDAO roleDAO;
+	
 	@Autowired
 	private GroupDAO groupDAO;
 
@@ -415,6 +420,91 @@ public class AdminController {
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
+	}
+	
+	// ROLE-SECTION
+
+	/**
+	 * Creates a new role
+	 * 
+	 * @param json
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/role/",
+			"/role" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> createRole(@RequestBody String json) throws JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		Role r = mapper.readValue(json, Role.class);
+
+		if (roleDAO.findByName(r.getName()) == null) {
+			roleDAO.save(r);
+			return JSonResponseHelper.successFullyCreated(r);
+		} else {
+			return JSonResponseHelper.alreadyExists();
+		}
+
+	}
+
+	/**
+	 * Deletes target role
+	 * 
+	 * @param id
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/role/{role_id}",
+			"/role/{role_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> destroyRole(@PathVariable(value = "role_id") Long roleId) {
+		Role r = roleDAO.findOne(roleId);
+
+		if (r != null) {
+			roleDAO.delete(r);
+			return JSonResponseHelper.successFullyDeleted(r);
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	/**
+	 * Updates target role
+	 * 
+	 * @param json
+	 * @param id
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/role/{role_id}",
+			"/role/{role_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> updateRole(@RequestBody String json, @PathVariable(value = "role_id") Long roleId) {
+		ObjectMapper mapper = new ObjectMapper();
+		Role updatedRole;
+		try {
+			updatedRole = mapper.readValue(json, Role.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonMapError();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+
+		Role oldRole = roleDAO.findOne(roleId);
+
+		if (oldRole != null) {
+			oldRole.setName(updatedRole.getName());
+			roleDAO.save(oldRole);
+			return JSonResponseHelper.successFullyUpdated(oldRole);
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
 	}
 
 }

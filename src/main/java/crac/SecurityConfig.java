@@ -1,5 +1,8 @@
 package crac;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +12,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,12 +23,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import crac.daos.CracUserDAO;
 import crac.models.CracUser;
+import crac.models.Role;
 
 @Configuration
 class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
   @Autowired
-  CracUserDAO accountRepository;
+  CracUserDAO userDAO;
 
   @Override
   public void init(AuthenticationManagerBuilder auth) throws Exception {
@@ -40,10 +46,24 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
       @Override
       public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-    	CracUser account = accountRepository.findByName(name);
-        if(account != null) {
+    	CracUser account = userDAO.findByName(name);
+    	List<GrantedAuthority> authorityList = new ArrayList<GrantedAuthority>();
+    	System.out.println(account.getName());
+    	try{
+    		account.getRoles().toString();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	for(Role role : account.getRoles()){
+    		System.out.println(role.getId());
+    		authorityList.add(new SimpleGrantedAuthority("ROLE_"+role.getName()));
+    	}
+    	if(account != null) {
+    		/*return new User(account.getName(), account.getPassword(), true, true, true, true,
+        			AuthorityUtils.createAuthorityList("ROLE_ADMIN"));*/
+        	
         return new User(account.getName(), account.getPassword(), true, true, true, true,
-                AuthorityUtils.createAuthorityList("ROLE_"+account.getRole().toString()));
+        		authorityList);
         } else {
           throw new UsernameNotFoundException("could not find the user '"
                   + name + "'");

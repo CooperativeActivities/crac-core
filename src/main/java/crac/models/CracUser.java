@@ -28,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.enums.Role;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
@@ -70,11 +69,7 @@ public class CracUser {
 	private String phone;
 	
 	private String address;
-	
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	private Role role;
-	
+		
 	/**
 	 * defines a one to many relation with the evaluation-entity
 	 */
@@ -150,6 +145,10 @@ public class CracUser {
 	@OneToOne
     @JoinColumn(name = "user_image")
 	private Attachment userImage;
+	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "mapping_role_user", joinColumns={@JoinColumn(name="user_id")}, inverseJoinColumns={@JoinColumn(name="role_id")})
+	Set<Role> roles;
 
 	/**
 	 * constructors
@@ -283,14 +282,6 @@ public class CracUser {
 		this.userImage = userImage;
 	}
 
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
 	public Set<UserCompetenceRel> getCompetenceRelationships() {
 		return competenceRelationships;
 	}
@@ -329,6 +320,27 @@ public class CracUser {
 
 	public void setUserRelationshipsAs2(Set<UserRelationship> userRelationshipsAs2) {
 		this.userRelationshipsAs2 = userRelationshipsAs2;
+	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
+	public boolean confirmRole(String name){
+		for(Role role : roles){
+			if(role.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean confirmRole(Role role){
+		return roles.contains(role);
 	}
 
 }

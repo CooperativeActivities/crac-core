@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
-import crac.enums.Role;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -273,7 +272,7 @@ public class TaskController {
 		Competence competence = competenceDAO.findOne(competence_id);
 		if (task != null && competence != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
-					|| user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED) {
+					|| user.confirmRole("ADMIN") && task.getTaskState() == TaskState.NOT_PUBLISHED) {
 				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, proficiency, importance, mandatory));
 				return JSonResponseHelper.successFullyAssigned(competence);
 			} else {
@@ -304,7 +303,7 @@ public class TaskController {
 		CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
 		if (task != null && competence != null && ctr != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
-					|| user.getRole() == Role.ADMIN && task.getTaskState() == TaskState.NOT_PUBLISHED) {
+					|| user.confirmRole("ADMIN") && task.getTaskState() == TaskState.NOT_PUBLISHED) {
 				competenceTaskRelDAO.delete(ctr);
 				return JSonResponseHelper.successFullyDeleted(competence);
 			} else {
@@ -584,7 +583,7 @@ public class TaskController {
 
 		if (targetU != null && task != null) {
 
-			if (loggedU.getRole() == Role.ADMIN || loggedU.getCreatedTasks().contains(task)) {
+			if (loggedU.confirmRole("ADMIN") || loggedU.getCreatedTasks().contains(task)) {
 				NotificationHelper.createLeadNomination(loggedU.getId(), targetU.getId(), task.getId());
 				return JSonResponseHelper.successfullySent();
 			} else {

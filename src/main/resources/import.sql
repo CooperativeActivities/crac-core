@@ -1,2 +1,3 @@
-INSERT INTO users(name, email, password, last_name, first_name, phone, role) VALUES ('dev', 'test@mail.at', '$2a$10$IfrX7uEH8zGjHVHSPfTe6uHrQewsMVSAkhHTYaV63GiG07Eh0WV5a', 'Mustermann', 'Max', 0664000000, 'ADMIN');
-INSERT INTO users(name, email, password, last_name, first_name, phone, role) VALUES ('frontend', 'frontend@mail.at', '$2a$10$nTFgFeGvGTja5rXJjqq/oupkbGozYi/JEnD9Y.qcQodbrDA07zIPa', 'frontend', 'frontend', 0664000000, 'ADMIN');
+INSERT INTO role(name) VALUES('ADMIN');
+INSERT INTO users(name, email, password, last_name, first_name, phone) VALUES ('frontend', 'frontend@mail.at', '$2a$10$nTFgFeGvGTja5rXJjqq/oupkbGozYi/JEnD9Y.qcQodbrDA07zIPa', 'frontend', 'frontend', 0664000000);
+INSERT INTO mapping_role_user(user_id, role_id) VALUES (1, 1);

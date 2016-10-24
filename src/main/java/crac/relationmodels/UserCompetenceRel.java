@@ -40,6 +40,8 @@ public class UserCompetenceRel {
 	
 	//0 - 100
 	private int proficiencyValue;
+	
+	private boolean selfAssigned;
 
 	public UserCompetenceRel() {
 		this.likeValue = 1;
@@ -50,6 +52,7 @@ public class UserCompetenceRel {
 		this.competence = competence;
 		this.proficiencyValue = proficiencyValue;
 		this.likeValue = likeValue;
+		this.selfAssigned = true;
 	}
 
 	public long getId() {
@@ -90,6 +93,14 @@ public class UserCompetenceRel {
 
 	public void setProficiencyValue(int proficiencyValue) {
 		this.proficiencyValue = proficiencyValue;
+	}
+
+	public boolean isSelfAssigned() {
+		return selfAssigned;
+	}
+
+	public void setSelfAssigned(boolean selfAssigned) {
+		this.selfAssigned = selfAssigned;
 	}
 
 }

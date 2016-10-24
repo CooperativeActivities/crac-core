@@ -29,7 +29,6 @@ import crac.daos.CracUserDAO;
 import crac.daos.RepetitionDateDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
-import crac.enums.Role;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
@@ -159,7 +158,6 @@ public class MainController {
 		cPermType.setDescription("can be added by oneself, free of restrictions");
 		cPermType.setName("restriction free");
 		cPermType.setSelf(true);
-		cPermType.setNeededRole(Role.USER);
 		
 		competencePermissionTypeDAO.save(cPermType);
 		
@@ -347,7 +345,7 @@ public class MainController {
 		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, phpProgramming, 50, 1));
 		Webmaster.getCompetenceRelationships().add(new UserCompetenceRel(Webmaster, javascriptProgramming, 50, 1));
 		Webmaster.setPassword(bcryptEncoder.encode("noOneKnowsThisPassword!1!1"));
-		Webmaster.setRole(Role.USER);
+		//Webmaster.setRole(Role.USER);
 		Webmaster.setPhone("0987656789098");
 		Webmaster.setEmail("Webmaster@internet.at");
 		
@@ -361,7 +359,7 @@ public class MainController {
 		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, walking, 50, 1));
 		AverageHuman.getCompetenceRelationships().add(new UserCompetenceRel(AverageHuman, swimming, 50, 1));
 		AverageHuman.setPassword(bcryptEncoder.encode("noOneKnowsThisPasswordAnyway!1!1"));
-		AverageHuman.setRole(Role.USER);
+		//AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		userDAO.save(Webmaster);

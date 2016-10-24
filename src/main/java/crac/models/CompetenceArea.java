@@ -1,18 +1,16 @@
-package crac.relationmodels;
+package crac.models;
 
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -20,36 +18,28 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.models.Role;
-import crac.models.Competence;
-
 @Entity
-@Table(name = "competence_permission_type")
+@Table(name = "competence_area")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class CompetencePermissionType {
+public class CompetenceArea {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "competence_area_id")
 	private long id;
 
 	@NotNull
 	private String name;
 	
+	@NotNull
 	private String description;
 	
-	private boolean self;
-	
 	@JsonIdentityReference(alwaysAsId=true)
-	@ManyToMany(mappedBy = "mappedPermissionTypes")
-	Set<Role> roles;
+	@ManyToMany(mappedBy = "competenceAreas")
+	Set<Competence> mappedCompetences;
 
-		
-	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "permissionType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Competence> permittedCompetences;
 
-	public CompetencePermissionType() {
+	public CompetenceArea() {
 	}
 
 	public long getId() {
@@ -75,30 +65,7 @@ public class CompetencePermissionType {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	public boolean isSelf() {
-		return self;
-	}
-
-	public void setSelf(boolean self) {
-		this.self = self;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
-
-	public Set<Competence> getPermittedCompetences() {
-		return permittedCompetences;
-	}
-
-	public void setPermittedCompetences(Set<Competence> permittedCompetences) {
-		this.permittedCompetences = permittedCompetences;
-	}
-
+	
+	
 	
 }

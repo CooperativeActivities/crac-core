@@ -95,7 +95,6 @@ public class SearchHelper {
 			considerUserRelationships(evaluatedTasks, user);
 		Collections.sort(evaluatedTasks);
 		return evaluatedTasks;
-		//return null;
 
 	}
 
