@@ -3,9 +3,12 @@ package crac;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -20,58 +23,81 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import crac.daos.CracUserDAO;
 import crac.models.CracUser;
 import crac.models.Role;
+import crac.token.Token;
+import crac.token.TokenDAO;
 
 @Configuration
 class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
-  @Autowired
-  CracUserDAO userDAO;
+	@Autowired
+	CracUserDAO userDAO;
+	
+	@Autowired
+	TokenDAO tokenDAO;
 
-  @Override
-  public void init(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
-  }
+	@Autowired
+	private HttpServletRequest request;
 
-  /**
-   * this converts the login data of the user to a user-entity and compares it to the users in the
-   * database, looking for a match to confirm a registered user
-   */
-  @Bean
-  UserDetailsService userDetailsService() {
-    return new UserDetailsService() {
+	@Override
+	public void init(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
+	}
 
-      @Override
-      public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-    	CracUser account = userDAO.findByName(name);
-    	List<GrantedAuthority> authorityList = new ArrayList<GrantedAuthority>();
-    	System.out.println(account.getName());
-    	try{
-    		account.getRoles().toString();
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    	for(Role role : account.getRoles()){
-    		System.out.println(role.getId());
-    		authorityList.add(new SimpleGrantedAuthority("ROLE_"+role.getName()));
-    	}
-    	if(account != null) {
-    		/*return new User(account.getName(), account.getPassword(), true, true, true, true,
-        			AuthorityUtils.createAuthorityList("ROLE_ADMIN"));*/
-        	
-        return new User(account.getName(), account.getPassword(), true, true, true, true,
-        		authorityList);
-        } else {
-          throw new UsernameNotFoundException("could not find the user '"
-                  + name + "'");
-        }
-      }
-      
-    };
-  }
+	/**
+	 * this converts the login data of the user to a user-entity and compares it
+	 * to the users in the database, looking for a match to confirm a registered
+	 * user
+	 */
+	@Bean
+	UserDetailsService userDetailsService() {
+		return new UserDetailsService() {
+
+			@Override
+			public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+
+				if (request.getHeader("Token") != null) {
+					System.out.println("intok");
+					Token t = tokenDAO.findByCode(request.getHeader("Token"));
+					if(t != null){
+						return assignUser(t.getUser());
+					}else{
+						return new User(null, null, true, true, true, true, null);
+					}
+				} else {
+					System.out.println("innontok");
+					CracUser account = userDAO.findByName(name);
+					return assignUser(account);
+				}
+
+			}
+
+		};
+	}
+
+	public User assignUser(CracUser user) {
+		List<GrantedAuthority> authorityList = new ArrayList<GrantedAuthority>();
+		System.out.println(user.getName());
+		try {
+			user.getRoles().toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		for (Role role : user.getRoles()) {
+			System.out.println(role.getId());
+			authorityList.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+		}
+		if (user != null) {
+			return new User(user.getName(), user.getPassword(), true, true, true, true, authorityList);
+		} else {
+			throw new UsernameNotFoundException("could not find the user");
+		}
+	}
+
 }
 
 /**
@@ -81,23 +107,18 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
- 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
-    	//.antMatchers("/adminOnly").hasAuthority("ADMIN")
-    	//.antMatchers("/openAccess/*").permitAll()
-    	.anyRequest().fullyAuthenticated()
-    	.and()
-	    	.httpBasic()
-	    	/*
-	    .and()
-		    .logout()
-	        .logoutUrl("/logout")
-	        .logoutSuccessUrl("/test")
-	        */
-	    .and()
-	    	.csrf().disable();
-  }
-  
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+				// .antMatchers("/adminOnly").hasAuthority("ADMIN")
+				// .antMatchers("/openAccess/*").permitAll()
+				.anyRequest().fullyAuthenticated().and().httpBasic()
+				/*
+				 * .and() .logout() .logoutUrl("/logout")
+				 * .logoutSuccessUrl("/test")
+				 */
+				.and().csrf().disable();
+	}
+
 }

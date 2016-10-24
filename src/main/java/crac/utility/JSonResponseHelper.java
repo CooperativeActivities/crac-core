@@ -4,6 +4,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
@@ -13,6 +16,7 @@ import crac.models.Task;
 import crac.notifier.Notification;
 import crac.relationmodels.CompetenceRelationshipType;
 import crac.relationmodels.UserTaskRel;
+import crac.token.Token;
 
 public class JSonResponseHelper {
 	
@@ -223,6 +227,41 @@ public class JSonResponseHelper {
 	
 	public static ResponseEntity<String> bootOff(){
 		return addEntity("{\"success\":\"false\", \"action\":\"boot\", \"cause\":\"bootMode is off\"}");
+	}
+	
+	//Token Helpers
+	
+	public static ResponseEntity<String> tokenSuccess(CracUser user, Token token){
+		ObjectMapper mapper = new ObjectMapper();
+		String roles = "";
+		try {
+			roles = mapper.writeValueAsString(user.getRoles());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return addEntity("{\"success\":\"true\", \"action\":\"create_token\", \"id\":\""+user.getId()+"\", "
+				+ "\"user\":\""+user.getName()+"\", \"token\":\""+token.getCode()+"\", \"roles\":"+roles+"}");
+	}
+	
+	public static ResponseEntity<String> tokenFailure(CracUser user, Token token){
+		ObjectMapper mapper = new ObjectMapper();
+		String roles = "";
+		try {
+			roles = mapper.writeValueAsString(user.getRoles());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return addEntity("{\"success\":\"false\", \"action\":\"create_token\", \"cause\":\"token already created\", \"id\":\""+user.getId()+"\""
+				+ ", \"user\":\""+user.getName()+"\", \"token\":\""+token.getCode()+"\", \"roles\":"+roles+"}");
+	}
+	
+	public static ResponseEntity<String> tokenDestroySuccess(CracUser user){
+		return addEntity("{\"success\":\"true\", \"action\":\"destroy_token\", \"id\":\""+user.getId()+"\", "
+				+ "\"user\":\""+user.getName()+"\"}");
+	}
+	
+	public static ResponseEntity<String> tokenDestroyFailure(CracUser user){
+		return addEntity("{\"success\":\"false\", \"action\":\"destroy_token\", \"cause\":\"no token available\"}");
 	}
 	
 	private static ResponseEntity<String> addEntity(String response){
