@@ -61,6 +61,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 			public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
 /*
 				if (request.getHeader("Token") != null) {
+				go
 					System.out.println("intok");
 					Token t = tokenDAO.findByCode(request.getHeader("Token"));
 					if(t != null){
