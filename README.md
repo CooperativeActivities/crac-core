@@ -4,18 +4,20 @@
 
 ###Login-related
 
-####THE CREDENTIALS (NAME AND PASSWORD) FOR ATHENTICATION MUST ALWAYS BE DELIVERED IN THE HEADER OF THE REQUEST AS BASIC AUTHENTICATION! 
-If this is not the case, the server will just return an "unauthorized"-message!
+###THIS IS REST! THE USED FRONTEND IS NEVER PERMANENTLY CONNECTED TO THE BACKEND!
+###As a result, the credentials (name and password) OR a valid token must always be delivered in the header of the request for authentication!
+The credentials have to be encoded, according to the Basic-Authentication standards.
+If this is not the case, the server will just return a 401 "unauthorized"-message!
 ####If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
 Eg.: A user without admin-rights tries to delete another user.
 
 -----------------------------------------------------------------
 
-**Get login response**
+**Get a valid token for the system and confirm your user**
 
 #####*Request:*
 
-GET /user/check
+GET /user/login
 
 ->the name and password have to be added in the header as the basic-authentication
 
@@ -24,8 +26,21 @@ GET /user/check
 If the name and password transferred in the header are correct:
 
 	{
-		"user": "userName",
-		"login": "true
+	  "success": "true",
+	  "action": "create_token",
+	  "id": "1",
+	  "user": "user1",
+	  "token": "r84r42cu9vs78jvj389cuj4cac",
+	  "roles": [
+	    {
+	      "id": 1,
+	      "name": "ADMIN",
+	      "mappedPermissionTypes": [],
+	      "mappedUser": [
+	        1
+	      ]
+	    }
+	  ]
 	}
 
 else the standard unauthorized-message will appear:
@@ -35,6 +50,30 @@ else the standard unauthorized-message will appear:
 		"error": "Unauthorized"
 	}
 	
+If the user already has a valid token, the system will output it and return a message that reminds the user, that he is already logged in.
+	
+Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
+The value of the token return by this endpoint can just be added to the header of the request in the custom-field "Token".
+If it's valid, the system will act like the user is sending his actual name and password.
+###Warning: If the token is invalid, even with correct user and password in the "Authorization"-field, the security won't let the request pass!
+
+-----------------------------------------------------------------
+
+**Delete your token**
+
+#####*Request:*
+
+GET /user/logout
+
+#####*Response:*
+
+Either a success or a failure-message, depending on the VALID (through basic authentication) user already having a token or not.
+	
+Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
+The value of the token return by this endpoint can just be added to the header of the request in the custom-field "Token".
+If it's valid, the system will act like the user is sending his actual name and password.
+###Warning: If the token is invalid, even with correct user and password in the "Authorization"-field, the security won't let the request pass!
+
 -----------------------------------------------------------------
 
 ###User-Functions
@@ -408,18 +447,107 @@ GET user/relationships
 
 -----------------------------------------------------------------
 
-**Returns the values for the enum taskParticipationType**
+**Adds a role to the logged in User**
+####This function requires ADMIN-rights!
 
 #####*Request:*
 
-GET user/roles
+GET user/role/{role_id}/add
+
+#####*Response:*
+
+Json-data, a success
+	
+-----------------------------------------------------------------
+
+**Removes a role from the logged in user**
+####This function requires ADMIN-rights!
+
+#####*Request:*
+
+GET user/role/{role_id}/remove
+
+#####*Response:*
+
+Json-data, a success
+
+-----------------------------------------------------------------
+
+###Role-Endpoints
+
+-----------------------------------------------------------------
+
+**Returns all possible roles**
+
+#####*Request:*
+
+GET /role
 
 #####*Response:*
 
 	[
-	  "USER",
-	  "ADMIN"
+	  {
+	    "id": 1,
+	    "name": "USER",
+	    "mappedPermissionTypes": [],
+	    "mappedUser": [
+	      1
+	    ]
+	  },
+	  {
+	    "id": 2,
+	    "name": "ADMIN",
+	    ...
+	  },
+	  ...
 	]
+
+-----------------------------------------------------------------
+
+**Deletes the role with given id**
+	
+#####*Request:*
+
+DELETE /admin/role/{role_id}
+####This function requires ADMIN-rights!
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Creates a new role**
+	
+#####*Request:*
+
+POST /admin/role
+####This function requires ADMIN-rights!
+
+	{
+	    "name": "DUMMYROLE"
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Updates the role with given id**
+	
+#####*Request:*
+
+PUT /admin/role/{role_id}
+####This function requires ADMIN-rights!
+
+	{
+	    "name": "DUMMYROLE"
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
@@ -495,7 +623,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-POST /admin/task/{task_id}
+POST /admin/task
 
 	{
 	    "name": "testTask",

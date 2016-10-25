@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -539,6 +540,12 @@ public class CracUserController {
 		}
 	}
 
+	/**
+	 * Adds a role to the logged in User
+	 * @param roleId
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/role/{role_id}/add", "/role/{role_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addRole(@PathVariable(value = "role_id") Long roleId) {
@@ -557,6 +564,12 @@ public class CracUserController {
 
 	}
 	
+	/**
+	 * Removes a role from the logged in user
+	 * @param roleId
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/role/{role_id}/remove", "/role/{role_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeRole(@PathVariable(value = "role_id") Long roleId) {

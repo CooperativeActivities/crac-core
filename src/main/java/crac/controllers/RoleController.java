@@ -22,6 +22,11 @@ public class RoleController {
 	@Autowired
 	private RoleDAO roleDAO;
 
+	/**
+	 * Returns all possible roles
+	 * @return ResponseEntity
+	 * @throws JsonProcessingException
+	 */
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
