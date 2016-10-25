@@ -59,7 +59,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
 			@Override
 			public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-
+/*
 				if (request.getHeader("Token") != null) {
 					System.out.println("intok");
 					Token t = tokenDAO.findByCode(request.getHeader("Token"));
@@ -72,7 +72,9 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 					System.out.println("innontok");
 					CracUser account = userDAO.findByName(name);
 					return assignUser(account);
-				}
+				}*/
+				CracUser account = userDAO.findByName(name);
+				return assignUser(account);
 
 			}
 
