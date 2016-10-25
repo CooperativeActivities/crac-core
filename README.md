@@ -1140,3 +1140,13 @@ GET /notification/{notification_id}/deny
 
 Json-data, either a success or a failure message
 	
+-----------------------------------------------------------------
+	
+##CHANGES
+
+In this section, changes and their dates are noted.
+
+###25.10.2016
+
+Role-System implemented -> see section Role-Endpoints
+Token-System implemented -> see section User-Endpoints for login (creation) and logout (destruction) with tokens
