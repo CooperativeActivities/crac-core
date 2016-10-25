@@ -23,7 +23,7 @@ public class CracToken {
 
 	private String code;
 	
-	private String userId;
+	private Long userId;
 
 	public CracToken() {
 	}
@@ -44,13 +44,12 @@ public class CracToken {
 		this.code = code;
 	}
 
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-	
 }
