@@ -18,7 +18,7 @@ public class CracToken {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
+	@Column(name = "cractoken_id")
 	private long id;
 
 	private String code;
