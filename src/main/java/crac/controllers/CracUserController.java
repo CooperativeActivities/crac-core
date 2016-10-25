@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
 import crac.daos.TaskDAO;
+import crac.daos.TokenDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
@@ -34,12 +35,11 @@ import crac.daos.GroupDAO;
 import crac.daos.RoleDAO;
 import crac.models.Competence;
 import crac.models.Task;
+import crac.models.CracToken;
 import crac.notifier.NotificationHelper;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
-import crac.token.Token;
-import crac.token.TokenDAO;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchHelper;
 import crac.utility.UpdateEntitiesHelper;
@@ -366,11 +366,11 @@ public class CracUserController {
 	public ResponseEntity<String> loginUser() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
-		Token t = tokenDAO.findByUser(user);
+		CracToken t = tokenDAO.findByUser(user);
 		if(t != null){
 			return JSonResponseHelper.tokenFailure(user, t);
 		}else{
-			Token token = new Token();
+			CracToken token = new CracToken();
 
 			SecureRandom random = new SecureRandom();
 			String code = new BigInteger(130, random).toString(32);
@@ -388,7 +388,7 @@ public class CracUserController {
 	public ResponseEntity<String> logoutUser() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
-		Token t = tokenDAO.findByUser(user);
+		CracToken t = tokenDAO.findByUser(user);
 		if(t != null){
 			user.setToken(null);
 			userDAO.save(user);

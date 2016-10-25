@@ -31,7 +31,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import crac.relationmodels.UserCompetenceRel;
 import crac.relationmodels.UserRelationship;
 import crac.relationmodels.UserTaskRel;
-import crac.token.Token;
 
 /**
  * The cracUser-entity.
@@ -152,7 +151,7 @@ public class CracUser {
 	Set<Role> roles;
 	
 	@OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-	private Token token;
+	private CracToken token;
 
 	/**
 	 * constructors
@@ -347,11 +346,11 @@ public class CracUser {
 		return roles.contains(role);
 	}
 
-	public Token getToken() {
+	public CracToken getToken() {
 		return token;
 	}
 
-	public void setToken(Token token) {
+	public void setToken(CracToken token) {
 		this.token = token;
 	}
 

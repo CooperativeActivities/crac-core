@@ -1,4 +1,4 @@
-package crac.token;
+package crac.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,12 +11,10 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.models.CracUser;
-
 @Entity
 @Table(name = "tokens")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Token {
+public class CracToken {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +26,7 @@ public class Token {
 	@OneToOne
 	private CracUser user;
 
-	public Token() {
+	public CracToken() {
 	}
 
 	public long getId() {

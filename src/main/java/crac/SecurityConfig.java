@@ -26,10 +26,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import crac.daos.CracUserDAO;
+import crac.daos.TokenDAO;
 import crac.models.CracUser;
 import crac.models.Role;
-import crac.token.Token;
-import crac.token.TokenDAO;
+import crac.models.CracToken;
 
 @Configuration
 class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {

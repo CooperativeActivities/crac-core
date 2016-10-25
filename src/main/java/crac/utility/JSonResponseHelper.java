@@ -13,10 +13,10 @@ import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Role;
 import crac.models.Task;
+import crac.models.CracToken;
 import crac.notifier.Notification;
 import crac.relationmodels.CompetenceRelationshipType;
 import crac.relationmodels.UserTaskRel;
-import crac.token.Token;
 
 public class JSonResponseHelper {
 	
@@ -231,7 +231,7 @@ public class JSonResponseHelper {
 	
 	//Token Helpers
 	
-	public static ResponseEntity<String> tokenSuccess(CracUser user, Token token){
+	public static ResponseEntity<String> tokenSuccess(CracUser user, CracToken token){
 		ObjectMapper mapper = new ObjectMapper();
 		String roles = "";
 		try {
@@ -243,7 +243,7 @@ public class JSonResponseHelper {
 				+ "\"user\":\""+user.getName()+"\", \"token\":\""+token.getCode()+"\", \"roles\":"+roles+"}");
 	}
 	
-	public static ResponseEntity<String> tokenFailure(CracUser user, Token token){
+	public static ResponseEntity<String> tokenFailure(CracUser user, CracToken token){
 		ObjectMapper mapper = new ObjectMapper();
 		String roles = "";
 		try {
