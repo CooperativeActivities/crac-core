@@ -1146,7 +1146,15 @@ Json-data, either a success or a failure message
 
 In this section, changes and their dates are noted.
 
+-----------------------------------------------------------------
+
 ###25.10.2016
 
 Role-System implemented -> see section Role-Endpoints
+The endpoint for the role-enums has been removed
+
 Token-System implemented -> see section User-Endpoints for login (creation) and logout (destruction) with tokens
+The "check"-endpoint is not part of the readMe anymore, since it's depricated and will be removed soon,
+if used, change it to the "login"-endpoint
+
+-----------------------------------------------------------------
