@@ -16,5 +16,5 @@ import crac.models.CracToken;
 @Transactional
 public interface TokenDAO extends CrudRepository<CracToken, Long> {
 	public CracToken findByCode(String code);
-	public CracToken findByUser(CracUser user);
+	public CracToken findByUserId(String userId);
 }

@@ -366,7 +366,7 @@ public class CracUserController {
 	public ResponseEntity<String> loginUser() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
-		CracToken t = tokenDAO.findByUser(user);
+		CracToken t = tokenDAO.findByUserId(user.getId()+"");
 		if(t != null){
 			return JSonResponseHelper.tokenFailure(user, t);
 		}else{
@@ -376,7 +376,7 @@ public class CracUserController {
 			String code = new BigInteger(130, random).toString(32);
 			
 			token.setCode(code);
-			token.setUser(user);
+			token.setUserId(user.getId()+"");
 			tokenDAO.save(token);
 			return JSonResponseHelper.tokenSuccess(user, token);
 		}
@@ -388,9 +388,8 @@ public class CracUserController {
 	public ResponseEntity<String> logoutUser() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		CracUser user = userDAO.findByName(userDetails.getUsername());
-		CracToken t = tokenDAO.findByUser(user);
+		CracToken t = tokenDAO.findByUserId(user.getId()+"");
 		if(t != null){
-			user.setToken(null);
 			userDAO.save(user);
 			tokenDAO.delete(t);
 			return JSonResponseHelper.tokenDestroySuccess(user);

@@ -150,9 +150,6 @@ public class CracUser {
 	@JoinTable(name = "mapping_role_user", joinColumns={@JoinColumn(name="user_id")}, inverseJoinColumns={@JoinColumn(name="role_id")})
 	Set<Role> roles;
 	
-	@OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-	private CracToken token;
-
 	/**
 	 * constructors
 	 */
@@ -344,14 +341,6 @@ public class CracUser {
 	
 	public boolean confirmRole(Role role){
 		return roles.contains(role);
-	}
-
-	public CracToken getToken() {
-		return token;
-	}
-
-	public void setToken(CracToken token) {
-		this.token = token;
 	}
 
 }

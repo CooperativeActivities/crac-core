@@ -23,8 +23,7 @@ public class CracToken {
 
 	private String code;
 	
-	@OneToOne
-	private CracUser user;
+	private String userId;
 
 	public CracToken() {
 	}
@@ -45,12 +44,13 @@ public class CracToken {
 		this.code = code;
 	}
 
-	public CracUser getUser() {
-		return user;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUser(CracUser user) {
-		this.user = user;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
+
 	
 }
