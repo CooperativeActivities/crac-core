@@ -319,7 +319,7 @@ public class MainController {
 		competenceTaskRelDAO.save(new CompetenceTaskRel(phpProgramming, programWateringTool, 10, 10, false));
 		competenceTaskRelDAO.save(new CompetenceTaskRel(javascriptProgramming, programWateringTool, 10, 10, false));
 
-		/*
+		
 		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
 
 		eSConnTask.indexOrUpdate(""+waterFlowers.getId(),waterFlowers);
@@ -327,7 +327,7 @@ public class MainController {
 		for(Task t : waterFlowers.getChildTasks()){
 			eSConnTask.indexOrUpdate(""+t.getId(),t);
 		}
-*/
+
 		//Add users
 		
 		CracUser Webmaster = new CracUser();
