@@ -2,14 +2,34 @@
 
 ##Endpoints (This is a work in progress! The documentation may be not up-to-date from time to time!)
 
-###Login-related
+###Important Informations (please read carefully before using any endpoints)
 
-###THIS IS REST! THE USED FRONTEND IS NEVER PERMANENTLY CONNECTED TO THE BACKEND!
+-----------------------------------------------------------------
+
+###THIS SYSTEM IS USING THE REST-CONCEPT! THE USED FRONTEND IS NEVER PERMANENTLY CONNECTED TO THE BACKEND!
+
 ###As a result, the credentials (name and password) OR a valid token must always be delivered in the header of the request for authentication!
+
 The credentials have to be encoded, according to the Basic-Authentication standards.
 If this is not the case, the server will just return a 401 "unauthorized"-message!
+
 ####If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
+
 Eg.: A user without admin-rights tries to delete another user.
+
+###Things to consider when using PUT or POST-Methods with JSon-Data
+
+The Backend is using a library called Jackson, which maps the JSon to objects and vice versa.
+This means, the fields in the JSon-data MUST match the fields of the class used in CrAc. 
+Information for that is provided down below in the details for each endpoint.
+
+###IMPORTANT: Not all fields have to be filled in! If only the name of the user should be changed, that is the only information that has to be sent via JSon. The Jackson-library takes all information sent and creates an object where it fills in all the fields it has provided data for, as long as this data does match the class-description.
+
+In summary: Not all fields have to be sent via JSon, but the data sent MUST match the possible fields.
+
+-----------------------------------------------------------------
+
+###Login-related Endpoints
 
 -----------------------------------------------------------------
 
