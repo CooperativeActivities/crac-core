@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,8 +33,10 @@ import crac.models.CracUser;
 import crac.models.Role;
 import crac.models.CracToken;
 
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
-class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	CracUserDAO userDAO;
@@ -40,12 +44,26 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 	@Autowired
 	TokenDAO tokenDAO;
 
-	@Autowired
-	private HttpServletRequest request;
 
-	@Override
-	public void init(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
+	@Autowired
+    private CustomAuthenticationProvider authProvider;
+ 
+    @Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider);
+    }
+    
+    @Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+				// .antMatchers("/adminOnly").hasAuthority("ADMIN")
+				// .antMatchers("/openAccess/*").permitAll()
+				.anyRequest().fullyAuthenticated().and().httpBasic()
+				/*
+				 * .and() .logout() .logoutUrl("/logout")
+				 * .logoutSuccessUrl("/test")
+				 */
+				.and().csrf().disable();
 	}
 
 	/**
@@ -53,6 +71,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 	 * to the users in the database, looking for a match to confirm a registered
 	 * user
 	 */
+    /*
 	@Bean
 	UserDetailsService userDetailsService() {
 		return new UserDetailsService() {
@@ -73,8 +92,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 					CracUser account = userDAO.findByName(name);
 					return assignUser(account);
 				}
-				/*CracUser account = userDAO.findByName(name);
-				return assignUser(account);*/
+				
 
 			}
 
@@ -99,28 +117,6 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 			throw new UsernameNotFoundException("could not find the user");
 		}
 	}
-
+*/
 }
 
-/**
- * the security configuration for this web application
- */
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-@Configuration
-class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				// .antMatchers("/adminOnly").hasAuthority("ADMIN")
-				// .antMatchers("/openAccess/*").permitAll()
-				.anyRequest().fullyAuthenticated().and().httpBasic()
-				/*
-				 * .and() .logout() .logoutUrl("/logout")
-				 * .logoutSuccessUrl("/test")
-				 */
-				.and().csrf().disable();
-	}
-
-}
