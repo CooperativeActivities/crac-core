@@ -643,7 +643,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-POST /admin/task
+POST /task
 
 	{
 	    "name": "testTask",
