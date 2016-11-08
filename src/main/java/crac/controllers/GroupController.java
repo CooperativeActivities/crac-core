@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,11 +63,11 @@ public class GroupController {
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());		
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		Group myGroup = mapper.readValue(json, Group.class);
-		myGroup.setCreator(myUser);
+		myGroup.setCreator(user);
 		groupDAO.save(myGroup);
 
 		return ResponseEntity.ok().body("{\"created\":\"true\"}");

@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -131,8 +132,8 @@ public class CracUserController {
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getLogged() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser myUser = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser myUser = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(myUser));
@@ -167,8 +168,8 @@ public class CracUserController {
 			return JSonResponseHelper.jsonReadError();
 		}
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser oldUser = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser oldUser = userDAO.findByName(userDetails.getName());
 
 		if (oldUser != null) {
 			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
@@ -194,8 +195,8 @@ public class CracUserController {
 			@PathVariable(value = "likeValue") int likeValue,
 			@PathVariable(value = "proficiencyValue") int proficiencyValue) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		UserCompetenceRel rel = new UserCompetenceRel();
 
 		Competence competence = competenceDAO.findOne(competenceId);
@@ -226,8 +227,8 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> removeCompetence(@PathVariable(value = "competence_id") Long competenceId) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Competence competence = competenceDAO.findOne(competenceId);
 
@@ -255,8 +256,8 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> removeTask(@PathVariable(value = "task_id") Long taskId) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(taskId);
 
@@ -280,8 +281,8 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> getCompetences() {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
 
@@ -311,8 +312,8 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> getTasks() {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
 
@@ -356,8 +357,8 @@ public class CracUserController {
 	@RequestMapping(value = "/check", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> checkLoginData() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		return JSonResponseHelper.checkUserSuccess(user);
 
 	}
@@ -365,8 +366,8 @@ public class CracUserController {
 	@RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> loginUser() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		CracToken t = tokenDAO.findByUserId(user.getId());
 		if(t != null){
 			return JSonResponseHelper.tokenFailure(user, t);
@@ -387,8 +388,8 @@ public class CracUserController {
 	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> logoutUser() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		CracToken t = tokenDAO.findByUserId(user.getId());
 		if(t != null){
 			userDAO.save(user);
@@ -411,8 +412,8 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> findTasks() {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -436,8 +437,8 @@ public class CracUserController {
 			"/{user_id}/friend/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addFriend(@PathVariable(value = "user_id") Long id) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser sender = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser sender = userDAO.findByName(userDetails.getName());
 		CracUser receiver = userDAO.findOne(id);
 		NotificationHelper.createFriendRequest(sender.getId(), receiver.getId());
 		return JSonResponseHelper.successfullFriendRequest(receiver);
@@ -453,8 +454,8 @@ public class CracUserController {
 			"/{user_id}/unfriend/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeFriend(@PathVariable(value = "user_id") Long id) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser me = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser me = userDAO.findByName(userDetails.getName());
 		CracUser friend = userDAO.findOne(id);
 		UserRelationship rel = userRelationshipDAO.findByC1AndC2(me, friend);
 		if (rel != null) {
@@ -479,8 +480,8 @@ public class CracUserController {
 	@RequestMapping(value = { "/friends", "/friends/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> showFriends() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Set<CracUser> friends = new HashSet<CracUser>();
 
@@ -516,8 +517,8 @@ public class CracUserController {
 			"/relationships/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> showRelationships() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Set<SimpleUserRelationship> rels = new HashSet<SimpleUserRelationship>();
 
@@ -550,8 +551,8 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> addRole(@PathVariable(value = "role_id") Long roleId) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		Role role = roleDAO.findOne(roleId);
 
 		if (role != null) {
@@ -573,8 +574,8 @@ public class CracUserController {
 	@RequestMapping(value = { "/role/{role_id}/remove", "/role/{role_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeRole(@PathVariable(value = "role_id") Long roleId) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		Role role = roleDAO.findOne(roleId);
 		
 		if(user.getRoles().contains(role)){

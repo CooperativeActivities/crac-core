@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,8 +77,8 @@ public class EvaluationController {
 			"/task/{task_id}/self/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> createSelfEvaluation(@PathVariable(value = "task_id") Long taskId) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		Task task = taskDAO.findOne(taskId);
 
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null

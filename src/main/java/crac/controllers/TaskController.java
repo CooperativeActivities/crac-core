@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -152,8 +153,8 @@ public class TaskController {
 			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		Task task;
 		try {
@@ -190,9 +191,9 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> extendTask(@RequestBody String json,
 			@PathVariable(value = "supertask_id") Long supertask_id) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
 
 		Task superTask = taskDAO.findOne(supertask_id);
 
@@ -232,8 +233,8 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> copyTask(@PathVariable(value = "task_id") Long task_id) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task original = taskDAO.findOne(task_id);
 
@@ -265,8 +266,8 @@ public class TaskController {
 			@PathVariable(value = "proficiency") int proficiency, @PathVariable(value = "importance") int importance,
 			@PathVariable(value = "mandatory") boolean mandatory) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
@@ -295,8 +296,8 @@ public class TaskController {
 	public ResponseEntity<String> removeCompetence(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "competence_id") Long competence_id) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
@@ -347,8 +348,8 @@ public class TaskController {
 	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName,
 			@PathVariable(value = "task_id") Long taskId) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser user = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(taskId);
 
@@ -575,8 +576,8 @@ public class TaskController {
 	public ResponseEntity<String> nominateLeader(@PathVariable(value = "user_id") Long userId,
 			@PathVariable(value = "task_id") Long taskId) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser loggedU = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser loggedU = userDAO.findByName(userDetails.getName());
 		CracUser targetU = userDAO.findOne(userId);
 		Task task = taskDAO.findOne(taskId);
 		System.out.println(taskId);
@@ -608,8 +609,8 @@ public class TaskController {
 	public ResponseEntity<String> invitePerson(@PathVariable(value = "user_id") Long userId,
 			@PathVariable(value = "task_id") Long taskId) {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser logged = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CracUser logged = userDAO.findByName(userDetails.getName());
 
 		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(logged, taskDAO.findOne(taskId));
 
@@ -736,9 +737,8 @@ public class TaskController {
 
 		if (bindES) {
 
-			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
-			CracUser user = userDAO.findByName(userDetails.getUsername());
+			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+			CracUser user = userDAO.findByName(userDetails.getName());
 			ArrayList<EvaluatedTask> doables = searchHelper.findMatch(user);
 
 			for (EvaluatedTask ets : et) {
