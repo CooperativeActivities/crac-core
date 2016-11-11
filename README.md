@@ -975,11 +975,48 @@ GET /task/findMatchingUsers/{task_id}"
 
 -----------------------------------------------------------------
 
-**Returns an array containing all competences**
+**Returns an array containing all competence-relationships of the logged in user**
 
 #####*Request:*
 
 GET /competence
+
+#####*Response:*
+
+	[
+	  {
+	    "id": 10,
+	    "user": 1,
+	    "competence": {
+	      "id": 3,
+	      "name": "walking",
+			...
+	    },
+	    "likeValue": 50,
+	    "proficiencyValue": 50,
+	    "selfAssigned": false
+	  },
+	  {
+	    "id": 14,
+	    "user": 1,
+	    "competence": {
+	      "id": 4,
+			...
+	    },
+	    "likeValue": 10,
+	    "proficiencyValue": 50,
+	    "selfAssigned": false
+	  },
+	  ...
+	]
+
+-----------------------------------------------------------------
+
+**Returns an array containing all competences**
+
+#####*Request:*
+
+GET /competence/all
 
 #####*Response:*
 
@@ -1176,5 +1213,11 @@ The endpoint for the role-enums has been removed
 Token-System implemented -> see section User-Endpoints for login (creation) and logout (destruction) with tokens
 The "check"-endpoint is not part of the readMe anymore, since it's depricated and will be removed soon,
 if used, change it to the "login"-endpoint
+
+-----------------------------------------------------------------
+
+###11.11.2016
+
+Endpoint-change -> Assigned competences of user now at the /competence-endpoint, all competences at the endpoint /competence/all
 
 -----------------------------------------------------------------
