@@ -292,6 +292,32 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+**Returns target task and its relationship to the logged in user**
+
+#####*Request:*
+
+GET user/task/{task_id}
+
+
+#####*Response:*
+
+	[
+	  {
+	    "id": 1,
+	    "name": "Water the flowers",
+	    "description": "All about watering the different flowers in the garden.",
+	    ...
+	  },
+	  {
+	    "id": 1,
+	    "user": 1,
+	    "task": 1,
+	    "participationType": "PARTICIPATING"
+	  }
+	]
+
+-----------------------------------------------------------------
+
 **Returns all tasks of logged in user, divided in the TaskParticipationTypes**
 
 #####*Request:*
@@ -1219,5 +1245,11 @@ if used, change it to the "login"-endpoint
 ###11.11.2016
 
 Endpoint-change -> Assigned competences of user now at the /competence-endpoint, all competences at the endpoint /competence/all
+
+-----------------------------------------------------------------
+
+###16.11.2016
+
+Endpoint-change -> A single task + task-user-relationship is available at the /user/task/{task_id}-endpoint
 
 -----------------------------------------------------------------
