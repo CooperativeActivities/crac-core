@@ -28,10 +28,12 @@ import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CompetenceTaskRelDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.RepetitionDateDAO;
+import crac.daos.RoleDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.Role;
 import crac.models.Task;
 import crac.relationmodels.CompetencePermissionType;
 import crac.relationmodels.CompetenceRelationship;
@@ -53,6 +55,9 @@ public class MainController {
 	@Autowired
 	private CracUserDAO userDAO;
 
+	@Autowired
+	private RoleDAO roleDAO;
+	
 	@Autowired
 	private CompetenceDAO competenceDAO;
 
@@ -129,6 +134,16 @@ public class MainController {
 		
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser myUser = userDAO.findByName(userDetails.getName());
+		
+		//Add roles
+		
+		Role userRole = new Role();
+		userRole.setName("USER");
+		roleDAO.save(userRole);
+		
+		Role editorRole = new Role();
+		editorRole.setName("EDITOR");
+		roleDAO.save(editorRole);
 		
 		//Add relationship types
 		
