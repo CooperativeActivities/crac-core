@@ -45,6 +45,7 @@ import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceTaskRelDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.RepetitionDateDAO;
+import crac.daos.RoleDAO;
 import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.Competence;
@@ -56,6 +57,8 @@ import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchHelper;
+import crac.utility.TaskStateHandler;
+import crac.utility.UpdateEntitiesHelper;
 import crac.utilityModels.EvaluatedTask;
 import crac.utilityModels.RepetitionDate;
 import crac.utilityModels.SimpleQuery;
@@ -89,6 +92,9 @@ public class TaskController {
 	@Autowired
 	private SearchHelper searchHelper;
 
+	@Autowired
+	private RoleDAO roleDAO;
+
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
 
@@ -117,6 +123,24 @@ public class TaskController {
 	}
 
 	/**
+	 * Starts all tasks, that fullfill the prerequisites and are ready to starts
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/updateStarted",
+			"/updateStarted/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> startPossibleTasks() {
+		Iterable<Task> taskList = taskDAO.findAll();
+
+		for (Task t : taskList) {
+			t.start(taskDAO);
+		}
+
+		return JSonResponseHelper.successFullAction("Updated all tasks");
+
+	}
+
+	/**
 	 * Returns target task with given id
 	 * 
 	 * @param id
@@ -130,6 +154,10 @@ public class TaskController {
 		Task task = taskDAO.findOne(id);
 
 		if (task != null) {
+			if (task.checkStartAllowance()) {
+				System.out.println("HAPPENS");
+				task.start(taskDAO);
+			}
 			try {
 				return ResponseEntity.ok().body(mapper.writeValueAsString(task));
 			} catch (JsonProcessingException e) {
@@ -142,38 +170,51 @@ public class TaskController {
 	}
 
 	/**
-	 * Creates a new task
+	 * Updates target task
 	 * 
 	 * @param json
+	 * @param id
 	 * @return ResponseEntity
-	 * @throws JsonMappingException
-	 * @throws IOException
 	 */
-	@RequestMapping(value = { "/",
-			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{task_id}",
+			"/{task_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-		ObjectMapper mapper = new ObjectMapper();
-		Task task;
-		try {
-			task = mapper.readValue(json, Task.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonMapError();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonReadError();
+	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id) {
+		Task oldTask = taskDAO.findOne(id);
+
+		if (!oldTask.inConduction()) {
+			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+					.getContext().getAuthentication();
+			CracUser user = userDAO.findByName(userDetails.getName());
+
+			if (oldTask != null) {
+				if (user.hasTaskPermissions(oldTask)) {
+					ObjectMapper mapper = new ObjectMapper();
+					Task updatedTask;
+					try {
+						updatedTask = mapper.readValue(json, Task.class);
+					} catch (JsonMappingException e) {
+						System.out.println(e.toString());
+						return JSonResponseHelper.jsonMapError();
+					} catch (IOException e) {
+						System.out.println(e.toString());
+						return JSonResponseHelper.jsonReadError();
+					}
+					UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
+					taskDAO.save(oldTask);
+					ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+					eSConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
+					return JSonResponseHelper.successFullyUpdated(oldTask);
+				} else {
+					return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+				}
+			} else {
+				return JSonResponseHelper.idNotFound();
+			}
+
+		} else {
+			return JSonResponseHelper.actionNotPossible("Task is already started or completed");
 		}
-		task.setCreator(user);
-		taskDAO.save(task);
-
-		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
-
-		eSConnTask.indexOrUpdate("" + task.getId(), task);
-
-		return JSonResponseHelper.successFullyCreated(task);
 
 	}
 
@@ -191,35 +232,116 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> extendTask(@RequestBody String json,
 			@PathVariable(value = "supertask_id") Long supertask_id) {
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		ObjectMapper mapper = new ObjectMapper();
 
-		Task superTask = taskDAO.findOne(supertask_id);
+		Task st = taskDAO.findOne(supertask_id);
 
-		if (superTask != null) {
-			Task task;
-			try {
-				task = mapper.readValue(json, Task.class);
-			} catch (JsonMappingException e) {
-				System.out.println(e.toString());
-				return JSonResponseHelper.jsonMapError();
-			} catch (IOException e) {
-				System.out.println(e.toString());
-				return JSonResponseHelper.jsonReadError();
+		if (st != null) {
+			if (user.hasTaskPermissions(st)) {
+				if (st.getTaskState() == TaskState.NOT_PUBLISHED) {
+					System.out.println("Task not in conduction");
+					return persistTask(st, user, json);
+				} else {
+					System.out.println("Task in conduction");
+					if (!st.isLeaf()) {
+						return persistTask(st, user, json);
+					} else {
+						return JSonResponseHelper
+								.actionNotPossible("A leaf cannot be changed after task has been published");
+					}
+
+				}
+
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
 			}
-			task.setCreator(user);
-			task.setSuperTask(superTask);
-			task.setUserRelationships(
-					userTaskRelDAO.findByParticipationTypeAndTask(TaskParticipationType.LEADING, superTask));
-			taskDAO.save(task);
-
-			return JSonResponseHelper.successFullyCreated(task);
 
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
 
+	}
+
+	private ResponseEntity<String> persistTask(Task st, CracUser u, String json) {
+
+		ObjectMapper mapper = new ObjectMapper();
+		Task t;
+		try {
+			t = mapper.readValue(json, Task.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonMapError();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+		t.setTaskState(st.getTaskState());
+		t.setReadyToPublish(st.isReadyToPublish());
+		t.setCreator(u);
+		t.setSuperTask(st);
+		taskDAO.save(t);
+
+		return JSonResponseHelper.successFullyCreated(t);
+
+	}
+
+	/**
+	 * Sets a single task ready to be published, only works if it's children are ready
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/publish/ready/single",
+			"/{task_id}/publish/ready/single/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> readyforPublish(@PathVariable(value = "task_id") Long taskId) {
+		Task t = taskDAO.findOne(taskId);
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		if (t != null) {
+			if (user.hasTaskPermissions(t)) {
+				if (t.readyToPublish()) {
+					t.setReadyToPublish(true);
+					taskDAO.save(t);
+					return JSonResponseHelper.successFullyUpdated(t);
+				} else {
+					return JSonResponseHelper.actionNotPossible("Child-tasks are not ready!");
+				}
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+	}
+
+	/**
+	 * Sets target task and all children ready to be published
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/publish/ready/tree",
+			"/{task_id}/publish/ready/tree/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> forcePublish(@PathVariable(value = "task_id") Long taskId) {
+		Task t = taskDAO.findOne(taskId);
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		if (t != null) {
+			if (user.hasTaskPermissions(t)) {
+				t.readyToPublishTree(taskDAO);
+				return JSonResponseHelper.successFullyUpdated(t);
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
 	}
 
 	/**
@@ -233,7 +355,8 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> copyTask(@PathVariable(value = "task_id") Long task_id) {
 
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task original = taskDAO.findOne(task_id);
@@ -252,7 +375,8 @@ public class TaskController {
 	}
 
 	/**
-	 * Adds target competence to target task, it is mandatory to add the proficiency and importanceLvl
+	 * Adds target competence to target task, it is mandatory to add the
+	 * proficiency and importanceLvl
 	 * 
 	 * @param task_id
 	 * @param competence_id
@@ -266,7 +390,8 @@ public class TaskController {
 			@PathVariable(value = "proficiency") int proficiency, @PathVariable(value = "importance") int importance,
 			@PathVariable(value = "mandatory") boolean mandatory) {
 
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(task_id);
@@ -291,12 +416,14 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/remove", "/{task_id}/competence/{competence_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/remove",
+			"/{task_id}/competence/{competence_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeCompetence(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "competence_id") Long competence_id) {
 
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(task_id);
@@ -322,7 +449,8 @@ public class TaskController {
 	 * @return ResponseEntity
 	 * @throws JsonProcessingException
 	 */
-	@RequestMapping(value = { "/searchDirect/{task_name}", "/searchDirect/{task_name}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/searchDirect/{task_name}",
+			"/searchDirect/{task_name}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getByName(@PathVariable(value = "task_name") String task_name) {
 		List<Task> taskList = taskDAO.findMultipleByNameLike("%" + task_name + "%");
@@ -336,60 +464,8 @@ public class TaskController {
 	}
 
 	/**
-	 * Adds target task to the open-tasks of the logged-in user or changes it's
-	 * state
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/{task_id}/{state_name}",
-			"/{task_id}/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName,
-			@PathVariable(value = "task_id") Long taskId) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Task task = taskDAO.findOne(taskId);
-
-		if (task != null) {
-			TaskParticipationType state = TaskParticipationType.PARTICIPATING;
-
-			if (stateName.equals("participate")) {
-				state = TaskParticipationType.PARTICIPATING;
-			} else if (stateName.equals("follow")) {
-				state = TaskParticipationType.FOLLOWING;
-			} else if (stateName.equals("lead")) {
-				state = TaskParticipationType.LEADING;
-			} else {
-				return JSonResponseHelper.stateNotAvailable(stateName);
-			}
-
-			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
-
-			if (rel == null) {
-				rel = new UserTaskRel();
-				rel.setUser(user);
-				rel.setTask(task);
-				rel.setParticipationType(state);
-				user.getTaskRelationships().add(rel);
-				userDAO.save(user);
-			} else {
-				rel.setParticipationType(state);
-				userTaskRelDAO.save(rel);
-			}
-
-			return JSonResponseHelper.successFullyAssigned(task);
-
-		} else {
-			return JSonResponseHelper.idNotFound();
-		}
-
-	}
-
-	/**
-	 * Sets the TaskRepetitionState from once to periodic if possible, mandatory to add a date as json
+	 * Sets the TaskRepetitionState from once to periodic if possible, mandatory
+	 * to add a date as json
 	 * 
 	 * @param task_id
 	 * @return ResponseEntity
@@ -458,13 +534,50 @@ public class TaskController {
 	}
 
 	/**
-	 * Change the state of target task, for each state different prerequisite
+	 * Sets the relation between the logged in user and target task to done, meaning the user completed the task
+	 * @param task_id
+	 * @param done
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/done/{done_boolean}",
+			"/{task_id}/done/{done_boolean}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> singleUserDone(@PathVariable(value = "task_id") Long task_id,
+			@PathVariable(value = "done_boolean") String done) {
+
+		Task task = taskDAO.findOne(task_id);
+
+		if (task != null) {
+
+			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+					.getContext().getAuthentication();
+			CracUser user = userDAO.findByName(userDetails.getName());
+
+			UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
+
+			if (utr != null) {
+				if (done.equals("true")) {
+					utr.setCompleted(true);
+				} else if (done.equals("false")) {
+					utr.setCompleted(false);
+				} else {
+					return JSonResponseHelper.actionNotPossible("This state does not exist");
+				}
+				userTaskRelDAO.save(utr);
+				return JSonResponseHelper.successFullyUpdated(task);
+			}
+
+		}
+
+		return JSonResponseHelper.idNotFound();
+
+	}
+
+	/**
+	 * Change the state of target task, for each state different prerequisites
 	 * have to be fullfilled:
 	 * 
-	 * NOT_PUBLISHED: Default state PUBLISHED: Only allowed when the task-fields
-	 * are all filled STARTED: Only allowed when the parent task is started and
-	 * if sequential, the previous task is completed COMPLETED: A task can only
-	 * be completed when its children are all completed or if it has none
+	 * What exactly they are can be read in the notes from 28.11.
 	 * 
 	 * @param task_id
 	 * @param stateName
@@ -477,44 +590,87 @@ public class TaskController {
 			@PathVariable(value = "state_name") String stateName) {
 
 		Task task = taskDAO.findOne(task_id);
-		if (task != null) {
 
-			TaskState state = TaskState.NOT_PUBLISHED;
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
-			if (stateName.equals("publish")) {
-				if (allowPublish(task)) {
-					state = TaskState.PUBLISHED;
-				} else {
-					return JSonResponseHelper.actionNotPossible("can not be published, task-fields must be filled");
-				}
-			} else if (stateName.equals("start")) {
-				if (task.getTaskState() == TaskState.PUBLISHED && allowStart(task)) {
-					state = TaskState.STARTED;
-				} else {
-					return JSonResponseHelper.actionNotPossible(
-							"can not be started, task is not published or does not fullfill the prerequisites");
-				}
-			} else if (stateName.equals("complete")) {
-				if (task.getTaskState() == TaskState.STARTED && childrenDone(task)) {
-					if (task.getTaskRepetitionState() == TaskRepetitionState.PERIODIC) {
-						adjustTaskTime(task, task.getRepetitionDate());
-						state = TaskState.NOT_PUBLISHED;
-					} else {
-						state = TaskState.COMPLETED;
+		if (user.hasTaskPermissions(task)) {
+
+			if (task != null) {
+
+				TaskState state = TaskState.NOT_PUBLISHED;
+				int s = 0;
+
+				if (stateName.equals("publish")) {
+					s = task.publish();
+					switch (s) {
+					case 1:
+						return JSonResponseHelper.actionNotPossible("Children are not published");
+					case 2:
+						return JSonResponseHelper.actionNotPossible("Attributes are not filled");
+					case 3:
+						state = TaskState.PUBLISHED;
+						break;
+					default:
+						return JSonResponseHelper.actionNotPossible("Undefined Error");
 					}
-				} else {
-					return JSonResponseHelper.actionNotPossible(
-							"can not be completed, task is not started or does not fullfill the prerequisites");
-				}
-			} else {
-				return JSonResponseHelper.stateNotAvailable(stateName);
-			}
 
-			task.setTaskState(state);
-			taskDAO.save(task);
-			return JSonResponseHelper.successTaskStateChanged(task, state);
-		} else {
-			return JSonResponseHelper.idNotFound();
+				} else if (stateName.equals("start")) {
+
+					s = task.start(taskDAO);
+					switch (s) {
+					case 1:
+						return JSonResponseHelper.actionNotPossible("Task is not published");
+					case 3:
+						state = TaskState.STARTED;
+						break;
+					default:
+						return JSonResponseHelper.actionNotPossible("Undefined Error");
+					}
+
+				} else if (stateName.equals("complete")) {
+
+					s = task.complete();
+					switch (s) {
+					case 1:
+						return JSonResponseHelper.actionNotPossible("Task is not started");
+					case 2:
+						return JSonResponseHelper.actionNotPossible("Not all users have completed the task");
+					case 3:
+						state = TaskState.COMPLETED;
+						break;
+					default:
+						return JSonResponseHelper.actionNotPossible("Undefined Error");
+					}
+
+				} else if (stateName.equals("forceComplete")) {
+
+					s = task.forceComplete(taskDAO, user);
+					switch (s) {
+					case 1:
+						return JSonResponseHelper.actionNotPossible("Task is not started");
+					case 2:
+						return JSonResponseHelper.actionNotPossible("Logged in user is not permitted to use action");
+					case 3:
+						state = TaskState.COMPLETED;
+						return JSonResponseHelper.successTaskStateChanged(task, state);
+					default:
+						return JSonResponseHelper.actionNotPossible("Undefined Error");
+					}
+
+				} else {
+					return JSonResponseHelper.stateNotAvailable(stateName);
+				}
+
+				task.setTaskState(state);
+				taskDAO.save(task);
+				return JSonResponseHelper.successTaskStateChanged(task, state);
+			} else {
+				return JSonResponseHelper.idNotFound();
+			}
+		}else{
+			return JSonResponseHelper.actionNotPossible("Permissions not sufficient");
 		}
 	}
 
@@ -576,7 +732,8 @@ public class TaskController {
 	public ResponseEntity<String> nominateLeader(@PathVariable(value = "user_id") Long userId,
 			@PathVariable(value = "task_id") Long taskId) {
 
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser loggedU = userDAO.findByName(userDetails.getName());
 		CracUser targetU = userDAO.findOne(userId);
 		Task task = taskDAO.findOne(taskId);
@@ -584,7 +741,7 @@ public class TaskController {
 
 		if (targetU != null && task != null) {
 
-			if (loggedU.confirmRole("ADMIN") || loggedU.getCreatedTasks().contains(task)) {
+			if (loggedU.hasTaskPermissions(task)) {
 				NotificationHelper.createLeadNomination(loggedU.getId(), targetU.getId(), task.getId());
 				return JSonResponseHelper.successfullySent();
 			} else {
@@ -609,7 +766,8 @@ public class TaskController {
 	public ResponseEntity<String> invitePerson(@PathVariable(value = "user_id") Long userId,
 			@PathVariable(value = "task_id") Long taskId) {
 
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser logged = userDAO.findByName(userDetails.getName());
 
 		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(logged, taskDAO.findOne(taskId));
@@ -737,7 +895,8 @@ public class TaskController {
 
 		if (bindES) {
 
-			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+					.getContext().getAuthentication();
 			CracUser user = userDAO.findByName(userDetails.getName());
 			ArrayList<EvaluatedTask> doables = searchHelper.findMatch(user);
 
@@ -789,15 +948,16 @@ public class TaskController {
 	 * @param t
 	 * @return boolean
 	 */
-	private boolean allowPublish(Task t) {
-
-		if (t.getAmountOfVolunteers() > 0 && !t.getDescription().equals("") && t.getStartTime() != null
-				&& t.getEndTime() != null && !t.getMappedCompetences().isEmpty() && !t.getLocation().equals("")) {
-			return true;
-		}
-		return false;
-
-	}
+	/*
+	 * private boolean allowPublish(Task t) {
+	 * 
+	 * if (t.getAmountOfVolunteers() > 0 && !t.getDescription().equals("") &&
+	 * t.getStartTime() != null && t.getEndTime() != null &&
+	 * !t.getMappedCompetences().isEmpty() && !t.getLocation().equals("")) {
+	 * return true; } return false;
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Looks up, if the task is allowed to be started
@@ -805,39 +965,32 @@ public class TaskController {
 	 * @param t
 	 * @return boolean
 	 */
-	private boolean allowStart(Task t) {
-
-		Task parent = t.getSuperTask();
-
-		boolean startedParent = true;
-
-		if (parent != null) {
-			startedParent = t.getSuperTask().getTaskState() == TaskState.STARTED;
-		}
-
-		if (t.getTaskType() == TaskType.SEQUENTIAL) {
-			return previousTaskDone(t) && startedParent;
-		} else {
-			return startedParent;
-		}
-
-	}
-
+	/*
+	 * private boolean allowStart(Task t) {
+	 * 
+	 * Task parent = t.getSuperTask();
+	 * 
+	 * boolean startedParent = true;
+	 * 
+	 * if (parent != null) { startedParent = t.getSuperTask().getTaskState() ==
+	 * TaskState.STARTED; }
+	 * 
+	 * if (t.getTaskType() == TaskType.SEQUENTIAL) { return previousTaskDone(t)
+	 * && startedParent; } else { return startedParent; }
+	 * 
+	 * }
+	 */
 	/**
 	 * Looks up, if the previous task is done, if there is one
 	 * 
 	 * @param t
 	 * @return boolean
 	 */
-	private boolean previousTaskDone(Task t) {
-		if (t.getTaskType() == TaskType.SEQUENTIAL) {
-			if (t.getPreviousTask().getTaskState() == TaskState.COMPLETED) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	/*
+	 * private boolean previousTaskDone(Task t) { if (t.getTaskType() ==
+	 * TaskType.SEQUENTIAL) { if (t.getPreviousTask().getTaskState() ==
+	 * TaskState.COMPLETED) { return true; } } return false; }
+	 */
 	/**
 	 * Looks up, if the child-tasks (if there are some) are all completed. If
 	 * there are none, returns always true
@@ -845,26 +998,18 @@ public class TaskController {
 	 * @param t
 	 * @return boolean
 	 */
-	private boolean childrenDone(Task t) {
-		boolean childrenDone = true;
-
-		Set<Task> children = t.getChildTasks();
-
-		if (children != null) {
-			for (Task ct : t.getChildTasks()) {
-				if (ct.getTaskState() != TaskState.COMPLETED) {
-					childrenDone = false;
-				}
-			}
-
-			return childrenDone;
-			// return true;
-		} else {
-			return true;
-		}
-
-	}
-
+	/*
+	 * private boolean childrenDone(Task t) { boolean childrenDone = true;
+	 * 
+	 * Set<Task> children = t.getChildTasks();
+	 * 
+	 * if (children != null) { for (Task ct : t.getChildTasks()) { if
+	 * (ct.getTaskState() != TaskState.COMPLETED) { childrenDone = false; } }
+	 * 
+	 * return childrenDone; // return true; } else { return true; }
+	 * 
+	 * }
+	 */
 	// KEEP OR DELETE METHODS
 
 	/**

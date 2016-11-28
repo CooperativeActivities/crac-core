@@ -626,7 +626,7 @@ GET /task
 
 -----------------------------------------------------------------
 
-**Returns a task object with given id**
+**Returns a task object with given id and updates the task if it's ready to start**
 
 #####*Request:*
 
@@ -669,7 +669,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-POST /task
+POST /admin/task
 
 	{
 	    "name": "testTask",
@@ -723,7 +723,44 @@ GET /task/{task_id}/competence/{competence_id}/remove
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
+	
+**Sets a single task ready to be published, only works if it's children are ready**
+	
+#####*Request:*
 
+GET /task/{task_id}/publish/ready/single
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Sets target task and all children ready to be published**
+	
+#####*Request:*
+
+GET /task/{task_id}/publish/ready/tree
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Sets the relation between the logged in user and target task to done, meaning the user completed the task**
+	
+#####*Request:*
+
+####Use "true" or "false" for {done_boolean}
+
+GET /task/{task_id}/done/{done_boolean}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 **Returns an array with all tasks that contain given task_name in their name**
 
 #####*Request:*
@@ -831,7 +868,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/{state_name}"
+GET /user/task/{task_id}/{state_name}"
 
 #####*Response:*
 
@@ -849,6 +886,18 @@ Json-data, either a success or a failure message
 #####*Request:*
 
 GET /task/{task_id}/state/{state_name}"
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Starts all tasks, that fullfill the prerequisites and are ready to starts**
+
+#####*Request:*
+
+GET /task/updateStarted
 
 #####*Response:*
 
@@ -1251,5 +1300,98 @@ Endpoint-change -> Assigned competences of user now at the /competence-endpoint,
 ###16.11.2016
 
 Endpoint-change -> A single task + task-user-relationship is available at the /user/task/{task_id}-endpoint
+
+-----------------------------------------------------------------
+
+###21.11.2016
+
+With the big changes to tasks, the following endpoints have been implemented:
+GET /task/{task_id}/publish/ready/single -> NEW
+GET /task/{task_id}/publish/ready/tree -> NEW
+GET /task/{task_id}/done/{done_boolean} -> NEW
+GET /task/updateStarted -> NEW
+
+The following endpoints where changed:
+GET /task/{task_id}/state/{state_name} -> FUNCTIONALITY CHANGED
+POST /admin/task -> from /task, now only usable with admin or editor permissions
+GET /task/{task_id} -> FUNCTIONALITY CHANGED, now updates the task if it's ready to start
+GET /user/task/{task_id}/{state_name} -> from /task/{task_id}/{state_name}
+
+###This is the summary of the changes to the Task-Workflow
+
+1. not published
+Admin/Editor kann Task (Task auf oberster Ebene entspricht meistens einem Projekt) erstellen
+Creator wird im Task permanent dokumentiert und und ist automatisch auch Leader des erstellten Tasks (Creator == Leader)
+Leader hat Änderungsrechte am Task
+Leader kann Felder befüllen, ändern
+Leader kann weitere CrAc-User als Leader für jeweiligen Task bestimmen
+Leader kann weitere Sub-Tasks erstellen
+Leader kann Leader für Sub-Tasks erstellen
+Leader hat generell Berechtigungen über alle Tasks/Sub-Tasks unter “seinem” Task
+Nur weil jemand globale Rolle “Editor” hat, darf er deswegen den Task nicht verändern – Editor erlaubt nur einen neuen Task zu erstellen, von welchem er dann automatisch Creator ist – ergo die genannten Privilegien erhält (Änderungsrecht, etc.)
+Alle Felder eines Tasks (außer dem “creator”-Feld) sind in diesem Status noch veränderbar
+Die Struktur des gesamten Task-Baumes ist gänzlich veränderbar (Sub-Tasks, Siblings, Leaderbestimmung, etc.)
+Not published Task ist für niemanden sichtbar außer den Admin (Schreibrechte), Editor (Leserechte), und den einzelnen Leader (generell Leserechte; bei eigenem Task/Sub-Tasks Schreibrechte) welche im gesamten Task-Baum definiert sind
+Jeder Leader eines Tasks kann für seinen Bereich bekanntgeben, dass er “ready-to-publish” ist
+Vorgehensweise von unten nach oben im Baum
+Notifikation an Super-Leader (quasi Projektverantwortlicher), wenn alle Sub-Tasks “ready-to-publish” sind, was bedeutet, dass alle Verantwortlichen das ok geben für die Veröffentlichung (es ist davon auszugehen, dass daher die Struktur für den gesamten Task überlegt und umgesetzt wurde)
+Wird ein “ready-to-publish” an einer Stelle “vergessen”, so kann der darüberliegende Leader das “ready-to-publish” erzwingen.
+
+2. published
+Wenn ein Task von einem Leader (ggf. auch Admin) veröffentlicht wird, bekommen alle User lesend Zugriff auf den Task-Baum mit den einzelnen Tasks und dabei auch folgende Funktionalitäten
+Task durchscrollen, anzeigen, Sub-Tasks öffnen
+Teilnehmen / Absagen
+Folgen / Entfolgen
+Kommentieren
+Handelt es sich um einzelne Tasks anstatt eines Task-Baumes, so gilt selbiges für die einzelnen Tasks
+Leader haben weiterhin Schreibrechte auf den Task, allerdings erste Einschränkungen nach der Veröffentlichung:
+Leader kann keine Sub-Tasks mehr von einem Blatt erstellen (da am Blatt nun ev. bereits User zugesagt haben)
+Leader kann bestimmte Felder nicht mehr verändern: Aktuell = creator, createdate, createtime
+Leader kann Status nicht mehr in den Status “notpublished” rückführen
+Leader hat aber weiterhin Rechte auf gesamten Sub-Baum “seines” Tasks
+Leader kann neue Task hinzufügen, jedoch wie bereits erwähnt nicht mehr unter einem Blatt, sondern nur mehr als Siblings zu anderen Tasks
+Anzeige in Taskliste(n)
+Aktivierung für Matching-Kalkulation
+
+
+3. started
+Im Gegensat zu den Stati unpublished/published welche für den gesamten Task-Baum (quasi das Projekt) gelten, kann jeder einzelne Task in den Status “started” hinübergeführt werden
+Die überführung in den Status “started” kann entweder manuell durch den Leader oder automatisch aufgrund des definierten Zeitraumes / Zeitpunktes erfolgen
+Sub-Task kann aber erst gestartet werden nachdem Super-Task gestartet wurde
+Ein offizieller Start eines Tasks bringt folgende Auswirkungen mit sich:
+User darf nicht mehr über das System absagen (Leader / Admin haben jedoch noch die Möglichkeit einen User händisch von der Teilnahmeliste zu entfernen)
+Teilnehmen ist weiterhin möglich, solange die max. Teilnehmeranzahl nicht erreicht ist (ggf. plus Tolleranz?  Diskussion soft/hard limit Teilnehmeranzahl)
+Follow/Unfollow ist weiterhin möglich
+Leader darf nun auch die Felder nicht mehr ändern im Task, da der Task bereits gestartet ist
+Kommentieren ist weiterhin möglich und dient u.a. dem Informationsaustausch
+Wenn die Teilnehmeranzahl erfüllt ist und der Task “in time” ist:
+Task nicht mehr in der Liste der “offenen Tasks” anzeigen (ev. sollte es eine eigene Liste “laufende Tasks” geben)
+Matching-Kalkulation abschwächen damit der Task im Matching nach hinten gereiht wird oder ggf. nicht mehr vorgeschlagen wird
+Wenn die Teilnehmeranzahl nicht erfüllt ist und der Task “in time” ist:
+Task nicht mehr in der Liste der “offenen Tasks” anzeigen
+Matching-Kalkulation noch nicht abschwächen – der Task sollte weiterhin matchen, ev. finden sich dadurch weitere Helfer
+Wenn die Teilnehmeranzahl nicht erfüllt ist und der Task “critical” ist:
+Task weiterhin in der Liste der “offenen Tasks” anzeigen
+Task ev. auf Startseite anzeigen und hervorheben
+Matching-Kalkulation anpassen damit Task eher Benutzern vorgeschlagen wird
+
+4. completed
+Jeder einzelne Task kann auf completed gesetzt werden, dabei ist jedoch zu unterscheiden, dass bei einem einzelnen Task mehrere User teilnehmen können, z.B. 3 Kuchen werden von 3 User gebacken – folglich kann jeder User seinen Task (seinen gebackenen Kuchen) für sich abschließen. Erst nachdem alle den Task abgeschlossen haben, bekommt der Leader eine Notifikation dass der Task abgeschlossen werden kann.
+Ähnlich wie beim “ready-to-publish” werden die Tasks von unten nach oben abgeschlossen – es kann kein Super-Task abgeschlossen werden, wenn der Sub-Task noch nicht abgeschlossen ist.
+Ausnahme: der Leader hat wieder die Möglichkeit ein complete zu erzwingen, z.B. falls der Benutzer darauf vergessen hat
+Nach dem der Task abgeschlossen ist können keine Änderungen mehr gemacht werden
+Diskussion: Sollte der Task wieder eröffnet werden können, z.B. wenn die Lösung nicht ausreichend ist?
+Nach dem ein Task gänzlich (von allen Usern & folglich Leader) abgeschlossen wurde, wird die Evaluierungsfunktion freigeschalten
+Task wird nicht mehr in Taskliste angezeigt (jedoch kann Task in eigener Liste “Completed Tasks” abgerufen werden um ggf. vergangene Tasks zu betrachten, beurteilen, etc.)
+Tasks wird im Matching nicht mehr berücksichtigt
+
+
+
+Anmerkungen
+Follow deutet das prinzipielle Interesse eines Users an einem Task oder einem Projekt an
+Leader und User wissen somit wer noch Interesse hätte mitzuarbeiten
+Ein Pool an ev. vorhandenen Helfern ist vorhanden
+Der Interessent (Follower) bekommt je nach Einstellungen Notifikationen zum jeweiligen Task
+Zeitraum eines Sub-Tasks muss innerhalb des Super-Tasks sein, d.h. wenn das Projekt Adventbazar von 01.10. bis zum 25.11. andauert, dann dürfen die Sub-Tasks nicht außerhalb dieses Zeitraumes sein. Wird hingegen nur ein Zeitpunkt angegeben, z.B. Adventbazar am 25.11. dann müssen die Sub-Task innerhalb des aktuellen Erstelldatums und dem 25.11. sein.
 
 -----------------------------------------------------------------

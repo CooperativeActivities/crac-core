@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,11 +31,14 @@ import crac.daos.GroupDAO;
 import crac.daos.RoleDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
+import crac.daos.UserTaskRelDAO;
+import crac.enums.TaskParticipationType;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Role;
 import crac.models.Task;
 import crac.relationmodels.CompetenceRelationshipType;
+import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
@@ -59,13 +63,16 @@ public class AdminController {
 
 	@Autowired
 	private RoleDAO roleDAO;
-	
+
 	@Autowired
 	private GroupDAO groupDAO;
 
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
-
+	
+	@Autowired
+	private UserTaskRelDAO userTaskRelDAO;
+	
 	@Value("${crac.elastic.url}")
 	private String url;
 
@@ -193,21 +200,28 @@ public class AdminController {
 	}
 
 	/**
-	 * Updates target task
+	 * Creates a new task
 	 * 
 	 * @param json
-	 * @param id
 	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/task/{task_id}",
-			"/task/{task_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
+	@RequestMapping(value = { "/task",
+			"/task/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id) {
+	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		for(GrantedAuthority g : userDetails.getAuthorities()){
+			System.out.println(g.getAuthority());
+		}
+		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
-		Task updatedTask;
+		Task task;
 		try {
-			updatedTask = mapper.readValue(json, Task.class);
+			task = mapper.readValue(json, Task.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonMapError();
@@ -215,17 +229,20 @@ public class AdminController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonReadError();
 		}
-		Task oldTask = taskDAO.findOne(id);
+		task.setCreator(user);
+		taskDAO.save(task);
+		
+		UserTaskRel newRel = new UserTaskRel();
+		newRel.setParticipationType(TaskParticipationType.LEADING);
+		newRel.setTask(task);
+		newRel.setUser(user);
+		userTaskRelDAO.save(newRel);
 
-		if (oldTask != null) {
-			UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
-			taskDAO.save(oldTask);
-			ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
-			eSConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
-			return JSonResponseHelper.successFullyUpdated(oldTask);
-		} else {
-			return JSonResponseHelper.idNotFound();
-		}
+		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+
+		eSConnTask.indexOrUpdate("" + task.getId(), task);
+
+		return JSonResponseHelper.successFullyCreated(task);
 
 	}
 
@@ -242,7 +259,8 @@ public class AdminController {
 			"/competence" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> createCompetence(@RequestBody String json) {
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		Competence myCompetence;
@@ -422,7 +440,7 @@ public class AdminController {
 			return JSonResponseHelper.idNotFound();
 		}
 	}
-	
+
 	// ROLE-SECTION
 
 	/**

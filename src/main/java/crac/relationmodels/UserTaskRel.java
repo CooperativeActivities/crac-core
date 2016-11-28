@@ -42,12 +42,15 @@ public class UserTaskRel {
 	@Enumerated(EnumType.STRING)
 	private TaskParticipationType participationType;
 	
+	private boolean completed;
+	
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "type_id")
 	private TaskRelationshipType type;
 	
 	public UserTaskRel() {
+		completed = false;
 	}
 
 	public long getId() {
@@ -82,7 +85,20 @@ public class UserTaskRel {
 		this.participationType = participationType;
 	}
 
-	
-	
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
+	public TaskRelationshipType getType() {
+		return type;
+	}
+
+	public void setType(TaskRelationshipType type) {
+		this.type = type;
+	}
 	
 }

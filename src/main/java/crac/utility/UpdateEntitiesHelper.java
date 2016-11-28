@@ -82,9 +82,6 @@ public class UpdateEntitiesHelper {
 			old.setTaskState(updated.getTaskState());
 		}
 		
-		if(updated.getTaskType() != null){
-			old.setTaskType(updated.getTaskType());
-		}
 	}
 	
 	public static void checkAndUpdateCompetence(Competence old, Competence updated){

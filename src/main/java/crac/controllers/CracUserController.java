@@ -251,6 +251,67 @@ public class CracUserController {
 	}
 
 	/**
+	 * Adds target task to the open-tasks of the logged-in user or changes it's
+	 * state
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/task/{task_id}/{state_name}",
+			"/task/{task_id}/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName,
+			@PathVariable(value = "task_id") Long taskId) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task task = taskDAO.findOne(taskId);
+
+		if (task != null) {
+			if (task.isJoinable()) {
+				TaskParticipationType state = TaskParticipationType.PARTICIPATING;
+
+				if (stateName.equals("participate")) {
+					if (!task.isFull()) {
+						state = TaskParticipationType.PARTICIPATING;
+					} else {
+						return JSonResponseHelper.actionNotPossible("This task is already full");
+					}
+				} else if (stateName.equals("follow")) {
+					state = TaskParticipationType.FOLLOWING;
+				} else if (stateName.equals("lead")) {
+					state = TaskParticipationType.LEADING;
+				} else {
+					return JSonResponseHelper.stateNotAvailable(stateName);
+				}
+
+				UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
+
+				if (rel == null) {
+					rel = new UserTaskRel();
+					rel.setUser(user);
+					rel.setTask(task);
+					rel.setParticipationType(state);
+					user.getTaskRelationships().add(rel);
+					userDAO.save(user);
+				} else {
+					rel.setParticipationType(state);
+					userTaskRelDAO.save(rel);
+				}
+
+				return JSonResponseHelper.successFullyAssigned(task);
+			} else {
+				return JSonResponseHelper.actionNotPossible("This task cannot be joined like this");
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	/**
 	 * Removes target task from the open-tasks of the logged-in user
 	 * 
 	 * @param taskId
@@ -267,8 +328,12 @@ public class CracUserController {
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTask(user, task));
-			return JSonResponseHelper.successFullyDeleted(task);
+			if (!task.inConduction()) {
+				userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTask(user, task));
+				return JSonResponseHelper.successFullyDeleted(task);
+			} else {
+				return JSonResponseHelper.actionNotPossible("task already in progress");
+			}
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
@@ -277,6 +342,7 @@ public class CracUserController {
 
 	/**
 	 * Returns target task and its relationship to the logged in user
+	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -296,7 +362,8 @@ public class CracUserController {
 			if (rel != null) {
 				ObjectMapper mapper = new ObjectMapper();
 				try {
-					return ResponseEntity.ok().body("[" + mapper.writeValueAsString(task) + "," + mapper.writeValueAsString(rel) + "]");
+					return ResponseEntity.ok()
+							.body("[" + mapper.writeValueAsString(task) + "," + mapper.writeValueAsString(rel) + "]");
 				} catch (JsonProcessingException e) {
 					System.out.println(e.toString());
 					return JSonResponseHelper.jsonWriteError();
@@ -405,6 +472,10 @@ public class CracUserController {
 
 	}
 
+	/**
+	 * Get a valid token for the system and confirm your user
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> loginUser() {
@@ -428,6 +499,10 @@ public class CracUserController {
 
 	}
 
+	/**
+	 * Delete your token
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> logoutUser() {

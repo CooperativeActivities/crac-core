@@ -26,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.relationmodels.UserCompetenceRel;
@@ -157,6 +158,32 @@ public class CracUser {
 	public CracUser() {
 		this.competenceRelationships = new HashSet<UserCompetenceRel>();
 	}
+	
+	//UTILITY----------------
+	
+	@JsonIgnore
+	public boolean hasTaskPermissions(Task t){
+		System.out.println("ADMIN: "+confirmRole("ADMIN"));
+		System.out.println("LEADER: "+t.getAllLeaders().contains(this));
+		return confirmRole("ADMIN") || t.getAllLeaders().contains(this);
+	}
+	
+	@JsonIgnore
+	public boolean confirmRole(String name){
+		for(Role role : roles){
+			if(role.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@JsonIgnore
+	public boolean confirmRole(Role role){
+		return roles.contains(role);
+	}
+	
+	//------------------------
 	
 	/**
 	 * getters and setters
@@ -330,17 +357,4 @@ public class CracUser {
 		this.roles = roles;
 	}
 	
-	public boolean confirmRole(String name){
-		for(Role role : roles){
-			if(role.getName().equals(name)){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean confirmRole(Role role){
-		return roles.contains(role);
-	}
-
 }
