@@ -270,41 +270,41 @@ public class CracUserController {
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			if (task.isJoinable()) {
-				TaskParticipationType state = TaskParticipationType.PARTICIPATING;
-
-				if (stateName.equals("participate")) {
+			TaskParticipationType state = TaskParticipationType.PARTICIPATING;
+			if (stateName.equals("participate")) {
+				if (task.isJoinable()) {
 					if (!task.isFull()) {
 						state = TaskParticipationType.PARTICIPATING;
 					} else {
 						return JSonResponseHelper.actionNotPossible("This task is already full");
 					}
-				} else if (stateName.equals("follow")) {
-					state = TaskParticipationType.FOLLOWING;
-				} else if (stateName.equals("lead")) {
-					state = TaskParticipationType.LEADING;
 				} else {
-					return JSonResponseHelper.stateNotAvailable(stateName);
+					return JSonResponseHelper.actionNotPossible("This task cannot be joined like this");
 				}
-
-				UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
-
-				if (rel == null) {
-					rel = new UserTaskRel();
-					rel.setUser(user);
-					rel.setTask(task);
-					rel.setParticipationType(state);
-					user.getTaskRelationships().add(rel);
-					userDAO.save(user);
-				} else {
-					rel.setParticipationType(state);
-					userTaskRelDAO.save(rel);
-				}
-
-				return JSonResponseHelper.successFullyAssigned(task);
+			} else if (stateName.equals("follow")) {
+				state = TaskParticipationType.FOLLOWING;
+			} else if (stateName.equals("lead")) {
+				state = TaskParticipationType.LEADING;
 			} else {
-				return JSonResponseHelper.actionNotPossible("This task cannot be joined like this");
+				return JSonResponseHelper.stateNotAvailable(stateName);
 			}
+
+			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
+
+			if (rel == null) {
+				rel = new UserTaskRel();
+				rel.setUser(user);
+				rel.setTask(task);
+				rel.setParticipationType(state);
+				user.getTaskRelationships().add(rel);
+				userDAO.save(user);
+			} else {
+				rel.setParticipationType(state);
+				userTaskRelDAO.save(rel);
+			}
+
+			return JSonResponseHelper.successFullyAssigned(task);
+
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
@@ -474,6 +474,7 @@ public class CracUserController {
 
 	/**
 	 * Get a valid token for the system and confirm your user
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
@@ -501,6 +502,7 @@ public class CracUserController {
 
 	/**
 	 * Delete your token
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = "/logout", method = RequestMethod.GET, produces = "application/json")
