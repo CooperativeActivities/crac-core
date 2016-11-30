@@ -646,7 +646,7 @@ GET /task/{task_id}
 	
 #####*Request:*
 
-PUT /admin/task/{task_id}
+PUT /task/{task_id}
 ####This function requires ADMIN-rights!
 
 	{
@@ -1303,7 +1303,7 @@ Endpoint-change -> A single task + task-user-relationship is available at the /u
 
 -----------------------------------------------------------------
 
-###21.11.2016
+###27.11.2016
 
 With the big changes to tasks, the following endpoints have been implemented:
 GET /task/{task_id}/publish/ready/single -> NEW
@@ -1313,7 +1313,7 @@ GET /task/updateStarted -> NEW
 
 The following endpoints where changed:
 GET /task/{task_id}/state/{state_name} -> FUNCTIONALITY CHANGED
-POST /admin/task -> from /task, now only usable with admin or editor permissions
+PUT /admin/task -> from /task, now only usable with admin or editor permissions
 GET /task/{task_id} -> FUNCTIONALITY CHANGED, now updates the task if it's ready to start
 GET /user/task/{task_id}/{state_name} -> from /task/{task_id}/{state_name}
 

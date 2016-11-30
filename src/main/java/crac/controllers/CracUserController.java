@@ -282,7 +282,11 @@ public class CracUserController {
 					return JSonResponseHelper.actionNotPossible("This task cannot be joined like this");
 				}
 			} else if (stateName.equals("follow")) {
-				state = TaskParticipationType.FOLLOWING;
+				if (task.isJoinable()) {
+					state = TaskParticipationType.FOLLOWING;
+				} else {
+					return JSonResponseHelper.actionNotPossible("This task cannot be joined like this");
+				}
 			} else if (stateName.equals("lead")) {
 				state = TaskParticipationType.LEADING;
 			} else {
