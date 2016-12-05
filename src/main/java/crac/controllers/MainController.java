@@ -21,6 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.competenceGraph.CompetenceStorage;
+import crac.competenceGraph.SimpleCompetence;
+import crac.competenceGraph.AugmenterUnit;
+import crac.competenceGraph.SimpleCompetenceRelation;
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetencePermissionTypeDAO;
 import crac.daos.CompetenceRelationshipDAO;
@@ -94,13 +98,31 @@ public class MainController {
 	@Value("${crac.boot.enable}")
     private boolean bootEnabled;
 	
-	@RequestMapping("/test")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/sync")
 	@ResponseBody
-	public String index() {
-		System.out.println("elastic url: "+url);
-		System.out.println("elastic port: "+port);
-		return "Hello World! This is just a test!";
-
+	public ResponseEntity<String> sync() {
+		System.out.println(CompetenceStorage.isSynced());
+		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
+		for(SimpleCompetence c : CompetenceStorage.getCompetences().values()){
+			System.out.println("id: "+c.getId());
+			for(SimpleCompetenceRelation scr : c.getRelations()){
+				System.out.println("related: id: "+scr.getRelated().getId()+" distance: "+scr.getDistance());
+			}
+		}
+		System.out.println(CompetenceStorage.isSynced());
+		return JSonResponseHelper.successFullAction("Competences have been synchronized");
+	}
+	
+	@RequestMapping("/test/{competence_id}")
+	@ResponseBody
+	public ResponseEntity<String> test(@PathVariable(value = "competence_id") Long competenceId) {
+		
+		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
+		
+		AugmenterUnit.augment(competenceDAO.findOne(competenceId), competenceDAO);
+		
+		return JSonResponseHelper.successFullAction("called");
 	}
 
 	@RequestMapping("/testMe/{competence_id}/{distance}/go")
@@ -383,6 +405,8 @@ public class MainController {
 		
 		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);
 		repetitionDateDAO.save(date1);
+		
+		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
 		
 		return JSonResponseHelper.bootSuccess();
 	}

@@ -282,9 +282,10 @@ public class Task {
 
 	@JsonIgnore
 	public boolean isLeaf() {
-		if(childTasks == null){
+		if (childTasks == null) {
 			return !isSuperTask();
-		}{
+		}
+		{
 			return !isSuperTask() && childTasks.isEmpty();
 		}
 	}
@@ -310,13 +311,17 @@ public class Task {
 
 	@JsonIgnore
 	public boolean fieldsFilled() {
-		boolean filled = this.getAmountOfVolunteers() > 0 && !this.getDescription().equals("") && this.getStartTime() != null
-				&& this.getEndTime() != null && !this.getLocation().equals("");
-		if(isLeaf()){
-			return filled  && !this.getMappedCompetences().isEmpty(); 
-		}else{
-			return filled;
+		boolean filled = this.getAmountOfVolunteers() > 0 && !this.getDescription().equals("")
+				&& this.getStartTime() != null && this.getEndTime() != null && !this.getLocation().equals("");
+		if (isLeaf()) {
+			if (this.getMappedCompetences() != null) {
+				return filled && !this.getMappedCompetences().isEmpty();
+			} else {
+				return false;
+			}
 		}
+
+		return filled;
 	}
 
 	@JsonIgnore
