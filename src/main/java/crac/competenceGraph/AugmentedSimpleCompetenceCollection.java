@@ -16,6 +16,13 @@ public class AugmentedSimpleCompetenceCollection {
 		this.main.setTravelledDistance(1);
 		this.augmented = new ArrayList<AugmentedSimpleCompetence>();
 	}
+	
+	public AugmentedSimpleCompetenceCollection(SimpleCompetence main) {
+		this.main = new AugmentedSimpleCompetence(main);
+		this.main.setStepsDone(0);
+		this.main.setTravelledDistance(1);
+		this.augmented = new ArrayList<AugmentedSimpleCompetence>();
+	}
 
 	public AugmentedSimpleCompetence getMain() {
 		return main;

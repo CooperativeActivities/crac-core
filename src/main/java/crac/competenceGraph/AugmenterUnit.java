@@ -13,8 +13,14 @@ import crac.models.Competence;
 import crac.utility.JSonResponseHelper;
 
 public class AugmenterUnit {
+	
+	private CompetenceDAO competenceDAO;
+	
+	public AugmenterUnit(CompetenceDAO competenceDAO){
+		this.competenceDAO = competenceDAO;
+	}
 
-	public static AugmentedSimpleCompetenceCollection augment(Competence c, CompetenceDAO competenceDAO) {
+	public AugmentedSimpleCompetenceCollection augment(SimpleCompetence c) {
 
 		AugmentedSimpleCompetenceCollection competences = new AugmentedSimpleCompetenceCollection(c);
 
@@ -28,7 +34,7 @@ public class AugmenterUnit {
 
 	}
 
-	private static void augmentIntern(AugmentedSimpleCompetenceCollection collection,
+	private void augmentIntern(AugmentedSimpleCompetenceCollection collection,
 			AugmentedSimpleCompetence target) {
 
 		if (target.getStepsDone() <= 5 && target.getTravelledDistance() >= 0.2) {
@@ -39,7 +45,7 @@ public class AugmenterUnit {
 
 	}
 
-	public static void callChildren(AugmentedSimpleCompetenceCollection collection, AugmentedSimpleCompetence parent) {
+	public void callChildren(AugmentedSimpleCompetenceCollection collection, AugmentedSimpleCompetence parent) {
 		List<SimpleCompetenceRelation> rels = parent.getComp().getRelations();
 		if (rels != null) {
 			for (SimpleCompetenceRelation sc : rels) {
@@ -63,7 +69,7 @@ public class AugmenterUnit {
 		}
 	}
 
-	private static void updateValues(AugmentedSimpleCompetence target, AugmentedSimpleCompetence parent,
+	private void updateValues(AugmentedSimpleCompetence target, AugmentedSimpleCompetence parent,
 			double distance) {
 
 		target.setStepsDone(parent.getStepsDone() + 1);

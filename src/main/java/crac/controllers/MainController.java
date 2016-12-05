@@ -104,13 +104,13 @@ public class MainController {
 	public ResponseEntity<String> sync() {
 		System.out.println(CompetenceStorage.isSynced());
 		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
-		for(SimpleCompetence c : CompetenceStorage.getCompetences().values()){
-			System.out.println("id: "+c.getId());
-			for(SimpleCompetenceRelation scr : c.getRelations()){
-				System.out.println("related: id: "+scr.getRelated().getId()+" distance: "+scr.getDistance());
-			}
-		}
-		System.out.println(CompetenceStorage.isSynced());
+//		for(SimpleCompetence c : CompetenceStorage.getCompetences().values()){
+//			System.out.println("id: "+c.getId());
+//			for(SimpleCompetenceRelation scr : c.getRelations()){
+//				System.out.println("related: id: "+scr.getRelated().getId()+" distance: "+scr.getDistance());
+//			}
+//		}
+//		System.out.println(CompetenceStorage.isSynced());
 		return JSonResponseHelper.successFullAction("Competences have been synchronized");
 	}
 	
@@ -118,9 +118,10 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> test(@PathVariable(value = "competence_id") Long competenceId) {
 		
-		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
+		//CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
 		
-		AugmenterUnit.augment(competenceDAO.findOne(competenceId), competenceDAO);
+		//AugmenterUnit.augment(competenceDAO.findOne(competenceId), competenceDAO);
+		CompetenceStorage.getCollection(competenceId).print();
 		
 		return JSonResponseHelper.successFullAction("called");
 	}
@@ -291,6 +292,7 @@ public class MainController {
 		waterFlowers.setStartTime(time);
 		time.set(2016, 9, 10, 17, 00, 00);
 		waterFlowers.setEndTime(time);
+		waterFlowers.setAmountOfVolunteers(4);
 		waterFlowers.setCreator(myUser);
 				
 		//Add tasks
