@@ -3,6 +3,7 @@ package crac.controllers;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -214,6 +215,80 @@ public class CracUserController {
 			return JSonResponseHelper.successFullyAssigned(competence);
 		} else {
 			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	@RequestMapping(value = { "/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}",
+			"/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "competence_id") Long competenceId,
+			@PathVariable(value = "likeValue") int likeValue,
+			@PathVariable(value = "proficiencyValue") int proficiencyValue) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Competence competence = competenceDAO.findOne(competenceId);
+
+		if (competence != null) {
+			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
+			
+			if(ucr != null){
+				ucr.setLikeValue(likeValue);
+				ucr.setProficiencyValue(proficiencyValue);
+				userCompetenceRelDAO.save(ucr);
+				return JSonResponseHelper.successFullyAssigned(competence);
+			}else{
+				return JSonResponseHelper.idNotFound();
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+	
+	@RequestMapping(value = { "/competence/available", "/competence/available/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getAvailableCompetences() {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Iterable<Competence> competenceList = competenceDAO.findAll();
+
+		Set<UserCompetenceRel> competenceRels = user.getCompetenceRelationships();
+
+		ArrayList<Competence> found = new ArrayList<Competence>();
+
+		if (competenceList != null) {
+			for (Competence c : competenceList) {
+				boolean in = false;
+				for (UserCompetenceRel ucr : competenceRels) {
+					if (c.getId() == ucr.getCompetence().getId()) {
+						in = true;
+					}
+				}
+				if (!in) {
+					found.add(c);
+				}
+			}
+		}
+
+		if (found.size() != 0) {
+
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				return ResponseEntity.ok().body(mapper.writeValueAsString(found));
+			} catch (JsonProcessingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonWriteError();
+			}
+
+		} else {
+			return JSonResponseHelper.emptyData();
 		}
 
 	}

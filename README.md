@@ -765,7 +765,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/searchDirect/{task_name}"
+GET /task/searchDirect/{task_name}
 
 #####*Response:*
 
@@ -788,7 +788,7 @@ GET /task/searchDirect/{task_name}"
 
 #####*Request:*
 
-GET /task/{supertask_id}/extend"
+GET /task/{supertask_id}/extend
 
 	{
 	    "name": "testTask",
@@ -810,7 +810,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/copy"
+GET /task/{task_id}/copy
 
 #####*Response:*
 
@@ -822,7 +822,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/periodic/set"
+GET /task/{task_id}/periodic/set
 
 	{
 		"year": 0,
@@ -843,7 +843,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/periodic/undo"
+GET /task/{task_id}/periodic/undo
 
 #####*Response:*
 
@@ -855,7 +855,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task//{task_id}/invite/{user_id}"
+GET /task//{task_id}/invite/{user_id}
 
 #####*Response:*
 
@@ -868,7 +868,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /user/task/{task_id}/{state_name}"
+GET /user/task/{task_id}/{state_name}
 
 #####*Response:*
 

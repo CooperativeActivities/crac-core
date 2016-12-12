@@ -37,8 +37,8 @@ public class AugmenterUnit {
 	private void augmentIntern(AugmentedSimpleCompetenceCollection collection,
 			AugmentedSimpleCompetence target) {
 
-		if (target.getStepsDone() <= 5 && target.getTravelledDistance() >= 0.2) {
-			System.out.println("Target with ID "+target.getComp().getId()+" and distance "+target.getTravelledDistance()+" added!");
+		if (target.getStepsDone() <= 5 && target.getSimilarity() >= 0.2) {
+			System.out.println("Target with ID "+target.getComp().getId()+" and distance "+target.getSimilarity()+" added!");
 			collection.addCompetence(target);
 			callChildren(collection, target);
 		}
@@ -51,9 +51,11 @@ public class AugmenterUnit {
 			for (SimpleCompetenceRelation sc : rels) {
 				AugmentedSimpleCompetence target = collection.loadOrCreate(sc.getRelated());
 				
-				if(target.getTravelledDistance() > 0){
-					if(parent.getTravelledDistance() * sc.getDistance() > target.getTravelledDistance() ){
-						System.out.println("found and updated: new "+parent.getTravelledDistance() * sc.getDistance()+" old: "+target.getTravelledDistance());
+				target.setPaths(target.getPaths() + 1);
+				
+				if(target.getSimilarity() > 0){
+					if(parent.getSimilarity() * sc.getDistance() > target.getSimilarity() ){
+						System.out.println("found and updated: new "+parent.getSimilarity() * sc.getDistance()+" old: "+target.getSimilarity());
 						updateValues(target, parent, sc.getDistance());
 						augmentIntern(collection, target);
 					}else{
@@ -73,7 +75,7 @@ public class AugmenterUnit {
 			double distance) {
 
 		target.setStepsDone(parent.getStepsDone() + 1);
-		target.setTravelledDistance(parent.getTravelledDistance() * distance);
+		target.setSimilarity(parent.getSimilarity() * distance);
 
 	}
 

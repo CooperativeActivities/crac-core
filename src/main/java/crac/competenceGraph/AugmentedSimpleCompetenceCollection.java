@@ -13,17 +13,43 @@ public class AugmentedSimpleCompetenceCollection {
 	public AugmentedSimpleCompetenceCollection(Competence main) {
 		this.main = new AugmentedSimpleCompetence(CompetenceStorage.getCompetence(main.getId()));
 		this.main.setStepsDone(0);
-		this.main.setTravelledDistance(1);
+		this.main.setSimilarity(1);
 		this.augmented = new ArrayList<AugmentedSimpleCompetence>();
 	}
 	
 	public AugmentedSimpleCompetenceCollection(SimpleCompetence main) {
 		this.main = new AugmentedSimpleCompetence(main);
 		this.main.setStepsDone(0);
-		this.main.setTravelledDistance(1);
+		this.main.setSimilarity(1);
 		this.augmented = new ArrayList<AugmentedSimpleCompetence>();
 	}
 
+	public double compare(AugmentedSimpleCompetenceCollection other){
+		if(other.getMain().getComp().getId() == this.getMain().getComp().getId()){
+			return 1.0;
+		}
+		for(AugmentedSimpleCompetence aut : this.augmented){
+			for(AugmentedSimpleCompetence auo : other.getAugmented()){
+				if(auo.getComp().getId() == aut.getComp().getId()){
+					double val = aut.getSimilarity() * auo.getSimilarity();
+					if(val > 0.2){
+						return val;
+					}
+				}
+			}
+		}
+		return 0.0;
+	}
+
+	public double compare(AugmentedSimpleCompetence other){
+		for(AugmentedSimpleCompetence aut : this.augmented){
+			if(aut.getComp().getId() == other.getComp().getId()){
+				return aut.getSimilarity();
+			}
+		}
+		return 0.0;
+	}
+	
 	public AugmentedSimpleCompetence getMain() {
 		return main;
 	}
@@ -84,7 +110,7 @@ public class AugmentedSimpleCompetenceCollection {
 			System.out.println("CONCRETE COMPETENCE HAS BEEN LOADED");
 		}
 		System.out.println("Main-Competence");
-		System.out.println("ID: " + main.getComp().getId() + " | distance: " + main.getTravelledDistance() + " steps: "
+		System.out.println("ID: " + main.getComp().getId() + " | distance: " + main.getSimilarity() + " steps: "
 				+ main.getStepsDone());
 		if (loaded) {
 			System.out.println("concrete name: " + main.getConcreteComp().getName());
@@ -92,8 +118,8 @@ public class AugmentedSimpleCompetenceCollection {
 		System.out.println("---------------------------");
 		System.out.println("Augmented Competences");
 		for (AugmentedSimpleCompetence a : augmented) {
-			System.out.println("ID: " + a.getComp().getId() + " | distance: " + a.getTravelledDistance() + " steps: "
-					+ a.getStepsDone());
+			System.out.println("ID: " + a.getComp().getId() + " | distance: " + a.getSimilarity() + " steps: "
+					+ a.getStepsDone() + " paths: "+a.getPaths());
 			if (loaded) {
 				System.out.println("concrete name: " + a.getConcreteComp().getName());
 			}

@@ -6,7 +6,11 @@ import java.util.HashMap;
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.models.Competence;
+import crac.models.CracUser;
+import crac.models.Task;
 import crac.relationmodels.CompetenceRelationship;
+import crac.relationmodels.CompetenceTaskRel;
+import crac.relationmodels.UserCompetenceRel;
 
 public class CompetenceStorage {
 
@@ -46,12 +50,6 @@ public class CompetenceStorage {
 
 	}
 
-	private boolean clear() {
-		competences = new HashMap<Long, SimpleCompetence>();
-		cached = false;
-		return true;
-	}
-
 	private boolean cache(CompetenceDAO competenceDAO) {
 
 		AugmenterUnit au = new AugmenterUnit(competenceDAO);
@@ -81,6 +79,43 @@ public class CompetenceStorage {
 			return null;
 		}
 	}
+	
+	public static double getCompetenceSimilarity(Competence assigned, Competence target){
+		return instance.getCollectionIntern(assigned.getId()).compare(instance.getCollectionIntern(target.getId()));
+	}
+
+	public static AugmentedSimpleCompetenceCollection getCollection(Competence c) {
+		return instance.getCollectionIntern(c.getId());
+	}
+
+	public static AugmentedSimpleCompetenceCollection getCollection(Long id) {
+		return instance.getCollectionIntern(id);
+	}
+	
+	public static ArrayList<AugmentedSimpleCompetenceCollection> getCollections(Task t){
+		ArrayList<AugmentedSimpleCompetenceCollection> collections = new ArrayList<AugmentedSimpleCompetenceCollection>();
+		for(CompetenceTaskRel ctr : t.getMappedCompetences()){
+			collections.add(instance.getCollectionIntern(ctr.getCompetence().getId()));
+		}
+		return collections;
+	}
+	
+	public static ArrayList<AugmentedSimpleCompetenceCollection> getCollections(CracUser u){
+		ArrayList<AugmentedSimpleCompetenceCollection> collections = new ArrayList<AugmentedSimpleCompetenceCollection>();
+		for(UserCompetenceRel ucr : u.getCompetenceRelationships()){
+			collections.add(instance.getCollectionIntern(ucr.getCompetence().getId()));
+		}
+		return collections;
+	}
+
+	public static boolean isSynced() {
+		return instance.synced;
+	}
+
+	public static boolean isCached() {
+		return instance.cached;
+	}
+
 
 	private AugmentedSimpleCompetenceCollection getCollectionIntern(Long id) {
 		if (instance.cached) {
@@ -93,20 +128,9 @@ public class CompetenceStorage {
 		return null;
 	}
 
-	public static AugmentedSimpleCompetenceCollection getCollection(Competence c) {
-		return instance.getCollectionIntern(c.getId());
+	private boolean clear() {
+		competences = new HashMap<Long, SimpleCompetence>();
+		cached = false;
+		return true;
 	}
-
-	public static AugmentedSimpleCompetenceCollection getCollection(Long id) {
-		return instance.getCollectionIntern(id);
-	}
-
-	public static boolean isSynced() {
-		return instance.synced;
-	}
-
-	public static boolean isCached() {
-		return instance.cached;
-	}
-
 }

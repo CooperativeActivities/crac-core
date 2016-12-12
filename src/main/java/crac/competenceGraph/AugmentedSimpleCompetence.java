@@ -7,16 +7,16 @@ public class AugmentedSimpleCompetence {
 	
 	private SimpleCompetence comp;
 	private Competence concreteComp;
-	private double travelledDistance;
+	private double similarity;
 	private int stepsDone;
-	private double finalValue;
+	private int paths;
 	
 	public AugmentedSimpleCompetence(SimpleCompetence comp) {
 		this.comp = comp;
-		travelledDistance = 0;
+		similarity = 0;
 		stepsDone = 0;
 		concreteComp = null;
-		finalValue = 0;
+		paths = 0;
 	}
 
 	public SimpleCompetence getComp() {
@@ -27,12 +27,12 @@ public class AugmentedSimpleCompetence {
 		this.comp = comp;
 	}
 
-	public double getTravelledDistance() {
-		return travelledDistance;
+	public double getSimilarity() {
+		return similarity;
 	}
 
-	public void setTravelledDistance(double travelledDistance) {
-		this.travelledDistance = travelledDistance;
+	public void setSimilarity(double similarity) {
+		this.similarity = similarity;
 	}
 
 	public int getStepsDone() {
@@ -51,16 +51,16 @@ public class AugmentedSimpleCompetence {
 		this.concreteComp = concreteComp;
 	}
 
-	public double getFinalValue() {
-		return finalValue;
-	}
-
-	public void setFinalValue(double finalValue) {
-		this.finalValue = finalValue;
-	}
-	
 	public void loadConcreteCompetence(CompetenceDAO competenceDAO){
 		this.concreteComp = competenceDAO.findOne(this.comp.getId());
+	}
+
+	public int getPaths() {
+		return paths;
+	}
+
+	public void setPaths(int paths) {
+		this.paths = paths;
 	}
 
 }
