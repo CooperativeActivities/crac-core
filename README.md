@@ -711,7 +711,7 @@ POST /admin/task
 	    "description": "this is a test",
 	    "location": "Vienna",
 	    "startTime": "2000-01-01T00:30:00",
-	    "endTime": "2000-01-01T01:00:00"
+	    "endTime": "2000-01-01T01:00:00",
 	    "urgency": 3,
 	    "amountOfVolunteers": 30
 	}
