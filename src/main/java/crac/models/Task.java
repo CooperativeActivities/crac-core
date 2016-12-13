@@ -275,7 +275,6 @@ public class Task {
 		}
 	}
 
-	@JsonIgnore
 	public boolean isSuperTask() {
 		return this.getSuperTask() == null;
 	}
