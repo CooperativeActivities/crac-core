@@ -40,13 +40,19 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		String name = authentication.getName();
 		String password = authentication.getCredentials().toString();
 		
-		System.out.println(name);
-		System.out.println(password);
-		System.out.println(tokenCode);
+		System.out.println("-----------------------");
+		System.out.println("INCOMING REQUEST");
+		System.out.println("Name: "+name);
+		System.out.println("Password: "+password);
+		System.out.println("Token: "+tokenCode);
+		System.out.println("-----------------------");
 
 		CracUser user = userDAO.findByName(name);
 		CracToken token = tokenDAO.findByCode(tokenCode);
 
+		System.out.println("-----------------------");
+		System.out.println("LOOKING UP AUTHENTICATION-DATA");
+		
 		if (token != null) {
 			System.out.println("Valid token found!");
 			return assignUser(userDAO.findOne(token.getUserId()));
@@ -57,13 +63,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 				BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 				if (bcryptEncoder.matches(password, user.getPassword())) {
 					System.out.println("Valid password!");
+					System.out.println("-----------------------");
 					return assignUser(user);
 				} else {
 					System.out.println("Invalid password!");
+					System.out.println("-----------------------");
 					return null;
 				}
 			} else {
 				System.out.println("No username found!");
+				System.out.println("-----------------------");
 				return null;
 			}
 		}
@@ -76,17 +85,20 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
 	public UsernamePasswordAuthenticationToken assignUser(CracUser user) {
 		List<GrantedAuthority> authorityList = new ArrayList<GrantedAuthority>();
-		System.out.println(user.getName());
+		System.out.println("-----------------------");
+		System.out.println("USER FOUND - CONFIGURE ACCESS");
+		System.out.println("User: "+user.getName());
 		try {
 			user.getRoles().toString();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		for (Role role : user.getRoles()) {
-			System.out.println(role.getId());
+			System.out.println("Assigned Role with ID "+role.getId()+": "+role.getName());
 			authorityList.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
 		}
 
+		System.out.println("-----------------------");
 		return new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword(), authorityList);
 
 	}

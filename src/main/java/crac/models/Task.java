@@ -53,16 +53,22 @@ public class Task {
 	@NotNull
 	private String name;
 
+	@NotNull
 	private String description;
 
+	@NotNull
 	private String location;
 
+	@NotNull
 	private Calendar startTime;
 
+	@NotNull
 	private Calendar endTime;
 
+	@NotNull
 	private int urgency;
 
+	@NotNull
 	private int amountOfVolunteers;
 
 	private String feedback;

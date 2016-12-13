@@ -69,10 +69,10 @@ public class AdminController {
 
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
-	
+
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
-	
+
 	@Value("${crac.elastic.url}")
 	private String url;
 
@@ -214,7 +214,7 @@ public class AdminController {
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
-		for(GrantedAuthority g : userDetails.getAuthorities()){
+		for (GrantedAuthority g : userDetails.getAuthorities()) {
 			System.out.println(g.getAuthority());
 		}
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -223,19 +223,25 @@ public class AdminController {
 		try {
 			task = mapper.readValue(json, Task.class);
 		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
 			return JSonResponseHelper.jsonMapError();
 		} catch (IOException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonReadError();
 		}
 		task.setCreator(user);
-		taskDAO.save(task);
-		
+
+		try {
+			taskDAO.save(task);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonReadError();
+		}
+
 		UserTaskRel newRel = new UserTaskRel();
 		newRel.setParticipationType(TaskParticipationType.LEADING);
 		newRel.setTask(task);
 		newRel.setUser(user);
+
 		userTaskRelDAO.save(newRel);
 
 		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");

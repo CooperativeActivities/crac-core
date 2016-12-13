@@ -44,57 +44,5 @@ class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.and().csrf().disable();
 	}
 
-	/**
-	 * this converts the login data of the user to a user-entity and compares it
-	 * to the users in the database, looking for a match to confirm a registered
-	 * user
-	 */
-    /*
-	@Bean
-	UserDetailsService userDetailsService() {
-		return new UserDetailsService() {
-
-			@Override
-			public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-
-				if (request.getHeader("Token") != null) {
-					System.out.println("intok");
-					CracToken t = tokenDAO.findByCode(request.getHeader("Token"));
-					if(t != null){
-						return assignUser(userDAO.findOne(t.getUserId()));
-					}else{
-						return new User(null, null, true, true, true, true, null);
-					}
-				} else {
-					System.out.println("innontok");
-					CracUser account = userDAO.findByName(name);
-					return assignUser(account);
-				}
-				
-
-			}
-
-		};
-	}
-
-	public User assignUser(CracUser user) {
-		List<GrantedAuthority> authorityList = new ArrayList<GrantedAuthority>();
-		System.out.println(user.getName());
-		try {
-			user.getRoles().toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		for (Role role : user.getRoles()) {
-			System.out.println(role.getId());
-			authorityList.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-		}
-		if (user != null) {
-			return new User(user.getName(), user.getPassword(), true, true, true, true, authorityList);
-		} else {
-			throw new UsernameNotFoundException("could not find the user");
-		}
-	}
-*/
 }
 

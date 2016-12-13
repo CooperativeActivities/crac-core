@@ -185,7 +185,7 @@ public class CracUserController {
 	}
 
 	/**
-	 * Adds target competence to the currently logged-in user
+	 * Add a competence with given ID to the currently logged in user, likeValue and proficiencyValue are mandatory
 	 * 
 	 * @param competenceId
 	 * @return ResponseEntity
@@ -219,6 +219,13 @@ public class CracUserController {
 
 	}
 
+	/**
+	 * Adjust the values of a user-competence connection
+	 * @param competenceId
+	 * @param likeValue
+	 * @param proficiencyValue
+	 * @return
+	 */
 	@RequestMapping(value = { "/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}",
 			"/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody

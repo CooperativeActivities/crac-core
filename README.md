@@ -263,6 +263,41 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+**Adjust the values of a user-competence connection**
+
+#####*Request:*
+
+GET user/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Show all competences, that are and not yet connected available to a user**
+
+#####*Request:*
+
+GET user/competence/available
+
+#####*Response:*
+
+	[
+		{
+			"id": 1,
+			"name": "testCompetence",
+			...
+		},
+		{
+			"id": 2,
+			"name": "AnotherCompetence",
+			...
+		}
+	]
+
+-----------------------------------------------------------------
+
 **Remove a competence with given ID from the currently logged in user**
 
 #####*Request:*

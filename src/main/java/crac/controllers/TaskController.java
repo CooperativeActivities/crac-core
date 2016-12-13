@@ -155,7 +155,6 @@ public class TaskController {
 
 		if (task != null) {
 			if (task.checkStartAllowance()) {
-				System.out.println("HAPPENS");
 				task.start(taskDAO);
 			}
 			try {
