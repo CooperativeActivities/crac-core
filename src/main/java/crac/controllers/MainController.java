@@ -377,6 +377,14 @@ public class MainController {
 
 		//Add users
 		
+		CracUser frontend = userDAO.findOne((long)1);
+		
+		frontend.getCompetenceRelationships().add(new UserCompetenceRel(frontend, breathing, 50, 1));
+		frontend.getCompetenceRelationships().add(new UserCompetenceRel(frontend, walking, 50, 1));
+		frontend.getCompetenceRelationships().add(new UserCompetenceRel(frontend, swimming, 50, 1));
+		userDAO.save(frontend);
+
+		
 		CracUser Webmaster = new CracUser();
 		
 		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
@@ -395,7 +403,8 @@ public class MainController {
 		//Webmaster.setRole(Role.USER);
 		Webmaster.setPhone("0987656789098");
 		Webmaster.setEmail("Webmaster@internet.at");
-		
+		userDAO.save(Webmaster);
+	
 		CracUser AverageHuman = new CracUser();
 		
 		AverageHuman.setName("AverageHuman");
@@ -409,7 +418,6 @@ public class MainController {
 		//AverageHuman.setRole(Role.USER);
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
-		userDAO.save(Webmaster);
 		userDAO.save(AverageHuman);
 		
 		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);

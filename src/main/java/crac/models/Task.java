@@ -214,6 +214,15 @@ public class Task {
 
 		return leaders;
 	}
+	
+	@JsonIgnore
+	public int possibleNumberOfVolunteers(){
+		int total = amountOfVolunteers;
+		for(Task t : childTasks){
+			total -= t.getAmountOfVolunteers();
+		}
+		return total;
+	}
 
 	@JsonIgnore
 	public Set<CracUser> getAllLeaders() {
@@ -308,6 +317,9 @@ public class Task {
 	@JsonIgnore
 	public boolean isFull() {
 		if (userRelationships != null) {
+			if(amountOfVolunteers == 0){
+				return false;
+			}
 			return amountOfVolunteers == userRelationships.size();
 		} else {
 			return true;

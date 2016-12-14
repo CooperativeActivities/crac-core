@@ -124,6 +124,7 @@ public class TaskController {
 
 	/**
 	 * Starts all tasks, that fullfill the prerequisites and are ready to starts
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/updateStarted",
@@ -199,6 +200,31 @@ public class TaskController {
 						System.out.println(e.toString());
 						return JSonResponseHelper.jsonReadError();
 					}
+
+					int c = checkAmountOfVolunteers(oldTask, updatedTask.getAmountOfVolunteers(), true);
+
+					System.out.println("answer: " + c);
+
+					if (c == 0) {
+						return JSonResponseHelper.actionNotPossible("Amount of volunteers is full");
+					} else if (c > 0) {
+						return JSonResponseHelper
+								.actionNotPossible("Amount of volunteers has to be between 1 and " + c);
+					}
+					/*
+					 * if (oldTask.getSuperTask() != null) { if
+					 * (oldTask.getSuperTask().getAmountOfVolunteers() != 0) {
+					 * int availableNumber =
+					 * oldTask.getSuperTask().possibleNumberOfVolunteers() +
+					 * oldTask.getAmountOfVolunteers(); if
+					 * (updatedTask.getAmountOfVolunteers() > availableNumber) {
+					 * if (availableNumber == 0) { return JSonResponseHelper.
+					 * actionNotPossible("Amount of volunteers is full"); } else
+					 * { return JSonResponseHelper.actionNotPossible(
+					 * "Amount of volunteers has to be between 1 and " +
+					 * availableNumber); } } } }
+					 */
+
 					UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
 					taskDAO.save(oldTask);
 					ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
@@ -215,6 +241,26 @@ public class TaskController {
 			return JSonResponseHelper.actionNotPossible("Task is already started or completed");
 		}
 
+	}
+
+	private int checkAmountOfVolunteers(Task t, int amount, boolean update) {
+		Task st = t.getSuperTask();
+		if (st != null) {
+			if (st.getAmountOfVolunteers() != 0) {
+				int availableNumber;
+				if (update) {
+					availableNumber = st.possibleNumberOfVolunteers() + t.getAmountOfVolunteers();
+				} else {
+					availableNumber = st.possibleNumberOfVolunteers();
+				}
+				System.out.println("amount: " + t.getAmountOfVolunteers());
+				System.out.println("available: " + availableNumber);
+				if (amount > availableNumber) {
+					return availableNumber;
+				}
+			}
+		}
+		return -1;
 	}
 
 	/**
@@ -263,6 +309,54 @@ public class TaskController {
 
 	}
 
+	/**
+	 * Updates the value of an task with an open amount of volunteers, based on the amount of volunteers on their child-tasks
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/updateAmountOfVolunteers",
+			"/{task_id}/updateAmountOfVolunteers/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> updateAmountOfVolunteers(@PathVariable(value = "task_id") Long taskId) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task t = taskDAO.findOne(taskId);
+
+		if (t != null) {
+			if (user.hasTaskPermissions(t)) {
+
+				System.out.println("sfd "+t.getAmountOfVolunteers());
+				if(t.getAmountOfVolunteers() == 0){
+					
+					int val = 0;
+					
+					for(Task ct : t.getChildTasks()){
+						if(ct.getAmountOfVolunteers() > 0){
+							val += ct.getAmountOfVolunteers();
+						}else{
+							return JSonResponseHelper.actionNotPossible("Task has childtask with open amount");
+						}
+					}
+					
+					t.setAmountOfVolunteers(val);
+					taskDAO.save(t);
+					return JSonResponseHelper.successFullyUpdated(t);
+					
+				}else{
+					return JSonResponseHelper.actionNotPossible("Task has an assigned Value");
+				}
+				
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+			}
+		}else{
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
 	private ResponseEntity<String> persistTask(Task st, CracUser u, String json) {
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -276,10 +370,29 @@ public class TaskController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonReadError();
 		}
+
+		t.setSuperTask(st);
+
+		int c = checkAmountOfVolunteers(t, t.getAmountOfVolunteers(), false);
+
+		System.out.println("answer: " + c);
+
+		if (c == 0) {
+			return JSonResponseHelper.actionNotPossible("Amount of volunteers is full");
+		} else if (c > 0) {
+			return JSonResponseHelper.actionNotPossible("Amount of volunteers has to be between 1 and " + c);
+		}
+
+		/*
+		 * if (st.getAmountOfVolunteers() != 0) { if (t.getAmountOfVolunteers()
+		 * > st.possibleNumberOfVolunteers()) { return
+		 * JSonResponseHelper.actionNotPossible(
+		 * "Amount of volunteers has to be between 1 and " +
+		 * st.possibleNumberOfVolunteers()); } }
+		 */
 		t.setTaskState(st.getTaskState());
 		t.setReadyToPublish(st.isReadyToPublish());
 		t.setCreator(u);
-		t.setSuperTask(st);
 		taskDAO.save(t);
 
 		return JSonResponseHelper.successFullyCreated(t);
@@ -287,7 +400,9 @@ public class TaskController {
 	}
 
 	/**
-	 * Sets a single task ready to be published, only works if it's children are ready
+	 * Sets a single task ready to be published, only works if it's children are
+	 * ready
+	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -319,6 +434,7 @@ public class TaskController {
 
 	/**
 	 * Sets target task and all children ready to be published
+	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -533,7 +649,9 @@ public class TaskController {
 	}
 
 	/**
-	 * Sets the relation between the logged in user and target task to done, meaning the user completed the task
+	 * Sets the relation between the logged in user and target task to done,
+	 * meaning the user completed the task
+	 * 
 	 * @param task_id
 	 * @param done
 	 * @return ResponseEntity
@@ -668,7 +786,7 @@ public class TaskController {
 			} else {
 				return JSonResponseHelper.idNotFound();
 			}
-		}else{
+		} else {
 			return JSonResponseHelper.actionNotPossible("Permissions not sufficient");
 		}
 	}

@@ -1,6 +1,7 @@
 package crac.deciderCore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import crac.competenceGraph.CompetenceCollectionMatrix;
 import crac.daos.TaskDAO;
@@ -20,14 +21,25 @@ public class TaskMatchingWorker extends Worker {
 
 	public ArrayList<EvaluatedTask> run(){
 		
+		ArrayList<EvaluatedTask> tasks = new ArrayList<EvaluatedTask>();
+		
 		CompetenceCollectionMatrix ccm;
 		
 		for(Task t : taskDAO.findAll()){
 			ccm = new CompetenceCollectionMatrix(user, t);
 			ccm.print();
+			tasks.add(new EvaluatedTask(t, ccm.calcMatch()));
 		}
 		
-		return new ArrayList<EvaluatedTask>();
+		for(EvaluatedTask t : tasks){
+			if(!t.isDoable() || t.getAssessment() == 0){
+				tasks.remove(t);
+			}
+		}
+		
+		Collections.sort(tasks);
+		
+		return tasks;
 	}
 	
 }

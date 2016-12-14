@@ -853,6 +853,18 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+**Updates the value of an task with an open amount of volunteers, based on the amount of volunteers on their child-tasks**
+
+#####*Request:*
+
+GET /task/{task_id}/updateAmountOfVolunteers
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
 **Sets the TaskRepetitionState from once to periodic if possible, mandatory to add a date as json**
 
 #####*Request:*
@@ -1428,5 +1440,15 @@ Leader und User wissen somit wer noch Interesse hätte mitzuarbeiten
 Ein Pool an ev. vorhandenen Helfern ist vorhanden
 Der Interessent (Follower) bekommt je nach Einstellungen Notifikationen zum jeweiligen Task
 Zeitraum eines Sub-Tasks muss innerhalb des Super-Tasks sein, d.h. wenn das Projekt Adventbazar von 01.10. bis zum 25.11. andauert, dann dürfen die Sub-Tasks nicht außerhalb dieses Zeitraumes sein. Wird hingegen nur ein Zeitpunkt angegeben, z.B. Adventbazar am 25.11. dann müssen die Sub-Task innerhalb des aktuellen Erstelldatums und dem 25.11. sein.
+
+-----------------------------------------------------------------
+
+###14.12.2016
+
+Change to how the amount of volunteers on tasks is handled
+The attribute can be set to any positive number, meaning the concrete amount of volunteers, or to "0", meaning an infinite number
+of volunteers can join the task. This "0" can also be updated to a concrete amount, based on the amount that's placed on the child-tasks:
+
+GET /task/{task_id}/updateAmountOfVolunteers -> NEW
 
 -----------------------------------------------------------------
