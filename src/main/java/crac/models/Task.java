@@ -33,9 +33,9 @@ import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
-import crac.relationmodels.CompetenceTaskRel;
-import crac.relationmodels.UserTaskRel;
-import crac.utilityModels.RepetitionDate;
+import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserTaskRel;
+import crac.models.utility.RepetitionDate;
 
 /**
  * The task-entity.

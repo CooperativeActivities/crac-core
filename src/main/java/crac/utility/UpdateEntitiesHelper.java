@@ -6,7 +6,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Task;
-import crac.relationmodels.CompetenceRelationshipType;
+import crac.models.relation.CompetenceRelationshipType;
 
 public class UpdateEntitiesHelper {
 

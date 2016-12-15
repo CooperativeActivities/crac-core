@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.relationmodels.UserCompetenceRel;
-import crac.relationmodels.UserRelationship;
-import crac.relationmodels.UserTaskRel;
+import crac.models.relation.UserCompetenceRel;
+import crac.models.relation.UserRelationship;
+import crac.models.relation.UserTaskRel;
 
 /**
  * The cracUser-entity.

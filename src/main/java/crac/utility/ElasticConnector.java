@@ -27,7 +27,7 @@ import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.models.Competence;
 import crac.models.Task;
-import crac.utilityModels.EvaluatedTask;
+import crac.models.utility.EvaluatedTask;
 
 public class ElasticConnector<T> {
 

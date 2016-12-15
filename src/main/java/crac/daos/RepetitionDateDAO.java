@@ -3,7 +3,7 @@ package crac.daos;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import crac.utilityModels.RepetitionDate;
+import crac.models.utility.RepetitionDate;
 
 
 /**

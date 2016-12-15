@@ -29,9 +29,9 @@ import crac.daos.CracUserDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
-import crac.relationmodels.CompetenceRelationship;
-import crac.relationmodels.CompetenceRelationshipType;
-import crac.relationmodels.UserCompetenceRel;
+import crac.models.relation.CompetenceRelationship;
+import crac.models.relation.CompetenceRelationshipType;
+import crac.models.relation.UserCompetenceRel;
 import crac.utility.JSonResponseHelper;
 
 /**
@@ -120,6 +120,7 @@ public class CompetenceController {
 	 * @param type_id
 	 * @return ResponseEntity
 	 */
+	/*
 	@RequestMapping(value = { "/{competence1_id}/connect/{competence2_id}/type/{type_id}",
 			"/{competence1_id}/connect/{competence2_id}/type/{type_id}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
@@ -154,6 +155,7 @@ public class CompetenceController {
 		}
 
 	}
+	*/
 
 	@RequestMapping(value = { "/userrels", "/userrels/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import crac.models.Attachment;
 import crac.models.Competence;
 import crac.models.Task;
-import crac.relationmodels.CompetenceTaskRel;
+import crac.models.relation.CompetenceTaskRel;
 
 
 /**

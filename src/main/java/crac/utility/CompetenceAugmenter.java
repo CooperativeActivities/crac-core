@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceRelationshipDAO;
 import crac.models.Competence;
-import crac.relationmodels.CompetenceRelationship;
-import crac.utilityModels.TravelledCompetence;
+import crac.models.relation.CompetenceRelationship;
+import crac.models.utility.TravelledCompetence;
 
 @Service
 public class CompetenceAugmenter {

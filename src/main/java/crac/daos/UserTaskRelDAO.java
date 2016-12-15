@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import crac.enums.TaskParticipationType;
 import crac.models.CracUser;
 import crac.models.Task;
-import crac.relationmodels.UserTaskRel;
+import crac.models.relation.UserTaskRel;
 
 
 /**

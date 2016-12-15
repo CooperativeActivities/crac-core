@@ -32,12 +32,12 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Task;
+import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserCompetenceRel;
+import crac.models.relation.UserRelationship;
+import crac.models.relation.UserTaskRel;
 import crac.notifier.NotificationHelper;
 import crac.notifier.notifications.EvaluationNotification;
-import crac.relationmodels.CompetenceTaskRel;
-import crac.relationmodels.UserCompetenceRel;
-import crac.relationmodels.UserRelationship;
-import crac.relationmodels.UserTaskRel;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
 

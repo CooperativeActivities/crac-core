@@ -25,16 +25,16 @@ import crac.daos.UserTaskRelDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserCompetenceRel;
+import crac.models.relation.UserRelationship;
+import crac.models.relation.UserTaskRel;
+import crac.models.utility.EvaluatedTask;
+import crac.models.utility.EvaluatedUser;
+import crac.models.utility.TaskSearchLogger;
+import crac.models.utility.TravelledCompetence;
+import crac.models.utility.TravelledCompetenceCollection;
 import crac.notifier.Notification;
-import crac.relationmodels.CompetenceTaskRel;
-import crac.relationmodels.UserCompetenceRel;
-import crac.relationmodels.UserRelationship;
-import crac.relationmodels.UserTaskRel;
-import crac.utilityModels.EvaluatedTask;
-import crac.utilityModels.EvaluatedUser;
-import crac.utilityModels.TaskSearchLogger;
-import crac.utilityModels.TravelledCompetence;
-import crac.utilityModels.TravelledCompetenceCollection;
 
 @Service
 public class SearchHelper {

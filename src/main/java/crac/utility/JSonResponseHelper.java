@@ -13,10 +13,10 @@ import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Role;
 import crac.models.Task;
+import crac.models.relation.CompetenceRelationshipType;
+import crac.models.relation.UserTaskRel;
 import crac.models.CracToken;
 import crac.notifier.Notification;
-import crac.relationmodels.CompetenceRelationshipType;
-import crac.relationmodels.UserTaskRel;
 
 public class JSonResponseHelper {
 	

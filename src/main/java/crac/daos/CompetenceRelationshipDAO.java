@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import crac.models.Competence;
 import crac.models.Task;
-import crac.relationmodels.CompetenceRelationship;
+import crac.models.relation.CompetenceRelationship;
 
 
 /**

@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.relationmodels.CompetencePermissionType;
-import crac.relationmodels.CompetenceRelationship;
-import crac.relationmodels.CompetenceTaskRel;
-import crac.relationmodels.UserCompetenceRel;
+import crac.models.relation.CompetencePermissionType;
+import crac.models.relation.CompetenceRelationship;
+import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserCompetenceRel;
 
 /**
  * The competence-entity.

@@ -7,7 +7,7 @@ import crac.daos.TaskDAO;
 import crac.enums.TaskState;
 import crac.models.CracUser;
 import crac.models.Task;
-import crac.relationmodels.UserTaskRel;
+import crac.models.relation.UserTaskRel;
 
 //0 is undefined -> unknown bug, skipped all the code
 //1 means that a very important rule for changing the state is not met

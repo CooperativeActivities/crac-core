@@ -4,9 +4,9 @@ import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.relation.UserCompetenceRel;
+import crac.models.relation.UserRelationship;
 import crac.notifier.NotificationHelper;
-import crac.relationmodels.UserCompetenceRel;
-import crac.relationmodels.UserRelationship;
 
 public class EvaluationTriggers {
 

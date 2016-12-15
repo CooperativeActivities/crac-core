@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import crac.models.Competence;
 import crac.models.CracUser;
-import crac.relationmodels.UserCompetenceRel;
+import crac.models.relation.UserCompetenceRel;
 
 
 /**

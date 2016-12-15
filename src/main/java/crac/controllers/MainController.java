@@ -21,10 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.competenceGraph.CompetenceStorage;
-import crac.competenceGraph.SimpleCompetence;
-import crac.competenceGraph.AugmenterUnit;
-import crac.competenceGraph.SimpleCompetenceRelation;
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetencePermissionTypeDAO;
 import crac.daos.CompetenceRelationshipDAO;
@@ -35,21 +31,27 @@ import crac.daos.RepetitionDateDAO;
 import crac.daos.RoleDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
-import crac.deciderCore.TaskMatchingWorker;
+import crac.decider.core.Decider;
+import crac.decider.core.DeciderParameters;
+import crac.decider.workers.TaskMatchingWorker;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Role;
 import crac.models.Task;
-import crac.relationmodels.CompetencePermissionType;
-import crac.relationmodels.CompetenceRelationship;
-import crac.relationmodels.CompetenceRelationshipType;
-import crac.relationmodels.CompetenceTaskRel;
-import crac.relationmodels.UserCompetenceRel;
+import crac.models.relation.CompetencePermissionType;
+import crac.models.relation.CompetenceRelationship;
+import crac.models.relation.CompetenceRelationshipType;
+import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserCompetenceRel;
+import crac.models.storage.SimpleCompetence;
+import crac.models.storage.SimpleCompetenceRelation;
+import crac.models.utility.RepetitionDate;
+import crac.models.utility.TravelledCompetence;
+import crac.storage.AugmenterUnit;
+import crac.storage.CompetenceStorage;
 import crac.utility.CompetenceAugmenter;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utilityModels.RepetitionDate;
-import crac.utilityModels.TravelledCompetence;
 
 /**
  * The main-controller used for hello world and testing
@@ -98,15 +100,7 @@ public class MainController {
 	
 	@Value("${crac.boot.enable}")
     private boolean bootEnabled;
-	
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping("/sync")
-	@ResponseBody
-	public ResponseEntity<String> sync() {
-		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
-		return JSonResponseHelper.successFullAction("Competences have been synchronized");
-	}
-	
+		
 	@RequestMapping("/test/{competence_id}")
 	@ResponseBody
 	public ResponseEntity<String> test(@PathVariable(value = "competence_id") Long competenceId) {
@@ -122,31 +116,16 @@ public class MainController {
 		
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser myUser = userDAO.findByName(userDetails.getName());
-		
-		System.out.println("compval: "+CompetenceStorage.getCompetenceSimilarity(competenceDAO.findByName("breathing"), competenceDAO.findByName("swimming")));
-		System.out.println("compval: "+CompetenceStorage.getCompetenceSimilarity(competenceDAO.findByName("basic human skills"), competenceDAO.findByName("swimming")));
-		System.out.println("compval: "+CompetenceStorage.getCompetenceSimilarity(competenceDAO.findByName("walking"), competenceDAO.findByName("swimming")));
-		
-		TaskMatchingWorker t = new TaskMatchingWorker(myUser, taskDAO);
-		t.run();
-		
-		return JSonResponseHelper.successFullAction("called");
-	}
 
-	@RequestMapping("/testMe/{competence_id}/{distance}/go")
-	@ResponseBody
-	public ResponseEntity<String> indexWord(@PathVariable(value = "distance") Double distance, @PathVariable(value = "competence_id") Long competenceId) {
-		
-		HashMap<Long, TravelledCompetence> relatedCompetences = competenceAugmenter.augment(competenceDAO.findOne(competenceId), distance);
+		Decider unit = new Decider();
 		
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(relatedCompetences));
+			return ResponseEntity.ok().body(mapper.writeValueAsString(unit.findUsers(taskDAO.findOne((long)3), userDAO, new DeciderParameters())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
 		}
-		
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")

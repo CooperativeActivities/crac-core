@@ -51,17 +51,17 @@ import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserTaskRel;
+import crac.models.utility.EvaluatedTask;
+import crac.models.utility.RepetitionDate;
+import crac.models.utility.SimpleQuery;
 import crac.notifier.NotificationHelper;
-import crac.relationmodels.CompetenceTaskRel;
-import crac.relationmodels.UserTaskRel;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SearchHelper;
 import crac.utility.TaskStateHandler;
 import crac.utility.UpdateEntitiesHelper;
-import crac.utilityModels.EvaluatedTask;
-import crac.utilityModels.RepetitionDate;
-import crac.utilityModels.SimpleQuery;
 
 /**
  * REST controller for managing tasks.

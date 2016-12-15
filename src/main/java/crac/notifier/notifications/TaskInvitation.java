@@ -15,11 +15,11 @@ import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.enums.TaskParticipationType;
 import crac.models.CracUser;
+import crac.models.relation.UserRelationship;
+import crac.models.relation.UserTaskRel;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
-import crac.relationmodels.UserRelationship;
-import crac.relationmodels.UserTaskRel;
 
 public class TaskInvitation extends Notification{
 	

@@ -3,9 +3,9 @@ package crac.daos;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import crac.relationmodels.CompetencePermissionType;
-import crac.relationmodels.CompetenceRelationshipType;
-import crac.relationmodels.TaskRelationshipType;
+import crac.models.relation.CompetencePermissionType;
+import crac.models.relation.CompetenceRelationshipType;
+import crac.models.relation.TaskRelationshipType;
 
 
 /**

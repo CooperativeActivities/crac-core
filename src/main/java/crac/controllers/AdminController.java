@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
+import crac.daos.CompetenceRelationshipDAO;
 import crac.daos.CompetenceRelationshipTypeDAO;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
@@ -37,8 +38,9 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Role;
 import crac.models.Task;
-import crac.relationmodels.CompetenceRelationshipType;
-import crac.relationmodels.UserTaskRel;
+import crac.models.relation.CompetenceRelationshipType;
+import crac.models.relation.UserTaskRel;
+import crac.storage.CompetenceStorage;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
@@ -66,6 +68,9 @@ public class AdminController {
 
 	@Autowired
 	private GroupDAO groupDAO;
+	
+	@Autowired
+	private CompetenceRelationshipDAO competenceRelationshipDAO;
 
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
@@ -253,6 +258,15 @@ public class AdminController {
 	}
 
 	// COMPETENCE-SECTION
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/sync")
+	@ResponseBody
+	public ResponseEntity<String> sync() {
+		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
+		return JSonResponseHelper.successFullAction("Competences have been synchronized");
+	}
+
 
 	/**
 	 * Creates a new competence
@@ -260,6 +274,7 @@ public class AdminController {
 	 * @param json
 	 * @return ResponseEntity
 	 */
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/",
 			"/competence" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -283,7 +298,7 @@ public class AdminController {
 		competenceDAO.save(myCompetence);
 		return JSonResponseHelper.successFullyCreated(myCompetence);
 
-	}
+	}*/
 
 	/**
 	 * Deletes target competence
@@ -291,6 +306,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/{competence_id}",
 			"/competence/{competence_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
@@ -306,7 +322,7 @@ public class AdminController {
 			return JSonResponseHelper.idNotFound();
 		}
 
-	}
+	}*/
 
 	/**
 	 * Updates target competence
@@ -315,6 +331,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/{competence_id}",
 			"/competence/{competence_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
@@ -343,7 +360,7 @@ public class AdminController {
 			return JSonResponseHelper.idNotFound();
 		}
 
-	}
+	}*/
 
 	/**
 	 * Add a new relationship-type for competences
@@ -351,6 +368,7 @@ public class AdminController {
 	 * @param json
 	 * @return ResponseEntity
 	 */
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type",
 			"competence/type/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -369,7 +387,7 @@ public class AdminController {
 		}
 		typeDAO.save(t);
 		return JSonResponseHelper.successFullyCreated(t);
-	}
+	}*/
 
 	/**
 	 * Deletes target relationship-type for competences
@@ -377,6 +395,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type/{type_id}",
 			"competence/type/{type_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
@@ -393,7 +412,7 @@ public class AdminController {
 			return JSonResponseHelper.idNotFound();
 		}
 
-	}
+	}*/
 
 	/**
 	 * Updates target relationship-type for competences
@@ -402,6 +421,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type/{type_id}",
 			"/competence/type/{type_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
@@ -429,7 +449,9 @@ public class AdminController {
 			return JSonResponseHelper.idNotFound();
 		}
 
-	}
+	}*/
+	
+	// ELASTICSEARCH
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/refreshESTasks",

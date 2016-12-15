@@ -13,10 +13,10 @@ import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.models.CracUser;
+import crac.models.relation.UserRelationship;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
-import crac.relationmodels.UserRelationship;
 
 public class FriendRequest extends Notification{
 	
