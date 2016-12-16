@@ -35,6 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
+import crac.decider.core.Decider;
+import crac.decider.core.DeciderParameters;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -1041,17 +1043,15 @@ public class TaskController {
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/findMatchingUsers/{task_id}",
-			"/findMatchingUsers/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/findMatchingUsers",
+			"/{task_id}/findMatchingUsers/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
 
+		Decider unit = new Decider();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers)
-					.body(mapper.writeValueAsString(searchHelper.findMatch(taskDAO.findOne(taskId))));
+			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO, new DeciderParameters())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

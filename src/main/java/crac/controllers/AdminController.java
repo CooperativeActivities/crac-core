@@ -259,6 +259,10 @@ public class AdminController {
 
 	// COMPETENCE-SECTION
 	
+	/**
+	 * Synchronizes the competences of the DB into the CompetenceStorage of the application and caches the relations
+	 * @return ResponseEntity
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/sync")
 	@ResponseBody

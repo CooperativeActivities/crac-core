@@ -932,7 +932,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/state/{state_name}"
+GET /task/{task_id}/state/{state_name}
 
 #####*Response:*
 
@@ -956,7 +956,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/nominateLeader/{user_id}"
+GET /task/{task_id}/nominateLeader/{user_id}
 
 #####*Response:*
 
@@ -968,7 +968,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/taskParticipationTypes"
+GET /task/taskParticipationTypes
 
 #####*Response:*
 
@@ -984,7 +984,7 @@ GET /task/taskParticipationTypes"
 
 #####*Request:*
 
-GET /task/taskStates"
+GET /task/taskStates
 
 #####*Response:*
 
@@ -1001,7 +1001,7 @@ GET /task/taskStates"
 
 #####*Request:*
 
-GET /task/taskTypes"
+GET /task/taskTypes
 
 #####*Response:*
 
@@ -1016,7 +1016,7 @@ GET /task/taskTypes"
 
 #####*Request:*
 
-GET /task/parents"
+GET /task/parents
 
 #####*Response:*
 
@@ -1039,7 +1039,7 @@ GET /task/parents"
 
 #####*Request:*
 
-POST /task/queryES"
+POST /task/queryES
 
 	{
 		"text": "This is a fulltext-query!"
@@ -1068,7 +1068,7 @@ POST /task/queryES"
 
 #####*Request:*
 
-GET /task/findMatchingUsers/{task_id}"
+GET /task/{task_id}/findMatchingUsers
 
 #####*Response:*
 
@@ -1094,6 +1094,21 @@ GET /task/findMatchingUsers/{task_id}"
 -----------------------------------------------------------------
 
 ###Competence-Endpoints
+
+-----------------------------------------------------------------
+
+**Synchronizes the competences of the DB into the CompetenceStorage of the application and caches the relations**
+##VERY IMPORTANT:
+-> When booting the system, this is done automatically. Later on, if there is a change on the DB, this HAS to be called,
+since internally, the system only works with the cached data!
+
+#####*Request:*
+
+GET /admin/sync
+
+#####*Response:*
+
+Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
@@ -1450,5 +1465,17 @@ The attribute can be set to any positive number, meaning the concrete amount of 
 of volunteers can join the task. This "0" can also be updated to a concrete amount, based on the amount that's placed on the child-tasks:
 
 GET /task/{task_id}/updateAmountOfVolunteers -> NEW
+
+-----------------------------------------------------------------
+###16.12.2016
+
+Change to the endpoint, that gets users for a specific task.
+
+GET /task/{task_id}/findMatchingUsers -> from /task/findMatchingUsers/{task_id}
+
+##MAJOR UPDATE TO THE MATCHING-SYSTEM!!!!
+-> Competences are synchronized from the DB into the running system for performance-reasons now, and thus MUST be synchronized by hand if there is a change on KOMET! This can be done by calling the following endpoint with ADMIN-permissions:
+
+GET /admin/sync -> NEW
 
 -----------------------------------------------------------------

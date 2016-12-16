@@ -32,6 +32,8 @@ import crac.daos.TokenDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
+import crac.decider.core.Decider;
+import crac.decider.core.DeciderParameters;
 import crac.enums.TaskParticipationType;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
@@ -624,10 +626,10 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		ObjectMapper mapper = new ObjectMapper();
+		Decider unit = new Decider();
+		
 		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(searchHelper.findMatch(user)));
+			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, taskDAO, new DeciderParameters())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

@@ -264,6 +264,10 @@ public class JSonResponseHelper {
 		return addEntity("{\"success\":\"false\", \"action\":\"destroy_token\", \"cause\":\"no token available\"}");
 	}
 	
+	public static ResponseEntity<String> print(String msg){
+		return addEntity(msg);
+	}
+	
 	private static ResponseEntity<String> addEntity(String response){
 		
 		HttpHeaders headers = new HttpHeaders();
