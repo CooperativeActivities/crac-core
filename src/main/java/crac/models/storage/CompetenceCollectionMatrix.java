@@ -53,6 +53,30 @@ public class CompetenceCollectionMatrix {
 		markMandatoryViolation();
 
 	}
+	
+	public void applyFilters(SearchFilter sf){
+		if(sf.getFriends() == 1){
+			applyFriends();
+		}
+		if(sf.getLike() == 1){
+			applyLike();
+		}
+		if(sf.getProficiency() == 1){
+			applyProficiency();
+		}
+	}
+	
+	private void applyFriends(){
+		
+	}
+	
+	private void applyLike(){
+		
+	}
+	
+	private void applyProficiency(){
+		
+	}
 
 	public void markMandatoryViolation() {
 

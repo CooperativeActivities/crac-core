@@ -8,6 +8,7 @@ import crac.decider.core.Worker;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.models.storage.CompetenceCollectionMatrix;
+import crac.models.storage.SearchFilter;
 import crac.models.utility.EvaluatedTask;
 import crac.notifier.NotificationHelper;
 
@@ -16,11 +17,13 @@ public class TaskMatchingWorker extends Worker {
 	
 	private CracUser user;
 	private TaskDAO taskDAO;
+	private SearchFilter filter;
 
 	public TaskMatchingWorker(CracUser u, TaskDAO taskDAO) {
 		super();
 		this.user = u;
 		this.taskDAO = taskDAO;
+		filter = null;
 	}
 
 	public ArrayList<EvaluatedTask> run() {
@@ -34,6 +37,9 @@ public class TaskMatchingWorker extends Worker {
 			if (t.getMappedCompetences() != null) {
 				if (t.getMappedCompetences().size() != 0) {
 					ccm = new CompetenceCollectionMatrix(user, t);
+					if(filter != null){
+						ccm.applyFilters(filter);
+					}
 					ccm.print();
 					EvaluatedTask et = new EvaluatedTask(t, ccm.calcMatch());
 					et.setDoable(ccm.isDoable());
@@ -58,6 +64,10 @@ public class TaskMatchingWorker extends Worker {
 		}
 
 		return tasks;
+	}
+	
+	public void setFilter(SearchFilter sf){
+		this.filter = sf;
 	}
 	
 	public String getWorkerId(){

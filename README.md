@@ -735,11 +735,11 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
-**Adds target competence to target task, it is mandatory to add the proficiency and importanceLvl**
+**Adds target competence to target task, it is mandatory to add the proficiency, importanceLvl and the mandatoryflag (as boolean)**
 	
 #####*Request:*
 
-GET /task/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}
+GET /task/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}
 
 #####*Response:*
 
