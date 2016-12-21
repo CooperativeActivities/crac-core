@@ -54,6 +54,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.models.relation.CompetenceTaskRel;
+import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserTaskRel;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.RepetitionDate;
@@ -169,6 +170,49 @@ public class TaskController {
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
+	}
+
+	@RequestMapping(value = { "/{task_id}/competence/available",
+			"/{task_id}/competence/available/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> availableCompetences(@PathVariable(value = "task_id") Long taskId) {
+
+		Task task = taskDAO.findOne(taskId);
+
+		Iterable<Competence> competenceList = competenceDAO.findAll();
+
+		Set<CompetenceTaskRel> competenceRels = task.getMappedCompetences();
+
+		ArrayList<Competence> found = new ArrayList<Competence>();
+
+		if (competenceList != null) {
+			for (Competence c : competenceList) {
+				boolean in = false;
+				for (CompetenceTaskRel ctr : competenceRels) {
+					if (c.getId() == ctr.getCompetence().getId()) {
+						in = true;
+					}
+				}
+				if (!in) {
+					found.add(c);
+				}
+			}
+		}
+
+		if (found.size() != 0) {
+
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				return ResponseEntity.ok().body(mapper.writeValueAsString(found));
+			} catch (JsonProcessingException e) {
+				System.out.println(e.toString());
+				return JSonResponseHelper.jsonWriteError();
+			}
+
+		} else {
+			return JSonResponseHelper.emptyData();
+		}
+
 	}
 
 	/**
@@ -312,7 +356,9 @@ public class TaskController {
 	}
 
 	/**
-	 * Updates the value of an task with an open amount of volunteers, based on the amount of volunteers on their child-tasks
+	 * Updates the value of an task with an open amount of volunteers, based on
+	 * the amount of volunteers on their child-tasks
+	 * 
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
@@ -329,31 +375,31 @@ public class TaskController {
 		if (t != null) {
 			if (user.hasTaskPermissions(t)) {
 
-				System.out.println("sfd "+t.getAmountOfVolunteers());
-				if(t.getAmountOfVolunteers() == 0){
-					
+				System.out.println("sfd " + t.getAmountOfVolunteers());
+				if (t.getAmountOfVolunteers() == 0) {
+
 					int val = 0;
-					
-					for(Task ct : t.getChildTasks()){
-						if(ct.getAmountOfVolunteers() > 0){
+
+					for (Task ct : t.getChildTasks()) {
+						if (ct.getAmountOfVolunteers() > 0) {
 							val += ct.getAmountOfVolunteers();
-						}else{
+						} else {
 							return JSonResponseHelper.actionNotPossible("Task has childtask with open amount");
 						}
 					}
-					
+
 					t.setAmountOfVolunteers(val);
 					taskDAO.save(t);
 					return JSonResponseHelper.successFullyUpdated(t);
-					
-				}else{
+
+				} else {
 					return JSonResponseHelper.actionNotPossible("Task has an assigned Value");
 				}
-				
+
 			} else {
 				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
 			}
-		}else{
+		} else {
 			return JSonResponseHelper.idNotFound();
 		}
 
@@ -1051,7 +1097,8 @@ public class TaskController {
 		Decider unit = new Decider();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO, new DeciderParameters())));
+			return JSonResponseHelper.print(mapper
+					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO, new DeciderParameters())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

@@ -1467,6 +1467,7 @@ of volunteers can join the task. This "0" can also be updated to a concrete amou
 GET /task/{task_id}/updateAmountOfVolunteers -> NEW
 
 -----------------------------------------------------------------
+
 ###16.12.2016
 
 Change to the endpoint, that gets users for a specific task.

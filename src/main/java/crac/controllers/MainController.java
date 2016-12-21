@@ -402,7 +402,7 @@ public class MainController {
 		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);
 		repetitionDateDAO.save(date1);
 		
-		CompetenceStorage.sync(competenceDAO, competenceRelationshipDAO);
+		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
 		
 		return JSonResponseHelper.bootSuccess();
 	}
