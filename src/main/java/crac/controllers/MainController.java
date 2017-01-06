@@ -43,6 +43,8 @@ import crac.models.relation.CompetenceRelationship;
 import crac.models.relation.CompetenceRelationshipType;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
+import crac.models.storage.CompetenceCollectionMatrix;
+import crac.models.storage.SearchFilter;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
 import crac.models.utility.RepetitionDate;
@@ -117,11 +119,12 @@ public class MainController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser myUser = userDAO.findByName(userDetails.getName());
 
-		Decider unit = new Decider();
+		CompetenceCollectionMatrix m = new CompetenceCollectionMatrix(myUser, taskDAO.findOne((long)3), new SearchFilter());
+		m.print();
 		
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(unit.findUsers(taskDAO.findOne((long)3), userDAO, new DeciderParameters())));
+			return ResponseEntity.ok().body(mapper.writeValueAsString("sdf"));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

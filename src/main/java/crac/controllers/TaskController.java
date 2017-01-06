@@ -56,6 +56,7 @@ import crac.models.Task;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserTaskRel;
+import crac.models.storage.SearchFilter;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.RepetitionDate;
 import crac.models.utility.SimpleQuery;
@@ -1098,7 +1099,7 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return JSonResponseHelper.print(mapper
-					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO, new DeciderParameters())));
+					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO, new SearchFilter())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

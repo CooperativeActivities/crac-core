@@ -214,11 +214,11 @@ public class Task {
 
 		return leaders;
 	}
-	
+
 	@JsonIgnore
-	public int possibleNumberOfVolunteers(){
+	public int possibleNumberOfVolunteers() {
 		int total = amountOfVolunteers;
-		for(Task t : childTasks){
+		for (Task t : childTasks) {
 			total -= t.getAmountOfVolunteers();
 		}
 		return total;
@@ -317,7 +317,7 @@ public class Task {
 	@JsonIgnore
 	public boolean isFull() {
 		if (userRelationships != null) {
-			if(amountOfVolunteers == 0){
+			if (amountOfVolunteers == 0) {
 				return false;
 			}
 			return amountOfVolunteers == userRelationships.size();
@@ -515,6 +515,22 @@ public class Task {
 
 	public void setAmountOfVolunteers(int amountOfVolunteers) {
 		this.amountOfVolunteers = amountOfVolunteers;
+	}
+
+	public int getSignedUsers() {
+
+		int num = 0;
+
+		if (userRelationships != null) {
+			for (UserTaskRel rel : userRelationships) {
+				if (rel.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+					num++;
+				}
+			}
+		}
+		
+		return num;
+		
 	}
 
 	public String getFeedback() {

@@ -43,6 +43,7 @@ import crac.models.Task;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserRelationship;
 import crac.models.relation.UserTaskRel;
+import crac.models.storage.SearchFilter;
 import crac.models.utility.SimpleUserRelationship;
 import crac.models.CracToken;
 import crac.notifier.NotificationHelper;
@@ -629,7 +630,7 @@ public class CracUserController {
 		Decider unit = new Decider();
 		
 		try {
-			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, taskDAO, new DeciderParameters())));
+			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, taskDAO, new SearchFilter())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

@@ -36,10 +36,7 @@ public class TaskMatchingWorker extends Worker {
 		for (Task t : taskDAO.findAll()) {
 			if (t.getMappedCompetences() != null) {
 				if (t.getMappedCompetences().size() != 0) {
-					ccm = new CompetenceCollectionMatrix(user, t);
-					if(filter != null){
-						ccm.applyFilters(filter);
-					}
+					ccm = new CompetenceCollectionMatrix(user, t, filter);
 					ccm.print();
 					EvaluatedTask et = new EvaluatedTask(t, ccm.calcMatch());
 					et.setDoable(ccm.isDoable());
