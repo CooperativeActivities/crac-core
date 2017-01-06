@@ -46,12 +46,12 @@ public class Webhook {
 		response.getEntity().getContent();
 		String theString = IOUtils.toString(response.getEntity().getContent()); 
 		
-		SimpleLogger.setString(theString);
+		SimpleLogger.setString(json);
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-		return ResponseEntity.ok().headers(headers).body(json);
+		return ResponseEntity.ok().headers(headers).body(theString);
 		
 	}
 	
