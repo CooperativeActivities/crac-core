@@ -81,7 +81,9 @@ public class Webhook {
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-		return ResponseEntity.ok().headers(headers).body("{\"champion\":\""+returns+"\"}");
+		return ResponseEntity.ok().headers(headers).body("{\"speech\":\"Your most played champion is "+returns+"\","
+				+ "\"source\":\"Riot-API\","
+				+ "\"displayText\":\"Your most played champion is "+returns+"\"}");
 
 	}
 
