@@ -41,7 +41,7 @@ public class Webhook {
 	private String key = "?api_key=RGAPI-9309e8ff-073d-40f7-a240-abe9f7b50cdd";
 
 	@RequestMapping(value = { "/webhook/",
-			"/webhook" }, method = RequestMethod.POST, consumes = "application/json")
+			"/webhook" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> hook(@RequestBody String json) throws ClientProtocolException, IOException {
 
@@ -78,8 +78,10 @@ public class Webhook {
 
 
 		// SimpleLogger.setString(s);
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-		return ResponseEntity.ok().body(returns);
+		return ResponseEntity.ok().headers(headers).body("{\"champion\":\""+returns+"\"}");
 
 	}
 
