@@ -49,6 +49,10 @@ public class Webhook {
 		JsonNode resultNode = rootNode.get("result");
 		JsonNode parametersNode = resultNode.get("parameters");
 		String action = resultNode.get("action").asText();
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ResponseEntity toreturn = null;
 
 		String returns = "";
 		
@@ -57,6 +61,7 @@ public class Webhook {
 			String name = parametersNode.get("Player").asText();
 			
 			String call = call("api/lol/EUW/v1.4/summoner/by-name/"+name, euw);
+			System.out.println(call);
 			JsonNode playerNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode nameNode = playerNode.get(name);
 			String id = nameNode.get("id").asText();
@@ -74,16 +79,44 @@ public class Webhook {
 			JsonNode championNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode championNameNode = championNode.get("name");
 			returns = championNameNode.asText();
+			toreturn = ResponseEntity.ok().headers(headers).body("{\"speech\":\"Your most played champion is "+returns+"\","
+					+ "\"source\":\"Riot-API\","
+					+ "\"displayText\":\"Your most played champion is "+returns+"!\"}");
+		}
+		
+		if(action.equals("call-ingame")){
+			String name = parametersNode.get("Player").asText();
+			
+			String call = call("api/lol/EUW/v1.4/summoner/by-name/"+name, euw);
+			System.out.println(call);
+			JsonNode playerNode = new ObjectMapper().readTree(new StringReader(call));
+			JsonNode nameNode = playerNode.get(name);
+			String id = nameNode.get("id").asText();
+			
+			call = call("observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/"+id, euw);
+			JsonNode gameNode = new ObjectMapper().readTree(new StringReader(call));
+			JsonNode statusNode = gameNode.get("status");
+			String ingame = "";
+			if(statusNode == null){
+				System.out.println("INGAME");
+				ingame = "ingame";
+			}else{
+				System.out.println("NOT INGAME");
+				ingame = "not ingame";
+			}
+			toreturn = ResponseEntity.ok().headers(headers).body("{\"speech\":\"The player "+name+" is currently "+ingame+"!\","
+					+ "\"source\":\"Riot-API\","
+					+ "\"displayText\":\"The player "+name+" is currently "+ingame+"!\"}");
+		}
+		
+		if(action.equals("call-stats")){
+			
 		}
 
 
 		// SimpleLogger.setString(s);
-		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
 
-		return ResponseEntity.ok().headers(headers).body("{\"speech\":\"Your most played champion is "+returns+"\","
-				+ "\"source\":\"Riot-API\","
-				+ "\"displayText\":\"Your most played champion is "+returns+"\"}");
+		return toreturn;
 
 	}
 
