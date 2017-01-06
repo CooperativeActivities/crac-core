@@ -2,6 +2,7 @@ package crac.controllers;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -49,70 +50,109 @@ public class Webhook {
 		JsonNode resultNode = rootNode.get("result");
 		JsonNode parametersNode = resultNode.get("parameters");
 		String action = resultNode.get("action").asText();
-		
+
 		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity toreturn = null;
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		ResponseEntity<String> toreturn = null;
 
 		String returns = "";
-		
+
 		if (action.equals("call-champion")) {
-			
+
 			String name = parametersNode.get("Player").asText();
-			
-			String call = call("api/lol/EUW/v1.4/summoner/by-name/"+name, euw);
+
+			String call = call("api/lol/EUW/v1.4/summoner/by-name/" + name, euw);
 			System.out.println(call);
 			JsonNode playerNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode nameNode = playerNode.get(name);
 			String id = nameNode.get("id").asText();
-			
-			call = call("championmastery/location/EUW1/player/"+id+"/topchampions", euw);
+
+			call = call("championmastery/location/EUW1/player/" + id + "/topchampions", euw);
 			JsonNode championsNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode championIdNode = null;
-			for(JsonNode child : championsNode){
+			for (JsonNode child : championsNode) {
 				championIdNode = child;
 				break;
 			}
 			String mostPlayedId = championIdNode.get("championId").asText();
-			
-			call = call("api/lol/static-data/euw/v1.2/champion/"+mostPlayedId, global);
+
+			call = call("api/lol/static-data/euw/v1.2/champion/" + mostPlayedId, global);
 			JsonNode championNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode championNameNode = championNode.get("name");
 			returns = championNameNode.asText();
-			toreturn = ResponseEntity.ok().headers(headers).body("{\"speech\":\"Your most played champion is "+returns+"\","
-					+ "\"source\":\"Riot-API\","
-					+ "\"displayText\":\"Your most played champion is "+returns+"!\"}");
+			toreturn = ResponseEntity.ok().headers(headers)
+					.body("{\"speech\":\"Your most played champion is " + returns + "\"," + "\"source\":\"Riot-API\","
+							+ "\"displayText\":\"Your most played champion is " + returns + "!\"}");
 		}
-		
-		if(action.equals("call-ingame")){
+
+		if (action.equals("call-ingame")) {
 			String name = parametersNode.get("Player").asText();
-			
-			String call = call("api/lol/EUW/v1.4/summoner/by-name/"+name, euw);
+
+			String call = call("api/lol/EUW/v1.4/summoner/by-name/" + name, euw);
 			System.out.println(call);
 			JsonNode playerNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode nameNode = playerNode.get(name);
 			String id = nameNode.get("id").asText();
-			
-			call = call("observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/"+id, euw);
+
+			call = call("observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/" + id, euw);
 			JsonNode gameNode = new ObjectMapper().readTree(new StringReader(call));
 			JsonNode statusNode = gameNode.get("status");
 			String ingame = "";
-			if(statusNode == null){
-				System.out.println("INGAME");
+			if (statusNode == null) {
 				ingame = "ingame";
-			}else{
-				System.out.println("NOT INGAME");
+			} else {
 				ingame = "not ingame";
 			}
-			toreturn = ResponseEntity.ok().headers(headers).body("{\"speech\":\"The player "+name+" is currently "+ingame+"!\","
-					+ "\"source\":\"Riot-API\","
-					+ "\"displayText\":\"The player "+name+" is currently "+ingame+"!\"}");
-		}
-		
-		if(action.equals("call-stats")){
-			
+			toreturn = ResponseEntity.ok().headers(headers)
+					.body("{\"speech\":\"The player " + name + " is currently " + ingame + "!\","
+							+ "\"source\":\"Riot-API\"," + "\"displayText\":\"The player " + name + " is currently "
+							+ ingame + "!\"}");
 		}
 
+		if (action.equals("call-league")) {
+			String name = parametersNode.get("Player").asText();
+
+			String call = call("api/lol/EUW/v1.4/summoner/by-name/" + name, euw);
+			JsonNode playerNode = new ObjectMapper().readTree(new StringReader(call));
+			JsonNode nameNode = playerNode.get(name);
+			String id = nameNode.get("id").asText();
+
+			call = call("api/lol/euw/v2.5/league/by-summoner/" + id, euw);
+			JsonNode gameNode = new ObjectMapper().readTree(new StringReader(call));
+			System.out.println(id);
+			System.out.println(call);
+			JsonNode idNode = gameNode.get(id);
+
+			JsonNode detailPlayerNode = null;
+
+			ArrayList<String> list = new ArrayList();
+			String tier = "";
+
+			for (JsonNode firstChildren : idNode) {
+				for (JsonNode child : firstChildren.get("entries")) {
+					if (child.get("playerOrTeamId").asText().equals(id)) {
+						tier = firstChildren.get("tier").asText();
+						// detailPlayerNode = child;
+						String division = child.get("division").asText();
+						list.add("You are currently at " + tier + " " + division + " in the "
+								+ firstChildren.get("queue").asText() + " queue");
+						break;
+					}
+				}
+			}
+
+			// String division = detailPlayerNode.get("division").asText();
+
+			String result = "";
+
+			for (String str : list) {
+				result += str + ". ";
+			}
+
+			toreturn = ResponseEntity.ok().headers(headers).body(
+					"{\"speech\":\"" + result + "\"," + "\"source\":\"Riot-API\"," + "\"displayText\":\"" + result + "\"}");
+
+		}
 
 		// SimpleLogger.setString(s);
 
