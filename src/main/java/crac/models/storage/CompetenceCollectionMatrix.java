@@ -3,14 +3,11 @@ package crac.models.storage;
 import java.util.ArrayList;
 import java.util.Set;
 
-import crac.enums.TaskParticipationType;
-import crac.models.Competence;
+import crac.decider.workers.config.MatchingMatrixConfig;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
-import crac.models.relation.UserRelationship;
-import crac.models.relation.UserTaskRel;
 import crac.storage.CompetenceStorage;
 
 public class CompetenceCollectionMatrix {
@@ -24,16 +21,14 @@ public class CompetenceCollectionMatrix {
 	private ArrayList<String> mandatoryViolations = new ArrayList<>();
 	private Set<UserCompetenceRel> userComps;
 	private Set<CompetenceTaskRel> taskComps;
-	private SearchFilter sf;
 
-	public CompetenceCollectionMatrix(CracUser u, Task t, SearchFilter sf) {
+	public CompetenceCollectionMatrix(CracUser u, Task t) {
 		this.u = u;
 		this.t = t;
 		this.doable = true;
 
 		this.userComps = u.getCompetenceRelationships();
 		this.taskComps = t.getMappedCompetences();
-		this.sf = sf;
 
 		matrix = new MatrixField[userComps.size()][taskComps.size()];
 		rowsU = new String[userComps.size()];
@@ -41,9 +36,7 @@ public class CompetenceCollectionMatrix {
 
 		buildMatrix();
 		markMandatoryViolation();
-		if (sf.isSet()) {
-			applyFilters(sf);
-		}
+		applyFilters();
 
 	}
 
@@ -66,104 +59,14 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
-	private void applyFilters(SearchFilter sf) {
+	private void applyFilters() {
 
 		for (MatrixField[] row : matrix) {
+
 			for (MatrixField field : row) {
-				System.out.println("---------------------------");
-				System.out.println("ROW:");
-				System.out.println("Original: "+field.getVal());
-				int neededProficiency = field.getTaskRelation().getNeededProficiencyLevel();
-				int proficiencyValue = field.getUserRelation().getProficiencyValue();
-				int likeValue = field.getUserRelation().getLikeValue();
-				int importanceValue = field.getTaskRelation().getImportanceLevel();
-
-				if (sf.getProficiency() == 1) {
-					field.setVal(addProficiencyLevel(field.getVal(), neededProficiency, proficiencyValue));
-				}
-				System.out.println("After Proficiency: "+field.getVal());
-				if (sf.getLike() == 1) {
-					field.setVal(addLikeLevel(field.getVal(), likeValue));
-				}
-				System.out.println("After Like: "+field.getVal());
-				if (sf.getFriends() == 1) {
-					field.setVal(addFriendsLevel(field.getVal(), field.getUserRelation().getUser(),
-							field.getTaskRelation().getTask()));
-				}
-				System.out.println("After Friends: "+field.getVal());
-				if (sf.getImportance() == 1) {
-					field.setVal(addImportancyLevel(field.getVal(), importanceValue));
-				}
-				System.out.println("After Importance: "+field.getVal());
-				System.out.println("---------------------------");
+				MatchingMatrixConfig.applyFilters(field);
 			}
 		}
-	}
-
-	private double addFriendsLevel(double value, CracUser user, Task t) {
-
-		double newVal = value;
-
-		ArrayList<UserRelationship> others = getRelatedPersons(user, t);
-
-		for (UserRelationship rel : others) {
-			newVal = newVal * (1 + (((1 - newVal / 2) * (double) rel.getLikeValue() / 100) * 0.7));
-		}
-
-		return newVal;
-	}
-
-	private ArrayList<UserRelationship> getRelatedPersons(CracUser user, Task t) {
-		ArrayList<UserRelationship> others = new ArrayList<>();
-		for (UserTaskRel trel : t.getUserRelationships()) {
-			if (trel.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-				for (UserRelationship urel : trel.getUser().getUserRelationshipsAs1()) {
-					if (urel.getC2().getId() == user.getId()) {
-						others.add(urel);
-					}
-				}
-				for (UserRelationship urel : trel.getUser().getUserRelationshipsAs2()) {
-					if (urel.getC1().getId() == user.getId()) {
-						others.add(urel);
-					}
-				}
-			}
-		}
-		return others;
-	}
-
-	private double addProficiencyLevel(double value, int neededProficiency, int proficiencyValue) {
-		double newVal = value;
-		if (proficiencyValue < neededProficiency) {
-			newVal = value * ((double) 1 - (((double) neededProficiency / 100) - ((double) proficiencyValue / 100)));
-		}
-		return newVal;
-	}
-
-	private double addLikeLevel(double value, int likeValue) {
-
-		double newVal = value * (1 + (1 - value / 2) * (double) likeValue / 100);
-
-		if (newVal > 1) {
-			newVal = 1;
-		} else if (newVal < 0) {
-			newVal = 0;
-		}
-
-		return newVal;
-
-	}
-
-	private double addImportancyLevel(double value, int importancyValue) {
-
-		double newVal = value;
-
-		// do only if the value is not 1, since 1 means that the user possesses
-		// the competence
-		if (value != 1) {
-			newVal = value * (1 - ((double) importancyValue / 300));
-		}
-		return newVal;
 	}
 
 	private void markMandatoryViolation() {

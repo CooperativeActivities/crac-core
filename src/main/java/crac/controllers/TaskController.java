@@ -63,8 +63,6 @@ import crac.models.utility.SimpleQuery;
 import crac.notifier.NotificationHelper;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchHelper;
-import crac.utility.TaskStateHandler;
 import crac.utility.UpdateEntitiesHelper;
 
 /**
@@ -92,9 +90,6 @@ public class TaskController {
 
 	@Autowired
 	private RepetitionDateDAO repetitionDateDAO;
-
-	@Autowired
-	private SearchHelper searchHelper;
 
 	@Autowired
 	private RoleDAO roleDAO;
@@ -1064,7 +1059,10 @@ public class TaskController {
 			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 					.getContext().getAuthentication();
 			CracUser user = userDAO.findByName(userDetails.getName());
-			ArrayList<EvaluatedTask> doables = searchHelper.findMatch(user);
+			
+			Decider unit = new Decider();
+			
+			ArrayList<EvaluatedTask> doables = unit.findTasks(user, taskDAO);
 
 			for (EvaluatedTask ets : et) {
 				ets.setDoable(false);
@@ -1099,7 +1097,7 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return JSonResponseHelper.print(mapper
-					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO, new SearchFilter())));
+					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

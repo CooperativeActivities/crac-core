@@ -16,12 +16,10 @@ public class UserMatchingWorker extends Worker {
 
 	private Task task;
 	private CracUserDAO userDAO;
-	private SearchFilter filter;
 
 	public UserMatchingWorker(Task task, CracUserDAO userDAO) {
 		this.task = task;
 		this.userDAO = userDAO;
-		this.filter = null;
 	}
 
 	public ArrayList<EvaluatedUser> run() {
@@ -34,7 +32,7 @@ public class UserMatchingWorker extends Worker {
 		for (CracUser u : userDAO.findAll()) {
 			if (u.getCompetenceRelationships() != null) {
 				if (u.getCompetenceRelationships().size() != 0) {
-					ccm = new CompetenceCollectionMatrix(u, task, filter);
+					ccm = new CompetenceCollectionMatrix(u, task);
 					ccm.print();
 					EvaluatedUser eu = new EvaluatedUser(u, ccm.calcMatch());
 					eu.setDoable(ccm.isDoable());
@@ -59,10 +57,6 @@ public class UserMatchingWorker extends Worker {
 		}
 
 		return users;
-	}
-	
-	public void setFilter(SearchFilter filter){
-		this.filter = filter;
 	}
 	
 	public String getWorkerId(){

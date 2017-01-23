@@ -10,7 +10,6 @@ import crac.models.Task;
 import crac.models.relation.UserRelationship;
 import crac.models.relation.UserTaskRel;
 import crac.models.storage.SearchFilter;
-import crac.utility.Formulars;
 
 public class UserRelationEvolutionWorker extends Worker {
 
@@ -38,7 +37,8 @@ public class UserRelationEvolutionWorker extends Worker {
 			}
 			
 			double like = ur.getLikeValue();
-			like = Formulars.calcUserRelation(like, evaluation.getLikeValOthers());
+			//TODO calc new user relation
+			//like = Formulars.calcUserRelation(like, evaluation.getLikeValOthers());
 			ur.setLikeValue(like);	
 
 			userRelationshipDAO.save(ur);

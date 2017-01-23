@@ -14,19 +14,16 @@ import crac.models.utility.EvaluatedUser;
 
 public class Decider {
 	
-	public ArrayList<EvaluatedTask> findTasks(CracUser u, TaskDAO taskDAO, SearchFilter sf){
+	public ArrayList<EvaluatedTask> findTasks(CracUser u, TaskDAO taskDAO){
 		
 		TaskMatchingWorker worker = new TaskMatchingWorker(u, taskDAO);
-		worker.setFilter(sf);
-		
 		ArrayList<EvaluatedTask> list = worker.run();
 		
 		return list;
 	}
 	
-	public ArrayList<EvaluatedUser> findUsers(Task task, CracUserDAO userDAO, SearchFilter sf){
+	public ArrayList<EvaluatedUser> findUsers(Task task, CracUserDAO userDAO){
 		UserMatchingWorker worker = new UserMatchingWorker(task, userDAO);
-		worker.setFilter(sf);
 		ArrayList<EvaluatedUser> list = worker.run();
 		return list;
 	}

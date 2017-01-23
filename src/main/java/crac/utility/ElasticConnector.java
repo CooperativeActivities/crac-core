@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CracUserDAO;
 import crac.daos.TaskDAO;
+import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.Task;
 import crac.models.utility.EvaluatedTask;
@@ -35,7 +36,7 @@ public class ElasticConnector<T> {
 	private ObjectMapper mapper;
 	private String index;
 	private String type;
-	
+
 	private static final double ES_THRESHOLD = 0.05;
 
 	public ElasticConnector(String address, int port, String index, String type) {
@@ -78,25 +79,27 @@ public class ElasticConnector<T> {
 		search.setQuery(QueryBuilders.matchQuery("description", searchText));
 		SearchResponse sr = search.execute().actionGet();
 		ArrayList<EvaluatedTask> foundTasks = new ArrayList<EvaluatedTask>();
-		
+
 		System.out.println(sr.toString());
 		for (SearchHit hit : sr.getHits()) {
-			Long id =  Long.decode(hit.getId());
+			Long id = Long.decode(hit.getId());
 			double score = hit.getScore();
-			if(score >= ES_THRESHOLD){
+			if (score >= ES_THRESHOLD) {
 				EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), score);
-		        foundTasks.add(evTask);
+				if (evTask.getTask().getTaskState() != TaskState.NOT_PUBLISHED) {
+					foundTasks.add(evTask);
+				}
 			}
-	    }
+		}
 		return foundTasks;
 	}
-	
-	public DeleteIndexResponse deleteIndex(){
+
+	public DeleteIndexResponse deleteIndex() {
 		DeleteIndexResponse response = client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
-		//client.admin().indices().flush(new FlushRequest(index)).actionGet();
+		// client.admin().indices().flush(new FlushRequest(index)).actionGet();
 		return response;
 	}
-	
+
 	public String getIndex() {
 		return index;
 	}

@@ -33,7 +33,12 @@ import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.decider.core.Decider;
 import crac.decider.core.DeciderParameters;
+import crac.decider.filter.ImportancyLevelFilter;
+import crac.decider.filter.LikeLevelFilter;
+import crac.decider.filter.ProficiencyLevelFilter;
+import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.TaskMatchingWorker;
+import crac.decider.workers.config.MatchingMatrixConfig;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Role;
@@ -51,7 +56,6 @@ import crac.models.utility.RepetitionDate;
 import crac.models.utility.TravelledCompetence;
 import crac.storage.AugmenterUnit;
 import crac.storage.CompetenceStorage;
-import crac.utility.CompetenceAugmenter;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 
@@ -91,9 +95,6 @@ public class MainController {
 	@Autowired
 	private CompetencePermissionTypeDAO competencePermissionTypeDAO;
 	
-	@Autowired
-	private CompetenceAugmenter competenceAugmenter;
-	
 	@Value("${crac.elastic.url}")
     private String url;
 	
@@ -119,7 +120,7 @@ public class MainController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser myUser = userDAO.findByName(userDetails.getName());
 
-		CompetenceCollectionMatrix m = new CompetenceCollectionMatrix(myUser, taskDAO.findOne((long)3), new SearchFilter());
+		CompetenceCollectionMatrix m = new CompetenceCollectionMatrix(myUser, taskDAO.findOne((long)3));
 		m.print();
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -129,6 +130,26 @@ public class MainController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
 		}
+	}
+	
+	@RequestMapping("/filters")
+	@ResponseBody
+	public ResponseEntity<String> filters() {
+		
+		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
+
+		
+		System.out.println("-----------------------");
+		System.out.println("Adding Filters!");
+		MatchingMatrixConfig.clearFilters();
+		MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
+		MatchingMatrixConfig.addFilter(new LikeLevelFilter());
+		MatchingMatrixConfig.addFilter(new UserRelationFilter());
+		MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+		System.out.println("-----------------------");
+		
+		return JSonResponseHelper.successFullAction("standard filters added!");
+		
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
@@ -407,6 +428,14 @@ public class MainController {
 		
 		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
 		
+		System.out.println("-----------------------");
+		System.out.println("Adding Filters!");
+		MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
+		MatchingMatrixConfig.addFilter(new LikeLevelFilter());
+		MatchingMatrixConfig.addFilter(new UserRelationFilter());
+		MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+		System.out.println("-----------------------");
+
 		return JSonResponseHelper.bootSuccess();
 	}
 

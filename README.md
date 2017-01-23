@@ -1254,8 +1254,83 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+###Filter-Configuration-Endpoints
+These endpoints handle the filter-configuration of the User-Task-Allocation (the matrix-part)
+
+-----------------------------------------------------------------
+**Adds a filter to the filter-configuration, based on it's name**
+
+#####*Request:*
+
+GET /configuration/filter/add/{filter_name}
+
+The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+
+#####*Response:*
+
+Json-data, either a success or a failure message when an invalid filter-name has been used.
+
+-----------------------------------------------------------------
+**Adds multiple filters to the filter-configuration, based on the list of filters in the posted JSon-file**
+
+#####*Request:*
+
+POST /configuration/filter/add
+
+The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+
+	{
+		"parameters": ["ImportancyLevelFilter", "LikeLevelFilter", "ProficiencyLevelFilter", "LikeLevelFilter"]
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message when only invalid filter-names have been used.
+If that is the case, the configuration resets itself to the standard configuration.
+This configuration consists of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+
+-----------------------------------------------------------------
+**Returns a list of all active filters**
+
+#####*Request:*
+
+GET /configuration/filter/print
+
+#####*Response:*
+
+	{
+	  "success": "true",
+	  "msg": "ProficiencyLevelFilter is available! LikeLevelFilter is available! UserRelationFilter is available! ImportancyLevelFilter is available! "
+	}
+
+-----------------------------------------------------------------
+**Clears (empties) the list of active filters**
+
+#####*Request:*
+
+GET /configuration/filter/clear
+
+#####*Response:*
+
+Json-data, a success
+
+-----------------------------------------------------------------
+**Restores the standard state of the filter-configuration**
+
+#####*Request:*
+
+This endpoint restores the standard state of the configuration, consisting of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+
+GET /configuration/filter/restore
+
+#####*Response:*
+
+Json-data, a success.
+
+-----------------------------------------------------------------
+
 ###Notifications-Endpoints
-These endpoint handle already issued notifications for the most parts
+These endpoints handle already issued notifications for the most parts
 
 -----------------------------------------------------------------
 
@@ -1478,5 +1553,16 @@ GET /task/{task_id}/findMatchingUsers -> from /task/findMatchingUsers/{task_id}
 -> Competences are synchronized from the DB into the running system for performance-reasons now, and thus MUST be synchronized by hand if there is a change on KOMET! This can be done by calling the following endpoint with ADMIN-permissions:
 
 GET /admin/sync -> NEW
+
+-----------------------------------------------------------------
+
+####23.1.2017
+
+A new filter-configuration has been added to the system.
+These filters influence the matching between users and tasks and can be added and removed.
+There are 4 filter-types at the moment:
+LikeLevelFilter (changed matching-values based on the user's affection towards a competence), ImportancyLevelFilter (changed matching-values based on the importance of the competence), ProficiencyLevelFilter (changes matching-values based on the users proficiency and the tasks needed proficiency in a competence) and UserRelationFilter (changes the matching-values based on the relation of the searching user to already participating users).
+
+Look up the filter-section of the readMe details to the endpoints.
 
 -----------------------------------------------------------------

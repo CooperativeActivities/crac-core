@@ -48,7 +48,6 @@ import crac.models.utility.SimpleUserRelationship;
 import crac.models.CracToken;
 import crac.notifier.NotificationHelper;
 import crac.utility.JSonResponseHelper;
-import crac.utility.SearchHelper;
 import crac.utility.UpdateEntitiesHelper;
 import crac.models.CracUser;
 import crac.models.Role;
@@ -81,9 +80,6 @@ public class CracUserController {
 
 	@Autowired
 	private UserRelationshipDAO userRelationshipDAO;
-
-	@Autowired
-	private SearchHelper searchHelper;
 
 	@Autowired
 	private RoleDAO roleDAO;
@@ -630,7 +626,7 @@ public class CracUserController {
 		Decider unit = new Decider();
 		
 		try {
-			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, taskDAO, new SearchFilter())));
+			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, taskDAO)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
