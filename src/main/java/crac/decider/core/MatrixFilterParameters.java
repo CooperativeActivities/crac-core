@@ -6,7 +6,7 @@ import crac.decider.filter.ImportancyLevelFilter;
 import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.config.MatchingMatrixConfig;
+import crac.decider.workers.config.GlobalMatrixConfig;
 
 public class MatrixFilterParameters {
 
@@ -19,18 +19,18 @@ public class MatrixFilterParameters {
 		int count = 0;
 		for (String p : parameters) {
 			if (p.equals("LikeLevelFilter")) {
-				MatchingMatrixConfig.addFilter(new LikeLevelFilter());
+				GlobalMatrixConfig.addFilter(new LikeLevelFilter());
 				count++;
 			} else if (p.equals("ImportancyLevelFilter")) {
-				MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+				GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
 				count++;
 
 			} else if (p.equals("ProficiencyLevelFilter")) {
-				MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
+				GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
 				count++;
 
 			} else if (p.equals("UserRelationFilter")) {
-				MatchingMatrixConfig.addFilter(new UserRelationFilter());
+				GlobalMatrixConfig.addFilter(new UserRelationFilter());
 				count++;
 			}
 		}

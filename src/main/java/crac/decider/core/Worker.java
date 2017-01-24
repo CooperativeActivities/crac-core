@@ -2,7 +2,7 @@ package crac.decider.core;
 
 import crac.notifier.NotificationHelper;
 
-public class Worker {
+public abstract class Worker {
 	
 	private String workerId;
 	

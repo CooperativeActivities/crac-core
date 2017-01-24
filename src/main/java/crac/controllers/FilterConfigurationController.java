@@ -17,7 +17,7 @@ import crac.decider.filter.ImportancyLevelFilter;
 import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.config.MatchingMatrixConfig;
+import crac.decider.workers.config.GlobalMatrixConfig;
 import crac.models.CracUser;
 import crac.utility.JSonResponseHelper;
 
@@ -38,19 +38,19 @@ public class FilterConfigurationController {
 		String name = "";
 
 		if (filterName.equals("LikeLevelFilter")) {
-			MatchingMatrixConfig.addFilter(new LikeLevelFilter());
+			GlobalMatrixConfig.addFilter(new LikeLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("ImportancyLevelFilter")) {
-			MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+			GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("ProficiencyLevelFilter")) {
-			MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
+			GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("UserRelationFilter")) {
-			MatchingMatrixConfig.addFilter(new UserRelationFilter());
+			GlobalMatrixConfig.addFilter(new UserRelationFilter());
 			name = filterName;
 
 		} else {
@@ -79,7 +79,7 @@ public class FilterConfigurationController {
 
 		if (mfp != null) {
 
-			MatchingMatrixConfig.clearFilters();
+			GlobalMatrixConfig.clearFilters();
 
 			if (!mfp.apply()) {
 
@@ -104,7 +104,7 @@ public class FilterConfigurationController {
 			"/filter/print/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> printFilter() {
-		return JSonResponseHelper.successFullAction(MatchingMatrixConfig.filtersToString());
+		return JSonResponseHelper.successFullAction(GlobalMatrixConfig.filtersToString());
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class FilterConfigurationController {
 			"/filter/clear/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> clearFilter() {
-		MatchingMatrixConfig.clearFilters();
+		GlobalMatrixConfig.clearFilters();
 
 		return JSonResponseHelper.successFullAction("Filters cleared!");
 	}
@@ -134,11 +134,10 @@ public class FilterConfigurationController {
 	}
 
 	public void restoreStandard() {
-		MatchingMatrixConfig.clearFilters();
-		MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
-		MatchingMatrixConfig.addFilter(new LikeLevelFilter());
-		MatchingMatrixConfig.addFilter(new UserRelationFilter());
-		MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixConfig.clearFilters();
+		GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
+		GlobalMatrixConfig.addFilter(new LikeLevelFilter());
+		GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
 	}
 
 }

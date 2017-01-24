@@ -450,6 +450,36 @@ GET user/findMatchingTasks
 	]
 
 -----------------------------------------------------------------
+
+**Return a sorted list of a defined number of elements with the best fitting tasks for the logged in user**
+
+#####*Request:*
+
+GET user/findMatchingTasks/{number_of_tasks}
+
+#####*Response:*
+
+	[
+	  {
+	    "task": {
+	      "id": 3,
+	      "name": "Program a watering tool",
+	      ...
+	    },
+	    "assessment": 0.945
+	  },
+	  {
+	    "task": {
+	      "id": 2,
+	      "name": "Water the roses",
+	      ...
+	    },
+	    "assessment": 0.54
+	  }
+	]
+
+-----------------------------------------------------------------
+
 **Issues a friend-request-notification to target user**
 
 #####*Request:*
@@ -1287,7 +1317,7 @@ The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, 
 
 Json-data, either a success or a failure message when only invalid filter-names have been used.
 If that is the case, the configuration resets itself to the standard configuration.
-This configuration consists of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+This configuration consists of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
 
 -----------------------------------------------------------------
 **Returns a list of all active filters**
@@ -1319,7 +1349,7 @@ Json-data, a success
 
 #####*Request:*
 
-This endpoint restores the standard state of the configuration, consisting of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+This endpoint restores the standard state of the configuration, consisting of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
 
 GET /configuration/filter/restore
 
@@ -1564,5 +1594,13 @@ There are 4 filter-types at the moment:
 LikeLevelFilter (changed matching-values based on the user's affection towards a competence), ImportancyLevelFilter (changed matching-values based on the importance of the competence), ProficiencyLevelFilter (changes matching-values based on the users proficiency and the tasks needed proficiency in a competence) and UserRelationFilter (changes the matching-values based on the relation of the searching user to already participating users).
 
 Look up the filter-section of the readMe details to the endpoints.
+
+-----------------------------------------------------------------
+
+####24.1.2017
+
+A new endpoint returns a specified amount of best matches.
+
+GET /user/findMatchingTasks/{number_of_tasks} -> NEW
 
 -----------------------------------------------------------------

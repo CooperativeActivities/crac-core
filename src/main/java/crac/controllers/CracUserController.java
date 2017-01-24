@@ -33,7 +33,7 @@ import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.decider.core.Decider;
-import crac.decider.core.DeciderParameters;
+import crac.decider.core.UserFilterParameters;
 import crac.enums.TaskParticipationType;
 import crac.daos.CracUserDAO;
 import crac.daos.GroupDAO;
@@ -43,7 +43,7 @@ import crac.models.Task;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserRelationship;
 import crac.models.relation.UserTaskRel;
-import crac.models.storage.SearchFilter;
+import crac.models.utility.EvaluatedTask;
 import crac.models.utility.SimpleUserRelationship;
 import crac.models.CracToken;
 import crac.notifier.NotificationHelper;
@@ -353,7 +353,7 @@ public class CracUserController {
 		if (task != null) {
 			TaskParticipationType state = TaskParticipationType.PARTICIPATING;
 			if (stateName.equals("participate")) {
-				if (task.isJoinable()) {
+				if (task.isJoinable() && task.isLeaf()) {
 					if (!task.isFull()) {
 						state = TaskParticipationType.PARTICIPATING;
 					} else {
@@ -626,13 +626,55 @@ public class CracUserController {
 		Decider unit = new Decider();
 		
 		try {
-			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, taskDAO)));
+			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, new UserFilterParameters(), taskDAO)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();
 		}
 
 	}
+	
+	/**
+	 * Return a sorted list of a defined number of elements with the best fitting tasks for the
+	 * logged in user.
+	 * 
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/findMatchingTasks/{number_of_tasks}",
+			"/findMatchingTasks/{number_of_tasks}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> findBestTasks(@PathVariable(value = "number_of_tasks") int numberOfTasks) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		ObjectMapper mapper = new ObjectMapper();
+		Decider unit = new Decider();
+		
+		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
+		
+		int count = 0;
+		
+		for(EvaluatedTask task : unit.findTasks(user, new UserFilterParameters(), taskDAO)){
+			
+			if(count == numberOfTasks){
+				break;
+			}
+			
+			tasks.add(task);
+			count ++;
+		}
+				
+		try {
+			return JSonResponseHelper.print(mapper.writeValueAsString(tasks));
+		} catch (JsonProcessingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.jsonWriteError();
+		}
+
+	}
+
 
 	/**
 	 * Issues a friend-request-notification to target user

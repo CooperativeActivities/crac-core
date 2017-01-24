@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.daos.TaskDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.decider.core.Decider;
-import crac.decider.core.DeciderParameters;
+import crac.decider.core.UserFilterParameters;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -56,7 +56,6 @@ import crac.models.Task;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserTaskRel;
-import crac.models.storage.SearchFilter;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.RepetitionDate;
 import crac.models.utility.SimpleQuery;
@@ -1013,7 +1012,7 @@ public class TaskController {
 	public ResponseEntity<String> getParents() {
 
 		ObjectMapper mapper = new ObjectMapper();
-		List<Task> tasks = taskDAO.findBySuperTaskNull();
+		List<Task> tasks = taskDAO.findBySuperTaskNullAndTaskStateNot(TaskState.NOT_PUBLISHED);
 
 		try {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(tasks));
@@ -1062,7 +1061,7 @@ public class TaskController {
 			
 			Decider unit = new Decider();
 			
-			ArrayList<EvaluatedTask> doables = unit.findTasks(user, taskDAO);
+			ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters(), taskDAO);
 
 			for (EvaluatedTask ets : et) {
 				ets.setDoable(false);
@@ -1097,7 +1096,7 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return JSonResponseHelper.print(mapper
-					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), userDAO)));
+					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters(), userDAO)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
 			return JSonResponseHelper.jsonWriteError();

@@ -22,6 +22,8 @@ public interface TaskDAO extends CrudRepository<Task, Long> {
 		
 	public List<Task> findBySuperTaskNull();
 	
+	public List<Task> findBySuperTaskNullAndTaskStateNot(TaskState taskState);
+	
 	public List<Task> findByTaskStateNot(TaskState taskState);
 	
 }

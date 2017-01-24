@@ -11,15 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetencePermissionTypeDAO;
@@ -32,13 +28,14 @@ import crac.daos.RoleDAO;
 import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.decider.core.Decider;
-import crac.decider.core.DeciderParameters;
+import crac.decider.core.UserFilterParameters;
 import crac.decider.filter.ImportancyLevelFilter;
 import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.TaskMatchingWorker;
-import crac.decider.workers.config.MatchingMatrixConfig;
+import crac.decider.workers.config.GlobalMatrixConfig;
+import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Role;
@@ -49,7 +46,6 @@ import crac.models.relation.CompetenceRelationshipType;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.storage.CompetenceCollectionMatrix;
-import crac.models.storage.SearchFilter;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
 import crac.models.utility.RepetitionDate;
@@ -113,25 +109,6 @@ public class MainController {
 		return JSonResponseHelper.successFullAction("called");
 	}
 	
-	@RequestMapping("/test/match")
-	@ResponseBody
-	public ResponseEntity<String> testmatch() {
-		
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-		CracUser myUser = userDAO.findByName(userDetails.getName());
-
-		CompetenceCollectionMatrix m = new CompetenceCollectionMatrix(myUser, taskDAO.findOne((long)3));
-		m.print();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString("sdf"));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
-		}
-	}
-	
 	@RequestMapping("/filters")
 	@ResponseBody
 	public ResponseEntity<String> filters() {
@@ -141,11 +118,10 @@ public class MainController {
 		
 		System.out.println("-----------------------");
 		System.out.println("Adding Filters!");
-		MatchingMatrixConfig.clearFilters();
-		MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
-		MatchingMatrixConfig.addFilter(new LikeLevelFilter());
-		MatchingMatrixConfig.addFilter(new UserRelationFilter());
-		MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixConfig.clearFilters();
+		GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
+		GlobalMatrixConfig.addFilter(new LikeLevelFilter());
+		GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
 		System.out.println("-----------------------");
 		
 		return JSonResponseHelper.successFullAction("standard filters added!");
@@ -304,6 +280,7 @@ public class MainController {
 		waterFlowers.setEndTime(time);
 		waterFlowers.setAmountOfVolunteers(4);
 		waterFlowers.setCreator(myUser);
+		waterFlowers.setTaskState(TaskState.PUBLISHED);
 				
 		//Add tasks
 		
@@ -319,7 +296,8 @@ public class MainController {
 		waterRoses.setAmountOfVolunteers(2);		
 		waterRoses.setCreator(myUser);
 		waterRoses.setSuperTask(waterFlowers);
-		
+		waterRoses.setTaskState(TaskState.PUBLISHED);
+
 		Task waterLilies = new Task();
 		waterLilies.setName("Water the lillies");
 		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
@@ -332,7 +310,8 @@ public class MainController {
 		waterLilies.setAmountOfVolunteers(1);
 		waterLilies.setCreator(myUser);
 		waterLilies.setSuperTask(waterFlowers);
-		
+		waterLilies.setTaskState(TaskState.PUBLISHED);
+
 		Task programWateringTool = new Task();
 		programWateringTool.setName("Program a watering tool");
 		programWateringTool.setDescription("Program a web-tool that makes watering flowers easier.");
@@ -343,7 +322,8 @@ public class MainController {
 		programWateringTool.setEndTime(time);
 		programWateringTool.setUrgency(10);
 		programWateringTool.setAmountOfVolunteers(1);
-		
+		programWateringTool.setTaskState(TaskState.PUBLISHED);
+
 		programWateringTool.setCreator(myUser);
 		programWateringTool.setSuperTask(waterFlowers);
 		
@@ -430,10 +410,10 @@ public class MainController {
 		
 		System.out.println("-----------------------");
 		System.out.println("Adding Filters!");
-		MatchingMatrixConfig.addFilter(new ProficiencyLevelFilter());
-		MatchingMatrixConfig.addFilter(new LikeLevelFilter());
-		MatchingMatrixConfig.addFilter(new UserRelationFilter());
-		MatchingMatrixConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
+		GlobalMatrixConfig.addFilter(new LikeLevelFilter());
+		GlobalMatrixConfig.addFilter(new UserRelationFilter());
+		GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
 		System.out.println("-----------------------");
 
 		return JSonResponseHelper.bootSuccess();

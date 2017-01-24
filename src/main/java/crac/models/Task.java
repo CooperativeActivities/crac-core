@@ -297,11 +297,15 @@ public class Task {
 	@JsonIgnore
 	public boolean isLeaf() {
 		if (childTasks == null) {
-			return !isSuperTask();
+			return true;
 		}
+		
+		if(childTasks.isEmpty())
 		{
-			return !isSuperTask() && childTasks.isEmpty();
+			return true;
 		}
+		
+		return false;
 	}
 
 	@JsonIgnore

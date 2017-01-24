@@ -3,7 +3,8 @@ package crac.models.storage;
 import java.util.ArrayList;
 import java.util.Set;
 
-import crac.decider.workers.config.MatchingMatrixConfig;
+import crac.decider.core.MatrixFilterConfiguration;
+import crac.decider.workers.config.GlobalMatrixConfig;
 import crac.models.CracUser;
 import crac.models.Task;
 import crac.models.relation.CompetenceTaskRel;
@@ -22,7 +23,7 @@ public class CompetenceCollectionMatrix {
 	private Set<UserCompetenceRel> userComps;
 	private Set<CompetenceTaskRel> taskComps;
 
-	public CompetenceCollectionMatrix(CracUser u, Task t) {
+	public CompetenceCollectionMatrix(CracUser u, Task t, MatrixFilterConfiguration m) {
 		this.u = u;
 		this.t = t;
 		this.doable = true;
@@ -36,7 +37,7 @@ public class CompetenceCollectionMatrix {
 
 		buildMatrix();
 		markMandatoryViolation();
-		applyFilters();
+		applyFilters(m);
 
 	}
 
@@ -59,12 +60,12 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
-	private void applyFilters() {
+	private void applyFilters(MatrixFilterConfiguration m) {
 
 		for (MatrixField[] row : matrix) {
 
 			for (MatrixField field : row) {
-				MatchingMatrixConfig.applyFilters(field);
+				m.applyFilters(field);
 			}
 		}
 	}
