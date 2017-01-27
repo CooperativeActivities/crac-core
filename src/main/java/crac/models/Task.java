@@ -2,6 +2,7 @@ package crac.models;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,10 +60,8 @@ public class Task {
 	@NotNull
 	private String location;
 
-	@NotNull
 	private Calendar startTime;
 
-	@NotNull
 	private Calendar endTime;
 
 	@NotNull
@@ -148,6 +147,12 @@ public class Task {
 		this.taskRepetitionState = TaskRepetitionState.ONCE;
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
+		Calendar time = new GregorianCalendar();
+		time.set(2030, 9, 10, 14, 30, 00);
+		this.startTime= time;
+		time.set(2031, 9, 10, 14, 30, 00);
+		this.endTime = time;
+		
 	}
 
 	public Task copy(Task superTask) {

@@ -20,10 +20,10 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 	private Evaluation evaluation;
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 	
-	public UserCompetenceRelationEvolutionWorker(CracUser user, Task task, Evaluation evaluation, UserCompetenceRelDAO userCompetenceRelDAO) {
+	public UserCompetenceRelationEvolutionWorker(Evaluation evaluation, UserCompetenceRelDAO userCompetenceRelDAO) {
 		super();
-		this.user = user;
-		this.task = task;
+		this.user = evaluation.getUser();
+		this.task = evaluation.getTask();
 		this.evaluation = evaluation;
 		this.userCompetenceRelDAO = userCompetenceRelDAO;
 	}
@@ -31,10 +31,23 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 	public void run(){
 		for(CompetenceTaskRel ctr : task.getMappedCompetences()){
 			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, ctr.getCompetence());
-			double likeValue = ucr.getLikeValue();
-			double profValue = ucr.getProficiencyValue();
-			likeValue = likeValue * (1 + (((1 - likeValue / 2) * evaluation.getLikeValTask()) * 0.7));
-			profValue = profValue * (1 + (((1 - profValue / 2) * 0.7) * 0.7));
+			int likeValue = ucr.getLikeValue();
+			int profValue = ucr.getProficiencyValue();
+			likeValue += (evaluation.getLikeValTask() / 4) * 100 ;
+			profValue += 10;
+			if(likeValue > 100){
+				likeValue = 100;
+			}else if(likeValue < -100){
+				likeValue = -100;
+			}
+			if(profValue > 100){
+				profValue = 100;
+			}else if(profValue < 0){
+				profValue = 0;
+			}
+			
+			ucr.setLikeValue(likeValue);
+			ucr.setProficiencyValue(profValue);
 			userCompetenceRelDAO.save(ucr);
 		}
 	}

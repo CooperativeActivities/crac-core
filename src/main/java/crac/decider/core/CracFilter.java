@@ -1,5 +1,6 @@
 package crac.decider.core;
 
+import crac.models.Evaluation;
 import crac.models.storage.MatrixField;
 
 public abstract class CracFilter {
@@ -23,5 +24,5 @@ public abstract class CracFilter {
 	}
 
 	public abstract double apply(MatrixField m);
-	
+		
 }

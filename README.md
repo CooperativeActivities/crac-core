@@ -711,15 +711,13 @@ GET /task/{task_id}
 	
 #####*Request:*
 
-PUT /task/{task_id}
+PUT /admin/task/{task_id}
 ####This function requires ADMIN-rights!
 
 	{
 	    "name": "testTask",
 	    "description": "this is a test",
 	    "location": "Vienna",
-	    "startTime": "2000-01-01T00:30:00",
-	    "endTime": "2000-01-01T01:00:00"
 	    "urgency": 3,
 	    "amountOfVolunteers": 30
 	}

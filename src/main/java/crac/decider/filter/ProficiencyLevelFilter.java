@@ -24,6 +24,5 @@ public class ProficiencyLevelFilter extends CracFilter{
 		return newVal;
 		
 	}
-	
 
 }

@@ -3,14 +3,14 @@ package crac.decider.workers.config;
 import java.util.ArrayList;
 
 import crac.decider.core.CracFilter;
-import crac.decider.core.MatrixFilterConfiguration;
+import crac.decider.core.FilterConfiguration;
 import crac.models.storage.MatrixField;
 
-public class GlobalMatrixConfig {
+public class GlobalMatrixFilterConfig {
 	
-	private MatrixFilterConfiguration config = new MatrixFilterConfiguration();
+	private FilterConfiguration config = new FilterConfiguration();
 	
-	private static GlobalMatrixConfig instance = new GlobalMatrixConfig();
+	private static GlobalMatrixFilterConfig instance = new GlobalMatrixFilterConfig();
 
 	public static void addFilter(CracFilter filter){
 		filter.addSpeak();
@@ -29,7 +29,7 @@ public class GlobalMatrixConfig {
 		return instance.config.filtersToString();
 	}
 	
-	public static MatrixFilterConfiguration cloneConfiguration(){
+	public static FilterConfiguration cloneConfiguration(){
 		return instance.config.clone();
 	}
 

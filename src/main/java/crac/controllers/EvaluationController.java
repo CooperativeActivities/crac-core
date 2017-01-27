@@ -25,6 +25,7 @@ import crac.daos.TaskDAO;
 import crac.daos.UserCompetenceRelDAO;
 import crac.daos.UserRelationshipDAO;
 import crac.daos.UserTaskRelDAO;
+import crac.decider.core.Decider;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -109,8 +110,7 @@ public class EvaluationController {
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			if (task.getTaskRepetitionState() == TaskRepetitionState.PERIODIC
-					|| task.getTaskState() == TaskState.COMPLETED) {
+			if (task.getTaskState() == TaskState.COMPLETED) {
 				CracUser user = null;
 				EvaluationNotification es = null;
 
@@ -198,7 +198,13 @@ public class EvaluationController {
 			String notificationId = originalEval.getNotificationId();
 			UpdateEntitiesHelper.checkAndUpdateEvaluation(originalEval, newEval);
 			originalEval.setFilled(true);
-			postProcessEvaluation(originalEval);
+			//postProcessEvaluation(originalEval);
+			
+			Decider unit = new Decider();
+			
+			unit.evaluateUsers(originalEval, userRelationshipDAO);
+			unit.evaluateTask(originalEval, userCompetenceRelDAO);
+			
 			originalEval.setNotificationId("deleted");
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);

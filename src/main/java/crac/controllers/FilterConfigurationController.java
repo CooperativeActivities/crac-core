@@ -17,7 +17,7 @@ import crac.decider.filter.ImportancyLevelFilter;
 import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.config.GlobalMatrixConfig;
+import crac.decider.workers.config.GlobalMatrixFilterConfig;
 import crac.models.CracUser;
 import crac.utility.JSonResponseHelper;
 
@@ -38,19 +38,19 @@ public class FilterConfigurationController {
 		String name = "";
 
 		if (filterName.equals("LikeLevelFilter")) {
-			GlobalMatrixConfig.addFilter(new LikeLevelFilter());
+			GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("ImportancyLevelFilter")) {
-			GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
+			GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("ProficiencyLevelFilter")) {
-			GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
+			GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("UserRelationFilter")) {
-			GlobalMatrixConfig.addFilter(new UserRelationFilter());
+			GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
 			name = filterName;
 
 		} else {
@@ -79,7 +79,7 @@ public class FilterConfigurationController {
 
 		if (mfp != null) {
 
-			GlobalMatrixConfig.clearFilters();
+			GlobalMatrixFilterConfig.clearFilters();
 
 			if (!mfp.apply()) {
 
@@ -104,7 +104,7 @@ public class FilterConfigurationController {
 			"/filter/print/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> printFilter() {
-		return JSonResponseHelper.successFullAction(GlobalMatrixConfig.filtersToString());
+		return JSonResponseHelper.successFullAction(GlobalMatrixFilterConfig.filtersToString());
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class FilterConfigurationController {
 			"/filter/clear/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> clearFilter() {
-		GlobalMatrixConfig.clearFilters();
+		GlobalMatrixFilterConfig.clearFilters();
 
 		return JSonResponseHelper.successFullAction("Filters cleared!");
 	}
@@ -134,10 +134,10 @@ public class FilterConfigurationController {
 	}
 
 	public void restoreStandard() {
-		GlobalMatrixConfig.clearFilters();
-		GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
-		GlobalMatrixConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixFilterConfig.clearFilters();
+		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
 	}
 
 }

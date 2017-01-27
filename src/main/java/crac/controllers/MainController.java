@@ -34,7 +34,7 @@ import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.TaskMatchingWorker;
-import crac.decider.workers.config.GlobalMatrixConfig;
+import crac.decider.workers.config.GlobalMatrixFilterConfig;
 import crac.enums.TaskState;
 import crac.models.Competence;
 import crac.models.CracUser;
@@ -118,10 +118,10 @@ public class MainController {
 		
 		System.out.println("-----------------------");
 		System.out.println("Adding Filters!");
-		GlobalMatrixConfig.clearFilters();
-		GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
-		GlobalMatrixConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixFilterConfig.clearFilters();
+		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
 		System.out.println("-----------------------");
 		
 		return JSonResponseHelper.successFullAction("standard filters added!");
@@ -179,24 +179,42 @@ public class MainController {
 		
 		//Add competences
 		
-		CompetencePermissionType cPermType = new CompetencePermissionType();
-		cPermType.setDescription("can be added by oneself, free of restrictions");
-		cPermType.setName("restriction free");
-		cPermType.setSelf(true);
+		CompetencePermissionType cPermType1 = new CompetencePermissionType();
+		cPermType1.setDescription("Can be added by oneself, free of restrictions.");
+		cPermType1.setName("SELF");
+		cPermType1.setSelf(true);
 		
-		competencePermissionTypeDAO.save(cPermType);
+		CompetencePermissionType cPermType2 = new CompetencePermissionType();
+		cPermType2.setDescription("Can be added only by a user with the permission to add it.");
+		cPermType2.setName("EXTERNAL");
+		cPermType2.setSelf(false);
+		
+		CompetencePermissionType cPermType3 = new CompetencePermissionType();
+		cPermType3.setDescription("Can be acqired by solving tasks containing related competences as a reward.");
+		cPermType3.setName("ACQUIRED");
+		cPermType3.setSelf(false);
+		
+		CompetencePermissionType cPermType4 = new CompetencePermissionType();
+		cPermType4.setDescription("Are automatically acquired, when enough tasks with this self-acquirably competence are done.");
+		cPermType4.setName("ACQUIRED");
+		cPermType4.setSelf(true);
+		
+		competencePermissionTypeDAO.save(cPermType1);
+		competencePermissionTypeDAO.save(cPermType2);
+		competencePermissionTypeDAO.save(cPermType3);
+		competencePermissionTypeDAO.save(cPermType4);
 		
 		Competence basicHumanSkills = new Competence();
 		basicHumanSkills.setCreator(myUser);
 		basicHumanSkills.setDescription("The majority of people is able to do these things.");
 		basicHumanSkills.setName("basic human skills");
-		basicHumanSkills.setPermissionType(cPermType);
+		basicHumanSkills.setPermissionType(cPermType1);
 		
 		Competence breathing = new Competence();
 		breathing.setCreator(myUser);
 		breathing.setDescription("Beeing to stay alive by inhaling air.");
 		breathing.setName("breathing");
-		breathing.setPermissionType(cPermType);
+		breathing.setPermissionType(cPermType1);
 
 		CompetenceRelationship basic_breathing = new CompetenceRelationship();
 		basic_breathing.setCompetence1(basicHumanSkills);
@@ -207,7 +225,7 @@ public class MainController {
 		walking.setCreator(myUser);
 		walking.setDescription("Getting slowly from one point to another using human legs.");
 		walking.setName("walking");
-		walking.setPermissionType(cPermType);
+		walking.setPermissionType(cPermType1);
 
 		CompetenceRelationship basic_walking = new CompetenceRelationship();
 		basic_walking.setCompetence1(basicHumanSkills);
@@ -218,7 +236,7 @@ public class MainController {
 		swimming.setCreator(myUser);
 		swimming.setDescription("Not drowning while in water.");
 		swimming.setName("swimming");
-		swimming.setPermissionType(cPermType);
+		swimming.setPermissionType(cPermType1);
 
 		CompetenceRelationship basic_swimming = new CompetenceRelationship();
 		basic_swimming.setCompetence1(basicHumanSkills);
@@ -229,13 +247,13 @@ public class MainController {
 		programming.setCreator(myUser);
 		programming.setDescription("Beeing able to write computer programs.");
 		programming.setName("programming");
-		programming.setPermissionType(cPermType);
+		programming.setPermissionType(cPermType1);
 
 		Competence javascriptProgramming = new Competence();
 		javascriptProgramming.setCreator(myUser);
 		javascriptProgramming.setDescription("Beeing able to write computer programs with/in JavaScript and it's libraries.");
 		javascriptProgramming.setName("javascript-programming");
-		javascriptProgramming.setPermissionType(cPermType);
+		javascriptProgramming.setPermissionType(cPermType1);
 
 		CompetenceRelationship programming_javascriptProgramming = new CompetenceRelationship();
 		programming_javascriptProgramming.setCompetence1(programming);
@@ -246,7 +264,7 @@ public class MainController {
 		phpProgramming.setCreator(myUser);
 		phpProgramming.setDescription("Beeing able to write computer programs with/in PHP and it's libraries.");
 		phpProgramming.setName("php-programming");
-		phpProgramming.setPermissionType(cPermType);
+		phpProgramming.setPermissionType(cPermType1);
 
 		CompetenceRelationship programming_phpProgramming = new CompetenceRelationship();
 		programming_phpProgramming.setCompetence1(programming);
@@ -268,16 +286,11 @@ public class MainController {
 		competenceRelationshipDAO.save(programming_phpProgramming);
 		
 		//Add projects
-		Calendar time = new GregorianCalendar();
 		
 		Task waterFlowers = new Task();
 		waterFlowers.setName("Water the flowers");
 		waterFlowers.setDescription("All about watering the different flowers in the garden.");
 		waterFlowers.setLocation("my garden");
-		time.set(2016, 9, 10, 14, 30, 00);
-		waterFlowers.setStartTime(time);
-		time.set(2016, 9, 10, 17, 00, 00);
-		waterFlowers.setEndTime(time);
 		waterFlowers.setAmountOfVolunteers(4);
 		waterFlowers.setCreator(myUser);
 		waterFlowers.setTaskState(TaskState.PUBLISHED);
@@ -288,10 +301,6 @@ public class MainController {
 		waterRoses.setName("Water the roses");
 		waterRoses.setDescription("Water the roses on the westside of the garden.");
 		waterRoses.setLocation("my garden");
-		time.set(2016, 9, 10, 16, 30, 00);
-		waterRoses.setStartTime(time);
-		time.set(2016, 9, 10, 17, 00, 00);
-		waterRoses.setEndTime(time);
 		waterRoses.setUrgency(5);
 		waterRoses.setAmountOfVolunteers(2);		
 		waterRoses.setCreator(myUser);
@@ -302,10 +311,6 @@ public class MainController {
 		waterLilies.setName("Water the lillies");
 		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
 		waterLilies.setLocation("my garden");
-		time.set(2016, 9, 10, 14, 30, 00);
-		waterLilies.setStartTime(time);
-		time.set(2016, 9, 10, 16, 00, 00);
-		waterLilies.setEndTime(time);
 		waterLilies.setUrgency(2);
 		waterLilies.setAmountOfVolunteers(1);
 		waterLilies.setCreator(myUser);
@@ -316,10 +321,6 @@ public class MainController {
 		programWateringTool.setName("Program a watering tool");
 		programWateringTool.setDescription("Program a web-tool that makes watering flowers easier.");
 		programWateringTool.setLocation("a desk in my garden");
-		time.set(2016, 9, 10, 14, 30, 00);
-		programWateringTool.setStartTime(time);
-		time.set(2016, 9, 10, 17, 00, 00);
-		programWateringTool.setEndTime(time);
 		programWateringTool.setUrgency(10);
 		programWateringTool.setAmountOfVolunteers(1);
 		programWateringTool.setTaskState(TaskState.PUBLISHED);
@@ -410,10 +411,10 @@ public class MainController {
 		
 		System.out.println("-----------------------");
 		System.out.println("Adding Filters!");
-		GlobalMatrixConfig.addFilter(new ProficiencyLevelFilter());
-		GlobalMatrixConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixConfig.addFilter(new UserRelationFilter());
-		GlobalMatrixConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
+		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
 		System.out.println("-----------------------");
 
 		return JSonResponseHelper.bootSuccess();

@@ -24,5 +24,5 @@ public class ImportancyLevelFilter extends CracFilter{
 		return newVal;
 		
 	}
-	
+
 }

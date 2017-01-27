@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import crac.models.storage.MatrixField;
 
-public class MatrixFilterConfiguration {
+public class FilterConfiguration {
 	
 	private ArrayList<CracFilter> filters = new ArrayList<>();
 
@@ -36,8 +36,8 @@ public class MatrixFilterConfiguration {
 		return s;
 	}
 	
-	public MatrixFilterConfiguration clone(){
-		MatrixFilterConfiguration m = new MatrixFilterConfiguration();
+	public FilterConfiguration clone(){
+		FilterConfiguration m = new FilterConfiguration();
 		for(CracFilter filter : filters){
 			m.addFilter(filter);
 		}

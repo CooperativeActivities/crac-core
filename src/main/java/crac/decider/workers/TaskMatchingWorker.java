@@ -6,11 +6,11 @@ import java.util.List;
 
 import crac.daos.TaskDAO;
 import crac.decider.core.CracFilter;
-import crac.decider.core.MatrixFilterConfiguration;
+import crac.decider.core.FilterConfiguration;
 import crac.decider.core.UserFilterParameters;
 import crac.decider.core.Worker;
 import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.config.GlobalMatrixConfig;
+import crac.decider.workers.config.GlobalMatrixFilterConfig;
 import crac.enums.TaskState;
 import crac.models.CracUser;
 import crac.models.Task;
@@ -41,7 +41,7 @@ public class TaskMatchingWorker extends Worker {
 		ArrayList<Task> filteredTaskSet = loadFilteredTask();
 
 		// load the filters for matrix matching
-		MatrixFilterConfiguration filters = GlobalMatrixConfig.cloneConfiguration();
+		FilterConfiguration filters = GlobalMatrixFilterConfig.cloneConfiguration();
 
 		// add user-filters to the global filters
 		addUserFilters(filters);
@@ -75,7 +75,7 @@ public class TaskMatchingWorker extends Worker {
 		return tasks;
 	}
 
-	public void addUserFilters(MatrixFilterConfiguration m) {
+	public void addUserFilters(FilterConfiguration m) {
 		if (up.getFriends() == 1) {
 			m.addFilter(new UserRelationFilter());
 		}
