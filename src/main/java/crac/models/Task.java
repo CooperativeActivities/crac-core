@@ -149,10 +149,10 @@ public class Task {
 		this.creationDate = Calendar.getInstance();
 		Calendar time = new GregorianCalendar();
 		time.set(2030, 9, 10, 14, 30, 00);
-		this.startTime= time;
+		this.startTime = time;
 		time.set(2031, 9, 10, 14, 30, 00);
 		this.endTime = time;
-		
+
 	}
 
 	public Task copy(Task superTask) {
@@ -271,9 +271,11 @@ public class Task {
 			return false;
 		}
 		if (childTasks != null) {
-			for (Task c : childTasks) {
-				if (!c.isReadyToPublish()) {
-					return false;
+			if (!childTasks.isEmpty()) {
+				for (Task c : childTasks) {
+					if (!c.isReadyToPublish()) {
+						return false;
+					}
 				}
 			}
 		}
@@ -304,12 +306,11 @@ public class Task {
 		if (childTasks == null) {
 			return true;
 		}
-		
-		if(childTasks.isEmpty())
-		{
+
+		if (childTasks.isEmpty()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -537,9 +538,9 @@ public class Task {
 				}
 			}
 		}
-		
+
 		return num;
-		
+
 	}
 
 	public String getFeedback() {

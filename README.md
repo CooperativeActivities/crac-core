@@ -788,6 +788,11 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 	
 **Sets a single task ready to be published, only works if it's children are ready**
+
+There are a few prerequisites to this. 
+First of all, the following fields have to be set: amountOfVolunteers, description, startTime, endTime, location.
+If the task is a supertask and has children, all children need to be ready-to-publish first.
+If the task is a leaf (so users can participate), at least one competence has to be added.
 	
 #####*Request:*
 
@@ -800,6 +805,8 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 	
 **Sets target task and all children ready to be published**
+
+This endpoint follows the same rules described above for every single task it tries to set ready-to-publish
 	
 #####*Request:*
 
