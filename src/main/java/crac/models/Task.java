@@ -150,8 +150,9 @@ public class Task {
 		Calendar time = new GregorianCalendar();
 		time.set(2030, 9, 10, 14, 30, 00);
 		this.startTime = time;
-		time.set(2031, 9, 10, 14, 30, 00);
-		this.endTime = time;
+		Calendar time2 = new GregorianCalendar();
+		time2.set(2031, 9, 10, 14, 30, 00);
+		this.endTime = time2;
 
 	}
 

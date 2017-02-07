@@ -157,25 +157,40 @@ public class MainController {
 		//Add relationship types
 		
 		CompetenceRelationshipType t1 = new CompetenceRelationshipType(); 
-		t1.setDescription("Basic type SMALL");
-		t1.setDistanceVal(0.9);
-		t1.setName("small");
+		t1.setDescription("Competences are synonym to each other");
+		t1.setDistanceVal(1.0);
+		t1.setName("synonym");
 		
 		competenceRelationshipTypeDAO.save(t1);
 		
 		CompetenceRelationshipType t2 = new CompetenceRelationshipType(); 
-		t2.setDescription("Competences are synonym to each other");
-		t2.setDistanceVal(1.0);
-		t2.setName("isSynonym");
+		t2.setDescription("Competences are similar to each other");
+		t2.setDistanceVal(0.8);
+		t2.setName("similar");
 		
 		competenceRelationshipTypeDAO.save(t2);
 		
 		CompetenceRelationshipType t3 = new CompetenceRelationshipType(); 
 		t3.setDescription("Competences are closely related to each other");
-		t3.setDistanceVal(0.9);
-		t3.setName("isSimilar");
+		t3.setDistanceVal(0.6);
+		t3.setName("closeRelated");
 		
 		competenceRelationshipTypeDAO.save(t3);
+		
+		CompetenceRelationshipType t4 = new CompetenceRelationshipType(); 
+		t4.setDescription("Competences are related to each other");
+		t4.setDistanceVal(0.4);
+		t4.setName("related");
+		
+		competenceRelationshipTypeDAO.save(t4);
+
+		CompetenceRelationshipType t5 = new CompetenceRelationshipType(); 
+		t5.setDescription("Competences are far related to each other");
+		t5.setDistanceVal(0.2);
+		t5.setName("farRelated");
+		
+		competenceRelationshipTypeDAO.save(t5);
+
 		
 		//Add competences
 		

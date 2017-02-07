@@ -40,6 +40,8 @@ import crac.daos.GroupDAO;
 import crac.daos.RoleDAO;
 import crac.models.Competence;
 import crac.models.Task;
+import crac.models.output.TaskDetails;
+import crac.models.output.TaskShort;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserRelationship;
 import crac.models.relation.UserTaskRel;
@@ -448,7 +450,7 @@ public class CracUserController {
 				ObjectMapper mapper = new ObjectMapper();
 				try {
 					return ResponseEntity.ok()
-							.body("[" + mapper.writeValueAsString(task) + "," + mapper.writeValueAsString(rel) + "]");
+							.body("[" + mapper.writeValueAsString(new TaskDetails(task, user)) + "," + mapper.writeValueAsString(rel) + "]");
 				} catch (JsonProcessingException e) {
 					System.out.println(e.toString());
 					return JSonResponseHelper.jsonWriteError();
@@ -511,17 +513,17 @@ public class CracUserController {
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
 
 		if (taskRels.size() != 0) {
-			Set<Task> taskListFollow = new HashSet<Task>();
-			Set<Task> taskListPart = new HashSet<Task>();
-			Set<Task> taskListLead = new HashSet<Task>();
+			Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
+			Set<TaskShort> taskListPart = new HashSet<TaskShort>();
+			Set<TaskShort> taskListLead = new HashSet<TaskShort>();
 
 			for (UserTaskRel utr : taskRels) {
 				if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
-					taskListFollow.add(utr.getTask());
+					taskListFollow.add(new TaskShort(utr.getTask()));
 				} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					taskListPart.add(utr.getTask());
+					taskListPart.add(new TaskShort(utr.getTask()));
 				} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
-					taskListLead.add(utr.getTask());
+					taskListLead.add(new TaskShort(utr.getTask()));
 				}
 			}
 

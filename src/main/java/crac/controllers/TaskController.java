@@ -53,6 +53,7 @@ import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Task;
+import crac.models.output.TaskDetails;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
 import crac.models.relation.UserTaskRel;
@@ -151,13 +152,18 @@ public class TaskController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		Task task = taskDAO.findOne(id);
+		
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		if (task != null) {
 			if (task.checkStartAllowance()) {
 				task.start(taskDAO);
 			}
+			TaskDetails td = new TaskDetails(task, user);
 			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(task));
+				return ResponseEntity.ok().body(mapper.writeValueAsString(td));
 			} catch (JsonProcessingException e) {
 				System.out.println(e.toString());
 				return JSonResponseHelper.jsonWriteError();
