@@ -41,7 +41,7 @@ public class CompetenceStorage {
 		instance.synced = true;
 		instance.cached = false;
 
-		//instance.cache(competenceDAO);
+		// instance.cache(competenceDAO);
 
 		return true;
 	}
@@ -50,8 +50,8 @@ public class CompetenceStorage {
 		return instance.clear();
 
 	}
-	
-	public static boolean synchronize(CompetenceDAO competenceDAO, CompetenceRelationshipDAO compRelDAO){
+
+	public static boolean synchronize(CompetenceDAO competenceDAO, CompetenceRelationshipDAO compRelDAO) {
 		sync(competenceDAO, compRelDAO);
 		cache(competenceDAO);
 		return true;
@@ -88,9 +88,13 @@ public class CompetenceStorage {
 			return null;
 		}
 	}
-	
-	public static double getCompetenceSimilarity(Competence assigned, Competence target){
-		return instance.getCollectionIntern(assigned.getId()).compare(instance.getCollectionIntern(target.getId()));
+
+	public static double getCompetenceSimilarity(Competence assigned, Competence target) {
+		if (!instance.synced || !instance.cached) {
+			return 0;
+		} else {
+			return instance.getCollectionIntern(assigned.getId()).compare(instance.getCollectionIntern(target.getId()));
+		}
 	}
 
 	public static AugmentedSimpleCompetenceCollection getCollection(Competence c) {
@@ -100,18 +104,18 @@ public class CompetenceStorage {
 	public static AugmentedSimpleCompetenceCollection getCollection(Long id) {
 		return instance.getCollectionIntern(id);
 	}
-	
-	public static ArrayList<AugmentedSimpleCompetenceCollection> getCollections(Task t){
+
+	public static ArrayList<AugmentedSimpleCompetenceCollection> getCollections(Task t) {
 		ArrayList<AugmentedSimpleCompetenceCollection> collections = new ArrayList<AugmentedSimpleCompetenceCollection>();
-		for(CompetenceTaskRel ctr : t.getMappedCompetences()){
+		for (CompetenceTaskRel ctr : t.getMappedCompetences()) {
 			collections.add(instance.getCollectionIntern(ctr.getCompetence().getId()));
 		}
 		return collections;
 	}
-	
-	public static ArrayList<AugmentedSimpleCompetenceCollection> getCollections(CracUser u){
+
+	public static ArrayList<AugmentedSimpleCompetenceCollection> getCollections(CracUser u) {
 		ArrayList<AugmentedSimpleCompetenceCollection> collections = new ArrayList<AugmentedSimpleCompetenceCollection>();
-		for(UserCompetenceRel ucr : u.getCompetenceRelationships()){
+		for (UserCompetenceRel ucr : u.getCompetenceRelationships()) {
 			collections.add(instance.getCollectionIntern(ucr.getCompetence().getId()));
 		}
 		return collections;
@@ -124,7 +128,6 @@ public class CompetenceStorage {
 	public static boolean isCached() {
 		return instance.cached;
 	}
-
 
 	private AugmentedSimpleCompetenceCollection getCollectionIntern(Long id) {
 		if (instance.cached) {
