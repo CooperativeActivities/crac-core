@@ -3,6 +3,7 @@ package crac.models;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -282,19 +283,39 @@ public class Task {
 		}
 		return true;
 	}
+	
+	public boolean childTasksReady(){
+		if (childTasks == null) {
+			if (childTasks.isEmpty()) {
+				return true;
+			}
+			return true;
+		}
+				
+		for (Task c : childTasks) {
+			if(!c.isReadyToPublish()){
+				return false;
+			}		
+		}
+		
+		return true;
+		
+	}
 
 	@JsonIgnore
-	public void readyToPublishTree(TaskDAO taskDAO) {
+	public void readyToPublishTree(HashMap<String, String> errors, TaskDAO taskDAO) {
 		if (this.fieldsFilled()) {
 			this.readyToPublish = true;
 			taskDAO.save(this);
 			if (childTasks != null) {
 				if (!childTasks.isEmpty()) {
 					for (Task t : childTasks) {
-						t.readyToPublishTree(taskDAO);
+						t.readyToPublishTree(errors, taskDAO);
 					}
 				}
 			}
+		}else{
+			errors.put(this.id+"", "TASK_NOT_READY");
 		}
 	}
 
@@ -369,8 +390,8 @@ public class Task {
 	@JsonIgnore
 	public int publish() {
 
-		if (this.isSuperTask() && this.getTaskState() == TaskState.NOT_PUBLISHED && readyToPublish()) {
-			if (fieldsFilled()) {
+		if (this.isSuperTask() && this.getTaskState() == TaskState.NOT_PUBLISHED && fieldsFilled()) {
+			if (childTasksReady()) {
 				publishTree();
 				return 3;
 			} else {

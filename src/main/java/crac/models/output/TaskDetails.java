@@ -47,7 +47,7 @@ public class TaskDetails {
 	private Calendar endTime;
 
 	private int amountOfVolunteers;
-	
+
 	private int signedUsers;
 
 	private TaskState taskState;
@@ -71,8 +71,8 @@ public class TaskDetails {
 	private Set<UserFriendDetails> userRelationships;
 
 	private Set<CompetenceRelationDetails> taskCompetences;
-	
-	public TaskDetails(Task t, CracUser u){
+
+	public TaskDetails(Task t, CracUser u) {
 		this.id = t.getId();
 		this.creationDate = t.getCreationDate();
 		this.name = t.getName();
@@ -84,90 +84,115 @@ public class TaskDetails {
 		this.signedUsers = t.getSignedUsers();
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();
-		this.superTask = new TaskShort(t.getSuperTask());
+		if (t.getSuperTask() != null) {
+			this.superTask = new TaskShort(t.getSuperTask());
+		} else {
+			this.superTask = null;
+		}
 		this.childTasks = addChildren(t);
 		this.attachments = t.getAttachments();
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
 		this.taskCompetences = calcComps(t, u);
 	}
-	
-	public Set<TaskShort> addChildren(Task t){
-		
+
+	public Set<TaskShort> addChildren(Task t) {
+
 		Set<TaskShort> list = new HashSet<>();
-		
-		for(Task tc : t.getChildTasks()){
-			list.add(new TaskShort(tc));
+
+		if (t.getChildTasks() != null) {
+
+			for (Task tc : t.getChildTasks()) {
+				list.add(new TaskShort(tc));
+			}
 		}
-		
 		return list;
-		
+
 	}
-	
-	public Set<CompetenceRelationDetails> calcComps(Task t, CracUser u){
-		
+
+	public Set<CompetenceRelationDetails> calcComps(Task t, CracUser u) {
+
 		Set<CompetenceRelationDetails> list = new HashSet<>();
-		
-		for(CompetenceTaskRel ctr : t.getMappedCompetences()){
-			double bestVal = 0;
-			for(UserCompetenceRel ucr : u.getCompetenceRelationships()){
-				double newVal = CompetenceStorage.getCompetenceSimilarity(ucr.getCompetence(), ctr.getCompetence());
-				if(newVal > bestVal){
-					bestVal = newVal;
+
+		Set<CompetenceTaskRel> mctr = t.getMappedCompetences();
+
+		if (mctr != null) {
+			if (mctr.size() != 0) {
+				for (CompetenceTaskRel ctr : mctr) {
+					double bestVal = 0;
+					if (u.getCompetenceRelationships() != null) {
+						for (UserCompetenceRel ucr : u.getCompetenceRelationships()) {
+							double newVal = CompetenceStorage.getCompetenceSimilarity(ucr.getCompetence(),
+									ctr.getCompetence());
+							if (newVal > bestVal) {
+								bestVal = newVal;
+							}
+						}
+					}
+					System.out.println("name: " + ctr.getCompetence().getName() + " val: " + bestVal);
+					CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
+					cd.setMandatory(ctr.isMandatory());
+					cd.setRelationValue(bestVal);
+
+					list.add(cd);
 				}
 			}
-			
-			System.out.println("name: "+ctr.getCompetence().getName()+" val: "+bestVal);
-			CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
-			cd.setMandatory(ctr.isMandatory());
-			cd.setRelationValue(bestVal);
-			
-			list.add(cd);
 		}
-			
 		return list;
-		
+
 	}
-	
-	private Set<UserFriendDetails> calcFriends(Task t, CracUser u){
-		
+
+	private Set<UserFriendDetails> calcFriends(Task t, CracUser u) {
+
 		Set<UserFriendDetails> list = new HashSet<>();
 		UserRelationship found = null;
 		boolean friend = false;
 		CracUser otherU = null;
-		
-		for(UserTaskRel utr : t.getUserRelationships()){
-			found = null;
-			otherU = utr.getUser();
-			for(UserRelationship ur : u.getUserRelationshipsAs1()){
-				if(otherU.getId() == ur.getC2().getId()){
-					found = ur;
+
+		if (t.getUserRelationships() != null) {
+			if (t.getUserRelationships().size() != 0) {
+				for (UserTaskRel utr : t.getUserRelationships()) {
+					found = null;
+					otherU = utr.getUser();
+
+					if (u.getUserRelationshipsAs1() != null) {
+						if (u.getUserRelationshipsAs1().size() != 0) {
+							for (UserRelationship ur : u.getUserRelationshipsAs1()) {
+								if (otherU.getId() == ur.getC2().getId()) {
+									found = ur;
+								}
+							}
+						}
+					}
+					if (u.getUserRelationshipsAs2() != null) {
+						if (u.getUserRelationshipsAs2().size() != 0) {
+							for (UserRelationship ur : u.getUserRelationshipsAs2()) {
+								if (utr.getUser().getId() == ur.getC1().getId()) {
+									found = ur;
+								}
+							}
+						}
+					}
+
+					if (found != null) {
+						friend = found.isFriends();
+					} else {
+						friend = false;
+					}
+
+					UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr.getParticipationType());
+
+					if (otherU.getId() == u.getId()) {
+						fd.setSelf(true);
+					}
+
+					list.add(fd);
 				}
 			}
-			for(UserRelationship ur : u.getUserRelationshipsAs2()){
-				if(utr.getUser().getId() == ur.getC1().getId()){
-					found = ur;
-				}
-			}
-			
-			if(found != null){
-				friend = found.isFriends();
-			}else{
-				friend = false;
-			}
-			
-			UserFriendDetails fd = new UserFriendDetails(otherU, friend);
-			
-			if(otherU.getId() == u.getId()){
-				fd.setSelf(true);
-			}
-			
-			list.add(fd);
-			
 		}
-		
+
 		return list;
-		
+
 	}
 
 	public long getId() {

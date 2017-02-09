@@ -1,5 +1,7 @@
 package crac.utility;
 
+import java.util.HashMap;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +15,40 @@ import crac.models.CracUser;
 import crac.models.Evaluation;
 import crac.models.Role;
 import crac.models.Task;
+import crac.models.output.errors.MessageHandler;
+import crac.models.output.errors.ResponseHandler;
 import crac.models.relation.CompetenceRelationshipType;
 import crac.models.relation.UserTaskRel;
 import crac.models.CracToken;
 import crac.notifier.Notification;
 
 public class JSonResponseHelper {
+	
+	public static ResponseEntity<String> messageArray(HashMap<String, String> data){
+		MessageHandler mh = new MessageHandler(false, "bad_request", data);
+		ObjectMapper mapper = new ObjectMapper();
+		String result = "";
+		try {
+			result = mapper.writeValueAsString(mh);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return addEntity(result);
+	}
+	
+	public static ResponseEntity<String> createResponse(boolean success, String error, String cause){
+		ResponseHandler rh = new ResponseHandler(success, error, cause);
+		ObjectMapper mapper = new ObjectMapper();
+		String result = "";
+		try {
+			result = mapper.writeValueAsString(rh);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return addEntity(result);
+	}
 	
 	//Creation Helpers
 		
@@ -276,5 +306,5 @@ public class JSonResponseHelper {
 		return ResponseEntity.ok().headers(headers).body(response);
 				
 	}
-	
+		
 }

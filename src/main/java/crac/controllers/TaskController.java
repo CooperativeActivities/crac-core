@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -152,7 +153,7 @@ public class TaskController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		Task task = taskDAO.findOne(id);
-		
+
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -466,15 +467,21 @@ public class TaskController {
 
 		if (t != null) {
 			if (user.hasTaskPermissions(t)) {
-				if (t.readyToPublish()) {
-					t.setReadyToPublish(true);
-					taskDAO.save(t);
-					return JSonResponseHelper.successFullyUpdated(t);
+
+				if (t.fieldsFilled()) {
+					if (t.childTasksReady()) {
+						t.setReadyToPublish(true);
+						taskDAO.save(t);
+						return JSonResponseHelper.successFullyUpdated(t);
+					} else {
+						return JSonResponseHelper.createResponse(false, "bad_request", "CHILDREN_NOT_READY");
+					}
 				} else {
-					return JSonResponseHelper.actionNotPossible("Child-tasks are not ready!");
+					return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
 				}
+				
 			} else {
-				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 			}
 		} else {
 			return JSonResponseHelper.idNotFound();
@@ -498,8 +505,14 @@ public class TaskController {
 
 		if (t != null) {
 			if (user.hasTaskPermissions(t)) {
-				t.readyToPublishTree(taskDAO);
-				return JSonResponseHelper.successFullyUpdated(t);
+				HashMap<String, String> results = new HashMap<>();
+				t.readyToPublishTree(results, taskDAO);
+				if (results.size() == 0) {
+					return JSonResponseHelper.successFullyUpdated(t);
+				} else {
+					return JSonResponseHelper.messageArray(results);
+				}
+
 			} else {
 				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
 			}
@@ -772,14 +785,14 @@ public class TaskController {
 					s = task.publish();
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.actionNotPossible("Children are not published");
+						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
 					case 2:
-						return JSonResponseHelper.actionNotPossible("Attributes are not filled");
+						return JSonResponseHelper.createResponse(false, "bad_request", "CHILDREN_NOT_READY");
 					case 3:
 						state = TaskState.PUBLISHED;
 						break;
 					default:
-						return JSonResponseHelper.actionNotPossible("Undefined Error");
+						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
 					}
 
 				} else if (stateName.equals("start")) {
@@ -787,12 +800,14 @@ public class TaskController {
 					s = task.start(taskDAO);
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.actionNotPossible("Task is not published");
+						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
+					case 2:
+						return JSonResponseHelper.createResponse(false, "bad_request", "START_NOT_ALLOWED");
 					case 3:
 						state = TaskState.STARTED;
 						break;
 					default:
-						return JSonResponseHelper.actionNotPossible("Undefined Error");
+						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
 					}
 
 				} else if (stateName.equals("complete")) {
@@ -800,14 +815,14 @@ public class TaskController {
 					s = task.complete();
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.actionNotPossible("Task is not started");
+						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
 					case 2:
-						return JSonResponseHelper.actionNotPossible("Not all users have completed the task");
+						return JSonResponseHelper.createResponse(false, "bad_request", "NOT_COMPLETED_BY_USERS");
 					case 3:
 						state = TaskState.COMPLETED;
 						break;
 					default:
-						return JSonResponseHelper.actionNotPossible("Undefined Error");
+						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
 					}
 
 				} else if (stateName.equals("forceComplete")) {
@@ -815,14 +830,14 @@ public class TaskController {
 					s = task.forceComplete(taskDAO, user);
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.actionNotPossible("Task is not started");
+						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
 					case 2:
-						return JSonResponseHelper.actionNotPossible("Logged in user is not permitted to use action");
+						return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 					case 3:
 						state = TaskState.COMPLETED;
 						return JSonResponseHelper.successTaskStateChanged(task, state);
 					default:
-						return JSonResponseHelper.actionNotPossible("Undefined Error");
+						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
 					}
 
 				} else {
@@ -836,7 +851,7 @@ public class TaskController {
 				return JSonResponseHelper.idNotFound();
 			}
 		} else {
-			return JSonResponseHelper.actionNotPossible("Permissions not sufficient");
+			return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 		}
 	}
 
@@ -1064,9 +1079,9 @@ public class TaskController {
 			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 					.getContext().getAuthentication();
 			CracUser user = userDAO.findByName(userDetails.getName());
-			
+
 			Decider unit = new Decider();
-			
+
 			ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters(), taskDAO);
 
 			for (EvaluatedTask ets : et) {

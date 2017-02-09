@@ -153,7 +153,7 @@ public class TaskOverview {
 				friend = false;
 			}
 			
-			UserFriendDetails fd = new UserFriendDetails(otherU, friend);
+			UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr.getParticipationType());
 			
 			if(otherU.getId() == u.getId()){
 				fd.setSelf(true);

@@ -1,5 +1,6 @@
 package crac.models.output;
 
+import crac.enums.TaskParticipationType;
 import crac.models.CracUser;
 
 public class UserFriendDetails {
@@ -12,11 +13,14 @@ public class UserFriendDetails {
 	
 	private boolean self;
 	
-	public UserFriendDetails(CracUser u, boolean friend) {
+	private TaskParticipationType participationType;
+	
+	public UserFriendDetails(CracUser u, boolean friend, TaskParticipationType participationType) {
 		this.id = u.getId();
 		this.name = u.getName();
 		this.friend = friend;
 		this.self = false;
+		this.participationType = participationType;
 	}
 
 	public long getId() {
@@ -49,6 +53,14 @@ public class UserFriendDetails {
 
 	public void setSelf(boolean self) {
 		this.self = self;
+	}
+
+	public TaskParticipationType getParticipationType() {
+		return participationType;
+	}
+
+	public void setParticipationType(TaskParticipationType participationType) {
+		this.participationType = participationType;
 	}
 	
 }
