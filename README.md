@@ -802,6 +802,26 @@ GET /task/{task_id}/publish/ready/single
 
 Json-data, either a success or a failure message
 
+Possible failures:
+
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "CHILDREN_NOT_READY"
+	}
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "TASK_NOT_READY"
+	}
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "PERMISSIONS_NOT_SUFFICIENT"
+	}
+
 -----------------------------------------------------------------
 	
 **Sets target task and all children ready to be published**
@@ -815,6 +835,17 @@ GET /task/{task_id}/publish/ready/tree
 #####*Response:*
 
 Json-data, either a success or a failure message
+
+The cause-object contains an array that states the ID of the task that failed and the cause why it failed.
+
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": {
+	    "4": "TASK_NOT_READY",
+	    "5": "TASK_NOT_READY"
+	  }
+	}
 
 -----------------------------------------------------------------
 	
@@ -972,6 +1003,46 @@ GET /task/{task_id}/state/{state_name}
 #####*Response:*
 
 Json-data, either a success or a failure message
+
+Possible failures:
+
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "CHILDREN_NOT_READY"
+	}
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "START_NOT_ALLOWED"
+	}
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "TASK_NOT_READY"
+	}
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "NOT_COMPLETED_BY_USERS"
+	}
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "UNDEFINED_ERROR"
+	}
+
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "PERMISSIONS_NOT_SUFFICIENT"
+	}
+
+
 
 -----------------------------------------------------------------
 
