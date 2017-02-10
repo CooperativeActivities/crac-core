@@ -72,10 +72,10 @@ else the standard unauthorized-message will appear:
 	
 If the user already has a valid token, the system will output it and return a message that reminds the user, that he is already logged in.
 	
-Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
+###Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
 The value of the token return by this endpoint can just be added to the header of the request in the custom-field "Token".
 If it's valid, the system will act like the user is sending his actual name and password.
-###Warning: If the token is invalid, even with correct user and password in the "Authorization"-field, the security won't let the request pass!
+###The user can still authenticate via basic-authentication!
 
 -----------------------------------------------------------------
 
@@ -89,10 +89,8 @@ GET /user/logout
 
 Either a success or a failure-message, depending on the VALID (through basic authentication) user already having a token or not.
 	
-Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
-The value of the token return by this endpoint can just be added to the header of the request in the custom-field "Token".
-If it's valid, the system will act like the user is sending his actual name and password.
-###Warning: If the token is invalid, even with correct user and password in the "Authorization"-field, the security won't let the request pass!
+This endpoint will delete the token that was created by calling the login-endpoint!
+####If no basic-authentication is provided, the user now has no access to the system!
 
 -----------------------------------------------------------------
 
