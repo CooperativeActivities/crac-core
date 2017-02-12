@@ -24,6 +24,7 @@ import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.CracUser;
 import crac.models.Evaluation;
+import crac.models.Material;
 import crac.models.Task;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
@@ -74,6 +75,8 @@ public class TaskDetails {
 
 	private Set<CompetenceRelationDetails> taskCompetences;
 
+	private Set<Material> materials;
+
 	public TaskDetails(Task t, CracUser u) {
 		this.id = t.getId();
 		this.creationDate = t.getCreationDate();
@@ -97,6 +100,7 @@ public class TaskDetails {
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
 		this.taskCompetences = calcComps(t, u);
+		this.materials = t.getMaterials();
 	}
 
 	public Set<TaskShort> addChildren(Task t) {
@@ -356,6 +360,14 @@ public class TaskDetails {
 
 	public void setTaskCompetences(Set<CompetenceRelationDetails> taskCompetences) {
 		this.taskCompetences = taskCompetences;
+	}
+
+	public Set<Material> getMaterials() {
+		return materials;
+	}
+
+	public void setMaterials(Set<Material> materials) {
+		this.materials = materials;
 	}
 
 }

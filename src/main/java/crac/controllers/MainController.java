@@ -306,7 +306,8 @@ public class MainController {
 		waterFlowers.setName("Water the flowers");
 		waterFlowers.setDescription("All about watering the different flowers in the garden.");
 		waterFlowers.setLocation("my garden");
-		waterFlowers.setMaxAmountOfVolunteers(4);
+		waterFlowers.setMaxAmountOfVolunteers(0);
+		waterFlowers.setMinAmountOfVolunteers(10);
 		waterFlowers.setCreator(myUser);
 		waterFlowers.setTaskState(TaskState.PUBLISHED);
 				
@@ -317,7 +318,8 @@ public class MainController {
 		waterRoses.setDescription("Water the roses on the westside of the garden.");
 		waterRoses.setLocation("my garden");
 		waterRoses.setUrgency(5);
-		waterRoses.setMaxAmountOfVolunteers(2);		
+		waterRoses.setMaxAmountOfVolunteers(0);		
+		waterRoses.setMinAmountOfVolunteers(3);		
 		waterRoses.setCreator(myUser);
 		waterRoses.setSuperTask(waterFlowers);
 		waterRoses.setTaskState(TaskState.PUBLISHED);
@@ -327,7 +329,8 @@ public class MainController {
 		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
 		waterLilies.setLocation("my garden");
 		waterLilies.setUrgency(2);
-		waterLilies.setMaxAmountOfVolunteers(1);
+		waterLilies.setMaxAmountOfVolunteers(0);
+		waterLilies.setMinAmountOfVolunteers(2);
 		waterLilies.setCreator(myUser);
 		waterLilies.setSuperTask(waterFlowers);
 		waterLilies.setTaskState(TaskState.PUBLISHED);
@@ -337,7 +340,8 @@ public class MainController {
 		programWateringTool.setDescription("Program a web-tool that makes watering flowers easier.");
 		programWateringTool.setLocation("a desk in my garden");
 		programWateringTool.setUrgency(10);
-		programWateringTool.setMaxAmountOfVolunteers(1);
+		programWateringTool.setMaxAmountOfVolunteers(0);
+		programWateringTool.setMinAmountOfVolunteers(5);
 		programWateringTool.setTaskState(TaskState.PUBLISHED);
 
 		programWateringTool.setCreator(myUser);

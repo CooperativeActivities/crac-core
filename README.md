@@ -785,6 +785,54 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
+**Add a material to target task**
+	
+#####*Request:*
+
+POST /task/{task_id}/material/add
+
+	{
+		"name": "cake",
+		"description": "sweet baked food",
+		"quantity": 3
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Update fields of target material on target task**
+	
+#####*Request:*
+
+PUT /task/{task_id}/material/update/{material_id}
+
+	{
+		"name": "cake",
+		"description": "sweet baked food",
+		"quantity": 3
+	}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Remove a material from target task**
+	
+#####*Request:*
+
+GET /task/{task_id}/material/remove/{material_id}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
 **Sets a single task ready to be published, only works if it's children are ready**
 
 There are a few prerequisites to this. 
@@ -1676,5 +1724,16 @@ Look up the filter-section of the readMe details to the endpoints.
 A new endpoint returns a specified amount of best matches.
 
 GET /user/findMatchingTasks/{number_of_tasks} -> NEW
+
+-----------------------------------------------------------------
+
+####12.2.2017
+
+Materials can now be assigned to users.
+Endpoints for that are in the task-section.
+
+GET /task/{task_id}/material/add -> NEW
+GET /task/{task_id}/material/update/{material_id} -> NEW
+GET /task/{task_id}/material/remove/{material_id} -> NEW
 
 -----------------------------------------------------------------

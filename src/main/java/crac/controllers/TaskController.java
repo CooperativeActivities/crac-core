@@ -47,12 +47,14 @@ import crac.daos.CommentDAO;
 import crac.daos.CompetenceDAO;
 import crac.daos.CompetenceTaskRelDAO;
 import crac.daos.CracUserDAO;
+import crac.daos.MaterialDAO;
 import crac.daos.RepetitionDateDAO;
 import crac.daos.RoleDAO;
 import crac.models.Attachment;
 import crac.models.Comment;
 import crac.models.Competence;
 import crac.models.CracUser;
+import crac.models.Material;
 import crac.models.Task;
 import crac.models.output.TaskDetails;
 import crac.models.relation.CompetenceTaskRel;
@@ -94,6 +96,9 @@ public class TaskController {
 
 	@Autowired
 	private RoleDAO roleDAO;
+
+	@Autowired
+	private MaterialDAO materialDAO;
 
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
@@ -450,6 +455,154 @@ public class TaskController {
 	}
 
 	/**
+	 * Add a material to target task
+	 * 
+	 * @param json
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/material/add",
+			"/{task_id}/material/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task st = taskDAO.findOne(taskId);
+
+		if (st != null) {
+			if (user.hasTaskPermissions(st)) {
+				ObjectMapper mapper = new ObjectMapper();
+				Material m;
+
+				try {
+					m = mapper.readValue(json, Material.class);
+				} catch (JsonMappingException e) {
+					System.out.println(e.toString());
+					return JSonResponseHelper.jsonMapError();
+				} catch (IOException e) {
+					System.out.println(e.toString());
+					return JSonResponseHelper.jsonReadError();
+				}
+
+				m.setTask(st);
+				st.addMaterial(m);
+				taskDAO.save(st);
+				return JSonResponseHelper.successFullyUpdated(st);
+
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+			}
+
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	/**
+	 * Update fields of target material on target task
+	 * @param json
+	 * @param taskId
+	 * @param materialId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/material/update/{material_id}",
+			"/{task_id}/material/update/{material_id}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> updateMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
+			@PathVariable(value = "material_id") Long materialId) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task st = taskDAO.findOne(taskId);
+
+		if (st != null) {
+			if (user.hasTaskPermissions(st)) {
+
+				Material old = materialDAO.findOne(materialId);
+
+				if (old != null) {
+
+					ObjectMapper mapper = new ObjectMapper();
+					Material updated;
+
+					try {
+						updated = mapper.readValue(json, Material.class);
+					} catch (JsonMappingException e) {
+						System.out.println(e.toString());
+						return JSonResponseHelper.jsonMapError();
+					} catch (IOException e) {
+						System.out.println(e.toString());
+						return JSonResponseHelper.jsonReadError();
+					}
+
+					UpdateEntitiesHelper.checkAndUpdateMaterial(old, updated);
+					materialDAO.save(old);
+					return JSonResponseHelper.successFullyUpdated(st);
+				} else {
+					return JSonResponseHelper.idNotFound();
+				}
+
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+			}
+
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	/**
+	 * Remove a material from target task based on ID
+	 * 
+	 * @param taskId
+	 * @param materialId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/material/remove/{material_id}",
+			"/{task_id}/material/remove/{material_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeMaterial(@PathVariable(value = "task_id") Long taskId,
+			@PathVariable(value = "material_id") Long materialId) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task st = taskDAO.findOne(taskId);
+
+		if (st != null) {
+			if (user.hasTaskPermissions(st)) {
+
+				Material delm = null;
+
+				for (Material m : st.getMaterials()) {
+					if (m.getId() == materialId) {
+						delm = m;
+					}
+				}
+
+				st.getMaterials().remove(delm);
+
+				materialDAO.delete(delm);
+
+				taskDAO.save(st);
+				return JSonResponseHelper.successFullyUpdated(st);
+
+			} else {
+				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+			}
+
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+
+	/**
 	 * Sets a single task ready to be published, only works if it's children are
 	 * ready
 	 * 
@@ -479,7 +632,7 @@ public class TaskController {
 				} else {
 					return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
 				}
-				
+
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 			}

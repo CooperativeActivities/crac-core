@@ -139,6 +139,9 @@ public class Task {
 
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceTaskRel> mappedCompetences;
+	
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Material> materials;
 
 	/**
 	 * constructors
@@ -155,7 +158,7 @@ public class Task {
 		Calendar time2 = new GregorianCalendar();
 		time2.set(2031, 9, 10, 14, 30, 00);
 		this.endTime = time2;
-
+		this.materials = new HashSet<Material>();
 	}
 
 	public Task copy(Task superTask) {
@@ -656,6 +659,18 @@ public class Task {
 
 	public void setMinAmountOfVolunteers(int minAmountOfVolunteers) {
 		this.minAmountOfVolunteers = minAmountOfVolunteers;
+	}
+
+	public Set<Material> getMaterials() {
+		return materials;
+	}
+
+	public void setMaterials(Set<Material> materials) {
+		this.materials = materials;
+	}
+	
+	public void addMaterial(Material material){
+		this.materials.add(material);
 	}
 
 }

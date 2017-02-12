@@ -5,6 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Evaluation;
+import crac.models.Material;
 import crac.models.Task;
 import crac.models.relation.CompetenceRelationshipType;
 
@@ -100,6 +101,20 @@ public class UpdateEntitiesHelper {
 		}
 
 	}
+	
+	public static void checkAndUpdateMaterial(Material old, Material updated){
+		if (updated.getName() != null) {
+			old.setName(updated.getName());
+		}
+		if (updated.getDescription() != null) {
+			old.setDescription(updated.getDescription());
+		}
+		if (updated.getQuantity() > 0) {
+			old.setQuantity(updated.getQuantity());
+		}
+
+	}
+
 
 	public static void checkAndUpdateCompetenceRelType(CompetenceRelationshipType old, CompetenceRelationshipType updated){
 		if (updated.getName() != null) {
