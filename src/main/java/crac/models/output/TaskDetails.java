@@ -46,7 +46,9 @@ public class TaskDetails {
 
 	private Calendar endTime;
 
-	private int amountOfVolunteers;
+	private int minAmountOfVolunteers;
+	
+	private int maxAmountOfVolunteers;
 
 	private int signedUsers;
 
@@ -80,7 +82,8 @@ public class TaskDetails {
 		this.location = t.getLocation();
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
-		this.amountOfVolunteers = t.getMaxAmountOfVolunteers();
+		this.maxAmountOfVolunteers = t.getMaxAmountOfVolunteers();
+		this.minAmountOfVolunteers = t.getMinAmountOfVolunteers();
 		this.signedUsers = t.getSignedUsers();
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();
@@ -243,12 +246,20 @@ public class TaskDetails {
 		this.endTime = endTime;
 	}
 
-	public int getAmountOfVolunteers() {
-		return amountOfVolunteers;
+	public int getMinAmountOfVolunteers() {
+		return minAmountOfVolunteers;
 	}
 
-	public void setAmountOfVolunteers(int amountOfVolunteers) {
-		this.amountOfVolunteers = amountOfVolunteers;
+	public void setMinAmountOfVolunteers(int minAmountOfVolunteers) {
+		this.minAmountOfVolunteers = minAmountOfVolunteers;
+	}
+
+	public int getMaxAmountOfVolunteers() {
+		return maxAmountOfVolunteers;
+	}
+
+	public void setMaxAmountOfVolunteers(int maxAmountOfVolunteers) {
+		this.maxAmountOfVolunteers = maxAmountOfVolunteers;
 	}
 
 	public int getSignedUsers() {
