@@ -70,8 +70,12 @@ public class UpdateEntitiesHelper {
 			old.setUrgency(updated.getUrgency());
 		}
 		
-		if(updated.getAmountOfVolunteers() > 0){
-			old.setAmountOfVolunteers(updated.getAmountOfVolunteers());
+		if(updated.getMaxAmountOfVolunteers() >= 0){
+			old.setMaxAmountOfVolunteers(updated.getMaxAmountOfVolunteers());
+		}
+		
+		if(updated.getMinAmountOfVolunteers() >= 0){
+			old.setMinAmountOfVolunteers(updated.getMinAmountOfVolunteers());
 		}
 		
 		if(updated.getFeedback() != null){

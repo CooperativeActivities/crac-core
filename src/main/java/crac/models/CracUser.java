@@ -157,6 +157,7 @@ public class CracUser {
 	
 	public CracUser() {
 		this.competenceRelationships = new HashSet<UserCompetenceRel>();
+		this.roles = new HashSet<Role>(); 
 	}
 	
 	//UTILITY----------------
@@ -355,6 +356,10 @@ public class CracUser {
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
+	}
+	
+	public void addRole(Role role){
+		this.roles.add(role);
 	}
 	
 }

@@ -306,7 +306,7 @@ public class MainController {
 		waterFlowers.setName("Water the flowers");
 		waterFlowers.setDescription("All about watering the different flowers in the garden.");
 		waterFlowers.setLocation("my garden");
-		waterFlowers.setAmountOfVolunteers(4);
+		waterFlowers.setMaxAmountOfVolunteers(4);
 		waterFlowers.setCreator(myUser);
 		waterFlowers.setTaskState(TaskState.PUBLISHED);
 				
@@ -317,7 +317,7 @@ public class MainController {
 		waterRoses.setDescription("Water the roses on the westside of the garden.");
 		waterRoses.setLocation("my garden");
 		waterRoses.setUrgency(5);
-		waterRoses.setAmountOfVolunteers(2);		
+		waterRoses.setMaxAmountOfVolunteers(2);		
 		waterRoses.setCreator(myUser);
 		waterRoses.setSuperTask(waterFlowers);
 		waterRoses.setTaskState(TaskState.PUBLISHED);
@@ -327,7 +327,7 @@ public class MainController {
 		waterLilies.setDescription("Water the lilies on the eastside of the garden.");
 		waterLilies.setLocation("my garden");
 		waterLilies.setUrgency(2);
-		waterLilies.setAmountOfVolunteers(1);
+		waterLilies.setMaxAmountOfVolunteers(1);
 		waterLilies.setCreator(myUser);
 		waterLilies.setSuperTask(waterFlowers);
 		waterLilies.setTaskState(TaskState.PUBLISHED);
@@ -337,7 +337,7 @@ public class MainController {
 		programWateringTool.setDescription("Program a web-tool that makes watering flowers easier.");
 		programWateringTool.setLocation("a desk in my garden");
 		programWateringTool.setUrgency(10);
-		programWateringTool.setAmountOfVolunteers(1);
+		programWateringTool.setMaxAmountOfVolunteers(1);
 		programWateringTool.setTaskState(TaskState.PUBLISHED);
 
 		programWateringTool.setCreator(myUser);
@@ -419,6 +419,8 @@ public class MainController {
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		userDAO.save(AverageHuman);
 		
+		addActualUsers();
+		
 		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);
 		repetitionDateDAO.save(date1);
 		
@@ -433,6 +435,76 @@ public class MainController {
 		System.out.println("-----------------------");
 
 		return JSonResponseHelper.bootSuccess();
+	}
+	
+	public void addActualUsers(){
+		CracUser SchönböckADMIN = new CracUser();
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+
+		SchönböckADMIN.setName("SchönböckADMIN");
+		SchönböckADMIN.setFirstName("Johannes");
+		SchönböckADMIN.setLastName("Schönböck");
+		SchönböckADMIN.setPassword(bcryptEncoder.encode("default"));
+		SchönböckADMIN.addRole(roleDAO.findByName("ADMIN"));
+		SchönböckADMIN.setPhone("35678987654");
+		SchönböckADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(SchönböckADMIN);
+		
+		CracUser SchönböckUSER = new CracUser();
+
+		SchönböckUSER.setName("SchönböckUSER");
+		SchönböckUSER.setFirstName("Johannes");
+		SchönböckUSER.setLastName("Schönböck");
+		SchönböckUSER.setPassword(bcryptEncoder.encode("default"));
+		SchönböckUSER.addRole(roleDAO.findByName("USER"));
+		SchönböckUSER.setPhone("35678987654");
+		SchönböckUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(SchönböckUSER);
+
+		CracUser PröllADMIN = new CracUser();
+
+		PröllADMIN.setName("PröllADMIN");
+		PröllADMIN.setFirstName("Birigt");
+		PröllADMIN.setLastName("Pröll");
+		PröllADMIN.setPassword(bcryptEncoder.encode("default"));
+		PröllADMIN.addRole(roleDAO.findByName("ADMIN"));
+		PröllADMIN.setPhone("35678987654");
+		PröllADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(PröllADMIN);
+		
+		CracUser PröllUSER = new CracUser();
+
+		PröllUSER.setName("PröllUSER");
+		PröllUSER.setFirstName("Birigt");
+		PröllUSER.setLastName("Pröll");
+		PröllUSER.setPassword(bcryptEncoder.encode("default"));
+		PröllUSER.addRole(roleDAO.findByName("USER"));
+		PröllUSER.setPhone("35678987654");
+		PröllUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(PröllUSER);
+		
+		CracUser EibnerADMIN = new CracUser();
+
+		EibnerADMIN.setName("EibnerADMIN");
+		EibnerADMIN.setFirstName("Wolfgang");
+		EibnerADMIN.setLastName("Eibner");
+		EibnerADMIN.setPassword(bcryptEncoder.encode("default"));
+		EibnerADMIN.addRole(roleDAO.findByName("ADMIN"));
+		EibnerADMIN.setPhone("35678987654");
+		EibnerADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(EibnerADMIN);
+		
+		CracUser EibnerUSER = new CracUser();
+
+		EibnerUSER.setName("EibnerUSER");
+		EibnerUSER.setFirstName("Wolfgang");
+		EibnerUSER.setLastName("Eibner");
+		EibnerUSER.setPassword(bcryptEncoder.encode("default"));
+		EibnerUSER.addRole(roleDAO.findByName("USER"));
+		EibnerUSER.setPhone("35678987654");
+		EibnerUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(EibnerUSER);
+		
 	}
 
 }

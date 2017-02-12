@@ -68,8 +68,9 @@ public class Task {
 	@NotNull
 	private int urgency;
 
-	@NotNull
-	private int amountOfVolunteers;
+	private int maxAmountOfVolunteers;
+
+	private int minAmountOfVolunteers;
 
 	private String feedback;
 
@@ -170,7 +171,7 @@ public class Task {
 		// t.setTaskRepetitionState(taskRepetitionState);
 		// t.setTaskState(taskState);
 		Task t = new Task();
-		t.setAmountOfVolunteers(amountOfVolunteers);
+		t.setMaxAmountOfVolunteers(maxAmountOfVolunteers);
 		t.setCreator(creator);
 		t.setDescription(description);
 		t.setLocation(location);
@@ -224,9 +225,9 @@ public class Task {
 
 	@JsonIgnore
 	public int possibleNumberOfVolunteers() {
-		int total = amountOfVolunteers;
+		int total = maxAmountOfVolunteers;
 		for (Task t : childTasks) {
-			total -= t.getAmountOfVolunteers();
+			total -= t.getMaxAmountOfVolunteers();
 		}
 		return total;
 	}
@@ -349,10 +350,10 @@ public class Task {
 	@JsonIgnore
 	public boolean isFull() {
 		if (userRelationships != null) {
-			if (amountOfVolunteers == 0) {
+			if (maxAmountOfVolunteers == 0) {
 				return false;
 			}
-			return amountOfVolunteers == userRelationships.size();
+			return maxAmountOfVolunteers == userRelationships.size();
 		} else {
 			return true;
 		}
@@ -360,7 +361,7 @@ public class Task {
 
 	@JsonIgnore
 	public boolean fieldsFilled() {
-		boolean filled = this.getAmountOfVolunteers() > 0 && !this.getDescription().equals("")
+		boolean filled = this.getMaxAmountOfVolunteers() > 0 && !this.getDescription().equals("")
 				&& this.getStartTime() != null && this.getEndTime() != null && !this.getLocation().equals("");
 		if (isLeaf()) {
 			if (this.getMappedCompetences() != null) {
@@ -541,12 +542,12 @@ public class Task {
 		this.urgency = urgency;
 	}
 
-	public int getAmountOfVolunteers() {
-		return amountOfVolunteers;
+	public int getMaxAmountOfVolunteers() {
+		return maxAmountOfVolunteers;
 	}
 
-	public void setAmountOfVolunteers(int amountOfVolunteers) {
-		this.amountOfVolunteers = amountOfVolunteers;
+	public void setMaxAmountOfVolunteers(int maxAmountOfVolunteers) {
+		this.maxAmountOfVolunteers = maxAmountOfVolunteers;
 	}
 
 	public int getSignedUsers() {
@@ -647,6 +648,14 @@ public class Task {
 
 	public Calendar getCreationDate() {
 		return creationDate;
+	}
+
+	public int getMinAmountOfVolunteers() {
+		return minAmountOfVolunteers;
+	}
+
+	public void setMinAmountOfVolunteers(int minAmountOfVolunteers) {
+		this.minAmountOfVolunteers = minAmountOfVolunteers;
 	}
 
 }

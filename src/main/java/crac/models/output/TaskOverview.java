@@ -78,7 +78,7 @@ public class TaskOverview {
 		this.location = t.getLocation();
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
-		this.amountOfVolunteers = t.getAmountOfVolunteers();
+		this.amountOfVolunteers = t.getMaxAmountOfVolunteers();
 		this.signedUsers = t.getSignedUsers();
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();

@@ -249,7 +249,7 @@ public class TaskController {
 						return JSonResponseHelper.jsonReadError();
 					}
 
-					int c = checkAmountOfVolunteers(oldTask, updatedTask.getAmountOfVolunteers(), true);
+					int c = checkAmountOfVolunteers(oldTask, updatedTask.getMaxAmountOfVolunteers(), true);
 
 					System.out.println("answer: " + c);
 
@@ -294,14 +294,14 @@ public class TaskController {
 	private int checkAmountOfVolunteers(Task t, int amount, boolean update) {
 		Task st = t.getSuperTask();
 		if (st != null) {
-			if (st.getAmountOfVolunteers() != 0) {
+			if (st.getMaxAmountOfVolunteers() != 0) {
 				int availableNumber;
 				if (update) {
-					availableNumber = st.possibleNumberOfVolunteers() + t.getAmountOfVolunteers();
+					availableNumber = st.possibleNumberOfVolunteers() + t.getMaxAmountOfVolunteers();
 				} else {
 					availableNumber = st.possibleNumberOfVolunteers();
 				}
-				System.out.println("amount: " + t.getAmountOfVolunteers());
+				System.out.println("amount: " + t.getMaxAmountOfVolunteers());
 				System.out.println("available: " + availableNumber);
 				if (amount > availableNumber) {
 					return availableNumber;
@@ -377,20 +377,20 @@ public class TaskController {
 		if (t != null) {
 			if (user.hasTaskPermissions(t)) {
 
-				System.out.println("sfd " + t.getAmountOfVolunteers());
-				if (t.getAmountOfVolunteers() == 0) {
+				System.out.println("sfd " + t.getMaxAmountOfVolunteers());
+				if (t.getMaxAmountOfVolunteers() == 0) {
 
 					int val = 0;
 
 					for (Task ct : t.getChildTasks()) {
-						if (ct.getAmountOfVolunteers() > 0) {
-							val += ct.getAmountOfVolunteers();
+						if (ct.getMaxAmountOfVolunteers() > 0) {
+							val += ct.getMaxAmountOfVolunteers();
 						} else {
 							return JSonResponseHelper.actionNotPossible("Task has childtask with open amount");
 						}
 					}
 
-					t.setAmountOfVolunteers(val);
+					t.setMaxAmountOfVolunteers(val);
 					taskDAO.save(t);
 					return JSonResponseHelper.successFullyUpdated(t);
 
@@ -423,7 +423,7 @@ public class TaskController {
 
 		t.setSuperTask(st);
 
-		int c = checkAmountOfVolunteers(t, t.getAmountOfVolunteers(), false);
+		int c = checkAmountOfVolunteers(t, t.getMaxAmountOfVolunteers(), false);
 
 		System.out.println("answer: " + c);
 
