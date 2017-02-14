@@ -86,6 +86,9 @@ public class TaskController {
 	private CompetenceDAO competenceDAO;
 
 	@Autowired
+	private CommentDAO commentDAO;
+
+	@Autowired
 	private CompetenceTaskRelDAO competenceTaskRelDAO;
 
 	@Autowired
@@ -503,6 +506,7 @@ public class TaskController {
 
 	/**
 	 * Update fields of target material on target task
+	 * 
 	 * @param json
 	 * @param taskId
 	 * @param materialId
@@ -1431,21 +1435,20 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	/*
-	 * @RequestMapping(value = "/{task_id}/addComment", method =
-	 * RequestMethod.POST, produces = "application/json", consumes =
-	 * "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String> addComment(@RequestBody
-	 * String json, @PathVariable(value = "task_id") Long task_id) throws
-	 * JsonMappingException, IOException { Task myTask =
-	 * taskDAO.findOne(task_id); ObjectMapper mapper = new ObjectMapper();
-	 * Comment myComment = mapper.readValue(json, Comment.class);
-	 * myTask.getComments().add(myComment); myComment.setTask(myTask);
-	 * taskDAO.save(myTask); return
-	 * ResponseEntity.ok().body("{\"added\":\"true\",\"name\":\""+myComment.
-	 * getName()+"\"}"); }
-	 */
+
+	@RequestMapping(value = "/{task_id}/comment/add", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+
+	@ResponseBody
+	public ResponseEntity<String> addComment(@RequestBody String json, @PathVariable(value = "task_id") Long task_id)
+			throws JsonMappingException, IOException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		Comment myComment = mapper.readValue(json, Comment.class);
+		myTask.getComments().add(myComment);
+		myComment.setTask(myTask);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"added\":\"true\",\"name\":\"" + myComment.getName() + "\"}");
+	}
 
 	/**
 	 * Remove a comment from target task
@@ -1456,20 +1459,19 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	/*
-	 * @RequestMapping(value = "/{task_id}/removeComment/{comment_id}", method =
-	 * RequestMethod.DELETE, produces = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * removeComment(@PathVariable(value = "task_id") Long
-	 * task_id, @PathVariable(value = "comment_id") Long comment_id) { Task
-	 * myTask = taskDAO.findOne(task_id); Comment myComment =
-	 * commentDAO.findOne(comment_id);
-	 * myTask.getAttachments().remove(myComment); commentDAO.delete(myComment);
-	 * taskDAO.save(myTask); return
-	 * ResponseEntity.ok().body("{\"removed\":\"true\",\"name\":\""+myComment.
-	 * getName()+"\"}"); }
-	 */
+
+	@RequestMapping(value = "/{task_id}/comment/{comment_id}/remove", method = RequestMethod.DELETE, produces = "application/json")
+
+	@ResponseBody
+	public ResponseEntity<String> removeComment(@PathVariable(value = "task_id") Long task_id,
+			@PathVariable(value = "comment_id") Long comment_id) {
+		Task myTask = taskDAO.findOne(task_id);
+		Comment myComment = commentDAO.findOne(comment_id);
+		myTask.getAttachments().remove(myComment);
+		commentDAO.delete(myComment);
+		taskDAO.save(myTask);
+		return ResponseEntity.ok().body("{\"removed\":\"true\",\"name\":\"" + myComment.getName() + "\"}");
+	}
 
 	/**
 	 * Returns all comments of a task
@@ -1478,16 +1480,15 @@ public class TaskController {
 	 * @return ResponseEntity
 	 * @throws JsonProcessingException
 	 */
-	/*
-	 * @RequestMapping(value = "/{task_id}/comments", method =
-	 * RequestMethod.GET, produces = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * getComments(@PathVariable(value = "task_id") Long task_id) throws
-	 * JsonProcessingException { Task myTask = taskDAO.findOne(task_id);
-	 * ObjectMapper mapper = new ObjectMapper(); return
-	 * ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()))
-	 * ; }
-	 */
+
+	@RequestMapping(value = "/{task_id}/comments", method = RequestMethod.GET, produces = "application/json")
+
+	@ResponseBody
+	public ResponseEntity<String> getComments(@PathVariable(value = "task_id") Long task_id)
+			throws JsonProcessingException {
+		Task myTask = taskDAO.findOne(task_id);
+		ObjectMapper mapper = new ObjectMapper();
+		return ResponseEntity.ok().body(mapper.writeValueAsString(myTask.getComments()));
+	}
 
 }
