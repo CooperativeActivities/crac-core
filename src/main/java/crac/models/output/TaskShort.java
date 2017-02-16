@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
+import crac.enums.TaskState;
 import crac.models.Task;
 
 public class TaskShort {
@@ -22,12 +23,15 @@ public class TaskShort {
 
 	private Calendar endTime;
 	
+	private TaskState taskState;
+	
 	public TaskShort(Task t){
 		this.id = t.getId();
 		this.name = t.getName();
 		this.description = t.getDescription();
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
+		this.taskState = t.getTaskState();
 	}
 
 	public long getId() {
@@ -68,6 +72,14 @@ public class TaskShort {
 
 	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
+	}
+
+	public TaskState getTaskState() {
+		return taskState;
+	}
+
+	public void setTaskState(TaskState taskState) {
+		this.taskState = taskState;
 	}
 
 }
