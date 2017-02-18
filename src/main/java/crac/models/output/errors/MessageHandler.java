@@ -5,12 +5,12 @@ import java.util.HashMap;
 public class MessageHandler {
 	private boolean success;
 	private String error;
-	private HashMap<String, String> cause;
+	private HashMap<String, String> details;
 
-	public MessageHandler(boolean success, String error, HashMap<String, String> cause) {
+	public MessageHandler(boolean success, String error, HashMap<String, String> details) {
 		this.success = success;
 		this.error = error;
-		this.cause = cause;
+		this.details = details;
 	}
 
 	public boolean isSuccess() {
@@ -29,12 +29,12 @@ public class MessageHandler {
 		this.error = error;
 	}
 
-	public HashMap<String, String> getCause() {
-		return cause;
+	public HashMap<String, String> getDetails() {
+		return details;
 	}
 
-	public void setCause(HashMap<String, String> cause) {
-		this.cause = cause;
+	public void setDetails(HashMap<String, String> details) {
+		this.details = details;
 	}
 
 }

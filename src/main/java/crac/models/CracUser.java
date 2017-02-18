@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.relation.UserCompetenceRel;
+import crac.models.relation.UserMaterialSubscription;
 import crac.models.relation.UserRelationship;
 import crac.models.relation.UserTaskRel;
 
@@ -150,6 +151,10 @@ public class CracUser {
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "mapping_role_user", joinColumns={@JoinColumn(name="user_id")}, inverseJoinColumns={@JoinColumn(name="role_id")})
 	Set<Role> roles;
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserMaterialSubscription> subscribedMaterials;
 	
 	/**
 	 * constructors
@@ -360,6 +365,14 @@ public class CracUser {
 	
 	public void addRole(Role role){
 		this.roles.add(role);
+	}
+
+	public Set<UserMaterialSubscription> getSubscribedMaterials() {
+		return subscribedMaterials;
+	}
+
+	public void setSubscribedMaterials(Set<UserMaterialSubscription> subscribedMaterials) {
+		this.subscribedMaterials = subscribedMaterials;
 	}
 	
 }

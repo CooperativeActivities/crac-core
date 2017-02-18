@@ -24,6 +24,19 @@ import crac.notifier.Notification;
 
 public class JSonResponseHelper {
 	
+	public static ResponseEntity<String> messageArraySuccess(HashMap<String, String> data){
+		MessageHandler mh = new MessageHandler(true, "", data);
+		ObjectMapper mapper = new ObjectMapper();
+		String result = "";
+		try {
+			result = mapper.writeValueAsString(mh);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return addEntity(result);
+	}
+	
 	public static ResponseEntity<String> messageArray(HashMap<String, String> data){
 		MessageHandler mh = new MessageHandler(false, "bad_request", data);
 		ObjectMapper mapper = new ObjectMapper();

@@ -1,12 +1,18 @@
 package crac.models;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -14,31 +20,64 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.models.relation.UserMaterialSubscription;
+
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "material")
 public class Material {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "material_id")
 	private long id;
-	
+
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId = true)
 	@JoinColumn(name = "task")
 	private Task task;
-	
+
 	@NotNull
 	private long quantity;
-	
+
 	@NotNull
 	private String name;
-	
+
 	@NotNull
 	private String description;
 
+	@OneToMany(mappedBy = "material", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<UserMaterialSubscription> subscribedUsers;
+
 	public Material() {
+		this.subscribedUsers = new HashSet<UserMaterialSubscription>();
+	}
+
+	public String subscribable(Long additionalq) {
+
+		if (additionalq <= 0) {
+			return "QUANTITY_TOO_SMALL";
+		}
+
+		if (getsubscribedQuantity() + additionalq <= quantity) {
+			return "OK";
+		} else {
+			return "QUANTITY_TOO_HIGH";
+		}
+
+	}
+
+	public String subscribable(Long additionalq, UserMaterialSubscription um) {
+		if (additionalq <= 0) {
+			return "QUANTITY_TOO_SMALL";
+		}
+
+		if ((getsubscribedQuantity() - um.getQuantity()) + additionalq <= quantity) {
+			return "OK";
+		} else {
+			return "QUANTITY_TOO_HIGH";
+		}
+		
 	}
 
 	public long getId() {
@@ -51,6 +90,14 @@ public class Material {
 
 	public long getQuantity() {
 		return quantity;
+	}
+
+	public Long getsubscribedQuantity() {
+		Long currentq = 0l;
+		for (UserMaterialSubscription subscription : subscribedUsers) {
+			currentq += subscription.getQuantity();
+		}
+		return currentq;
 	}
 
 	public void setQuantity(long quantity) {
@@ -80,5 +127,17 @@ public class Material {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
+	public Set<UserMaterialSubscription> getSubscribedUsers() {
+		return subscribedUsers;
+	}
+
+	public void addUserSubscription(UserMaterialSubscription subscription) {
+		this.subscribedUsers.add(subscription);
+	}
+
+	public void setSubscribedUsers(Set<UserMaterialSubscription> subscribedUsers) {
+		this.subscribedUsers = subscribedUsers;
+	}
+
 }

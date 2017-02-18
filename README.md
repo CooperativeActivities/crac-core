@@ -833,6 +833,35 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
+**Subscribe to a material of a task with a quantity, or change the quantity if already subscribed**
+	
+#####*Request:*
+
+GET /task/{task_id}/material/{material_id}/subscribe/{quantity}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+Possible failures:
+
+QUANTITY_TOO_SMALL
+QUANTITY_TOO_HIGH
+
+-----------------------------------------------------------------
+	
+**Unsubscribe to a subscribed material**
+	
+#####*Request:*
+
+GET /task/{task_id}/material/{material_id}/unsubscribe
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
 **Sets a single task ready to be published, only works if it's children are ready**
 
 There are a few prerequisites to this. 
@@ -1735,5 +1764,17 @@ Endpoints for that are in the task-section.
 GET /task/{task_id}/material/add -> NEW
 GET /task/{task_id}/material/update/{material_id} -> NEW
 GET /task/{task_id}/material/remove/{material_id} -> NEW
+
+-----------------------------------------------------------------
+
+####18.2.2017
+
+Materials can be subscribed to (with a quantity) by the logged in user.
+Adding a material returns the material-id.
+
+GET /task/{task_id}/material/{material_id}/subscribe/{quantity} -> NEW
+GET /task/{task_id}/material/{material_id}/unsubscribe -> NEW
+
+Look at the task-section for more info
 
 -----------------------------------------------------------------

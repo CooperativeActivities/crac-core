@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.daos.TaskDAO;
+import crac.daos.UserMaterialSubscriptionDAO;
 import crac.daos.UserTaskRelDAO;
 import crac.decider.core.Decider;
 import crac.decider.core.UserFilterParameters;
@@ -59,6 +60,7 @@ import crac.models.Task;
 import crac.models.output.TaskDetails;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
+import crac.models.relation.UserMaterialSubscription;
 import crac.models.relation.UserTaskRel;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.RepetitionDate;
@@ -99,6 +101,9 @@ public class TaskController {
 
 	@Autowired
 	private RoleDAO roleDAO;
+
+	@Autowired
+	private UserMaterialSubscriptionDAO userMaterialSubscriptionDAO;
 
 	@Autowired
 	private MaterialDAO materialDAO;
@@ -491,11 +496,17 @@ public class TaskController {
 
 				m.setTask(st);
 				st.addMaterial(m);
+				materialDAO.save(m);
 				taskDAO.save(st);
-				return JSonResponseHelper.successFullyUpdated(st);
+
+				HashMap<String, String> answer = new HashMap<>();
+				answer.put("task_id", st.getId() + "");
+				answer.put("material_id", m.getId() + "");
+
+				return JSonResponseHelper.messageArraySuccess(answer);
 
 			} else {
-				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 			}
 
 		} else {
@@ -512,8 +523,8 @@ public class TaskController {
 	 * @param materialId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/material/update/{material_id}",
-			"/{task_id}/material/update/{material_id}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{task_id}/material/{material_id}/update",
+			"/{task_id}/material/{material_id}/update/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId) {
@@ -545,13 +556,14 @@ public class TaskController {
 
 					UpdateEntitiesHelper.checkAndUpdateMaterial(old, updated);
 					materialDAO.save(old);
+
 					return JSonResponseHelper.successFullyUpdated(st);
 				} else {
 					return JSonResponseHelper.idNotFound();
 				}
 
 			} else {
-				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 			}
 
 		} else {
@@ -567,8 +579,8 @@ public class TaskController {
 	 * @param materialId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/material/remove/{material_id}",
-			"/{task_id}/material/remove/{material_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/material/{material_id}/remove",
+			"/{task_id}/material/{material_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeMaterial(@PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId) {
@@ -597,13 +609,126 @@ public class TaskController {
 				return JSonResponseHelper.successFullyUpdated(st);
 
 			} else {
-				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 			}
 
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
 
+	}
+
+	/**
+	 * Subscribe to a material of a task with a quantity, or change the quantity if already subscribed
+	 * @param taskId
+	 * @param materialId
+	 * @param quantity
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/material/{material_id}/subscribe/{quantity}",
+			"/{task_id}/material/{material_id}/subscribe/{quantity}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> subscribeMaterial(@PathVariable(value = "task_id") Long taskId,
+			@PathVariable(value = "material_id") Long materialId, @PathVariable(value = "quantity") Long quantity) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task st = taskDAO.findOne(taskId);
+
+		if (st != null) {
+
+			Material m = materialDAO.findOne(materialId);
+
+			if (m != null) {
+
+				UserMaterialSubscription um = userMaterialSubscriptionDAO.findByUserAndMaterial(user, m);
+
+				if (um != null) {
+
+					String status = m.subscribable(quantity, um);
+
+					if (status.equals("OK")) {
+						HashMap<String, String> answer = new HashMap<>();
+						answer.put("task_id", st.getId() + "");
+						answer.put("material_id", m.getId() + "");
+						answer.put("previous_quantity", um.getQuantity() + "");
+						answer.put("new_quantity", quantity + "");
+						answer.put("cause", "USER_ALREADY_SUBSCRIBED");
+						answer.put("action", "QUANTITY_UPDATED");
+
+						um.setQuantity(quantity);
+						userMaterialSubscriptionDAO.save(um);
+
+						return JSonResponseHelper.messageArraySuccess(answer);
+					}
+				}
+
+				String status = m.subscribable(quantity);
+
+				if (status.equals("OK")) {
+					UserMaterialSubscription ums = new UserMaterialSubscription(user, m, quantity);
+					m.addUserSubscription(ums);
+					materialDAO.save(m);
+
+					HashMap<String, String> answer = new HashMap<>();
+					answer.put("task_id", st.getId() + "");
+					answer.put("material_id", m.getId() + "");
+					answer.put("quantity", quantity + "");
+					answer.put("action", "QUANTITY_UPDATED");
+
+					return JSonResponseHelper.messageArraySuccess(answer);
+				}
+
+				return JSonResponseHelper.createResponse(false, "bad_request", status);
+
+			}
+		}
+
+		return JSonResponseHelper.idNotFound();
+	}
+
+	/**
+	 * Unsubscribe to a subscribed material
+	 * @param taskId
+	 * @param materialId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/material/{material_id}/unsubscribe",
+			"/{task_id}/material/{material_id}/unsubscribe/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> unsubscribeMaterial(@PathVariable(value = "task_id") Long taskId,
+			@PathVariable(value = "material_id") Long materialId) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task st = taskDAO.findOne(taskId);
+
+		if (st != null) {
+
+			Material m = materialDAO.findOne(materialId);
+
+			if (m != null) {
+
+				UserMaterialSubscription ums = userMaterialSubscriptionDAO.findByUserAndMaterial(user, m);
+
+				if (ums != null) {
+
+					m.getSubscribedUsers().remove(ums);
+					userMaterialSubscriptionDAO.delete(ums);
+
+					HashMap<String, String> answer = new HashMap<>();
+					answer.put("task_id", st.getId() + "");
+					answer.put("material_id", m.getId() + "");
+					answer.put("action", "UNSUBSCRIBED");
+
+					return JSonResponseHelper.messageArraySuccess(answer);
+				}
+			}
+		}
+
+		return JSonResponseHelper.idNotFound();
 	}
 
 	/**
@@ -1031,31 +1156,35 @@ public class TaskController {
 	 * return JSonResponseHelper.bootSuccess(); }
 	 */
 
-	private void adjustTaskTime(Task t, RepetitionDate repetitionTime) {
-		Calendar start = t.getStartTime();
-		Calendar end = t.getEndTime();
-
-		while (start.getTimeInMillis() < Calendar.getInstance().getTimeInMillis()) {
-			start.set(Calendar.YEAR, start.get(Calendar.YEAR) + repetitionTime.getYear());
-			start.set(Calendar.MONTH, start.get(Calendar.MONTH) + repetitionTime.getMonth());
-			start.set(Calendar.DAY_OF_MONTH, start.get(Calendar.DAY_OF_MONTH) + repetitionTime.getDay());
-			start.set(Calendar.HOUR, start.get(Calendar.HOUR) + repetitionTime.getHour());
-			start.set(Calendar.MINUTE, start.get(Calendar.MINUTE) + repetitionTime.getMinute());
-
-			end.set(Calendar.YEAR, end.get(Calendar.YEAR) + repetitionTime.getYear());
-			end.set(Calendar.MONTH, end.get(Calendar.MONTH) + repetitionTime.getMonth());
-			end.set(Calendar.DAY_OF_MONTH, end.get(Calendar.DAY_OF_MONTH) + repetitionTime.getDay());
-			end.set(Calendar.HOUR, end.get(Calendar.HOUR) + repetitionTime.getHour());
-			end.set(Calendar.MINUTE, end.get(Calendar.MINUTE) + repetitionTime.getMinute());
-		}
-
-		taskDAO.save(t);
-
-		for (Task child : t.getChildTasks()) {
-			adjustTaskTime(child, repetitionTime);
-		}
-
-	}
+	/*
+	 * private void adjustTaskTime(Task t, RepetitionDate repetitionTime) {
+	 * Calendar start = t.getStartTime(); Calendar end = t.getEndTime();
+	 * 
+	 * while (start.getTimeInMillis() <
+	 * Calendar.getInstance().getTimeInMillis()) { start.set(Calendar.YEAR,
+	 * start.get(Calendar.YEAR) + repetitionTime.getYear());
+	 * start.set(Calendar.MONTH, start.get(Calendar.MONTH) +
+	 * repetitionTime.getMonth()); start.set(Calendar.DAY_OF_MONTH,
+	 * start.get(Calendar.DAY_OF_MONTH) + repetitionTime.getDay());
+	 * start.set(Calendar.HOUR, start.get(Calendar.HOUR) +
+	 * repetitionTime.getHour()); start.set(Calendar.MINUTE,
+	 * start.get(Calendar.MINUTE) + repetitionTime.getMinute());
+	 * 
+	 * end.set(Calendar.YEAR, end.get(Calendar.YEAR) +
+	 * repetitionTime.getYear()); end.set(Calendar.MONTH,
+	 * end.get(Calendar.MONTH) + repetitionTime.getMonth());
+	 * end.set(Calendar.DAY_OF_MONTH, end.get(Calendar.DAY_OF_MONTH) +
+	 * repetitionTime.getDay()); end.set(Calendar.HOUR, end.get(Calendar.HOUR) +
+	 * repetitionTime.getHour()); end.set(Calendar.MINUTE,
+	 * end.get(Calendar.MINUTE) + repetitionTime.getMinute()); }
+	 * 
+	 * taskDAO.save(t);
+	 * 
+	 * for (Task child : t.getChildTasks()) { adjustTaskTime(child,
+	 * repetitionTime); }
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Nominate someone as the leader of a task as creator
