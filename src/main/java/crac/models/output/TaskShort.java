@@ -25,6 +25,8 @@ public class TaskShort {
 	
 	private TaskState taskState;
 	
+	private boolean readyToPublish;
+	
 	public TaskShort(Task t){
 		this.id = t.getId();
 		this.name = t.getName();
@@ -32,6 +34,7 @@ public class TaskShort {
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
 		this.taskState = t.getTaskState();
+		this.readyToPublish = t.isReadyToPublish();
 	}
 
 	public long getId() {
@@ -80,6 +83,14 @@ public class TaskShort {
 
 	public void setTaskState(TaskState taskState) {
 		this.taskState = taskState;
+	}
+
+	public boolean isReadyToPublish() {
+		return readyToPublish;
+	}
+
+	public void setReadyToPublish(boolean readyToPublish) {
+		this.readyToPublish = readyToPublish;
 	}
 
 }
