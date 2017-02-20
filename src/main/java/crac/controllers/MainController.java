@@ -445,7 +445,7 @@ public class MainController {
 		CracUser SchönböckADMIN = new CracUser();
 		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 
-		SchönböckADMIN.setName("SchönböckADMIN");
+		SchönböckADMIN.setName("SchoenboeckADMIN");
 		SchönböckADMIN.setFirstName("Johannes");
 		SchönböckADMIN.setLastName("Schönböck");
 		SchönböckADMIN.setPassword(bcryptEncoder.encode("default"));
@@ -456,7 +456,7 @@ public class MainController {
 		
 		CracUser SchönböckUSER = new CracUser();
 
-		SchönböckUSER.setName("SchönböckUSER");
+		SchönböckUSER.setName("SchoenboeckUSER");
 		SchönböckUSER.setFirstName("Johannes");
 		SchönböckUSER.setLastName("Schönböck");
 		SchönböckUSER.setPassword(bcryptEncoder.encode("default"));
@@ -467,7 +467,7 @@ public class MainController {
 
 		CracUser PröllADMIN = new CracUser();
 
-		PröllADMIN.setName("PröllADMIN");
+		PröllADMIN.setName("ProellADMIN");
 		PröllADMIN.setFirstName("Birigt");
 		PröllADMIN.setLastName("Pröll");
 		PröllADMIN.setPassword(bcryptEncoder.encode("default"));
@@ -478,7 +478,7 @@ public class MainController {
 		
 		CracUser PröllUSER = new CracUser();
 
-		PröllUSER.setName("PröllUSER");
+		PröllUSER.setName("ProellUSER");
 		PröllUSER.setFirstName("Birigt");
 		PröllUSER.setLastName("Pröll");
 		PröllUSER.setPassword(bcryptEncoder.encode("default"));
@@ -508,6 +508,97 @@ public class MainController {
 		EibnerUSER.setPhone("35678987654");
 		EibnerUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(EibnerUSER);
+
+		CracUser KapsammerADMIN = new CracUser();
+
+		KapsammerADMIN.setName("KapsammerADMIN");
+		KapsammerADMIN.setFirstName("Elisabeth");
+		KapsammerADMIN.setLastName("Kapsammer");
+		KapsammerADMIN.setPassword(bcryptEncoder.encode("default"));
+		KapsammerADMIN.addRole(roleDAO.findByName("ADMIN"));
+		KapsammerADMIN.setPhone("35678987654");
+		KapsammerADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(KapsammerADMIN);
+		
+		CracUser KapsammerUSER = new CracUser();
+
+		KapsammerUSER.setName("KapsammerUSER");
+		KapsammerUSER.setFirstName("Elisabeth");
+		KapsammerUSER.setLastName("Kapsammer");
+		KapsammerUSER.setPassword(bcryptEncoder.encode("default"));
+		KapsammerUSER.addRole(roleDAO.findByName("USER"));
+		KapsammerUSER.setPhone("35678987654");
+		KapsammerUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(KapsammerUSER);
+
+		CracUser SchwingerADMIN = new CracUser();
+
+		SchwingerADMIN.setName("SchwingerADMIN");
+		SchwingerADMIN.setFirstName("Wieland");
+		SchwingerADMIN.setLastName("Schwinger");
+		SchwingerADMIN.setPassword(bcryptEncoder.encode("default"));
+		SchwingerADMIN.addRole(roleDAO.findByName("ADMIN"));
+		SchwingerADMIN.setPhone("35678987654");
+		SchwingerADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(SchwingerADMIN);
+		
+		CracUser SchwingerUSER = new CracUser();
+
+		SchwingerUSER.setName("SchwingerUSER");
+		SchwingerUSER.setFirstName("Wieland");
+		SchwingerUSER.setLastName("Schwinger");
+		SchwingerUSER.setPassword(bcryptEncoder.encode("default"));
+		SchwingerUSER.addRole(roleDAO.findByName("USER"));
+		SchwingerUSER.setPhone("35678987654");
+		SchwingerUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(SchwingerUSER);
+
+		
+		//Users for Birgit
+		
+		CracUser bpAdmin = new CracUser();
+
+		bpAdmin.setName("bp-admin");
+		bpAdmin.setFirstName("Test");
+		bpAdmin.setLastName("Admin");
+		bpAdmin.setPassword(bcryptEncoder.encode("default"));
+		bpAdmin.addRole(roleDAO.findByName("ADMIN"));
+		bpAdmin.setPhone("35678987654");
+		bpAdmin.setEmail("Mustermail@internet.at");
+		userDAO.save(bpAdmin);
+
+		CracUser bpVol1 = new CracUser();
+
+		bpVol1.setName("bp-vol1");
+		bpVol1.setFirstName("Test");
+		bpVol1.setLastName("User1");
+		bpVol1.setPassword(bcryptEncoder.encode("default"));
+		bpVol1.addRole(roleDAO.findByName("USER"));
+		bpVol1.setPhone("35678987654");
+		bpVol1.setEmail("Mustermail@internet.at");
+		userDAO.save(bpVol1);
+
+		CracUser bpVol2 = new CracUser();
+
+		bpVol2.setName("bp-vol2");
+		bpVol2.setFirstName("Test");
+		bpVol2.setLastName("User2");
+		bpVol2.setPassword(bcryptEncoder.encode("default"));
+		bpVol2.addRole(roleDAO.findByName("USER"));
+		bpVol2.setPhone("35678987654");
+		bpVol2.setEmail("Mustermail@internet.at");
+		userDAO.save(bpVol2);
+
+		CracUser bpVol3 = new CracUser();
+
+		bpVol3.setName("bp-vol3");
+		bpVol3.setFirstName("Test");
+		bpVol3.setLastName("User3");
+		bpVol3.setPassword(bcryptEncoder.encode("default"));
+		bpVol3.addRole(roleDAO.findByName("USER"));
+		bpVol3.setPhone("35678987654");
+		bpVol3.setEmail("Mustermail@internet.at");
+		userDAO.save(bpVol3);
 		
 	}
 
