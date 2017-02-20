@@ -6,6 +6,8 @@ public class CompetenceRelationDetails {
 	
 	private Long id;
 	private String name;
+	private int neededProficiencyLevel;
+	private int importanceLevel;
 	private double relationValue;
 	private boolean mandatory;
 	
@@ -14,6 +16,8 @@ public class CompetenceRelationDetails {
 		this.name = c.getName();
 		this.relationValue = 0;
 		this.mandatory = false;
+		this.neededProficiencyLevel = 0;
+		this.importanceLevel = 0;
 	}
 
 	public Long getId() {
@@ -46,6 +50,22 @@ public class CompetenceRelationDetails {
 
 	public void setMandatory(boolean mandatory) {
 		this.mandatory = mandatory;
+	}
+
+	public int getNeededProficiencyLevel() {
+		return neededProficiencyLevel;
+	}
+
+	public void setNeededProficiencyLevel(int neededProficiencyLevel) {
+		this.neededProficiencyLevel = neededProficiencyLevel;
+	}
+
+	public int getImportanceLevel() {
+		return importanceLevel;
+	}
+
+	public void setImportanceLevel(int importanceLevel) {
+		this.importanceLevel = importanceLevel;
 	}
 
 }

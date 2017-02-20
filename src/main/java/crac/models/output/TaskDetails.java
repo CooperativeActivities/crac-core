@@ -140,6 +140,8 @@ public class TaskDetails {
 					CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
 					cd.setMandatory(ctr.isMandatory());
 					cd.setRelationValue(bestVal);
+					cd.setImportanceLevel(ctr.getImportanceLevel());
+					cd.setNeededProficiencyLevel(ctr.getNeededProficiencyLevel());
 
 					list.add(cd);
 				}

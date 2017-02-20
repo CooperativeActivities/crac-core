@@ -364,7 +364,7 @@ public class Task {
 
 	@JsonIgnore
 	public boolean fieldsFilled() {
-		boolean filled = this.getMaxAmountOfVolunteers() > 0 && !this.getDescription().equals("")
+		boolean filled = this.getMaxAmountOfVolunteers() >= 0 && !this.getDescription().equals("")
 				&& this.getStartTime() != null && this.getEndTime() != null && !this.getLocation().equals("");
 		if (isLeaf()) {
 			if (this.getMappedCompetences() != null) {
