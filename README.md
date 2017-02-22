@@ -817,6 +817,7 @@ mandatory (0 [for false] or 1 [for true])
 	  "details": {
 	    "1": {
 	      "competence_status": "COMPETENCE_ASSIGNED"
+      		"mandatory": "VALUE_NOT_VALID"
 	    },
 	    "2": {
 	      "competence_status": "ALREADY_ASSIGNED_VALUES_ADJUSTED",
