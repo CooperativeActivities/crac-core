@@ -930,13 +930,21 @@ public class TaskController {
 							if (singlem.getImportanceLevel() == -200) {
 								singleresponse.put("importanceLevel", "NOT_ASSIGNED");
 							} else {
-								r.setImportanceLevel(singlem.getImportanceLevel());
+								if(singlem.getImportanceLevel() >= 0 && singlem.getImportanceLevel() <= 100){
+									r.setImportanceLevel(singlem.getImportanceLevel());	
+								}else{
+									singleresponse.put("importanceLevel", "VALUE_NOT_VALID");
+								}
 							}
 
 							if (singlem.getNeededProficiencyLevel() == -200) {
 								singleresponse.put("neededProficiencyLevel", "NOT_ASSIGNED");
 							} else {
-								r.setNeededProficiencyLevel(singlem.getNeededProficiencyLevel());
+								if(singlem.getNeededProficiencyLevel() >= 0 && singlem.getNeededProficiencyLevel() <= 100){
+									r.setNeededProficiencyLevel(singlem.getNeededProficiencyLevel());
+								}else{
+									singleresponse.put("neededProficiencyLevel", "VALUE_NOT_VALID");
+								}
 							}
 
 							if (singlem.getMandatory() == -1) {
@@ -945,6 +953,8 @@ public class TaskController {
 								r.setMandatory(false);
 							} else if (singlem.getMandatory() == 1) {
 								r.setMandatory(true);
+							}else{
+								singleresponse.put("mandatory", "VALUE_NOT_VALID");
 							}
 							competenceTaskRelDAO.save(r);
 							fullresponse.put(singlem.getCompetenceId() + "", singleresponse);
