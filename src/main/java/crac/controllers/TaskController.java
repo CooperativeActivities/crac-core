@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +58,7 @@ import crac.models.Competence;
 import crac.models.CracUser;
 import crac.models.Material;
 import crac.models.Task;
+import crac.models.input.CompetenceTaskMapping;
 import crac.models.output.TaskDetails;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
@@ -619,7 +621,9 @@ public class TaskController {
 	}
 
 	/**
-	 * Subscribe to a material of a task with a quantity, or change the quantity if already subscribed
+	 * Subscribe to a material of a task with a quantity, or change the quantity
+	 * if already subscribed
+	 * 
 	 * @param taskId
 	 * @param materialId
 	 * @param quantity
@@ -690,6 +694,7 @@ public class TaskController {
 
 	/**
 	 * Unsubscribe to a subscribed material
+	 * 
 	 * @param taskId
 	 * @param materialId
 	 * @return ResponseEntity
@@ -866,6 +871,100 @@ public class TaskController {
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
+	}
+
+	/**
+	 * Add multiple competences
+	 * @param json
+	 * @param taskId
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/{task_id}/competence/require",
+			"/{task_id}/competence/require/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> create(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
+			throws JsonMappingException, IOException {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task t = taskDAO.findOne(taskId);
+
+		if (t != null) {
+
+			if (user.hasTaskPermissions(t)) {
+
+				ObjectMapper mapper = new ObjectMapper();
+				CompetenceTaskMapping[] m = null;
+				try {
+					m = mapper.readValue(json, CompetenceTaskMapping[].class);
+				} catch (JsonMappingException e) {
+					return JSonResponseHelper.jsonMapError();
+				} catch (IOException e) {
+					System.out.println(e.toString());
+					return JSonResponseHelper.jsonReadError();
+				}
+
+				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
+
+				if (m != null) {
+					for (CompetenceTaskMapping singlem : m) {
+						HashMap<String, String> singleresponse = new HashMap<>();
+						Competence c = competenceDAO.findOne(singlem.getCompetenceId());
+
+						if (c != null) {
+
+							CompetenceTaskRel r = competenceTaskRelDAO.findByTaskAndCompetence(t, c);
+							if (r != null) {
+								singleresponse.put("competence_status", "ALREADY_ASSIGNED_VALUES_ADJUSTED");
+							} else {
+								r = new CompetenceTaskRel();
+								r.setCompetence(c);
+								r.setTask(t);
+								singleresponse.put("competence_status", "COMPETENCE_ASSIGNED");
+							}
+
+							if (singlem.getImportanceLevel() == -200) {
+								singleresponse.put("importanceLevel", "NOT_ASSIGNED");
+							} else {
+								r.setImportanceLevel(singlem.getImportanceLevel());
+							}
+
+							if (singlem.getNeededProficiencyLevel() == -200) {
+								singleresponse.put("neededProficiencyLevel", "NOT_ASSIGNED");
+							} else {
+								r.setNeededProficiencyLevel(singlem.getNeededProficiencyLevel());
+							}
+
+							if (singlem.getMandatory() == -1) {
+								singleresponse.put("mandatory", "NOT_ASSIGNED");
+							} else if (singlem.getMandatory() == 0) {
+								r.setMandatory(false);
+							} else if (singlem.getMandatory() == 1) {
+								r.setMandatory(true);
+							}
+							competenceTaskRelDAO.save(r);
+							fullresponse.put(singlem.getCompetenceId() + "", singleresponse);
+						} else {
+							if(singlem.getCompetenceId() != 0){
+								singleresponse.put("competence_status", "COMPETENCE_NOT_FOUND");
+								fullresponse.put(singlem.getCompetenceId()+"", singleresponse);
+							}
+						}
+					}
+				}
+
+				return JSonResponseHelper.nestedResponse(true, fullresponse);
+			}else{
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
 	}
 
 	/**

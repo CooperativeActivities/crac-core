@@ -16,6 +16,7 @@ import crac.models.Evaluation;
 import crac.models.Role;
 import crac.models.Task;
 import crac.models.output.errors.MessageHandler;
+import crac.models.output.errors.NestedMessageHandler;
 import crac.models.output.errors.ResponseHandler;
 import crac.models.relation.CompetenceRelationshipType;
 import crac.models.relation.UserTaskRel;
@@ -23,6 +24,20 @@ import crac.models.CracToken;
 import crac.notifier.Notification;
 
 public class JSonResponseHelper {
+	
+	public static ResponseEntity<String> nestedResponse(boolean success, HashMap<String, HashMap<String, String>> data){
+		NestedMessageHandler mh = new NestedMessageHandler(success, data);
+		ObjectMapper mapper = new ObjectMapper();
+		String result = "";
+		try {
+			result = mapper.writeValueAsString(mh);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return addEntity(result);
+	}
+
 	
 	public static ResponseEntity<String> messageArraySuccess(HashMap<String, String> data){
 		MessageHandler mh = new MessageHandler(true, "", data);

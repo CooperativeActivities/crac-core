@@ -739,7 +739,8 @@ POST /admin/task
 	    "startTime": "2000-01-01T00:30:00",
 	    "endTime": "2000-01-01T01:00:00",
 	    "urgency": 3,
-	    "amountOfVolunteers": 30
+	    "minAmountOfVolunteers": 10,
+	    "maxAmountOfVolunteers": 30
 	}
 
 #####*Response:*
@@ -768,6 +769,64 @@ Json-data, either a success or a failure message
 GET /task/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}
 
 #####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Add multiple competences**
+	
+#####*Request:*
+
+Post a JSON-file with an array containing competence-ids and meta-data.  
+
+POST /task/{task_id}/competence/require  
+
+Each object can hold 4 different attributes:  
+
+competenceId (1 or higher)  
+neededProficiencyLevel (between 0 and 100)  
+importanceLevel (between 0 and 100)  
+mandatory (0 [for false] or 1 [for true])  
+
+	[
+		{
+			"competenceId": 1,
+			"neededProficiencyLevel": 100,
+			"importanceLevel": 10,
+			"mandatory": 1
+		},
+		{
+			"competenceId": 2,
+			"neededProficiencyLevel": 100,
+			"mandatory": 0
+		},
+		{
+			"competenceId": 100,
+			"neededProficiencyLevel": 100
+		},
+		{
+			"neededProficiencyLevel": 100
+		}
+	]
+
+#####*Response:*
+
+	{
+	  "success": true,
+	  "details": {
+	    "1": {
+	      "competence_status": "COMPETENCE_ASSIGNED"
+	    },
+	    "2": {
+	      "competence_status": "ALREADY_ASSIGNED_VALUES_ADJUSTED",
+	      "importanceLevel": "NOT_ASSIGNED"
+	    },
+	    "100": {
+	      "competence_status": "COMPETENCE_NOT_FOUND"
+	    }
+	  }
+	}
 
 Json-data, either a success or a failure message
 

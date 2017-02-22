@@ -45,6 +45,9 @@ public class CompetenceTaskRel {
 	private boolean mandatory;
 
 	public CompetenceTaskRel() {
+		this.neededProficiencyLevel = 0;
+		this.importanceLevel = 0;
+		this.mandatory = false;
 	}
 	
 	public CompetenceTaskRel(Competence competence, Task task, int neededProficiencyLevel, int importanceLevel, boolean mandatory) {
