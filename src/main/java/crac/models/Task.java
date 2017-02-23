@@ -55,17 +55,16 @@ public class Task {
 	@NotNull
 	private String name;
 
-	@NotNull
 	private String description;
 
-	@NotNull
 	private String location;
 
+	@NotNull
 	private Calendar startTime;
 
+	@NotNull
 	private Calendar endTime;
 
-	@NotNull
 	private int urgency;
 
 	private int maxAmountOfVolunteers;
@@ -364,8 +363,8 @@ public class Task {
 
 	@JsonIgnore
 	public boolean fieldsFilled() {
-		boolean filled = this.getMaxAmountOfVolunteers() >= 0 && !this.getDescription().equals("")
-				&& this.getStartTime() != null && this.getEndTime() != null && !this.getLocation().equals("");
+		boolean filled = this.getMaxAmountOfVolunteers() >= 0 && !this.getName().equals("")
+				&& this.getStartTime() != null && this.getEndTime() != null;
 		if (isLeaf()) {
 			if (this.getMappedCompetences() != null) {
 				return filled && !this.getMappedCompetences().isEmpty();
@@ -553,7 +552,7 @@ public class Task {
 		this.maxAmountOfVolunteers = maxAmountOfVolunteers;
 	}
 
-	public int getSignedUsers() {
+	public int getParticipatingUsers() {
 
 		int num = 0;
 

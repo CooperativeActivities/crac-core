@@ -87,7 +87,7 @@ public class TaskDetails {
 		this.endTime = t.getEndTime();
 		this.maxAmountOfVolunteers = t.getMaxAmountOfVolunteers();
 		this.minAmountOfVolunteers = t.getMinAmountOfVolunteers();
-		this.signedUsers = t.getSignedUsers();
+		this.signedUsers = t.getParticipatingUsers();
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();
 		if (t.getSuperTask() != null) {
@@ -189,7 +189,7 @@ public class TaskDetails {
 						friend = false;
 					}
 
-					UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr.getParticipationType());
+					UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr);
 
 					if (otherU.getId() == u.getId()) {
 						fd.setSelf(true);

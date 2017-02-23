@@ -875,6 +875,7 @@ public class TaskController {
 
 	/**
 	 * Add multiple competences
+	 * 
 	 * @param json
 	 * @param taskId
 	 * @return ResponseEntity
@@ -930,9 +931,9 @@ public class TaskController {
 							if (singlem.getImportanceLevel() == -200) {
 								singleresponse.put("importanceLevel", "NOT_ASSIGNED");
 							} else {
-								if(singlem.getImportanceLevel() >= 0 && singlem.getImportanceLevel() <= 100){
-									r.setImportanceLevel(singlem.getImportanceLevel());	
-								}else{
+								if (singlem.getImportanceLevel() >= 0 && singlem.getImportanceLevel() <= 100) {
+									r.setImportanceLevel(singlem.getImportanceLevel());
+								} else {
 									singleresponse.put("importanceLevel", "VALUE_NOT_VALID");
 								}
 							}
@@ -940,9 +941,10 @@ public class TaskController {
 							if (singlem.getNeededProficiencyLevel() == -200) {
 								singleresponse.put("neededProficiencyLevel", "NOT_ASSIGNED");
 							} else {
-								if(singlem.getNeededProficiencyLevel() >= 0 && singlem.getNeededProficiencyLevel() <= 100){
+								if (singlem.getNeededProficiencyLevel() >= 0
+										&& singlem.getNeededProficiencyLevel() <= 100) {
 									r.setNeededProficiencyLevel(singlem.getNeededProficiencyLevel());
-								}else{
+								} else {
 									singleresponse.put("neededProficiencyLevel", "VALUE_NOT_VALID");
 								}
 							}
@@ -953,22 +955,22 @@ public class TaskController {
 								r.setMandatory(false);
 							} else if (singlem.getMandatory() == 1) {
 								r.setMandatory(true);
-							}else{
+							} else {
 								singleresponse.put("mandatory", "VALUE_NOT_VALID");
 							}
 							competenceTaskRelDAO.save(r);
 							fullresponse.put(singlem.getCompetenceId() + "", singleresponse);
 						} else {
-							if(singlem.getCompetenceId() != 0){
+							if (singlem.getCompetenceId() != 0) {
 								singleresponse.put("competence_status", "COMPETENCE_NOT_FOUND");
-								fullresponse.put(singlem.getCompetenceId()+"", singleresponse);
+								fullresponse.put(singlem.getCompetenceId() + "", singleresponse);
 							}
 						}
 					}
 				}
 
 				return JSonResponseHelper.nestedResponse(true, fullresponse);
-			}else{
+			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
 			}
 		} else {
@@ -1119,24 +1121,44 @@ public class TaskController {
 
 		if (task != null) {
 
-			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-					.getContext().getAuthentication();
-			CracUser user = userDAO.findByName(userDetails.getName());
+			if (task.getTaskState() == TaskState.STARTED) {
 
-			UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
+				UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+						.getContext().getAuthentication();
+				CracUser user = userDAO.findByName(userDetails.getName());
 
-			if (utr != null) {
-				if (done.equals("true")) {
-					utr.setCompleted(true);
-				} else if (done.equals("false")) {
-					utr.setCompleted(false);
-				} else {
-					return JSonResponseHelper.actionNotPossible("This state does not exist");
+				UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
+
+				if (utr != null) {
+					if (done.equals("true")) {
+						utr.setCompleted(true);
+					} else if (done.equals("false")) {
+						utr.setCompleted(false);
+					} else {
+						return JSonResponseHelper.stateNotAvailable(done);
+					}
+					userTaskRelDAO.save(utr);
+
+					// Check if all users are done, if yes, notify the leaders
+
+					boolean alldone = true;
+
+					for (UserTaskRel ut : task.getUserRelationships()) {
+						if (!ut.isCompleted()) {
+							alldone = false;
+							break;
+						}
+					}
+
+					if (alldone) {
+						NotificationHelper.createTaskDone(task_id, user.getId());
+					}
+
+					return JSonResponseHelper.successFullyUpdated(task);
 				}
-				userTaskRelDAO.save(utr);
-				return JSonResponseHelper.successFullyUpdated(task);
+			} else {
+				return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_STARTED");
 			}
-
 		}
 
 		return JSonResponseHelper.idNotFound();

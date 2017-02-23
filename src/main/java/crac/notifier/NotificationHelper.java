@@ -12,11 +12,16 @@ import crac.notifier.notifications.EvaluationNotification;
 import crac.notifier.notifications.FriendRequest;
 import crac.notifier.notifications.FriendSuggestion;
 import crac.notifier.notifications.LeadNomination;
+import crac.notifier.notifications.TaskDoneNotification;
 import crac.notifier.notifications.TaskInvitation;
 
 public class NotificationHelper {
 	
 	private NotificationHelper(){}
+	
+	public static void createTaskDone(Long taskId, Long targetUserId) {
+		NotificationDistributor.getInstance().addNotification(new TaskDoneNotification(taskId, targetUserId));
+	}
 
 	public static void createFriendRequest(Long sendingUserId, Long targetUserId) {
 		NotificationDistributor.getInstance().addNotification(new FriendRequest(sendingUserId, targetUserId));

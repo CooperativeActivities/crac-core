@@ -38,7 +38,7 @@ public class TaskMatchingWorker extends Worker {
 		CompetenceCollectionMatrix ccm;
 
 		// load a filtered amount of tasks
-		ArrayList<Task> filteredTaskSet = loadFilteredTask();
+		ArrayList<Task> filteredTaskSet = loadFilteredTasks();
 
 		// load the filters for matrix matching
 		FilterConfiguration filters = GlobalMatrixFilterConfig.cloneConfiguration();
@@ -69,6 +69,7 @@ public class TaskMatchingWorker extends Worker {
 				tasks.remove(t);
 			}
 
+			postModifyTasks(tasks);
 			Collections.sort(tasks);
 		}
 
@@ -85,7 +86,7 @@ public class TaskMatchingWorker extends Worker {
 		return super.getWorkerId();
 	}
 
-	public ArrayList<Task> loadFilteredTask() {
+	public ArrayList<Task> loadFilteredTasks() {
 
 		ArrayList<Task> result = new ArrayList<>();
 
@@ -104,6 +105,27 @@ public class TaskMatchingWorker extends Worker {
 			}
 		}
 		return result;
+	}
+
+	public void postModifyTasks(ArrayList<EvaluatedTask> tasks) {
+
+		for (EvaluatedTask task : tasks) {
+			Task t = task.getTask();
+
+			if (t.getTaskState() == TaskState.STARTED) {
+				
+				double mval = 0.6;
+				double newval = 0;
+
+				double valAdjust = ((double)t.getParticipatingUsers() / (double)t.getMinAmountOfVolunteers());
+								
+				newval = task.getAssessment() * (1 + (1 - valAdjust) * mval);
+				
+				task.setAssessment((double) Math.round(newval * 100) / 100);
+				
+			}
+		}
+
 	}
 
 }
