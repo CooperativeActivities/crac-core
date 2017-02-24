@@ -1818,7 +1818,7 @@ GET /user/findMatchingTasks/{number_of_tasks} -> NEW
 
 ####12.2.2017
 
-Materials can now be assigned to users.
+Materials can now be assigned to tasks.
 Endpoints for that are in the task-section.
 
 GET /task/{task_id}/material/add -> NEW
