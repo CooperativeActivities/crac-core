@@ -833,6 +833,21 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
+**Overwrites all assigned competences with given competences**
+	
+#####*Request:*
+
+####This endpoint works exactly as the one above ( .../require), except it overwrite all previously assigned competences!
+Post a JSON-file with an array containing competence-ids and meta-data.
+
+PUT /task/{task_id}/competence/overwrite
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
 **Removes a competence by given id to a task by given id**
 	
 #####*Request:*

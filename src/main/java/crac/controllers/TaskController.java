@@ -885,7 +885,7 @@ public class TaskController {
 	@RequestMapping(value = { "/{task_id}/competence/require",
 			"/{task_id}/competence/require/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> create(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
+	public ResponseEntity<String> requireCompetences(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
 			throws JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -979,6 +979,120 @@ public class TaskController {
 
 	}
 
+	/**
+	 * Overwrites all assigned competences with given competences
+	 * 
+	 * @param json
+	 * @param taskId
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/{task_id}/competence/overwrite",
+			"/{task_id}/competence/overwrite/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> overwriteCompetences(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
+			throws JsonMappingException, IOException {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task t = taskDAO.findOne(taskId);
+
+		if (t != null) {
+
+			if (user.hasTaskPermissions(t)) {
+
+				Set<CompetenceTaskRel> toremove = new HashSet<>();
+
+				for(CompetenceTaskRel ctr : t.getMappedCompetences()){
+					toremove.add(ctr);
+				}				
+				
+				for(CompetenceTaskRel ctr : toremove){
+					ctr.getCompetence().getCompetenceTaskRels().remove(ctr);
+					ctr.getTask().getMappedCompetences().remove(ctr);
+					competenceTaskRelDAO.delete(ctr);
+				}
+								
+				ObjectMapper mapper = new ObjectMapper();
+				CompetenceTaskMapping[] m = null;
+				try {
+					m = mapper.readValue(json, CompetenceTaskMapping[].class);
+				} catch (JsonMappingException e) {
+					return JSonResponseHelper.jsonMapError();
+				} catch (IOException e) {
+					System.out.println(e.toString());
+					return JSonResponseHelper.jsonReadError();
+				}
+
+				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
+
+				if (m != null) {
+					for (CompetenceTaskMapping singlem : m) {
+						HashMap<String, String> singleresponse = new HashMap<>();
+						Competence c = competenceDAO.findOne(singlem.getCompetenceId());
+
+						if (c != null) {
+
+							CompetenceTaskRel r = new CompetenceTaskRel();
+							r.setCompetence(c);
+							r.setTask(t);
+							singleresponse.put("competence_status", "COMPETENCE_ASSIGNED");
+							
+
+							if (singlem.getImportanceLevel() == -200) {
+								singleresponse.put("importanceLevel", "NOT_ASSIGNED");
+							} else {
+								if (singlem.getImportanceLevel() >= 0 && singlem.getImportanceLevel() <= 100) {
+									r.setImportanceLevel(singlem.getImportanceLevel());
+								} else {
+									singleresponse.put("importanceLevel", "VALUE_NOT_VALID");
+								}
+							}
+
+							if (singlem.getNeededProficiencyLevel() == -200) {
+								singleresponse.put("neededProficiencyLevel", "NOT_ASSIGNED");
+							} else {
+								if (singlem.getNeededProficiencyLevel() >= 0
+										&& singlem.getNeededProficiencyLevel() <= 100) {
+									r.setNeededProficiencyLevel(singlem.getNeededProficiencyLevel());
+								} else {
+									singleresponse.put("neededProficiencyLevel", "VALUE_NOT_VALID");
+								}
+							}
+
+							if (singlem.getMandatory() == -1) {
+								singleresponse.put("mandatory", "NOT_ASSIGNED");
+							} else if (singlem.getMandatory() == 0) {
+								r.setMandatory(false);
+							} else if (singlem.getMandatory() == 1) {
+								r.setMandatory(true);
+							} else {
+								singleresponse.put("mandatory", "VALUE_NOT_VALID");
+							}
+							competenceTaskRelDAO.save(r);
+							fullresponse.put(singlem.getCompetenceId() + "", singleresponse);
+						} else {
+							if (singlem.getCompetenceId() != 0) {
+								singleresponse.put("competence_status", "COMPETENCE_NOT_FOUND");
+								fullresponse.put(singlem.getCompetenceId() + "", singleresponse);
+							}
+						}
+					}
+				}
+
+				return JSonResponseHelper.nestedResponse(true, fullresponse);
+			} else {
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
+
+	}
+	
 	/**
 	 * Adds target competence to target task
 	 * 
@@ -1129,7 +1243,7 @@ public class TaskController {
 
 				UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
 
-				if (utr != null) {
+				if (utr != null && utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
 					if (done.equals("true")) {
 						utr.setCompleted(true);
 					} else if (done.equals("false")) {
@@ -1144,7 +1258,7 @@ public class TaskController {
 					boolean alldone = true;
 
 					for (UserTaskRel ut : task.getUserRelationships()) {
-						if (!ut.isCompleted()) {
+						if (ut.getParticipationType() == TaskParticipationType.PARTICIPATING && !ut.isCompleted()) {
 							alldone = false;
 							break;
 						}
@@ -1155,6 +1269,8 @@ public class TaskController {
 					}
 
 					return JSonResponseHelper.successFullyUpdated(task);
+				} else {
+					return JSonResponseHelper.createResponse(false, "bad_request", "USER_NOT_PARTICIPATING");
 				}
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_STARTED");
