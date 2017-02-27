@@ -600,6 +600,53 @@ public class MainController {
 		bpVol3.setEmail("Mustermail@internet.at");
 		userDAO.save(bpVol3);
 		
+		//Users for Claudia
+		
+		CracUser cvadmin1 = new CracUser();
+
+		cvadmin1.setName("cvadmin1");
+		cvadmin1.setFirstName("Test");
+		cvadmin1.setLastName("Admin");
+		cvadmin1.setPassword(bcryptEncoder.encode("default"));
+		cvadmin1.addRole(roleDAO.findByName("ADMIN"));
+		cvadmin1.setPhone("35678987654");
+		cvadmin1.setEmail("Mustermail@internet.at");
+		userDAO.save(cvadmin1);
+
+		CracUser cvvol1 = new CracUser();
+
+		cvvol1.setName("cvvol1");
+		cvvol1.setFirstName("Test");
+		cvvol1.setLastName("User1");
+		cvvol1.setPassword(bcryptEncoder.encode("default"));
+		cvvol1.addRole(roleDAO.findByName("USER"));
+		cvvol1.setPhone("35678987654");
+		cvvol1.setEmail("Mustermail@internet.at");
+		userDAO.save(cvvol1);
+
+		CracUser cvvol2 = new CracUser();
+
+		cvvol2.setName("cvvol2");
+		cvvol2.setFirstName("Test");
+		cvvol2.setLastName("User2");
+		cvvol2.setPassword(bcryptEncoder.encode("default"));
+		cvvol2.addRole(roleDAO.findByName("USER"));
+		cvvol2.setPhone("35678987654");
+		cvvol2.setEmail("Mustermail@internet.at");
+		userDAO.save(cvvol2);
+
+		CracUser cvvol3 = new CracUser();
+
+		cvvol3.setName("cvvol3");
+		cvvol3.setFirstName("Test");
+		cvvol3.setLastName("User3");
+		cvvol3.setPassword(bcryptEncoder.encode("default"));
+		cvvol3.addRole(roleDAO.findByName("USER"));
+		cvvol3.setPhone("35678987654");
+		cvvol3.setEmail("Mustermail@internet.at");
+		userDAO.save(cvvol3);
+
+		
 	}
 
 }
