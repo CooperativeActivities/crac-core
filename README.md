@@ -860,6 +860,48 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
+**Add/Adjust multiple materials assigned to a task OR overwrite all materials assigned to a task**
+	
+#####*Request:*
+
+POST /task/{task_id}/material/multiple/{action}
+
+As action, either add or overwrite can be put!
+
+	{
+		"name": "cake",
+		"description": "sweet baked food",
+		"quantity": 3
+	}
+
+#####*Response:*
+
+In details, the key of the object is the ID of the material:
+
+	{
+	  "success": true,
+	  "details": {
+	    "1": {
+	      "quantity": "DEFAULT_VALUE_ASSIGNED",
+	      "material": "CREATED",
+	      "description": "DEFAULT_VALUE_ASSIGNED"
+	    },
+	    "2": {
+	      "material": "CREATED"
+	    },
+	    "3": {
+	      "material": "CREATED",
+	      "material_id": "ID_NOT_VALID"
+	    }
+	  }
+	}
+
+The following messages can occur:  
+ACTION_NOT_VALID, PERMISSIONS_NOT_SUFFICIENT  
+ALREADY_EXISTS_VALUES_ADJUSTED, ID_NOT_VALID, CREATED, NOT_CREATED, NOT_ASSIGNED, DEFAULT_VALUE_ASSIGNED, VALUE_NOT_VALID, 
+
+-----------------------------------------------------------------
+	
 **Add a material to target task**
 	
 #####*Request:*

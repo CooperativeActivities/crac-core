@@ -59,6 +59,7 @@ import crac.models.CracUser;
 import crac.models.Material;
 import crac.models.Task;
 import crac.models.input.CompetenceTaskMapping;
+import crac.models.input.MaterialMapping;
 import crac.models.output.TaskDetails;
 import crac.models.relation.CompetenceTaskRel;
 import crac.models.relation.UserCompetenceRel;
@@ -461,6 +462,87 @@ public class TaskController {
 		taskDAO.save(t);
 
 		return JSonResponseHelper.successFullyCreated(t);
+
+	}
+
+	/**
+	 * Add/Adjust multiple materials assigned to a task OR overwrite all materials assigned to a task
+	 * @param json
+	 * @param taskId
+	 * @param action
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/{task_id}/material/multiple/{action}",
+			"/{task_id}/material/multiple/{action}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addMaterials(@RequestBody String json, @PathVariable(value = "task_id") Long taskId
+			, @PathVariable(value = "action") String action)
+			throws JsonMappingException, IOException {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		
+		if(!(action.equals("add") || action.equals("overwrite"))){
+			return JSonResponseHelper.createResponse(false, "bad_request", "ACTION_NOT_VALID");
+		}
+
+		Task t = taskDAO.findOne(taskId);
+
+		if (t != null) {
+
+			if (user.hasTaskPermissions(t)) {
+				
+				if(action.equals("overwrite")){
+					
+					Set<Material> del = new HashSet<>();
+					
+					for(Material m : t.getMaterials()){
+						del.add(m);
+					}
+					
+					for(Material m : del){
+						m.getTask().getMaterials().remove(m);
+						taskDAO.save(t);
+						materialDAO.delete(m);
+					}
+					
+				}
+				
+				ObjectMapper mapper = new ObjectMapper();
+				MaterialMapping[] mma = null;
+				try {
+					mma = mapper.readValue(json, MaterialMapping[].class);
+				} catch (JsonMappingException e) {
+					return JSonResponseHelper.jsonMapError();
+				} catch (IOException e) {
+					System.out.println(e.toString());
+					return JSonResponseHelper.jsonReadError();
+				}
+
+				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
+
+				if (mma != null) {
+					for (MaterialMapping mm : mma) {
+						HashMap<String, String> response = new HashMap<>();
+						Material m = mm.mapToMaterial(response, materialDAO);
+						if(m != null){
+							m.setTask(t);
+							materialDAO.save(m);
+							fullresponse.put(m.getId()+"", response);
+						}
+					}
+				}
+
+				return JSonResponseHelper.nestedResponse(true, fullresponse);
+			} else {
+				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+			}
+		} else {
+			return JSonResponseHelper.idNotFound();
+		}
 
 	}
 
@@ -885,8 +967,8 @@ public class TaskController {
 	@RequestMapping(value = { "/{task_id}/competence/require",
 			"/{task_id}/competence/require/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> requireCompetences(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
-			throws JsonMappingException, IOException {
+	public ResponseEntity<String> requireCompetences(@RequestBody String json,
+			@PathVariable(value = "task_id") Long taskId) throws JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -991,8 +1073,8 @@ public class TaskController {
 	@RequestMapping(value = { "/{task_id}/competence/overwrite",
 			"/{task_id}/competence/overwrite/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> overwriteCompetences(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
-			throws JsonMappingException, IOException {
+	public ResponseEntity<String> overwriteCompetences(@RequestBody String json,
+			@PathVariable(value = "task_id") Long taskId) throws JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -1006,16 +1088,16 @@ public class TaskController {
 
 				Set<CompetenceTaskRel> toremove = new HashSet<>();
 
-				for(CompetenceTaskRel ctr : t.getMappedCompetences()){
+				for (CompetenceTaskRel ctr : t.getMappedCompetences()) {
 					toremove.add(ctr);
-				}				
-				
-				for(CompetenceTaskRel ctr : toremove){
+				}
+
+				for (CompetenceTaskRel ctr : toremove) {
 					ctr.getCompetence().getCompetenceTaskRels().remove(ctr);
 					ctr.getTask().getMappedCompetences().remove(ctr);
 					competenceTaskRelDAO.delete(ctr);
 				}
-								
+
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
 				try {
@@ -1040,7 +1122,6 @@ public class TaskController {
 							r.setCompetence(c);
 							r.setTask(t);
 							singleresponse.put("competence_status", "COMPETENCE_ASSIGNED");
-							
 
 							if (singlem.getImportanceLevel() == -200) {
 								singleresponse.put("importanceLevel", "NOT_ASSIGNED");
@@ -1092,7 +1173,7 @@ public class TaskController {
 		}
 
 	}
-	
+
 	/**
 	 * Adds target competence to target task
 	 * 
