@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 import crac.enums.TaskState;
-import crac.models.Task;
+import crac.models.db.entities.Task;
 
 public class TaskShort {
 	

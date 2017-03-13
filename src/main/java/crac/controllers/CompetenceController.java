@@ -22,16 +22,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CompetenceDAO;
-import crac.daos.CompetenceRelationshipDAO;
-import crac.daos.CompetenceRelationshipTypeDAO;
-import crac.daos.CracUserDAO;
-import crac.daos.UserCompetenceRelDAO;
-import crac.models.Competence;
-import crac.models.CracUser;
-import crac.models.relation.CompetenceRelationship;
-import crac.models.relation.CompetenceRelationshipType;
-import crac.models.relation.UserCompetenceRel;
+import crac.models.db.daos.CompetenceDAO;
+import crac.models.db.daos.CompetenceRelationshipDAO;
+import crac.models.db.daos.CompetenceRelationshipTypeDAO;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.UserCompetenceRelDAO;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracUser;
+import crac.models.db.relation.CompetenceRelationship;
+import crac.models.db.relation.CompetenceRelationshipType;
+import crac.models.db.relation.UserCompetenceRel;
 import crac.utility.JSonResponseHelper;
 
 /**

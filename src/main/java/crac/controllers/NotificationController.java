@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CracUserDAO;
-import crac.daos.TaskDAO;
-import crac.daos.UserRelationshipDAO;
-import crac.daos.UserTaskRelDAO;
-import crac.models.CracUser;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserRelationshipDAO;
+import crac.models.db.daos.UserTaskRelDAO;
+import crac.models.db.entities.CracUser;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.utility.JSonResponseHelper;

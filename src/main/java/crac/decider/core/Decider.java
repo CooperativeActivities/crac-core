@@ -2,17 +2,17 @@ package crac.decider.core;
 
 import java.util.ArrayList;
 
-import crac.daos.CracUserDAO;
-import crac.daos.TaskDAO;
-import crac.daos.UserCompetenceRelDAO;
-import crac.daos.UserRelationshipDAO;
 import crac.decider.workers.TaskMatchingWorker;
 import crac.decider.workers.UserCompetenceRelationEvolutionWorker;
 import crac.decider.workers.UserMatchingWorker;
 import crac.decider.workers.UserRelationEvolutionWorker;
-import crac.models.CracUser;
-import crac.models.Evaluation;
-import crac.models.Task;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserCompetenceRelDAO;
+import crac.models.db.daos.UserRelationshipDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Task;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.EvaluatedUser;
 

@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
-import crac.models.Attachment;
-import crac.models.Comment;
-import crac.models.CracUser;
-import crac.models.Evaluation;
-import crac.models.Material;
-import crac.models.Task;
-import crac.models.relation.CompetenceTaskRel;
-import crac.models.relation.UserCompetenceRel;
-import crac.models.relation.UserRelationship;
-import crac.models.relation.UserTaskRel;
-import crac.models.utility.RepetitionDate;
+import crac.models.db.entities.Attachment;
+import crac.models.db.entities.Comment;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Material;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.RepetitionDate;
+import crac.models.db.relation.UserCompetenceRel;
+import crac.models.db.relation.UserRelationship;
+import crac.models.db.relation.UserTaskRel;
 import crac.storage.CompetenceStorage;
 
 public class TaskDetails {

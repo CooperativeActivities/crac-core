@@ -1,6 +1,6 @@
 package crac.models.utility;
 
-import crac.models.Task;
+import crac.models.db.entities.Task;
 
 public class EvaluatedTask implements Comparable{
 	

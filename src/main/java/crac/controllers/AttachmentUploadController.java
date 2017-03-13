@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import crac.daos.AttachmentDAO;
-import crac.models.Attachment;
+import crac.models.db.daos.AttachmentDAO;
+import crac.models.db.entities.Attachment;
 
 @RestController
 @RequestMapping("/attachmentUl")

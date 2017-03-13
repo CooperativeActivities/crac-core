@@ -3,14 +3,14 @@ package crac.decider.workers;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import crac.daos.CracUserDAO;
 import crac.decider.core.FilterConfiguration;
 import crac.decider.core.UserFilterParameters;
 import crac.decider.core.Worker;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
-import crac.models.CracUser;
-import crac.models.Task;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Task;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.utility.EvaluatedUser;
 import crac.notifier.NotificationHelper;

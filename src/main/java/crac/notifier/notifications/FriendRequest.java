@@ -9,11 +9,11 @@ import org.springframework.data.repository.CrudRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CracUserDAO;
-import crac.daos.TaskDAO;
-import crac.daos.UserRelationshipDAO;
-import crac.models.CracUser;
-import crac.models.relation.UserRelationship;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserRelationshipDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.relation.UserRelationship;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;

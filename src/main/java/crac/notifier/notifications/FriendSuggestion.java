@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.models.CracUser;
+import crac.models.db.entities.CracUser;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;

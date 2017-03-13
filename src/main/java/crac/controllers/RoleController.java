@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.RoleDAO;
-import crac.models.CracUser;
-import crac.models.Role;
+import crac.models.db.daos.RoleDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Role;
 import crac.utility.JSonResponseHelper;
 
 @RestController

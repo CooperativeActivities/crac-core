@@ -17,16 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import crac.daos.CompetenceDAO;
-import crac.daos.CompetencePermissionTypeDAO;
-import crac.daos.CompetenceRelationshipDAO;
-import crac.daos.CompetenceRelationshipTypeDAO;
-import crac.daos.CompetenceTaskRelDAO;
-import crac.daos.CracUserDAO;
-import crac.daos.RepetitionDateDAO;
-import crac.daos.RoleDAO;
-import crac.daos.TaskDAO;
-import crac.daos.UserCompetenceRelDAO;
 import crac.decider.core.Decider;
 import crac.decider.core.UserFilterParameters;
 import crac.decider.filter.ImportancyLevelFilter;
@@ -36,19 +26,29 @@ import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.TaskMatchingWorker;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
 import crac.enums.TaskState;
-import crac.models.Competence;
-import crac.models.CracUser;
-import crac.models.Role;
-import crac.models.Task;
-import crac.models.relation.CompetencePermissionType;
-import crac.models.relation.CompetenceRelationship;
-import crac.models.relation.CompetenceRelationshipType;
-import crac.models.relation.CompetenceTaskRel;
-import crac.models.relation.UserCompetenceRel;
+import crac.models.db.daos.CompetenceDAO;
+import crac.models.db.daos.CompetencePermissionTypeDAO;
+import crac.models.db.daos.CompetenceRelationshipDAO;
+import crac.models.db.daos.CompetenceRelationshipTypeDAO;
+import crac.models.db.daos.CompetenceTaskRelDAO;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.RepetitionDateDAO;
+import crac.models.db.daos.RoleDAO;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserCompetenceRelDAO;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Role;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetencePermissionType;
+import crac.models.db.relation.CompetenceRelationship;
+import crac.models.db.relation.CompetenceRelationshipType;
+import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.RepetitionDate;
+import crac.models.db.relation.UserCompetenceRel;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
-import crac.models.utility.RepetitionDate;
 import crac.models.utility.TravelledCompetence;
 import crac.storage.AugmenterUnit;
 import crac.storage.CompetenceStorage;
@@ -218,7 +218,7 @@ public class MainController {
 		competencePermissionTypeDAO.save(cPermType2);
 		competencePermissionTypeDAO.save(cPermType3);
 		competencePermissionTypeDAO.save(cPermType4);
-		
+		/*
 		Competence basicHumanSkills = new Competence();
 		basicHumanSkills.setCreator(myUser);
 		basicHumanSkills.setDescription("The majority of people is able to do these things.");
@@ -422,7 +422,7 @@ public class MainController {
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		userDAO.save(AverageHuman);
-		
+		*/
 		addActualUsers();
 		
 		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);

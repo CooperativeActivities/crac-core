@@ -3,7 +3,7 @@ package crac.models.storage;
 import java.util.ArrayList;
 import java.util.List;
 
-import crac.models.Competence;
+import crac.models.db.entities.Competence;
 
 public class SimpleCompetence {
 

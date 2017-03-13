@@ -1,6 +1,6 @@
 package crac.models.output;
 
-import crac.models.Competence;
+import crac.models.db.entities.Competence;
 
 public class CompetenceRelationDetails {
 	

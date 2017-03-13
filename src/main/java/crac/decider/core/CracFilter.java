@@ -1,6 +1,6 @@
 package crac.decider.core;
 
-import crac.models.Evaluation;
+import crac.models.db.entities.Evaluation;
 import crac.models.storage.MatrixField;
 
 public abstract class CracFilter {

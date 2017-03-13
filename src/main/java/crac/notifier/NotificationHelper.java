@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import crac.models.CracUser;
-import crac.models.Evaluation;
-import crac.models.Task;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Task;
 import crac.notifier.notifications.EvaluationNotification;
 import crac.notifier.notifications.FriendRequest;
 import crac.notifier.notifications.FriendSuggestion;

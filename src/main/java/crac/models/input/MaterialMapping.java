@@ -2,8 +2,8 @@ package crac.models.input;
 
 import java.util.HashMap;
 
-import crac.daos.MaterialDAO;
-import crac.models.Material;
+import crac.models.db.daos.MaterialDAO;
+import crac.models.db.entities.Material;
 
 public class MaterialMapping {
 	

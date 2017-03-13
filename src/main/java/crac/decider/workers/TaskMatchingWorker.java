@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import crac.daos.TaskDAO;
 import crac.decider.core.CracFilter;
 import crac.decider.core.FilterConfiguration;
 import crac.decider.core.UserFilterParameters;
@@ -12,9 +11,10 @@ import crac.decider.core.Worker;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
 import crac.enums.TaskState;
-import crac.models.CracUser;
-import crac.models.Task;
-import crac.models.relation.UserTaskRel;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.UserTaskRel;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.utility.EvaluatedTask;
 

@@ -2,12 +2,12 @@ package crac.utility;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import crac.models.Competence;
-import crac.models.CracUser;
-import crac.models.Evaluation;
-import crac.models.Material;
-import crac.models.Task;
-import crac.models.relation.CompetenceRelationshipType;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Material;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetenceRelationshipType;
 
 public class UpdateEntitiesHelper {
 

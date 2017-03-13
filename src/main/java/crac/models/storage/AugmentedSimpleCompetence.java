@@ -1,7 +1,7 @@
 package crac.models.storage;
 
-import crac.daos.CompetenceDAO;
-import crac.models.Competence;
+import crac.models.db.daos.CompetenceDAO;
+import crac.models.db.entities.Competence;
 
 public class AugmentedSimpleCompetence {
 	

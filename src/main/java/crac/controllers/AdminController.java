@@ -1,6 +1,9 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -21,25 +24,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CompetenceDAO;
-import crac.daos.CompetenceRelationshipDAO;
-import crac.daos.CompetenceRelationshipTypeDAO;
-import crac.daos.CracUserDAO;
-import crac.daos.GroupDAO;
-import crac.daos.RoleDAO;
-import crac.daos.TaskDAO;
-import crac.daos.UserCompetenceRelDAO;
-import crac.daos.UserTaskRelDAO;
 import crac.enums.TaskParticipationType;
-import crac.models.Competence;
-import crac.models.CracUser;
-import crac.models.Role;
-import crac.models.Task;
-import crac.models.relation.CompetenceRelationshipType;
-import crac.models.relation.UserTaskRel;
+import crac.models.db.daos.CompetenceDAO;
+import crac.models.db.daos.CompetenceRelationshipDAO;
+import crac.models.db.daos.CompetenceRelationshipTypeDAO;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.GroupDAO;
+import crac.models.db.daos.RoleDAO;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserCompetenceRelDAO;
+import crac.models.db.daos.UserTaskRelDAO;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Role;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetenceRelationship;
+import crac.models.db.relation.CompetenceRelationshipType;
+import crac.models.db.relation.UserTaskRel;
+import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
+import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
+import crac.models.komet.entities.TxExabiscompetencesDescriptor;
+import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
 import crac.storage.CompetenceStorage;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
@@ -68,7 +77,7 @@ public class AdminController {
 
 	@Autowired
 	private GroupDAO groupDAO;
-	
+
 	@Autowired
 	private CompetenceRelationshipDAO competenceRelationshipDAO;
 
@@ -77,6 +86,15 @@ public class AdminController {
 
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
+
+	@Autowired
+	private CompetenceRelationshipTypeDAO competenceRelationshipTypeDAO;
+
+	@Autowired
+	private TxExabiscompetencesDescriptorDAO txExabiscompetencesDescriptorDAO;
+
+	@Autowired
+	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
 
 	@Value("${crac.elastic.url}")
 	private String url;
@@ -258,19 +276,6 @@ public class AdminController {
 	}
 
 	// COMPETENCE-SECTION
-	
-	/**
-	 * Synchronizes the competences of the DB into the CompetenceStorage of the application and caches the relations
-	 * @return ResponseEntity
-	 */
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping("/sync")
-	@ResponseBody
-	public ResponseEntity<String> sync() {
-		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
-		return JSonResponseHelper.successFullAction("Competences have been synchronized");
-	}
-
 
 	/**
 	 * Creates a new competence
@@ -278,7 +283,7 @@ public class AdminController {
 	 * @param json
 	 * @return ResponseEntity
 	 */
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/",
 			"/competence" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -310,7 +315,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/{competence_id}",
 			"/competence/{competence_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
@@ -335,7 +340,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/{competence_id}",
 			"/competence/{competence_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
@@ -372,7 +377,7 @@ public class AdminController {
 	 * @param json
 	 * @return ResponseEntity
 	 */
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type",
 			"competence/type/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -399,7 +404,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type/{type_id}",
 			"competence/type/{type_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
@@ -425,7 +430,7 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type/{type_id}",
 			"/competence/type/{type_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
@@ -454,7 +459,7 @@ public class AdminController {
 		}
 
 	}
-	
+
 	// ELASTICSEARCH
 
 	@PreAuthorize("hasRole('ADMIN')")

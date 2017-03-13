@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CompetenceDAO;
-import crac.models.Competence;
+import crac.models.db.daos.CompetenceDAO;
+import crac.models.db.entities.Competence;
 import crac.models.storage.AugmentedSimpleCompetence;
 import crac.models.storage.AugmentedSimpleCompetenceCollection;
 import crac.models.storage.SimpleCompetence;

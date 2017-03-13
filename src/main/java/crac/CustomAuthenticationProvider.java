@@ -16,11 +16,11 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import crac.daos.CracUserDAO;
-import crac.daos.TokenDAO;
-import crac.models.CracToken;
-import crac.models.CracUser;
-import crac.models.Role;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.TokenDAO;
+import crac.models.db.entities.CracToken;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Role;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {

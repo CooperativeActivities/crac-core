@@ -5,10 +5,10 @@ import java.util.Set;
 
 import crac.decider.core.FilterConfiguration;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
-import crac.models.CracUser;
-import crac.models.Task;
-import crac.models.relation.CompetenceTaskRel;
-import crac.models.relation.UserCompetenceRel;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.UserCompetenceRel;
 import crac.storage.CompetenceStorage;
 
 public class CompetenceCollectionMatrix {

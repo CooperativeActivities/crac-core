@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import crac.decider.core.CracFilter;
 import crac.enums.TaskParticipationType;
-import crac.models.CracUser;
-import crac.models.Task;
-import crac.models.relation.UserRelationship;
-import crac.models.relation.UserTaskRel;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.UserRelationship;
+import crac.models.db.relation.UserTaskRel;
 import crac.models.storage.MatrixField;
 
 public class UserRelationFilter extends CracFilter {

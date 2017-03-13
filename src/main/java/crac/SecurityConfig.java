@@ -8,8 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-import crac.daos.CracUserDAO;
-import crac.daos.TokenDAO;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.TokenDAO;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)

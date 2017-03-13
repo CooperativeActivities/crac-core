@@ -1,6 +1,6 @@
 package crac.models.utility;
 
-import crac.models.CracUser;
+import crac.models.db.entities.CracUser;
 
 public class SimpleUserRelationship {
 	

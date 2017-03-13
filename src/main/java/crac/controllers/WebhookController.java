@@ -29,7 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.models.CracUser;
+import crac.models.db.entities.CracUser;
 import crac.utility.JSonResponseHelper;
 import crac.utility.SimpleLogger;
 import webhook.ResultEntity;

@@ -18,7 +18,7 @@ import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
-import crac.models.CracUser;
+import crac.models.db.entities.CracUser;
 import crac.utility.JSonResponseHelper;
 
 @RestController

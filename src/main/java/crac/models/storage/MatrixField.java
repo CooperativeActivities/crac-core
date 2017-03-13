@@ -1,8 +1,8 @@
 package crac.models.storage;
 
-import crac.models.Competence;
-import crac.models.relation.CompetenceTaskRel;
-import crac.models.relation.UserCompetenceRel;
+import crac.models.db.entities.Competence;
+import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.UserCompetenceRel;
 
 public class MatrixField {
 	

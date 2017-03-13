@@ -10,17 +10,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.TaskState;
-import crac.models.Competence;
-import crac.models.CracUser;
-import crac.models.Evaluation;
-import crac.models.Role;
-import crac.models.Task;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracToken;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Role;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetenceRelationshipType;
+import crac.models.db.relation.UserTaskRel;
 import crac.models.output.errors.MessageHandler;
 import crac.models.output.errors.NestedMessageHandler;
 import crac.models.output.errors.ResponseHandler;
-import crac.models.relation.CompetenceRelationshipType;
-import crac.models.relation.UserTaskRel;
-import crac.models.CracToken;
 import crac.notifier.Notification;
 
 public class JSonResponseHelper {

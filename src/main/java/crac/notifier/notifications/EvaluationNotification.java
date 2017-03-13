@@ -7,8 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.TaskDAO;
-import crac.models.Task;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.entities.Task;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;

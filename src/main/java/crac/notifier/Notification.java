@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.springframework.data.repository.CrudRepository;
 
-import crac.models.CracUser;
+import crac.models.db.entities.CracUser;
 
 public abstract class Notification {
 	

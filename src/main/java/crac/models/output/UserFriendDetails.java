@@ -1,8 +1,8 @@
 package crac.models.output;
 
 import crac.enums.TaskParticipationType;
-import crac.models.CracUser;
-import crac.models.relation.UserTaskRel;
+import crac.models.db.entities.CracUser;
+import crac.models.db.relation.UserTaskRel;
 
 public class UserFriendDetails {
 

@@ -1,17 +1,17 @@
 package crac.decider.workers;
 
-import crac.daos.TaskDAO;
-import crac.daos.UserCompetenceRelDAO;
-import crac.daos.UserRelationshipDAO;
-import crac.daos.UserTaskRelDAO;
 import crac.decider.core.UserFilterParameters;
 import crac.decider.core.Worker;
-import crac.models.CracUser;
-import crac.models.Evaluation;
-import crac.models.Task;
-import crac.models.relation.CompetenceTaskRel;
-import crac.models.relation.UserCompetenceRel;
-import crac.models.relation.UserTaskRel;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserCompetenceRelDAO;
+import crac.models.db.daos.UserRelationshipDAO;
+import crac.models.db.daos.UserTaskRelDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Task;
+import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.UserCompetenceRel;
+import crac.models.db.relation.UserTaskRel;
 
 public class UserCompetenceRelationEvolutionWorker extends Worker {
 

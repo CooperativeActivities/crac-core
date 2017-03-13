@@ -18,10 +18,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.GroupDAO;
-import crac.daos.CracUserDAO;
-import crac.models.Group;
-import crac.models.CracUser;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.GroupDAO;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Group;
 
 /**
  * REST controller for managing groups.

@@ -23,11 +23,11 @@ import org.elasticsearch.search.SearchHit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.daos.CracUserDAO;
-import crac.daos.TaskDAO;
 import crac.enums.TaskState;
-import crac.models.Competence;
-import crac.models.Task;
+import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.TaskDAO;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.Task;
 import crac.models.utility.EvaluatedTask;
 
 public class ElasticConnector<T> {
