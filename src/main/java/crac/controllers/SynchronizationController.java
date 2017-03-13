@@ -375,7 +375,7 @@ public class SynchronizationController {
 	}
 	
 	private void addSamples(){
-		
+		/*
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser myUser = userDAO.findByName(userDetails.getName());
 		
@@ -452,6 +452,8 @@ public class SynchronizationController {
 		competenceRelationshipDAO.save(basic_swimming);
 		competenceRelationshipDAO.save(programming_javascriptProgramming);
 		competenceRelationshipDAO.save(programming_phpProgramming);
+		
+		*/
 		
 		CracUser Webmaster = new CracUser();
 		
