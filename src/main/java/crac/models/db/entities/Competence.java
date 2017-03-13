@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -46,7 +47,7 @@ public class Competence {
 	private String name;
 	
 	@NotNull
-	@Lob
+	@Type(type="text")
 	private String description;
 	
 	//Defines the KOMET-ID this competence is from
