@@ -375,16 +375,18 @@ public class SynchronizationController {
 	}
 	
 	private void addSamples(){
-		/*
+
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser myUser = userDAO.findByName(userDetails.getName());
 		
 		Competence basicHumanSkills = new Competence();
+		basicHumanSkills.setId(1);
 		basicHumanSkills.setCreator(myUser);
 		basicHumanSkills.setDescription("The majority of people is able to do these things.");
 		basicHumanSkills.setName("basic human skills");
 		
 		Competence breathing = new Competence();
+		breathing.setId(2);
 		breathing.setCreator(myUser);
 		breathing.setDescription("Beeing to stay alive by inhaling air.");
 		breathing.setName("breathing");
@@ -395,6 +397,7 @@ public class SynchronizationController {
 		basic_breathing.setType(competenceRelationshipTypeDAO.findOne((long) 1));
 
 		Competence walking = new Competence();
+		walking.setId(3);
 		walking.setCreator(myUser);
 		walking.setDescription("Getting slowly from one point to another using human legs.");
 		walking.setName("walking");
@@ -405,6 +408,7 @@ public class SynchronizationController {
 		basic_walking.setType(competenceRelationshipTypeDAO.findOne((long) 2));
 		
 		Competence swimming = new Competence();
+		swimming.setId(4);
 		swimming.setCreator(myUser);
 		swimming.setDescription("Not drowning while in water.");
 		swimming.setName("swimming");
@@ -415,11 +419,13 @@ public class SynchronizationController {
 		basic_swimming.setType(competenceRelationshipTypeDAO.findOne((long) 3));
 		
 		Competence programming = new Competence();
+		programming.setId(5);
 		programming.setCreator(myUser);
 		programming.setDescription("Beeing able to write computer programs.");
 		programming.setName("programming");
 
 		Competence javascriptProgramming = new Competence();
+		javascriptProgramming.setId(6);
 		javascriptProgramming.setCreator(myUser);
 		javascriptProgramming.setDescription("Beeing able to write computer programs with/in JavaScript and it's libraries.");
 		javascriptProgramming.setName("javascript-programming");
@@ -430,6 +436,7 @@ public class SynchronizationController {
 		programming_javascriptProgramming.setType(competenceRelationshipTypeDAO.findOne((long) 2));
 		
 		Competence phpProgramming = new Competence();
+		phpProgramming.setId(7);
 		phpProgramming.setCreator(myUser);
 		phpProgramming.setDescription("Beeing able to write computer programs with/in PHP and it's libraries.");
 		phpProgramming.setName("php-programming");
@@ -452,8 +459,6 @@ public class SynchronizationController {
 		competenceRelationshipDAO.save(basic_swimming);
 		competenceRelationshipDAO.save(programming_javascriptProgramming);
 		competenceRelationshipDAO.save(programming_phpProgramming);
-		
-		*/
 		
 		CracUser Webmaster = new CracUser();
 		
