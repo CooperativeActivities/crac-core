@@ -392,6 +392,7 @@ public class SynchronizationController {
 		breathing.setName("breathing");
 
 		CompetenceRelationship basic_breathing = new CompetenceRelationship();
+		basic_breathing.setId(1);
 		basic_breathing.setCompetence1(basicHumanSkills);
 		basic_breathing.setCompetence2(breathing);
 		basic_breathing.setType(competenceRelationshipTypeDAO.findOne((long) 1));
@@ -403,6 +404,7 @@ public class SynchronizationController {
 		walking.setName("walking");
 
 		CompetenceRelationship basic_walking = new CompetenceRelationship();
+		basic_walking.setId(2);
 		basic_walking.setCompetence1(basicHumanSkills);
 		basic_walking.setCompetence2(walking);
 		basic_walking.setType(competenceRelationshipTypeDAO.findOne((long) 2));
@@ -414,6 +416,7 @@ public class SynchronizationController {
 		swimming.setName("swimming");
 
 		CompetenceRelationship basic_swimming = new CompetenceRelationship();
+		basic_swimming.setId(3);
 		basic_swimming.setCompetence1(basicHumanSkills);
 		basic_swimming.setCompetence2(swimming);
 		basic_swimming.setType(competenceRelationshipTypeDAO.findOne((long) 3));
@@ -431,6 +434,7 @@ public class SynchronizationController {
 		javascriptProgramming.setName("javascript-programming");
 
 		CompetenceRelationship programming_javascriptProgramming = new CompetenceRelationship();
+		programming_javascriptProgramming.setId(4);
 		programming_javascriptProgramming.setCompetence1(programming);
 		programming_javascriptProgramming.setCompetence2(javascriptProgramming);
 		programming_javascriptProgramming.setType(competenceRelationshipTypeDAO.findOne((long) 2));
@@ -442,6 +446,7 @@ public class SynchronizationController {
 		phpProgramming.setName("php-programming");
 
 		CompetenceRelationship programming_phpProgramming = new CompetenceRelationship();
+		programming_phpProgramming.setId(5);
 		programming_phpProgramming.setCompetence1(programming);
 		programming_phpProgramming.setCompetence2(phpProgramming);
 		programming_phpProgramming.setType(competenceRelationshipTypeDAO.findOne((long) 2));
