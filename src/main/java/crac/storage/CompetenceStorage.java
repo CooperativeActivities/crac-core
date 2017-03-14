@@ -34,8 +34,10 @@ public class CompetenceStorage {
 		for (CompetenceRelationship cr : compRelDAO.findAll()) {
 			SimpleCompetence c1 = instance.competences.get(cr.getCompetence1().getId());
 			SimpleCompetence c2 = instance.competences.get(cr.getCompetence2().getId());
-			c1.addRelation(new SimpleCompetenceRelation(c2, cr.getType().getDistanceVal()));
-			c2.addRelation(new SimpleCompetenceRelation(c1, cr.getType().getDistanceVal()));
+			if (cr.getType() != null) {
+				c1.addRelation(new SimpleCompetenceRelation(c2, cr.getType().getDistanceVal()));
+				c2.addRelation(new SimpleCompetenceRelation(c1, cr.getType().getDistanceVal()));
+			}
 		}
 
 		instance.synced = true;
