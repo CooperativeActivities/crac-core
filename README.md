@@ -94,6 +94,105 @@ This endpoint will delete the token that was created by calling the login-endpoi
 
 -----------------------------------------------------------------
 
+###Synchronization-related Endpoints
+
+-----------------------------------------------------------------
+
+Before more funcionalities of the backend are explained in depth, the concept of it's competence-persistence needs to be explained.  
+Since they are not directly persisted in the DB of the backend but loaded from another, a synchronization needs to take place.  
+Additionally, the (now copied) competences need to be added to the intern storage-cache for performance-reasons.  
+These are the endpoints that allow those actions (also test-data can be created from here):  
+
+**Copy test-data to the platform and fully synchronize all competences from KOMET**
+
+#####*Request:*
+
+GET /synchronization/full
+####This function requires ADMIN-rights!
+
+This endpoint includes all synchronization-functionality available!
+
+#####*Response:*
+
+Either a success or a failure-message.
+
+-----------------------------------------------------------------
+
+**Fully synchronize all competences from KOMET**
+
+#####*Request:*
+
+GET /synchronization/competences
+####This function requires ADMIN-rights!
+
+This endpoint copies all competence-related data from the KOMET-DB to the CrAc-DB and caches them to the intern storage. It only works if the databases are configured correctly!
+
+#####*Response:*
+
+Either a success or a failure-message.
+
+-----------------------------------------------------------------
+
+**Synchronize all competences from KOMET-DB to CrAc-DB**
+
+#####*Request:*
+
+GET /synchronization/database
+####This function requires ADMIN-rights!
+
+This endpoint copies all competence-related data from the KOMET-DB to the CrAc-DB.
+
+#####*Response:*
+
+Either a success or a failure-message.
+
+-----------------------------------------------------------------
+
+**Synchronizes the competences of the DB into the Competence-Storage of the application and caches the relations**
+
+#####*Request:*
+
+GET /synchronization/intern
+####This function requires ADMIN-rights!
+
+This endpoint copies and caches the competences data of the CrAc-DB into the intern storage.
+
+#####*Response:*
+
+Either a success or a failure-message.
+
+-----------------------------------------------------------------
+
+**Add filters to the configuration**
+
+#####*Request:*
+
+GET /synchronization/filter
+####This function requires ADMIN-rights!
+
+This endpoint adds matching-matrix-filters to the filter-configuration.
+
+#####*Response:*
+
+Either a success or a failure-message.
+
+-----------------------------------------------------------------
+
+**Copy test-data to the platform**
+
+#####*Request:*
+
+GET /synchronization/data
+####This function requires ADMIN-rights!
+
+This endpoint adds test-data to the platform.
+
+#####*Response:*
+
+Either a success or a failure-message.
+
+-----------------------------------------------------------------
+
 ###User-Functions
 
 -----------------------------------------------------------------

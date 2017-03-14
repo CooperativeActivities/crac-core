@@ -48,7 +48,7 @@ import crac.storage.CompetenceStorage;
 import crac.utility.JSonResponseHelper;
 
 @RestController
-@RequestMapping("/synchronzation")
+@RequestMapping("/synchronization")
 public class SynchronizationController {
 	
 	@Autowired
@@ -106,6 +106,10 @@ public class SynchronizationController {
 		return JSonResponseHelper.successFullAction("Competences have been synchronized");
 	}
 	
+	/**
+	 * Copy test-data to the platform and fully synchronize all competences from KOMET
+	 * @return ResponseEntity
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/full")
 	@ResponseBody
@@ -116,7 +120,25 @@ public class SynchronizationController {
 		this.internsync();
 		return JSonResponseHelper.successFullAction("Everything has been synced");
 	}
+	
+	/**
+	 * Fully synchronize all competences from KOMET
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/competences")
+	@ResponseBody
+	public ResponseEntity<String> competencesync() {
+		this.dbsync();
+		this.filtersync();
+		this.internsync();
+		return JSonResponseHelper.successFullAction("Everything has been synced");
+	}
 
+	/**
+	 * Synchronize all competences from KOMET-DB to CrAc-DB
+	 * @return ResponseEntity
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/database")
 	@ResponseBody
@@ -343,6 +365,10 @@ public class SynchronizationController {
 		return m;
 	}
 	
+	/**
+	 * Add filters to the configuration
+	 * @return ResponseEntity
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/filter")
 	@ResponseBody
@@ -358,6 +384,10 @@ public class SynchronizationController {
 		return JSonResponseHelper.successFullAction("Filters have been synced");
 	}
 	
+	/**
+	 * Copy test-data to the platform
+	 * @return ResponseEntity
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/data")
 	@ResponseBody

@@ -128,6 +128,7 @@ public class MainController {
 		
 	}
 	
+	/*
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/boot")
 	@ResponseBody
@@ -422,7 +423,7 @@ public class MainController {
 		AverageHuman.setPhone("35678987654");
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		userDAO.save(AverageHuman);
-		*/
+		
 		addActualUsers();
 		
 		RepetitionDate date1 = new RepetitionDate(0, 0, 0, 0, 10);
@@ -439,7 +440,7 @@ public class MainController {
 		System.out.println("-----------------------");
 
 		return JSonResponseHelper.bootSuccess();
-	}
+	}*/
 	
 	public void addActualUsers(){
 		CracUser SchönböckADMIN = new CracUser();
