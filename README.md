@@ -1997,4 +1997,4 @@ Look at the task-section for more info
 
 Endpoints to set tasks ready-to-publish are removed, this is done automatically now!  
 TaskTypes have been added! More information in the endpoint for adding tasks  
-Error-Responses are updated  
+Error-Responses are updated, more information in the error-section!
