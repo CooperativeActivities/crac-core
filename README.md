@@ -197,6 +197,38 @@ Either a success or a failure-message.
 
 -----------------------------------------------------------------
 
+###Errors
+
+-----------------------------------------------------------------
+
+**Errors of Endpoints are presented in the following format:**
+
+The following JSON is just an example;  
+"type" contains the type of the data (eg Task, User etc).  
+"action" contains the action that is performed on the data.  
+"success" states if the action was a success or not.  
+If not, "errors" contains the different errors that happened.  
+"object" contains details about the object the action is performed on (after the action).  
+"meta" contains additional information.  
+
+	{
+	  "type": "Data-Type",
+	  "action": "CREATE",
+	  "success": true,
+	  "errors": [],
+	  "object": {},
+	  "meta": {}
+	}
+	
+These are the possible errors that can appear:  
+
+ACTION_NOT_VALID, ID_NOT_VALID, ID_NOT_FOUND, TASK_NOT_EXTENDABLE, PERMISSIONS_NOT_SUFFICIENT, ORGANISATIONAL_EXTENDS_SHIFT,  
+WORKABLE_EXTENDS_ORGANISATIONAL, WORKABLE_EXTENDS_WORKABLE, SHIFT_EXTENDS, USER_NOT_PARTICIPATING, TASK_NOT_STARTED, TASK_NOT_READY,  
+TASK_NOT_JOINABLE, TASK_ALREADY_IN_PROCESS, CHILDREN_NOT_READY, UNDEFINED_ERROR, START_NOT_ALLOWED, NOT_COMPLETED_BY_USERS,  
+QUANTITY_TOO_SMALL, QUANTITY_TOO_HIGH, QUANTITY_INCORRECT, DATASETS_ALREADY_EXISTS, JSON_READ_ERROR, JSON_MAP_ERROR, JSON_WRITE_ERROR,  RESSOURCE_UNCHANGEABLE, TASK_IS_FULL, USERS_NOT_FRIENDS, WRONG_TYPE, ALREADY_FILLED, NOT_FOUND, TASK_HAS_OPEN_AMOUNT, CANNOT_BE_COPIED  
+
+-----------------------------------------------------------------
+
 **Get all users**
 
 #####*Request:*
@@ -1965,3 +1997,4 @@ Look at the task-section for more info
 
 Endpoints to set tasks ready-to-publish are removed, this is done automatically now!  
 TaskTypes have been added! More information in the endpoint for adding tasks  
+Error-Responses are updated  
