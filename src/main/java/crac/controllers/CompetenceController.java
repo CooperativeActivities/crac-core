@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ErrorCause;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
 import crac.models.db.daos.CompetenceRelationshipTypeDAO;
@@ -69,7 +70,7 @@ public class CompetenceController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(competenceList));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class CompetenceController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(myCompetence));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -107,7 +108,7 @@ public class CompetenceController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(rels));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -166,7 +167,7 @@ public class CompetenceController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(competenceList));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 

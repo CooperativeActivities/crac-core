@@ -1,15 +1,8 @@
 package crac.notifier.notifications;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-
-import org.springframework.data.repository.CrudRepository;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.models.db.entities.CracUser;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
@@ -42,7 +35,7 @@ public class FriendSuggestion extends Notification{
 	}
 
 	@Override
-	public String accept(HashMap<String, CrudRepository> map) {
+	public String accept() {
 		NotificationHelper.createFriendRequest(getTargetId(), suggestedId);
 		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println("Friend-suggestion accepted, Friend request sent.");

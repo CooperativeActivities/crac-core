@@ -52,6 +52,7 @@ import crac.models.storage.SimpleCompetenceRelation;
 import crac.models.utility.TravelledCompetence;
 import crac.storage.AugmenterUnit;
 import crac.storage.CompetenceStorage;
+import crac.utility.DataAccess;
 import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 
@@ -100,11 +101,12 @@ public class MainController {
 	@Value("${crac.boot.enable}")
     private boolean bootEnabled;
 		
-	@RequestMapping("/test/{competence_id}")
+	@RequestMapping("/test")
 	@ResponseBody
-	public ResponseEntity<String> test(@PathVariable(value = "competence_id") Long competenceId) {
+	public ResponseEntity<String> test() {
 		
-		CompetenceStorage.getCollection(competenceId).print();
+		System.out.println(DataAccess.getRepo(CracUserDAO.class).findOne((long)1).getName());
+		System.out.println(DataAccess.getRepo(CompetenceDAO.class).findOne((long)3456).getName());
 		
 		return JSonResponseHelper.successFullAction("called");
 	}
@@ -113,7 +115,7 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> filters() {
 		
-		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
+		CompetenceStorage.synchronize();
 
 		
 		System.out.println("-----------------------");

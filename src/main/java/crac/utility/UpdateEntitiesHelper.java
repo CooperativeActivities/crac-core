@@ -45,7 +45,7 @@ public class UpdateEntitiesHelper {
 		}
 
 	}
-	
+	/*
 	public static void checkAndUpdateTask(Task old, Task updated){
 		if(updated.getName() != null){
 			old.setName(updated.getName());
@@ -87,7 +87,7 @@ public class UpdateEntitiesHelper {
 			old.setTaskState(updated.getTaskState());
 		}
 		
-	}
+	}*/
 	
 	public static void checkAndUpdateCompetence(Competence old, Competence updated){
 		if (updated.getName() != null) {

@@ -28,7 +28,7 @@ public abstract class Notification {
 
 	}
 	
-	public abstract String accept(HashMap<String, CrudRepository> map);
+	public abstract String accept();
 	
 	public abstract String deny();
 	

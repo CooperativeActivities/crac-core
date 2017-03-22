@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,7 +61,8 @@ public class GroupController {
 	/**
 	 * POST / or blank -> create a new group, creator is the logged-in user.
 	 */
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
@@ -77,7 +79,8 @@ public class GroupController {
 	/**
 	 * DELETE /{group_id} -> delete the group with given ID.
 	 */
-	@RequestMapping(value = "/{group_id}", method = RequestMethod.DELETE, produces = "application/json")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/admin/{group_id}", "/admin/{group_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "group_id") Long id) {
 		Group deleteGroup = groupDAO.findOne(id);
@@ -89,7 +92,8 @@ public class GroupController {
 	/**
 	 * PUT /{group_id} -> update the group with given ID.
 	 */
-	@RequestMapping(value = "/{group_id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/admin/{group_id}", "/admin/{group_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "group_id") Long id)
 			throws JsonMappingException, IOException {

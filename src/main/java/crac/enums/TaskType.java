@@ -2,6 +2,6 @@ package crac.enums;
 
 public enum TaskType {
 
-    PARALLEL, SEQUENTIAL
+    ORGANISATIONAL, WORKABLE, SHIFT
 
 }

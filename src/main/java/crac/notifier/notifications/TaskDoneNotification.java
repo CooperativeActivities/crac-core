@@ -46,7 +46,7 @@ public class TaskDoneNotification extends Notification{
 	}
 
 	@Override
-	public String accept(HashMap<String, CrudRepository> map) {
+	public String accept() {
 		System.out.println("Task-completion accepted");
 		return "accepted";
 	}

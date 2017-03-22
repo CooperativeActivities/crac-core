@@ -13,7 +13,7 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.utility.EvaluatedUser;
-import crac.notifier.NotificationHelper;
+import crac.utility.DataAccess;
 
 public class UserMatchingWorker extends Worker {
 
@@ -21,11 +21,11 @@ public class UserMatchingWorker extends Worker {
 	private CracUserDAO userDAO;
 	private UserFilterParameters up;
 
-	public UserMatchingWorker(Task task, CracUserDAO userDAO, UserFilterParameters up) {
+	public UserMatchingWorker(Task task, UserFilterParameters up) {
 		super();
 		this.up = up;
 		this.task = task;
-		this.userDAO = userDAO;
+		this.userDAO = DataAccess.getRepo(CracUserDAO.class);
 	}
 
 	public ArrayList<EvaluatedUser> run() {

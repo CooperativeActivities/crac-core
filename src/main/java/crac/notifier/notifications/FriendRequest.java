@@ -1,22 +1,15 @@
 package crac.notifier.notifications;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-
-import org.springframework.data.repository.CrudRepository;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.models.db.daos.CracUserDAO;
-import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
-import crac.models.db.entities.CracUser;
 import crac.models.db.relation.UserRelationship;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
+import crac.utility.DataAccess;
 
 public class FriendRequest extends Notification{
 	
@@ -46,10 +39,10 @@ public class FriendRequest extends Notification{
 	}
 
 	@Override
-	public String accept(HashMap<String, CrudRepository> map) {
+	public String accept() {
 		
-		UserRelationshipDAO userRelationshipDAO = (UserRelationshipDAO) map.get("userRelationshipDAO");
-		CracUserDAO userDAO = (CracUserDAO) map.get("userDAO");
+		UserRelationshipDAO userRelationshipDAO = DataAccess.getRepo(UserRelationshipDAO.class);
+		CracUserDAO userDAO = DataAccess.getRepo(CracUserDAO.class);
 		
 		UserRelationship ur = new UserRelationship();
 		

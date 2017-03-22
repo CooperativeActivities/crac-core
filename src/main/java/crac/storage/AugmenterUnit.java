@@ -1,27 +1,19 @@
 package crac.storage;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import crac.models.db.daos.CompetenceDAO;
-import crac.models.db.entities.Competence;
 import crac.models.storage.AugmentedSimpleCompetence;
 import crac.models.storage.AugmentedSimpleCompetenceCollection;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
-import crac.utility.JSonResponseHelper;
+import crac.utility.DataAccess;
 
 public class AugmenterUnit {
 	
 	private CompetenceDAO competenceDAO;
 	
-	public AugmenterUnit(CompetenceDAO competenceDAO){
-		this.competenceDAO = competenceDAO;
+	public AugmenterUnit(){
+		this.competenceDAO = DataAccess.getRepo(CompetenceDAO.class);
 	}
 
 	public AugmentedSimpleCompetenceCollection augment(SimpleCompetence c) {

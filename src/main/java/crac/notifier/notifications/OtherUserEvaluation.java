@@ -1,9 +1,5 @@
 package crac.notifier.notifications;
 
-import java.util.HashMap;
-
-import org.springframework.data.repository.CrudRepository;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,6 +8,7 @@ import crac.models.db.entities.Task;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
+import crac.utility.DataAccess;
 
 public class OtherUserEvaluation extends Notification {
 
@@ -53,9 +50,9 @@ public class OtherUserEvaluation extends Notification {
 	}
 
 	@Override
-	public String accept(HashMap<String, CrudRepository> map) {
+	public String accept() {
 		
-		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
+		TaskDAO taskDAO = DataAccess.getRepo(TaskDAO.class);
 		Task task = taskDAO.findOne(taskId);
 
 		String message = "Self-Evaluation accepted for: "+task.getName()+". Please fill out form.";

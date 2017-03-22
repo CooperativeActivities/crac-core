@@ -1,25 +1,17 @@
 package crac.notifier.notifications;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-
-import org.springframework.data.repository.CrudRepository;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
-import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
-import crac.models.db.entities.CracUser;
-import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
+import crac.utility.DataAccess;
 
 public class TaskInvitation extends Notification{
 	
@@ -60,11 +52,11 @@ public class TaskInvitation extends Notification{
 	}
 
 	@Override
-	public String accept(HashMap<String, CrudRepository> map) {
+	public String accept() {
 		
-		UserTaskRelDAO userTaskRelDAO = (UserTaskRelDAO) map.get("userTaskRelDAO");
-		CracUserDAO userDAO = (CracUserDAO) map.get("userDAO");
-		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
+		UserTaskRelDAO userTaskRelDAO = DataAccess.getRepo(UserTaskRelDAO.class);
+		CracUserDAO userDAO = DataAccess.getRepo(CracUserDAO.class);
+		TaskDAO taskDAO = DataAccess.getRepo(TaskDAO.class);
 
 		UserTaskRel utl = new UserTaskRel();
 		

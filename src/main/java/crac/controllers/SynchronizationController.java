@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,15 +26,25 @@ import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
+import crac.enums.ErrorCause;
+import crac.models.db.daos.AttachmentDAO;
+import crac.models.db.daos.CommentDAO;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
 import crac.models.db.daos.CompetenceRelationshipTypeDAO;
+import crac.models.db.daos.CompetenceTaskRelDAO;
 import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.EvaluationDAO;
 import crac.models.db.daos.GroupDAO;
+import crac.models.db.daos.MaterialDAO;
+import crac.models.db.daos.RepetitionDateDAO;
 import crac.models.db.daos.RoleDAO;
 import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.TaskRelationshipTypeDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
+import crac.models.db.daos.UserMaterialSubscriptionDAO;
+import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
@@ -45,6 +57,7 @@ import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
 import crac.models.komet.entities.TxExabiscompetencesDescriptor;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
 import crac.storage.CompetenceStorage;
+import crac.utility.DataAccess;
 import crac.utility.JSonResponseHelper;
 
 @RestController
@@ -52,35 +65,61 @@ import crac.utility.JSonResponseHelper;
 public class SynchronizationController {
 	
 	@Autowired
-	private CracUserDAO userDAO;
-
-	@Autowired
-	private CompetenceDAO competenceDAO;
-
-	@Autowired
-	private TaskDAO taskDAO;
-
-	@Autowired
-	private RoleDAO roleDAO;
-
-	@Autowired
-	private GroupDAO groupDAO;
-
+	private AttachmentDAO attachmentDAO;
 	
 	@Autowired
-	private CompetenceRelationshipDAO competenceRelationshipDAO;
+	private CommentDAO commentDAO;
+	
+	@Autowired
+	private CompetenceDAO competenceDAO;
 
 	@Autowired
 	private CompetencePermissionTypeDAO competencePermissionTypeDAO;
 	
 	@Autowired
+	private CompetenceRelationshipDAO competenceRelationshipDAO;
+	
+	@Autowired
+	private CompetenceRelationshipTypeDAO competenceRelationshipTypeDAO;
+
+	@Autowired
+	private CompetenceTaskRelDAO competenceTaskRelDAO;
+	
+	@Autowired
+	private CracUserDAO userDAO;
+	
+	@Autowired
+	private EvaluationDAO evaluationDAO;
+	
+	@Autowired
+	private GroupDAO groupDAO;
+		
+	@Autowired
+	private MaterialDAO materialDAO;
+
+	@Autowired
+	private RepetitionDateDAO repetitionDateDAO;
+
+	@Autowired
+	private RoleDAO roleDAO;
+
+	@Autowired
+	private TaskDAO taskDAO;
+
+	@Autowired
+	private TaskRelationshipTypeDAO taskRelationshipTypeDAO;
+
+	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 
 	@Autowired
-	private UserTaskRelDAO userTaskRelDAO;
+	private UserMaterialSubscriptionDAO userMaterialSubscriptionDAO;
 
 	@Autowired
-	private CompetenceRelationshipTypeDAO competenceRelationshipTypeDAO;
+	private UserRelationshipDAO userRelationshipDAO;
+
+	@Autowired
+	private UserTaskRelDAO userTaskRelDAO;
 
 	@Autowired
 	private TxExabiscompetencesDescriptorDAO txExabiscompetencesDescriptorDAO;
@@ -88,7 +127,44 @@ public class SynchronizationController {
 	@Autowired
 	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
 
+	@PostConstruct
+	public void init(){
+		this.daosync();
+		this.internsync();
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/dao")
+	@ResponseBody
+	public ResponseEntity<String> daosync() {
 
+		DataAccess.addRepo(attachmentDAO);
+		DataAccess.addRepo(commentDAO);
+		DataAccess.addRepo(competenceDAO);
+		DataAccess.addRepo(competencePermissionTypeDAO);
+		DataAccess.addRepo(competenceRelationshipDAO);
+		DataAccess.addRepo(competenceRelationshipTypeDAO);
+		DataAccess.addRepo(competenceTaskRelDAO);
+		DataAccess.addRepo(userDAO);
+		DataAccess.addRepo(evaluationDAO);
+		DataAccess.addRepo(groupDAO);
+		DataAccess.addRepo(materialDAO);
+		DataAccess.addRepo(repetitionDateDAO);
+		DataAccess.addRepo(roleDAO);
+		DataAccess.addRepo(taskDAO);
+		DataAccess.addRepo(taskRelationshipTypeDAO);
+		DataAccess.addRepo(userCompetenceRelDAO);
+		DataAccess.addRepo(userMaterialSubscriptionDAO);
+		DataAccess.addRepo(userRelationshipDAO);
+		DataAccess.addRepo(userTaskRelDAO);
+
+		
+		System.out.println("-------------------------------");
+		System.out.println("||||DAO||||");
+		System.out.println("-------------------------------");
+		return JSonResponseHelper.successFullAction("Data Access has been synchronized");
+	}
+	
 	/**
 	 * Synchronizes the competences of the DB into the CompetenceStorage of the
 	 * application and caches the relations
@@ -99,7 +175,7 @@ public class SynchronizationController {
 	@RequestMapping("/intern")
 	@ResponseBody
 	public ResponseEntity<String> internsync() {
-		CompetenceStorage.synchronize(competenceDAO, competenceRelationshipDAO);
+		CompetenceStorage.synchronize();
 		System.out.println("-------------------------------");
 		System.out.println("||||INTERN COMPETENCES SYNCED||||");
 		System.out.println("-------------------------------");
@@ -160,7 +236,7 @@ public class SynchronizationController {
 			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(m));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 
 	}
@@ -396,9 +472,9 @@ public class SynchronizationController {
 		System.out.println("||||DATA SYNCED||||");
 		System.out.println("-------------------------------");
 
-		addSamples();
-		addRoles();
 		addCompetenceRelationshipTypes();
+		addRoles();
+		addSamples();
 		addCompetencePermissionType();
 		addUsers();
 		return JSonResponseHelper.successFullAction("Data has been synced");

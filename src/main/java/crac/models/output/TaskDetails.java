@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
+import crac.enums.TaskType;
 import crac.models.db.entities.Attachment;
 import crac.models.db.entities.Comment;
 import crac.models.db.entities.CracUser;
@@ -76,6 +77,8 @@ public class TaskDetails {
 	private Set<CompetenceRelationDetails> taskCompetences;
 
 	private Set<Material> materials;
+	
+	private TaskType taskType;
 
 	public TaskDetails(Task t, CracUser u) {
 		this.id = t.getId();
@@ -101,6 +104,7 @@ public class TaskDetails {
 		this.userRelationships = calcFriends(t, u);
 		this.taskCompetences = calcComps(t, u);
 		this.materials = t.getMaterials();
+		this.taskType = t.getTaskType();
 	}
 
 	public Set<TaskShort> addChildren(Task t) {
@@ -370,6 +374,14 @@ public class TaskDetails {
 
 	public void setMaterials(Set<Material> materials) {
 		this.materials = materials;
+	}
+
+	public TaskType getTaskType() {
+		return taskType;
+	}
+
+	public void setTaskType(TaskType taskType) {
+		this.taskType = taskType;
 	}
 
 }

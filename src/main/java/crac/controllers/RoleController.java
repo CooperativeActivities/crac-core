@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ErrorCause;
 import crac.models.db.daos.RoleDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
@@ -38,7 +39,7 @@ public class RoleController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(roles));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 

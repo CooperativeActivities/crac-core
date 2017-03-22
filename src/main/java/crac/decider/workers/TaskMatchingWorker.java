@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import crac.decider.core.CracFilter;
 import crac.decider.core.FilterConfiguration;
 import crac.decider.core.UserFilterParameters;
 import crac.decider.core.Worker;
@@ -17,6 +16,7 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.utility.EvaluatedTask;
+import crac.utility.DataAccess;
 
 public class TaskMatchingWorker extends Worker {
 
@@ -24,11 +24,11 @@ public class TaskMatchingWorker extends Worker {
 	private TaskDAO taskDAO;
 	private UserFilterParameters up;
 
-	public TaskMatchingWorker(CracUser u, TaskDAO taskDAO, UserFilterParameters up) {
+	public TaskMatchingWorker(CracUser u, UserFilterParameters up) {
 		super();
 		this.up = up;
 		this.user = u;
-		this.taskDAO = taskDAO;
+		this.taskDAO = DataAccess.getRepo(TaskDAO.class);
 	}
 
 	public ArrayList<EvaluatedTask> run() {
@@ -92,7 +92,7 @@ public class TaskMatchingWorker extends Worker {
 
 		List<Task> found = taskDAO.findByTaskStateNot(TaskState.NOT_PUBLISHED);
 		for (Task task : found) {
-			if (task.isLeaf()) {
+			if (task.isJoinable()) {
 				boolean isConnected = false;
 				for (UserTaskRel utr : task.getUserRelationships()) {
 					if (utr.getUser().getId() == user.getId()) {

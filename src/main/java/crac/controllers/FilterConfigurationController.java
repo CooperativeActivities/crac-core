@@ -18,6 +18,7 @@ import crac.decider.filter.LikeLevelFilter;
 import crac.decider.filter.ProficiencyLevelFilter;
 import crac.decider.filter.UserRelationFilter;
 import crac.decider.workers.config.GlobalMatrixFilterConfig;
+import crac.enums.ErrorCause;
 import crac.models.db.entities.CracUser;
 import crac.utility.JSonResponseHelper;
 
@@ -54,7 +55,7 @@ public class FilterConfigurationController {
 			name = filterName;
 
 		} else {
-			return JSonResponseHelper.actionNotPossible("Given filter does not exist!");
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.NOT_FOUND);
 		}
 
 		return JSonResponseHelper.successFullAction(name + " added!");
@@ -85,7 +86,7 @@ public class FilterConfigurationController {
 
 				restoreStandard();
 
-				return JSonResponseHelper.actionNotPossible("No valid filters, standard filters restored");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.NOT_FOUND);
 			}
 
 			return JSonResponseHelper.successFullAction("Filters have been updated!");

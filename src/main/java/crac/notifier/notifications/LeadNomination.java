@@ -1,10 +1,5 @@
 package crac.notifier.notifications;
 
-import java.util.Calendar;
-import java.util.HashMap;
-
-import org.springframework.data.repository.CrudRepository;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,6 +13,7 @@ import crac.models.db.relation.UserTaskRel;
 import crac.notifier.Notification;
 import crac.notifier.NotificationHelper;
 import crac.notifier.NotificationType;
+import crac.utility.DataAccess;
 
 public class LeadNomination extends Notification {
 
@@ -57,10 +53,10 @@ public class LeadNomination extends Notification {
 	}
 
 	@Override
-	public String accept(HashMap<String, CrudRepository> map) {
-		TaskDAO taskDAO = (TaskDAO) map.get("taskDAO");
-		UserTaskRelDAO userTaskRelDAO = (UserTaskRelDAO) map.get("userTaskRelDAO");
-		CracUserDAO userDAO = (CracUserDAO) map.get("userDAO");
+	public String accept() {
+		TaskDAO taskDAO = DataAccess.getRepo(TaskDAO.class);
+		UserTaskRelDAO userTaskRelDAO = DataAccess.getRepo(UserTaskRelDAO.class);
+		CracUserDAO userDAO = DataAccess.getRepo(CracUserDAO.class);
 
 		Task task = taskDAO.findOne(taskId);
 		CracUser user = userDAO.findOne(super.getTargetId());

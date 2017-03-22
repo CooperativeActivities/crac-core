@@ -78,12 +78,7 @@ public class NotificationController {
 		Notification n = NotificationHelper.getNotificationById(notificationId);
 		
 		if(n != null){
-			HashMap<String, CrudRepository> map = new HashMap<String, CrudRepository>();
-			map.put("taskDAO", taskDAO);
-			map.put("userTaskRelDAO", userTaskRelDAO);
-			map.put("userDAO", userDAO);
-			map.put("userRelationshipDAO", userRelationshipDAO);
-			String message = n.accept(map);
+			String message = n.accept();
 			return JSonResponseHelper.successfullyAccepted(n, message);
 		}else{
 			return JSonResponseHelper.noSuchNotification();

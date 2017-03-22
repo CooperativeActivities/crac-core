@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.decider.core.Decider;
+import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -89,9 +90,9 @@ public class EvaluationController {
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
-			return JSonResponseHelper.successFullyCreated(e);
+			return JSonResponseHelper.successfullyCreated(e);
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -126,10 +127,10 @@ public class EvaluationController {
 				}
 				return JSonResponseHelper.successfullySent();
 			} else {
-				return JSonResponseHelper.actionNotPossible("wrong type of task");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -156,9 +157,9 @@ public class EvaluationController {
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
-			return JSonResponseHelper.successFullyCreated(e);
+			return JSonResponseHelper.successfullyCreated(e);
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -180,7 +181,7 @@ public class EvaluationController {
 		if (originalEval != null) {
 			
 			if(originalEval.isFilled()){
-				return JSonResponseHelper.actionNotPossible("this evaluation is already filled");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
@@ -189,10 +190,10 @@ public class EvaluationController {
 				newEval = mapper.readValue(json, Evaluation.class);
 			} catch (JsonMappingException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.jsonMapError();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 			} catch (IOException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.jsonReadError();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 			}
 
 			String notificationId = originalEval.getNotificationId();
@@ -202,8 +203,8 @@ public class EvaluationController {
 			
 			Decider unit = new Decider();
 			
-			unit.evaluateUsers(originalEval, userRelationshipDAO);
-			unit.evaluateTask(originalEval, userCompetenceRelDAO);
+			unit.evaluateUsers(originalEval);
+			unit.evaluateTask(originalEval);
 			
 			originalEval.setNotificationId("deleted");
 			evaluationDAO.save(originalEval);
@@ -211,7 +212,7 @@ public class EvaluationController {
 			return JSonResponseHelper.successfullEvaluation();
 
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}

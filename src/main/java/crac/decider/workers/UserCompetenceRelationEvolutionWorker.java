@@ -1,17 +1,13 @@
 package crac.decider.workers;
 
-import crac.decider.core.UserFilterParameters;
 import crac.decider.core.Worker;
-import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
-import crac.models.db.daos.UserRelationshipDAO;
-import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
-import crac.models.db.relation.UserTaskRel;
+import crac.utility.DataAccess;
 
 public class UserCompetenceRelationEvolutionWorker extends Worker {
 
@@ -20,12 +16,12 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 	private Evaluation evaluation;
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 	
-	public UserCompetenceRelationEvolutionWorker(Evaluation evaluation, UserCompetenceRelDAO userCompetenceRelDAO) {
+	public UserCompetenceRelationEvolutionWorker(Evaluation evaluation) {
 		super();
 		this.user = evaluation.getUser();
 		this.task = evaluation.getTask();
 		this.evaluation = evaluation;
-		this.userCompetenceRelDAO = userCompetenceRelDAO;
+		this.userCompetenceRelDAO = DataAccess.getRepo(UserCompetenceRelDAO.class);
 	}
 
 	public void run(){

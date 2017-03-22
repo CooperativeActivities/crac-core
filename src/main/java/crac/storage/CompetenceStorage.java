@@ -14,6 +14,7 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.models.storage.AugmentedSimpleCompetenceCollection;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
+import crac.utility.DataAccess;
 
 public class CompetenceStorage {
 
@@ -25,8 +26,11 @@ public class CompetenceStorage {
 
 	private static CompetenceStorage instance = new CompetenceStorage();
 
-	public static boolean sync(CompetenceDAO competenceDAO, CompetenceRelationshipDAO compRelDAO) {
+	public static boolean sync() {
 
+		CompetenceDAO competenceDAO = DataAccess.getRepo(CompetenceDAO.class);
+		CompetenceRelationshipDAO compRelDAO = DataAccess.getRepo(CompetenceRelationshipDAO.class);
+		
 		for (Competence c : competenceDAO.findAll()) {
 			instance.competences.put(c.getId(), new SimpleCompetence(c));
 		}
@@ -53,15 +57,15 @@ public class CompetenceStorage {
 
 	}
 
-	public static boolean synchronize(CompetenceDAO competenceDAO, CompetenceRelationshipDAO compRelDAO) {
-		sync(competenceDAO, compRelDAO);
-		cache(competenceDAO);
+	public static boolean synchronize() {
+		sync();
+		cache();
 		return true;
 	}
 
-	public static boolean cache(CompetenceDAO competenceDAO) {
+	public static boolean cache() {
 
-		AugmenterUnit au = new AugmenterUnit(competenceDAO);
+		AugmenterUnit au = new AugmenterUnit();
 
 		for (SimpleCompetence asc : instance.competences.values()) {
 			instance.cache.add(au.augment(asc));

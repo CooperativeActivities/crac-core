@@ -815,9 +815,18 @@ PUT /admin/task/{task_id}
 	    "name": "testTask",
 	    "description": "this is a test",
 	    "location": "Vienna",
-	    "urgency": 3,
-	    "amountOfVolunteers": 30
+	    "startTime": "2000-01-01T00:30:00",
+	    "endTime": "2000-01-01T01:00:00",
+	    "minAmountOfVolunteers": 10,
+	    "maxAmountOfVolunteers": 30
+	    "taskType": "ORGANISATIONAL"
 	}
+	
+The following Task-Types can be chosen: ORGANISATIONAL, WORKABLE, SHIFT
+
+ORGANISATIONAL: Can't be participated, only for organization purposes  
+WORKABLE: These are the tasks volunteers can be participate on  
+SHIFT: Workable tasks can be divided into shifts for marking time-spans on a task  
 
 #####*Response:*
 
@@ -837,10 +846,16 @@ POST /admin/task
 	    "location": "Vienna",
 	    "startTime": "2000-01-01T00:30:00",
 	    "endTime": "2000-01-01T01:00:00",
-	    "urgency": 3,
 	    "minAmountOfVolunteers": 10,
 	    "maxAmountOfVolunteers": 30
+	    "taskType": "ORGANISATIONAL"
 	}
+	
+The following Task-Types can be chosen: ORGANISATIONAL, WORKABLE, SHIFT
+
+ORGANISATIONAL: Can't be participated, only for organization purposes  
+WORKABLE: These are the tasks volunteers can be participate on  
+SHIFT: Workable tasks can be divided into shifts for marking time-spans on a task  
 
 #####*Response:*
 
@@ -1078,68 +1093,6 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 	
-**Sets a single task ready to be published, only works if it's children are ready**
-
-There are a few prerequisites to this. 
-First of all, the following fields have to be set: amountOfVolunteers, description, startTime, endTime, location.
-If the task is a supertask and has children, all children need to be ready-to-publish first.
-If the task is a leaf (so users can participate), at least one competence has to be added.
-	
-#####*Request:*
-
-GET /task/{task_id}/publish/ready/single
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
-Possible failures:
-
-	{
-	  "success": false,
-	  "error": "bad_request",
-	  "cause": "CHILDREN_NOT_READY"
-	}
-	
-	{
-	  "success": false,
-	  "error": "bad_request",
-	  "cause": "TASK_NOT_READY"
-	}
-	
-	{
-	  "success": false,
-	  "error": "bad_request",
-	  "cause": "PERMISSIONS_NOT_SUFFICIENT"
-	}
-
------------------------------------------------------------------
-	
-**Sets target task and all children ready to be published**
-
-This endpoint follows the same rules described above for every single task it tries to set ready-to-publish
-	
-#####*Request:*
-
-GET /task/{task_id}/publish/ready/tree
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
-The cause-object contains an array that states the ID of the task that failed and the cause why it failed.
-
-	{
-	  "success": false,
-	  "error": "bad_request",
-	  "cause": {
-	    "4": "TASK_NOT_READY",
-	    "5": "TASK_NOT_READY"
-	  }
-	}
-
------------------------------------------------------------------
-	
 **Sets the relation between the logged in user and target task to done, meaning the user completed the task**
 	
 #####*Request:*
@@ -1187,10 +1140,23 @@ GET /task/{supertask_id}/extend
 	    "description": "this is a test",
 	    "location": "Vienna",
 	    "startTime": "2000-01-01T00:30:00",
-	    "endTime": "2000-01-01T01:00:00"
-	    "urgency": 3,
-	    "amountOfVolunteers": 30
+	    "endTime": "2000-01-01T01:00:00",
+	    "minAmountOfVolunteers": 10,
+	    "maxAmountOfVolunteers": 30
+	    "taskType": "ORGANISATIONAL"
 	}
+	
+The following Task-Types can be chosen: ORGANISATIONAL, WORKABLE, SHIFT  
+
+ORGANISATIONAL: Can't be participated, only for organization purposes  
+WORKABLE: These are the tasks volunteers can be participate on  
+SHIFT: Workable tasks can be divided into shifts for marking time-spans on a task  
+
+These types exclude each other when trying to extend them illogically.  
+
+ORGANISATIONAL can only extend to another ORGANISATIONAL or WORKABLE,  
+WORKABLE can only extend multiple SHIFT-tasks,  
+every other extension is denied by the backend.  
 
 #####*Response:*
 
@@ -1994,3 +1960,8 @@ GET /task/{task_id}/material/{material_id}/unsubscribe -> NEW
 Look at the task-section for more info
 
 -----------------------------------------------------------------
+
+####20.3.2017
+
+Endpoints to set tasks ready-to-publish are removed, this is done automatically now!  
+TaskTypes have been added! More information in the endpoint for adding tasks  

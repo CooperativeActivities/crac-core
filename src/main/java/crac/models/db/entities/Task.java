@@ -35,9 +35,11 @@ import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.models.db.daos.TaskDAO;
+import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.RepetitionDate;
 import crac.models.db.relation.UserTaskRel;
+import crac.utility.DataAccess;
 
 /**
  * The task-entity.
@@ -79,6 +81,9 @@ public class Task {
 
 	@Column(name = "task_state")
 	private TaskState taskState;
+
+	@Column(name = "task_type")
+	private TaskType taskType;
 
 	@Column(name = "task_repetition_state")
 	private TaskRepetitionState taskRepetitionState;
@@ -146,7 +151,7 @@ public class Task {
 
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceTaskRel> mappedCompetences;
-	
+
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Material> materials;
 
@@ -277,74 +282,74 @@ public class Task {
 			}
 		}
 	}
+	/*
+	 * @JsonIgnore public boolean readyToPublish() { if (!this.fieldsFilled()) {
+	 * return false; } if (childTasks != null) { if (!childTasks.isEmpty()) {
+	 * for (Task c : childTasks) { if (!c.isReadyToPublish()) { return false; }
+	 * } } } return true; }
+	 */
 
 	@JsonIgnore
-	public boolean readyToPublish() {
-		if (!this.fieldsFilled()) {
-			return false;
+	public boolean updateReadyStatus() {
+		boolean ready = this.fieldsFilled() && this.childTasksReady();
+		this.readyToPublish = ready;
+		if (this.getSuperTask() != null) {
+			this.getSuperTask().updateReadyStatus();
 		}
-		if (childTasks != null) {
-			if (!childTasks.isEmpty()) {
-				for (Task c : childTasks) {
-					if (!c.isReadyToPublish()) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
+		return ready;
 	}
-	
-	public boolean childTasksReady(){
-		if (childTasks == null) {
-			if (childTasks.isEmpty()) {
-				return true;
-			}
+
+	public boolean childTasksReady() {
+		if (!this.hasChildTasks()) {
 			return true;
 		}
-				
+
 		for (Task c : childTasks) {
-			if(!c.isReadyToPublish()){
+			if (!c.isReadyToPublish()) {
 				return false;
-			}		
+			}
 		}
-		
+
 		return true;
-		
+
 	}
 
-	@JsonIgnore
-	public void readyToPublishTree(HashMap<String, String> errors, TaskDAO taskDAO) {
-		if (this.fieldsFilled()) {
-			this.readyToPublish = true;
-			taskDAO.save(this);
-			if (childTasks != null) {
-				if (!childTasks.isEmpty()) {
-					for (Task t : childTasks) {
-						t.readyToPublishTree(errors, taskDAO);
-					}
-				}
+	public boolean hasChildTasks() {
+		if (childTasks != null) {
+			if (childTasks.isEmpty()) {
+				return false;
+			} else {
+				return true;
 			}
-		}else{
-			errors.put(this.id+"", "TASK_NOT_READY");
+		} else {
+			return false;
 		}
 	}
+
+	/*
+	 * @JsonIgnore public void readyToPublishTree(HashMap<String, String>
+	 * errors, TaskDAO taskDAO) { if (this.fieldsFilled()) { this.readyToPublish
+	 * = true; taskDAO.save(this); if (this.hasChildTasks()) { for (Task t :
+	 * childTasks) { t.readyToPublishTree(errors, taskDAO); }
+	 * 
+	 * } } else { errors.put(this.id + "", "TASK_NOT_READY"); } }
+	 */
 
 	public boolean isSuperTask() {
 		return this.getSuperTask() == null;
 	}
+	/*
+	 * @JsonIgnore public boolean isLeaf() { if (childTasks == null) { return
+	 * true; }
+	 * 
+	 * if (childTasks.isEmpty()) { return true; }
+	 * 
+	 * return false; }
+	 */
 
 	@JsonIgnore
-	public boolean isLeaf() {
-		if (childTasks == null) {
-			return true;
-		}
-
-		if (childTasks.isEmpty()) {
-			return true;
-		}
-
-		return false;
+	public boolean isExtendable() {
+		return this.getTaskState() != TaskState.COMPLETED;
 	}
 
 	@JsonIgnore
@@ -354,6 +359,20 @@ public class Task {
 
 	@JsonIgnore
 	public boolean isJoinable() {
+
+		boolean state = this.getTaskState() == TaskState.PUBLISHED || this.getTaskState() == TaskState.STARTED;
+		boolean type = this.getTaskType() == TaskType.WORKABLE || this.getTaskType() == TaskType.SHIFT;
+
+		if (this.getTaskType() == TaskType.WORKABLE && this.hasChildTasks()) {
+			type = false;
+		}
+
+		return state && type;
+	}
+
+	@JsonIgnore
+	public boolean isFollowable() {
+
 		return this.getTaskState() == TaskState.PUBLISHED || this.getTaskState() == TaskState.STARTED;
 	}
 
@@ -371,26 +390,18 @@ public class Task {
 
 	@JsonIgnore
 	public boolean fieldsFilled() {
-		boolean filled = this.getMaxAmountOfVolunteers() >= 0 && !this.getName().equals("")
-				&& this.getStartTime() != null && this.getEndTime() != null;
-		if (isLeaf()) {
-			if (this.getMappedCompetences() != null) {
-				return filled && !this.getMappedCompetences().isEmpty();
-			} else {
-				return false;
-			}
-		}
-
+		boolean filled = !this.getName().equals("") && this.getStartTime() != null && this.getEndTime() != null;
 		return filled;
 	}
 
 	@JsonIgnore
-	private void publishTree() {
-		this.setTaskState(TaskState.PUBLISHED);
+	private void setTreeState(TaskState state, TaskDAO taskDAO) {
+		this.setTaskState(state);
 		if (childTasks != null) {
 			if (!childTasks.isEmpty()) {
 				for (Task t : childTasks) {
-					t.publishTree();
+					t.setTreeState(state, taskDAO);
+					taskDAO.save(t);
 				}
 			}
 		}
@@ -403,7 +414,7 @@ public class Task {
 
 		if (this.isSuperTask() && this.getTaskState() == TaskState.NOT_PUBLISHED && fieldsFilled()) {
 			if (childTasksReady()) {
-				publishTree();
+				setTreeState(TaskState.PUBLISHED, DataAccess.getRepo(TaskDAO.class));
 				return 3;
 			} else {
 				return 2;
@@ -414,17 +425,36 @@ public class Task {
 	}
 
 	@JsonIgnore
+	public int unpublish() {
+
+		if (this.getUserRelationships() != null) {
+
+			UserTaskRelDAO userTaskRelDAO = DataAccess.getRepo(UserTaskRelDAO.class);
+
+			for (UserTaskRel utr : this.getUserRelationships()) {
+				if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+					utr.setParticipationType(TaskParticipationType.FOLLOWING);
+					userTaskRelDAO.save(utr);
+				}
+			}
+		}
+
+		setTreeState(TaskState.NOT_PUBLISHED, DataAccess.getRepo(TaskDAO.class));
+		return 3;
+	}
+
+	@JsonIgnore
 	public boolean checkStartAllowance() {
 		return this.getStartTime().getTimeInMillis() < Calendar.getInstance().getTimeInMillis();
 	}
 
 	@JsonIgnore
-	public int start(TaskDAO taskDAO) {
+	public int start() {
 
 		if (this.getTaskState() == TaskState.PUBLISHED) {
 			if (checkStartAllowance()) {
 				this.setTaskState(TaskState.STARTED);
-				taskDAO.save(this);
+				DataAccess.getRepo(TaskDAO.class).save(this);
 				return 3;
 			} else {
 				return 2;
@@ -457,9 +487,9 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public int forceComplete(TaskDAO taskDAO, CracUser u) {
+	public int forceComplete() {
 		if (this.getTaskState() == TaskState.STARTED) {
-			this.setTreeComplete(taskDAO);
+			this.setTreeComplete(DataAccess.getRepo(TaskDAO.class));
 			return 3;
 		} else {
 			return 1;
@@ -675,9 +705,59 @@ public class Task {
 	public void setMaterials(Set<Material> materials) {
 		this.materials = materials;
 	}
-	
-	public void addMaterial(Material material){
+
+	public void addMaterial(Material material) {
 		this.materials.add(material);
+	}
+
+	public TaskType getTaskType() {
+		return taskType;
+	}
+
+	public void setTaskType(TaskType taskType) {
+		this.taskType = taskType;
+	}
+
+	public void setCreationDate(Calendar creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void update(Task t) {
+		if (t.getName() != null) {
+			this.setName(t.getName());
+		}
+
+		if (t.getDescription() != null) {
+			this.setDescription(t.getDescription());
+		}
+
+		if (t.getLocation() != null) {
+			this.setLocation(t.getLocation());
+		}
+
+		if (t.getStartTime() != null) {
+			this.setStartTime(t.getStartTime());
+		}
+
+		if (t.getEndTime() != null) {
+			this.setEndTime(t.getEndTime());
+		}
+
+		if (t.getMaxAmountOfVolunteers() >= 0) {
+			this.setMaxAmountOfVolunteers(t.getMaxAmountOfVolunteers());
+		}
+
+		if (t.getMinAmountOfVolunteers() >= 0) {
+			this.setMinAmountOfVolunteers(t.getMinAmountOfVolunteers());
+		}
+
+		if (t.getFeedback() != null) {
+			this.setFeedback(t.getFeedback());
+		}
+
+		if (t.getTaskType() != null) {
+			this.setTaskType(t.getTaskType());
+		}
 	}
 
 }

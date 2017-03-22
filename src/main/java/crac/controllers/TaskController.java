@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.decider.core.Decider;
 import crac.decider.core.UserFilterParameters;
+import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -134,7 +135,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -150,7 +151,7 @@ public class TaskController {
 		Iterable<Task> taskList = taskDAO.findAll();
 
 		for (Task t : taskList) {
-			t.start(taskDAO);
+			t.start();
 		}
 
 		return JSonResponseHelper.successFullAction("Updated all tasks");
@@ -176,17 +177,17 @@ public class TaskController {
 
 		if (task != null) {
 			if (task.checkStartAllowance()) {
-				task.start(taskDAO);
+				task.start();
 			}
 			TaskDetails td = new TaskDetails(task, user);
 			try {
 				return ResponseEntity.ok().body(mapper.writeValueAsString(td));
 			} catch (JsonProcessingException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.jsonWriteError();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -224,7 +225,7 @@ public class TaskController {
 				return ResponseEntity.ok().body(mapper.writeValueAsString(found));
 			} catch (JsonProcessingException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.jsonWriteError();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 			}
 
 		} else {
@@ -259,10 +260,10 @@ public class TaskController {
 						updatedTask = mapper.readValue(json, Task.class);
 					} catch (JsonMappingException e) {
 						System.out.println(e.toString());
-						return JSonResponseHelper.jsonMapError();
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 					} catch (IOException e) {
 						System.out.println(e.toString());
-						return JSonResponseHelper.jsonReadError();
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 					}
 
 					int c = checkAmountOfVolunteers(oldTask, updatedTask.getMaxAmountOfVolunteers(), true);
@@ -270,10 +271,12 @@ public class TaskController {
 					System.out.println("answer: " + c);
 
 					if (c == 0) {
-						return JSonResponseHelper.actionNotPossible("Amount of volunteers is full");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.QUANTITY_TOO_HIGH);
 					} else if (c > 0) {
-						return JSonResponseHelper
-								.actionNotPossible("Amount of volunteers has to be between 1 and " + c);
+						HashMap<String, String> meta = new HashMap<>();
+						meta.put("lowest", 1+"");
+						meta.put("highest", c+"");
+						return JSonResponseHelper.createMetaResponse(false, "bad_request", ErrorCause.QUANTITY_INCORRECT, meta);
 					}
 					/*
 					 * if (oldTask.getSuperTask() != null) { if
@@ -289,20 +292,23 @@ public class TaskController {
 					 * availableNumber); } } } }
 					 */
 
-					UpdateEntitiesHelper.checkAndUpdateTask(oldTask, updatedTask);
+					// UpdateEntitiesHelper.checkAndUpdateTask(oldTask,
+					// updatedTask);
+					oldTask.update(updatedTask);
+					oldTask.updateReadyStatus();
 					taskDAO.save(oldTask);
 					ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
 					eSConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
-					return JSonResponseHelper.successFullyUpdated(oldTask);
+					return JSonResponseHelper.successfullyUpdated(oldTask);
 				} else {
-					return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 				}
 			} else {
-				return JSonResponseHelper.idNotFound();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 
 		} else {
-			return JSonResponseHelper.actionNotPossible("Task is already started or completed");
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
 		}
 
 	}
@@ -349,26 +355,19 @@ public class TaskController {
 
 		if (st != null) {
 			if (user.hasTaskPermissions(st)) {
-				if (st.getTaskState() == TaskState.NOT_PUBLISHED) {
-					System.out.println("Task not in conduction");
+
+				if (st.isExtendable()) {
 					return persistTask(st, user, json);
 				} else {
-					System.out.println("Task in conduction");
-					if (!st.isLeaf()) {
-						return persistTask(st, user, json);
-					} else {
-						return JSonResponseHelper
-								.actionNotPossible("A leaf cannot be changed after task has been published");
-					}
-
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_EXTENDABLE);
 				}
 
 			} else {
-				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -402,23 +401,23 @@ public class TaskController {
 						if (ct.getMaxAmountOfVolunteers() > 0) {
 							val += ct.getMaxAmountOfVolunteers();
 						} else {
-							return JSonResponseHelper.actionNotPossible("Task has childtask with open amount");
-						}
+							return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_HAS_OPEN_AMOUNT);
+}
 					}
 
 					t.setMaxAmountOfVolunteers(val);
 					taskDAO.save(t);
-					return JSonResponseHelper.successFullyUpdated(t);
+					return JSonResponseHelper.successfullyUpdated(t);
 
 				} else {
-					return JSonResponseHelper.actionNotPossible("Task has an assigned Value");
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
 				}
 
 			} else {
-				return JSonResponseHelper.actionNotPossible("Permissions are not sufficient");
-			}
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -431,10 +430,10 @@ public class TaskController {
 			t = mapper.readValue(json, Task.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonMapError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonReadError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		t.setSuperTask(st);
@@ -442,11 +441,31 @@ public class TaskController {
 		int c = checkAmountOfVolunteers(t, t.getMaxAmountOfVolunteers(), false);
 
 		System.out.println("answer: " + c);
+		
+		if(st.getTaskType() == TaskType.ORGANISATIONAL && t.getTaskType() == TaskType.SHIFT){
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ORGANISATIONAL_EXTENDS_SHIFT);
+		}
+		
+		if(st.getTaskType() == TaskType.WORKABLE && t.getTaskType() == TaskType.ORGANISATIONAL){
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.WORKABLE_EXTENDS_ORGANISATIONAL);
+		}
+		
+		if(st.getTaskType() == TaskType.WORKABLE && t.getTaskType() == TaskType.WORKABLE){
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.WORKABLE_EXTENDS_WORKABLE);
+		}
+
+		
+		if(st.getTaskType() == TaskType.SHIFT){
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.SHIFT_EXTENDS);
+		}
 
 		if (c == 0) {
-			return JSonResponseHelper.actionNotPossible("Amount of volunteers is full");
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.QUANTITY_TOO_HIGH);
 		} else if (c > 0) {
-			return JSonResponseHelper.actionNotPossible("Amount of volunteers has to be between 1 and " + c);
+			HashMap<String, String> meta = new HashMap<>();
+			meta.put("lowest", 1+"");
+			meta.put("highest", c+"");
+			return JSonResponseHelper.createMetaResponse(false, "bad_request", ErrorCause.QUANTITY_INCORRECT, meta);
 		}
 
 		/*
@@ -459,14 +478,17 @@ public class TaskController {
 		t.setTaskState(st.getTaskState());
 		t.setReadyToPublish(st.isReadyToPublish());
 		t.setCreator(u);
+		t.updateReadyStatus();
 		taskDAO.save(t);
 
-		return JSonResponseHelper.successFullyCreated(t);
+		return JSonResponseHelper.successfullyCreated(t);
 
 	}
 
 	/**
-	 * Add/Adjust multiple materials assigned to a task OR overwrite all materials assigned to a task
+	 * Add/Adjust multiple materials assigned to a task OR overwrite all
+	 * materials assigned to a task
+	 * 
 	 * @param json
 	 * @param taskId
 	 * @param action
@@ -477,16 +499,15 @@ public class TaskController {
 	@RequestMapping(value = { "/{task_id}/material/multiple/{action}",
 			"/{task_id}/material/multiple/{action}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addMaterials(@RequestBody String json, @PathVariable(value = "task_id") Long taskId
-			, @PathVariable(value = "action") String action)
-			throws JsonMappingException, IOException {
+	public ResponseEntity<String> addMaterials(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
+			@PathVariable(value = "action") String action) throws JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		
-		if(!(action.equals("add") || action.equals("overwrite"))){
-			return JSonResponseHelper.createResponse(false, "bad_request", "ACTION_NOT_VALID");
+
+		if (!(action.equals("add") || action.equals("overwrite"))) {
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ACTION_NOT_VALID);
 		}
 
 		Task t = taskDAO.findOne(taskId);
@@ -494,32 +515,32 @@ public class TaskController {
 		if (t != null) {
 
 			if (user.hasTaskPermissions(t)) {
-				
-				if(action.equals("overwrite")){
-					
+
+				if (action.equals("overwrite")) {
+
 					Set<Material> del = new HashSet<>();
-					
-					for(Material m : t.getMaterials()){
+
+					for (Material m : t.getMaterials()) {
 						del.add(m);
 					}
-					
-					for(Material m : del){
+
+					for (Material m : del) {
 						m.getTask().getMaterials().remove(m);
 						taskDAO.save(t);
 						materialDAO.delete(m);
 					}
-					
+
 				}
-				
+
 				ObjectMapper mapper = new ObjectMapper();
 				MaterialMapping[] mma = null;
 				try {
 					mma = mapper.readValue(json, MaterialMapping[].class);
 				} catch (JsonMappingException e) {
-					return JSonResponseHelper.jsonMapError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 				} catch (IOException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonReadError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 				}
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
@@ -528,20 +549,20 @@ public class TaskController {
 					for (MaterialMapping mm : mma) {
 						HashMap<String, String> response = new HashMap<>();
 						Material m = mm.mapToMaterial(response, materialDAO);
-						if(m != null){
+						if (m != null) {
 							m.setTask(t);
 							materialDAO.save(m);
-							fullresponse.put(m.getId()+"", response);
+							fullresponse.put(m.getId() + "", response);
 						}
 					}
 				}
 
 				return JSonResponseHelper.nestedResponse(true, fullresponse);
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -572,10 +593,10 @@ public class TaskController {
 					m = mapper.readValue(json, Material.class);
 				} catch (JsonMappingException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonMapError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 				} catch (IOException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonReadError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 				}
 
 				m.setTask(st);
@@ -590,11 +611,11 @@ public class TaskController {
 				return JSonResponseHelper.messageArraySuccess(answer);
 
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -632,26 +653,26 @@ public class TaskController {
 						updated = mapper.readValue(json, Material.class);
 					} catch (JsonMappingException e) {
 						System.out.println(e.toString());
-						return JSonResponseHelper.jsonMapError();
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 					} catch (IOException e) {
 						System.out.println(e.toString());
-						return JSonResponseHelper.jsonReadError();
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 					}
 
 					UpdateEntitiesHelper.checkAndUpdateMaterial(old, updated);
 					materialDAO.save(old);
 
-					return JSonResponseHelper.successFullyUpdated(st);
+					return JSonResponseHelper.successfullyUpdated(st);
 				} else {
-					return JSonResponseHelper.idNotFound();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 				}
 
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -690,14 +711,14 @@ public class TaskController {
 				materialDAO.delete(delm);
 
 				taskDAO.save(st);
-				return JSonResponseHelper.successFullyUpdated(st);
+				return JSonResponseHelper.successfullyUpdated(st);
 
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -765,13 +786,21 @@ public class TaskController {
 
 					return JSonResponseHelper.messageArraySuccess(answer);
 				}
+				
+				ErrorCause cause = ErrorCause.QUANTITY_TOO_HIGH;
+				
+				if(status.equals("QUANTITY_TOO_SMALL")){
+					cause = ErrorCause.QUANTITY_TOO_SMALL;
+				}else if(status.equals("QUANTITY_TOO_HIGH")){
+					cause = ErrorCause.QUANTITY_TOO_HIGH;
+				}
 
-				return JSonResponseHelper.createResponse(false, "bad_request", status);
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", cause);
 
 			}
 		}
 
-		return JSonResponseHelper.idNotFound();
+		return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 	}
 
 	/**
@@ -815,7 +844,7 @@ public class TaskController {
 			}
 		}
 
-		return JSonResponseHelper.idNotFound();
+		return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 	}
 
 	/**
@@ -825,6 +854,7 @@ public class TaskController {
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
+	/*
 	@RequestMapping(value = { "/{task_id}/publish/ready/single",
 			"/{task_id}/publish/ready/single/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -855,7 +885,7 @@ public class TaskController {
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
-	}
+	}*/
 
 	/**
 	 * Sets target task and all children ready to be published
@@ -863,6 +893,7 @@ public class TaskController {
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
+	/*
 	@RequestMapping(value = { "/{task_id}/publish/ready/tree",
 			"/{task_id}/publish/ready/tree/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -888,7 +919,7 @@ public class TaskController {
 		} else {
 			return JSonResponseHelper.idNotFound();
 		}
-	}
+	}*/
 
 	/**
 	 * Copy target task
@@ -908,15 +939,15 @@ public class TaskController {
 		Task original = taskDAO.findOne(task_id);
 
 		if (original.getSuperTask() != null) {
-			return JSonResponseHelper.actionNotPossible("child-tasks can't be copied");
-		}
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.CANNOT_BE_COPIED);
+}
 
 		Task copy = original.copy(null);
 		copy.setCreator(user);
 
 		taskDAO.save(copy);
 
-		return JSonResponseHelper.successFullyCreated(copy);
+		return JSonResponseHelper.successfullyCreated(copy);
 
 	}
 
@@ -946,12 +977,12 @@ public class TaskController {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.confirmRole("ADMIN") && task.getTaskState() == TaskState.NOT_PUBLISHED) {
 				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, proficiency, importance, mandatory));
-				return JSonResponseHelper.successFullyAssigned(competence);
+				return JSonResponseHelper.successfullyAssigned(competence);
 			} else {
-				return JSonResponseHelper.ressourceUnchangeable();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.RESSOURCE_UNCHANGEABLE);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -985,10 +1016,10 @@ public class TaskController {
 				try {
 					m = mapper.readValue(json, CompetenceTaskMapping[].class);
 				} catch (JsonMappingException e) {
-					return JSonResponseHelper.jsonMapError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 				} catch (IOException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonReadError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 				}
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
@@ -1053,10 +1084,10 @@ public class TaskController {
 
 				return JSonResponseHelper.nestedResponse(true, fullresponse);
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -1103,10 +1134,10 @@ public class TaskController {
 				try {
 					m = mapper.readValue(json, CompetenceTaskMapping[].class);
 				} catch (JsonMappingException e) {
-					return JSonResponseHelper.jsonMapError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 				} catch (IOException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonReadError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 				}
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
@@ -1166,10 +1197,10 @@ public class TaskController {
 
 				return JSonResponseHelper.nestedResponse(true, fullresponse);
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -1198,12 +1229,12 @@ public class TaskController {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.confirmRole("ADMIN") && task.getTaskState() == TaskState.NOT_PUBLISHED) {
 				competenceTaskRelDAO.delete(ctr);
-				return JSonResponseHelper.successFullyDeleted(competence);
+				return JSonResponseHelper.successfullyDeleted(competence);
 			} else {
-				return JSonResponseHelper.ressourceUnchangeable();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.RESSOURCE_UNCHANGEABLE);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -1224,7 +1255,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(taskList));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -1235,6 +1266,7 @@ public class TaskController {
 	 * @param task_id
 	 * @return ResponseEntity
 	 */
+	/*
 	@RequestMapping(value = { "/{task_id}/periodic/set",
 			"/{task_id}/priodic/set/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
@@ -1254,10 +1286,10 @@ public class TaskController {
 					nrd = mapper.readValue(json, RepetitionDate.class);
 				} catch (JsonMappingException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonMapError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 				} catch (IOException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.jsonReadError();
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 				}
 				toSet.setTaskRepetitionState(TaskRepetitionState.PERIODIC);
 				RepetitionDate ord = toSet.getRepetitionDate();
@@ -1268,9 +1300,9 @@ public class TaskController {
 				return JSonResponseHelper.successFullAction("task set to periodical");
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
-	}
+	}*/
 
 	/**
 	 * Sets the TaskRepetitionState from periodic to once
@@ -1278,6 +1310,7 @@ public class TaskController {
 	 * @param task_id
 	 * @return ResponseEntity
 	 */
+	/*
 	@RequestMapping(value = { "/{task_id}/periodic/undo",
 			"/{task_id}/priodic/undo/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -1296,7 +1329,7 @@ public class TaskController {
 			return JSonResponseHelper.successFullAction("task set to once");
 		}
 
-	}
+	}*/
 
 	/**
 	 * Sets the relation between the logged in user and target task to done,
@@ -1349,16 +1382,16 @@ public class TaskController {
 						NotificationHelper.createTaskDone(task_id, user.getId());
 					}
 
-					return JSonResponseHelper.successFullyUpdated(task);
+					return JSonResponseHelper.successfullyUpdated(task);
 				} else {
-					return JSonResponseHelper.createResponse(false, "bad_request", "USER_NOT_PARTICIPATING");
+					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.USER_NOT_PARTICIPATING);
 				}
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_STARTED");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_STARTED);
 			}
 		}
 
-		return JSonResponseHelper.idNotFound();
+		return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 
 	}
 
@@ -1395,29 +1428,29 @@ public class TaskController {
 					s = task.publish();
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
 					case 2:
-						return JSonResponseHelper.createResponse(false, "bad_request", "CHILDREN_NOT_READY");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.CHILDREN_NOT_READY);
 					case 3:
 						state = TaskState.PUBLISHED;
 						break;
 					default:
-						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.UNDEFINED_ERROR);
 					}
 
 				} else if (stateName.equals("start")) {
 
-					s = task.start(taskDAO);
+					s = task.start();
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
 					case 2:
-						return JSonResponseHelper.createResponse(false, "bad_request", "START_NOT_ALLOWED");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.START_NOT_ALLOWED);
 					case 3:
 						state = TaskState.STARTED;
 						break;
 					default:
-						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.UNDEFINED_ERROR);
 					}
 
 				} else if (stateName.equals("complete")) {
@@ -1425,29 +1458,40 @@ public class TaskController {
 					s = task.complete();
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
 					case 2:
-						return JSonResponseHelper.createResponse(false, "bad_request", "NOT_COMPLETED_BY_USERS");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.NOT_COMPLETED_BY_USERS);
 					case 3:
 						state = TaskState.COMPLETED;
 						break;
 					default:
-						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.UNDEFINED_ERROR);
+					}
+
+				} else if (stateName.equals("unpublish")) {
+
+					s = task.unpublish();
+					switch (s) {
+					case 3:
+						state = TaskState.NOT_PUBLISHED;
+						break;
+					default:
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.UNDEFINED_ERROR);
 					}
 
 				} else if (stateName.equals("forceComplete")) {
 
-					s = task.forceComplete(taskDAO, user);
+					s = task.forceComplete();
 					switch (s) {
 					case 1:
-						return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
 					case 2:
-						return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 					case 3:
 						state = TaskState.COMPLETED;
 						return JSonResponseHelper.successTaskStateChanged(task, state);
 					default:
-						return JSonResponseHelper.createResponse(false, "bad_request", "UNDEFINED_ERROR");
+						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.UNDEFINED_ERROR);
 					}
 
 				} else {
@@ -1458,10 +1502,10 @@ public class TaskController {
 				taskDAO.save(task);
 				return JSonResponseHelper.successTaskStateChanged(task, state);
 			} else {
-				return JSonResponseHelper.idNotFound();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 		}
 	}
 
@@ -1540,10 +1584,10 @@ public class TaskController {
 				NotificationHelper.createLeadNomination(loggedU.getId(), targetU.getId(), task.getId());
 				return JSonResponseHelper.successfullySent();
 			} else {
-				return JSonResponseHelper.ressourceUnchangeable();
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.RESSOURCE_UNCHANGEABLE);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -1572,10 +1616,10 @@ public class TaskController {
 				NotificationHelper.createTaskInvitation(logged.getId(), userId, taskId);
 				return JSonResponseHelper.successfullySent();
 			} else {
-				return JSonResponseHelper.actionNotPossible("locked in user is not leading the task");
+				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSonResponseHelper.idNotFound();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -1595,7 +1639,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskParticipationType.values()));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -1614,7 +1658,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskState.values()));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -1633,7 +1677,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskType.values()));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -1653,7 +1697,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(tasks));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -1676,10 +1720,10 @@ public class TaskController {
 			query = mapper.readValue(json, SimpleQuery.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonMapError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonReadError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
@@ -1696,7 +1740,7 @@ public class TaskController {
 
 			Decider unit = new Decider();
 
-			ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters(), taskDAO);
+			ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters());
 
 			for (EvaluatedTask ets : et) {
 				ets.setDoable(false);
@@ -1712,7 +1756,7 @@ public class TaskController {
 			return ResponseEntity.ok().body(mapper.writeValueAsString(et));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 	}
 
@@ -1731,10 +1775,10 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return JSonResponseHelper.print(mapper
-					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters(), userDAO)));
+					.writeValueAsString(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters())));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.jsonWriteError();
+			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 
 	}
