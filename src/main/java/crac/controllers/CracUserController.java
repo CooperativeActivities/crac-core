@@ -410,8 +410,6 @@ public class CracUserController {
 
 	}
 	
-	//TODO Verbinde TaskDetail und Relation
-
 	/**
 	 * Returns target task and its relationship to the logged in user
 	 * 
@@ -432,14 +430,13 @@ public class CracUserController {
 		if (task != null) {
 			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
 			if (rel != null) {
-				ObjectMapper mapper = new ObjectMapper();
-				try {
-					return ResponseEntity.ok()
-							.body("[" + mapper.writeValueAsString(new TaskDetails(task, user)) + "," + mapper.writeValueAsString(rel) + "]");
-				} catch (JsonProcessingException e) {
-					System.out.println(e.toString());
-					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-				}
+				
+				HashMap<String, Object> meta = new HashMap<>();
+				meta.put("task", new TaskDetails(task, user));
+				meta.put("relationship", rel);
+				
+				return JSonResponseHelper.createResponse(user, true, meta);
+				
 			}
 
 		}
@@ -474,7 +471,6 @@ public class CracUserController {
 
 	}
 
-	//TODO what should we do with that
 	/**
 	 * Returns all tasks of logged in user, divided in the
 	 * TaskParticipationTypes
@@ -505,18 +501,14 @@ public class CracUserController {
 					taskListLead.add(new TaskShort(utr.getTask()));
 				}
 			}
-
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				return ResponseEntity.ok()
-						.body("{\"following\": " + mapper.writeValueAsString(taskListFollow) + ", \"participating\": "
-								+ mapper.writeValueAsString(taskListPart) + ", \"leading\": "
-								+ mapper.writeValueAsString(taskListLead) + "}");
-			} catch (JsonProcessingException e) {
-				System.out.println(e.toString());
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-			}
-
+			
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("leading", taskListLead);
+			meta.put("following", taskListFollow);
+			meta.put("participating", taskListPart);
+			
+			return JSonResponseHelper.createResponse(user, true, meta);
+			
 		} else {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
