@@ -1,6 +1,7 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,10 +56,12 @@ public class FilterConfigurationController {
 			name = filterName;
 
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
 		}
-
-		return JSonResponseHelper.successFullAction(name + " added!");
+		
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("filter", name);
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -86,13 +89,13 @@ public class FilterConfigurationController {
 
 				restoreStandard();
 
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.NOT_FOUND);
-			}
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
+			}	
 
-			return JSonResponseHelper.successFullAction("Filters have been updated!");
+			return JSonResponseHelper.successfullyUpdated(mfp);
 
 		} else {
-			return JSonResponseHelper.emptyData();
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 
 	}
@@ -105,7 +108,7 @@ public class FilterConfigurationController {
 			"/filter/print/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> printFilter() {
-		return JSonResponseHelper.successFullAction(GlobalMatrixFilterConfig.filtersToString());
+		return JSonResponseHelper.createResponse(GlobalMatrixFilterConfig.filtersToString(), true);
 	}
 
 	/**
@@ -117,8 +120,9 @@ public class FilterConfigurationController {
 	@ResponseBody
 	public ResponseEntity<String> clearFilter() {
 		GlobalMatrixFilterConfig.clearFilters();
-
-		return JSonResponseHelper.successFullAction("Filters cleared!");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("filters", "CLEARED");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -131,7 +135,9 @@ public class FilterConfigurationController {
 	public ResponseEntity<String> restoreFilter() {
 		restoreStandard();
 
-		return JSonResponseHelper.successFullAction("Filters restored!");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("filters", "RESTORED");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 
 	public void restoreStandard() {

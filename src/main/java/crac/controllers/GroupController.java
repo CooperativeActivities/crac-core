@@ -19,10 +19,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Group;
+import crac.utility.JSonResponseHelper;
 
 /**
  * REST controller for managing groups.
@@ -42,9 +44,7 @@ public class GroupController {
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
-		Iterable<Group> groupList = groupDAO.findAll();
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(groupList));
+		return JSonResponseHelper.createResponse(groupDAO.findAll(), true);
 	}
 
 	/**
@@ -53,9 +53,7 @@ public class GroupController {
 	@RequestMapping(value = "/{group_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "group_id") Long id) throws JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
-		Group myGroup = groupDAO.findOne(id);
-		return ResponseEntity.ok().body(mapper.writeValueAsString(myGroup));
+		return JSonResponseHelper.createResponse(groupDAO.findOne(id), true);
 	}
 
 	/**
@@ -72,7 +70,7 @@ public class GroupController {
 		myGroup.setCreator(user);
 		groupDAO.save(myGroup);
 
-		return ResponseEntity.ok().body("{\"created\":\"true\"}");
+		return JSonResponseHelper.successfullyCreated(myGroup);
 
 	}
 
@@ -84,9 +82,9 @@ public class GroupController {
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "group_id") Long id) {
 		Group deleteGroup = groupDAO.findOne(id);
+		ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(deleteGroup);
 		groupDAO.delete(deleteGroup);
-		return ResponseEntity.ok().body("{\"deleted\":\"true\"}");
-
+		return v;
 	}
 
 	/**
@@ -103,8 +101,8 @@ public class GroupController {
 		oldGroup = updatedGroup;
 
 		groupDAO.save(oldGroup);
-
-		return ResponseEntity.ok().body("{\"updated\":\"true\"}");
+		
+		return JSonResponseHelper.successfullyUpdated(oldGroup);
 
 	}
 

@@ -14,6 +14,7 @@ import crac.enums.ErrorCause;
 import crac.models.db.daos.RoleDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
+import crac.notifier.NotificationHelper;
 import crac.utility.JSonResponseHelper;
 
 @RestController
@@ -31,17 +32,7 @@ public class RoleController {
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
-
-		Iterable<Role> roles = roleDAO.findAll();
-
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(roles));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(roleDAO.findAll(), true);
 	}
 
-	
 }

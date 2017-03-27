@@ -64,14 +64,7 @@ public class CompetenceController {
 	@RequestMapping(value = { "/all", "/all/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-		Iterable<Competence> competenceList = competenceDAO.findAll();
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(competenceList));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(competenceDAO.findAll(), true);
 	}
 
 	/**
@@ -84,14 +77,7 @@ public class CompetenceController {
 			"/{competence_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "competence_id") Long id) {
-		ObjectMapper mapper = new ObjectMapper();
-		Competence myCompetence = competenceDAO.findOne(id);
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(myCompetence));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(competenceDAO.findOne(id), true);
 	}
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
@@ -101,15 +87,8 @@ public class CompetenceController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Set<UserCompetenceRel> rels = user.getCompetenceRelationships();
+		return JSonResponseHelper.createResponse(user.getCompetenceRelationships(), true);
 
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(rels));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
 	}
 
 	/**
@@ -161,14 +140,7 @@ public class CompetenceController {
 	@RequestMapping(value = { "/userrels", "/userrels/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> userrels() {
-		Iterable<UserCompetenceRel> competenceList = userCompetenceRelDAO.findAll();
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(competenceList));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(userCompetenceRelDAO.findAll(), true);
 	}
 
 }

@@ -9,18 +9,22 @@ import crac.enums.RESTAction;
 public class RESTResponse<T> {
 	
 	private String type;
-	private RESTAction action;
+	private RESTAction rest_action;
 	private boolean success;
 	private ArrayList<RESTError> errors;
 	private T object;
-	private HashMap<String, String> meta;
+	private HashMap<String, Object> meta;
 	
-	public RESTResponse(RESTAction action, boolean success, T object) {
-		type = object.getClass().getSimpleName();
-		this.action = action;
+	public RESTResponse(RESTAction rest_action, boolean success, T object) {
+		type = "NO_OBJECT";
+		this.object = null;
+		if(object != null){
+			type = object.getClass().getSimpleName();
+			this.object = object;
+		}
+		this.rest_action = rest_action;
 		this.success = success;
 		this.errors = new ArrayList<>();
-		this.object = object;
 		this.meta = new HashMap<>();
 	}
 	
@@ -32,8 +36,8 @@ public class RESTResponse<T> {
 		return type;
 	}
 
-	public RESTAction getAction() {
-		return action;
+	public RESTAction getRest_action() {
+		return rest_action;
 	}
 
 	public boolean isSuccess() {
@@ -48,11 +52,11 @@ public class RESTResponse<T> {
 		return object;
 	}
 
-	public HashMap<String, String> getMeta() {
+	public HashMap<String, Object> getMeta() {
 		return meta;
 	}
 
-	public void setMeta(HashMap<String, String> meta) {
+	public void setMeta(HashMap<String, Object> meta) {
 		this.meta = meta;
 	}
 

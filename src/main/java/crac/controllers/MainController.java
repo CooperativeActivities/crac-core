@@ -108,7 +108,9 @@ public class MainController {
 		System.out.println(DataAccess.getRepo(CracUserDAO.class).findOne((long)1).getName());
 		System.out.println(DataAccess.getRepo(CompetenceDAO.class).findOne((long)3456).getName());
 		
-		return JSonResponseHelper.successFullAction("called");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("endpoint", "CALLED");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 	
 	@RequestMapping("/filters")
@@ -126,7 +128,9 @@ public class MainController {
 		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
 		System.out.println("-----------------------");
 		
-		return JSonResponseHelper.successFullAction("standard filters added!");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("filters", "ADDED");
+		return JSonResponseHelper.createResponse(true, meta);
 		
 	}
 	

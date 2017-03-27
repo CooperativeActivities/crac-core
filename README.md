@@ -213,7 +213,7 @@ If not, "errors" contains the different errors that happened.
 
 	{
 	  "type": "Data-Type",
-	  "action": "CREATE",
+	  "rest_action": "CREATE",
 	  "success": true,
 	  "errors": [],
 	  "object": {},
@@ -1070,7 +1070,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-PUT /task/{task_id}/material/update/{material_id}
+PUT /task/{task_id}/material/{material_id}/update
 
 	{
 		"name": "cake",
@@ -1088,7 +1088,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-GET /task/{task_id}/material/remove/{material_id}
+GET /task/{task_id}/material/{material_id}/remove
 
 #####*Response:*
 

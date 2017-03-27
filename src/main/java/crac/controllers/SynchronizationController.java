@@ -162,7 +162,9 @@ public class SynchronizationController {
 		System.out.println("-------------------------------");
 		System.out.println("||||DAO||||");
 		System.out.println("-------------------------------");
-		return JSonResponseHelper.successFullAction("Data Access has been synchronized");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "DAO");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 	
 	/**
@@ -179,7 +181,9 @@ public class SynchronizationController {
 		System.out.println("-------------------------------");
 		System.out.println("||||INTERN COMPETENCES SYNCED||||");
 		System.out.println("-------------------------------");
-		return JSonResponseHelper.successFullAction("Competences have been synchronized");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "INTERN_COMPETENCES");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 	
 	/**
@@ -194,7 +198,9 @@ public class SynchronizationController {
 		this.dbsync();
 		this.filtersync();
 		this.internsync();
-		return JSonResponseHelper.successFullAction("Everything has been synced");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "ALL");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 	
 	/**
@@ -208,7 +214,9 @@ public class SynchronizationController {
 		this.dbsync();
 		this.filtersync();
 		this.internsync();
-		return JSonResponseHelper.successFullAction("Everything has been synced");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "ALL_COMPETENCES");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -228,16 +236,7 @@ public class SynchronizationController {
 		System.out.println("||||DATABASE SYNCED||||");
 		System.out.println("-------------------------------");
 
-		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(m));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(m, true);
 
 	}
 
@@ -457,7 +456,9 @@ public class SynchronizationController {
 		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
 		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
 		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
-		return JSonResponseHelper.successFullAction("Filters have been synced");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "FILTER");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 	
 	/**
@@ -477,7 +478,9 @@ public class SynchronizationController {
 		addSamples();
 		addCompetencePermissionType();
 		addUsers();
-		return JSonResponseHelper.successFullAction("Data has been synced");
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "TEST_DATA");
+		return JSonResponseHelper.createResponse(true, meta);
 	}
 	
 	private void addSamples(){

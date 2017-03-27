@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.decider.core.Decider;
 import crac.decider.core.UserFilterParameters;
 import crac.enums.ErrorCause;
+import crac.enums.RESTAction;
 import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
@@ -52,6 +54,7 @@ import crac.models.output.TaskShort;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.SimpleUserRelationship;
 import crac.notifier.NotificationHelper;
+import crac.notifier.notifications.FriendRequest;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
 
@@ -98,9 +101,7 @@ public class CracUserController {
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
-		Iterable<CracUser> userList = userDAO.findAll();
-		ObjectMapper mapper = new ObjectMapper();
-		return ResponseEntity.ok().body(mapper.writeValueAsString(userList));
+		return JSonResponseHelper.createResponse(userDAO.findAll(), true);
 	}
 
 	/**
@@ -111,18 +112,12 @@ public class CracUserController {
 	@RequestMapping(value = { "/{user_id}", "/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "user_id") Long id) {
-		ObjectMapper mapper = new ObjectMapper();
 		CracUser user = userDAO.findOne(id);
 
 		if (user != null) {
-			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(user));
-			} catch (JsonProcessingException e) {
-				System.out.println(e.toString());
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-			}
+			return JSonResponseHelper.createResponse(user, true);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -137,14 +132,7 @@ public class CracUserController {
 	public ResponseEntity<String> getLogged() {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
-		CracUser myUser = userDAO.findByName(userDetails.getName());
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(myUser));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(userDAO.findByName(userDetails.getName()), true);
 	}
 
 	/**
@@ -166,10 +154,10 @@ public class CracUserController {
 			updatedUser = mapper.readValue(json, CracUser.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -181,7 +169,7 @@ public class CracUserController {
 			userDAO.save(oldUser);
 			return JSonResponseHelper.successfullyUpdated(oldUser);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -216,7 +204,7 @@ public class CracUserController {
 			userDAO.save(user);
 			return JSonResponseHelper.successfullyAssigned(competence);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -250,10 +238,10 @@ public class CracUserController {
 				userCompetenceRelDAO.save(ucr);
 				return JSonResponseHelper.successfullyAssigned(competence);
 			}else{
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -287,17 +275,9 @@ public class CracUserController {
 		}
 
 		if (found.size() != 0) {
-
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(found));
-			} catch (JsonProcessingException e) {
-				System.out.println(e.toString());
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-			}
-
+			return JSonResponseHelper.createResponse(found, true);		
 		} else {
-			return JSonResponseHelper.emptyData();
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 
 	}
@@ -326,10 +306,10 @@ public class CracUserController {
 				userCompetenceRelDAO.delete(rel);
 				return JSonResponseHelper.successfullyDeleted(competence);
 			} else {
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -360,21 +340,23 @@ public class CracUserController {
 					if (!task.isFull()) {
 						state = TaskParticipationType.PARTICIPATING;
 					} else {
-						return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_IS_FULL);
+						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_IS_FULL);
 					}
 				} else {
-					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
+					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
 				}
 			} else if (stateName.equals("follow")) {
 				if (task.isFollowable()) {
 					state = TaskParticipationType.FOLLOWING;
 				} else {
-					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
+					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
 				}
 			}/* else if (stateName.equals("lead")) {
 				state = TaskParticipationType.LEADING;
 			} */else {
-				return JSonResponseHelper.stateNotAvailable(stateName);
+				HashMap<String, Object> meta = new HashMap<>();
+				meta.put("state", stateName);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE, meta);
 			}
 
 			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
@@ -394,7 +376,7 @@ public class CracUserController {
 			return JSonResponseHelper.successfullyAssigned(task);
 
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -420,13 +402,15 @@ public class CracUserController {
 				userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTask(user, task));
 				return JSonResponseHelper.successfullyDeleted(task);
 			} else {
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
 			}
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
+	
+	//TODO Verbinde TaskDetail und Relation
 
 	/**
 	 * Returns target task and its relationship to the logged in user
@@ -454,13 +438,13 @@ public class CracUserController {
 							.body("[" + mapper.writeValueAsString(new TaskDetails(task, user)) + "," + mapper.writeValueAsString(rel) + "]");
 				} catch (JsonProcessingException e) {
 					System.out.println(e.toString());
-					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
+					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 				}
 			}
 
 		}
 
-		return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+		return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 
 	}
 
@@ -481,22 +465,16 @@ public class CracUserController {
 
 		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
 
-		if (competenceRels.size() != 0) {
-
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				return ResponseEntity.ok().body(mapper.writeValueAsString(competenceRels));
-			} catch (JsonProcessingException e) {
-				System.out.println(e.toString());
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-			}
+		if (competenceRels.size() != 0) {		
+			return JSonResponseHelper.createResponse(competenceRels, true);
 
 		} else {
-			return JSonResponseHelper.emptyData();
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 
 	}
 
+	//TODO what should we do with that
 	/**
 	 * Returns all tasks of logged in user, divided in the
 	 * TaskParticipationTypes
@@ -536,11 +514,11 @@ public class CracUserController {
 								+ mapper.writeValueAsString(taskListLead) + "}");
 			} catch (JsonProcessingException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 			}
 
 		} else {
-			return JSonResponseHelper.emptyData();
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 
 	}
@@ -556,7 +534,7 @@ public class CracUserController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		return JSonResponseHelper.checkUserSuccess(user);
+		return JSonResponseHelper.createResponse(user, true);
 
 	}
 
@@ -573,7 +551,13 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		CracToken t = tokenDAO.findByUserId(user.getId());
 		if (t != null) {
-			return JSonResponseHelper.tokenFailure(user, t);
+			
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("action", "CREATE_TOKEN");
+			meta.put("issue", "TOKEN_ALREADY_CREATED");
+			meta.put("user", user);
+			meta.put("roles", user.getRoles());
+			return JSonResponseHelper.createResponse(t, true, meta);
 		} else {
 			CracToken token = new CracToken();
 
@@ -583,7 +567,12 @@ public class CracUserController {
 			token.setCode(code);
 			token.setUserId(user.getId());
 			tokenDAO.save(token);
-			return JSonResponseHelper.tokenSuccess(user, token);
+			
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("action", "CREATE_TOKEN");
+			meta.put("user", user);
+			meta.put("roles", user.getRoles());
+			return JSonResponseHelper.createResponse(token, true, meta);
 		}
 
 	}
@@ -601,11 +590,12 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		CracToken t = tokenDAO.findByUserId(user.getId());
 		if (t != null) {
+			ResponseEntity<String> v = JSonResponseHelper.createResponse(t, true, RESTAction.DELETE);
 			userDAO.save(user);
 			tokenDAO.delete(t);
-			return JSonResponseHelper.tokenDestroySuccess(user);
+			return v;
 		} else {
-			return JSonResponseHelper.tokenDestroyFailure(user);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NO_TOKEN, RESTAction.DELETE);
 		}
 
 	}
@@ -625,16 +615,10 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		ObjectMapper mapper = new ObjectMapper();
 		Decider unit = new Decider();
 		
-		try {
-			return JSonResponseHelper.print(mapper.writeValueAsString(unit.findTasks(user, new UserFilterParameters())));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
-
+		return JSonResponseHelper.createResponse(unit.findTasks(user, new UserFilterParameters()), true);
+		
 	}
 	
 	/**
@@ -652,7 +636,6 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		ObjectMapper mapper = new ObjectMapper();
 		Decider unit = new Decider();
 		
 		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
@@ -668,14 +651,9 @@ public class CracUserController {
 			tasks.add(task);
 			count ++;
 		}
-				
-		try {
-			return JSonResponseHelper.print(mapper.writeValueAsString(tasks));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
-
+			
+		return JSonResponseHelper.createResponse(tasks, true);
+		
 	}
 
 
@@ -693,8 +671,10 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser sender = userDAO.findByName(userDetails.getName());
 		CracUser receiver = userDAO.findOne(id);
-		NotificationHelper.createFriendRequest(sender.getId(), receiver.getId());
-		return JSonResponseHelper.successfullFriendRequest(receiver);
+		
+		FriendRequest n = new FriendRequest(sender.getId(), receiver.getId());
+		NotificationHelper.createNotification(n);
+		return JSonResponseHelper.successfullyCreated(n);
 	}
 
 	/**
@@ -717,12 +697,13 @@ public class CracUserController {
 				rel.setLikeValue(0.5);
 				rel.setFriends(false);
 				userRelationshipDAO.save(rel);
-				return JSonResponseHelper.successfullUnfriend(friend);
+				return JSonResponseHelper.successfullyDeleted(friend);
+				//return JSonResponseHelper.successfullUnfriend(friend);
 			} else {
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.USERS_NOT_FRIENDS);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.USERS_NOT_FRIENDS);
 			}
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -751,16 +732,9 @@ public class CracUserController {
 				friends.add(ur.getC1());
 			}
 		}
+		
+		return JSonResponseHelper.createResponse(friends, true);
 
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(friends));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
 	}
 
 	/**
@@ -786,15 +760,8 @@ public class CracUserController {
 			rels.add(new SimpleUserRelationship(ur.getC1(), ur.getLikeValue(), ur.isFriends()));
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			return ResponseEntity.ok().headers(headers).body(mapper.writeValueAsString(rels));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(rels, true);
+
 	}
 
 	/**
@@ -819,7 +786,7 @@ public class CracUserController {
 			userDAO.save(user);
 			return JSonResponseHelper.successfullyAssigned(role);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -844,7 +811,7 @@ public class CracUserController {
 			user.getRoles().remove(role);
 			return JSonResponseHelper.successfullyDeleted(role);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
@@ -53,7 +54,7 @@ public class NotificationController {
 	public ResponseEntity<String> getNotifications() {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getUserNotifications(user)));
+		return JSonResponseHelper.createResponse(NotificationHelper.notificationsToString(NotificationHelper.getUserNotifications(user)), true);
 	}
 	
 	/**
@@ -64,7 +65,7 @@ public class NotificationController {
 	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getAllNotifications() {
-	return ResponseEntity.ok().body(NotificationHelper.notificationsToString(NotificationHelper.getAllNotifications()));
+		return JSonResponseHelper.createResponse(NotificationHelper.notificationsToString(NotificationHelper.getAllNotifications()), true);
 	}
 
 	/**
@@ -79,9 +80,12 @@ public class NotificationController {
 		
 		if(n != null){
 			String message = n.accept();
-			return JSonResponseHelper.successfullyAccepted(n, message);
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("message", message);
+			return JSonResponseHelper.createResponse(n, true, meta);
+			//return JSonResponseHelper.successfullyAccepted(n, message);
 		}else{
-			return JSonResponseHelper.noSuchNotification();
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 		
 
@@ -99,9 +103,12 @@ public class NotificationController {
 		
 		if(n != null){
 			String message = n.deny();
-			return JSonResponseHelper.successfullyDenied(n, message);
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("message", message);
+			return JSonResponseHelper.createResponse(n, true, meta);
+			//return JSonResponseHelper.successfullyDenied(n, message);
 		}else{
-			return JSonResponseHelper.noSuchNotification();
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 	

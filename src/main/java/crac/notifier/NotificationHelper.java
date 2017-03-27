@@ -19,12 +19,18 @@ public class NotificationHelper {
 	
 	private NotificationHelper(){}
 	
+	public static void createNotification(Notification n){
+		NotificationDistributor.getInstance().addNotification(n);
+	}
+	
 	public static void createTaskDone(Long taskId, Long targetUserId) {
 		NotificationDistributor.getInstance().addNotification(new TaskDoneNotification(taskId, targetUserId));
 	}
-
-	public static void createFriendRequest(Long sendingUserId, Long targetUserId) {
-		NotificationDistributor.getInstance().addNotification(new FriendRequest(sendingUserId, targetUserId));
+/*
+	public static FriendRequest createFriendRequest(Long sendingUserId, Long targetUserId) {
+		FriendRequest n = new FriendRequest(sendingUserId, targetUserId);
+		NotificationDistributor.getInstance().addNotification(n);
+		return n;
 	}
 	
 	public static void createFriendSuggestion(Long suggestedUserId, Long targetUserId) {
@@ -44,7 +50,7 @@ public class NotificationHelper {
 		EvaluationNotification e = new EvaluationNotification(targetUserId, taskId, evaluationId);
 		NotificationDistributor.getInstance().addNotification(e);
 		return e;
-	}
+	}*/
 	
 	public static void deleteNotification(String id) {
 		NotificationDistributor.getInstance().deleteNotificationById(id);

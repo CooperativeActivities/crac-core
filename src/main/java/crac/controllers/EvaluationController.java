@@ -86,13 +86,16 @@ public class EvaluationController {
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user, task);
-			EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
+			
+			EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
+			NotificationHelper.createNotification(es);
+			//EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
 			return JSonResponseHelper.successfullyCreated(e);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -119,18 +122,21 @@ public class EvaluationController {
 					if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
 						user = utr.getUser();
 						Evaluation e = new Evaluation(user, task);
-						es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
+						//es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
+						es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
+						NotificationHelper.createNotification(es);
 						e.setNotificationId(es.getNotificationId());
 						evaluationDAO.save(e);
 						es.setEvaluationIdy(e.getId());
 					}
 				}
-				return JSonResponseHelper.successfullySent();
+				return JSonResponseHelper.successfullyCreated(task);
+				//return JSonResponseHelper.successfullySent();
 			} else {
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
 			}
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -153,13 +159,15 @@ public class EvaluationController {
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user, task);
-			EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
+			//EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());
+			EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
+			NotificationHelper.createNotification(es);
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
 			return JSonResponseHelper.successfullyCreated(e);
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -181,7 +189,7 @@ public class EvaluationController {
 		if (originalEval != null) {
 			
 			if(originalEval.isFilled()){
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
@@ -190,10 +198,10 @@ public class EvaluationController {
 				newEval = mapper.readValue(json, Evaluation.class);
 			} catch (JsonMappingException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 			} catch (IOException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 			}
 
 			String notificationId = originalEval.getNotificationId();
@@ -209,10 +217,11 @@ public class EvaluationController {
 			originalEval.setNotificationId("deleted");
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);
-			return JSonResponseHelper.successfullEvaluation();
+			return JSonResponseHelper.successfullyCreated(originalEval);
+			//return JSonResponseHelper.successfullEvaluation();
 
 		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}

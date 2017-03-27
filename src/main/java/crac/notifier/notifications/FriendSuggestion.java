@@ -36,7 +36,8 @@ public class FriendSuggestion extends Notification{
 
 	@Override
 	public String accept() {
-		NotificationHelper.createFriendRequest(getTargetId(), suggestedId);
+		//NotificationHelper.createFriendRequest(getTargetId(), suggestedId);
+		NotificationHelper.createNotification(new FriendRequest(getTargetId(), suggestedId));
 		NotificationHelper.deleteNotification(this.getNotificationId());
 		System.out.println("Friend-suggestion accepted, Friend request sent.");
 		return "accepted";
