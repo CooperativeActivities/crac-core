@@ -840,8 +840,8 @@ GET /task/{task_id}
 	
 #####*Request:*
 
-PUT /admin/task/{task_id}
-####This function requires ADMIN-rights!
+PUT /task/{task_id}
+####This function requires permission!
 
 	{
 	    "name": "testTask",

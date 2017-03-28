@@ -83,7 +83,7 @@ public class EvaluationController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		Task task = taskDAO.findOne(taskId);
 
-		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
+		if (user != null && task != null && userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user, task);
 			
@@ -156,7 +156,7 @@ public class EvaluationController {
 		CracUser user = userDAO.findOne(userId);
 		Task task = taskDAO.findOne(taskId);
 
-		if (user != null && task != null && userTaskRelDAO.findByUserAndTask(user, task) != null
+		if (user != null && task != null && userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING) != null
 				&& task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user, task);
 			//EvaluationNotification es = NotificationHelper.createEvaluation(user.getId(), task.getId(), e.getId());

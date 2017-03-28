@@ -359,7 +359,7 @@ public class CracUserController {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE, meta);
 			}
 
-			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
+			UserTaskRel rel = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING);
 
 			if (rel == null) {
 				rel = new UserTaskRel();
@@ -398,8 +398,8 @@ public class CracUserController {
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			if (!task.inConduction()) {
-				userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTask(user, task));
+			if (!task.inConduction()) {			
+				userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING));
 				return JSonResponseHelper.successfullyDeleted(task);
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
@@ -428,7 +428,7 @@ public class CracUserController {
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			UserTaskRel rel = userTaskRelDAO.findByUserAndTask(user, task);
+			UserTaskRel rel = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING);
 			if (rel != null) {
 				
 				HashMap<String, Object> meta = new HashMap<>();

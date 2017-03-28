@@ -82,6 +82,7 @@ public class Task {
 	@Column(name = "task_state")
 	private TaskState taskState;
 
+	@NotNull
 	@Column(name = "task_type")
 	private TaskType taskType;
 
@@ -164,12 +165,14 @@ public class Task {
 		this.taskRepetitionState = TaskRepetitionState.ONCE;
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
+		/*
 		Calendar time = new GregorianCalendar();
 		time.set(2030, 9, 10, 14, 30, 00);
 		this.startTime = time;
 		Calendar time2 = new GregorianCalendar();
 		time2.set(2031, 9, 10, 14, 30, 00);
 		this.endTime = time2;
+		*/
 		this.materials = new HashSet<Material>();
 	}
 
@@ -292,7 +295,11 @@ public class Task {
 	@JsonIgnore
 	public boolean updateReadyStatus() {
 		boolean ready = this.fieldsFilled() && this.childTasksReady();
+		if(this.getTaskType() == TaskType.ORGANISATIONAL && !this.hasChildTasks()){
+			ready = false;
+		}
 		this.readyToPublish = ready;
+		DataAccess.getRepo(TaskDAO.class).save(this);
 		if (this.getSuperTask() != null) {
 			this.getSuperTask().updateReadyStatus();
 		}
@@ -754,10 +761,10 @@ public class Task {
 		if (t.getFeedback() != null) {
 			this.setFeedback(t.getFeedback());
 		}
-
+/*
 		if (t.getTaskType() != null) {
 			this.setTaskType(t.getTaskType());
-		}
+		}*/
 	}
 
 }

@@ -257,9 +257,10 @@ public class TaskController {
 						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_TOO_HIGH);
 					} else if (c > 0) {
 						HashMap<String, Object> meta = new HashMap<>();
-						meta.put("lowest", 1+"");
-						meta.put("highest", c+"");
-						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_INCORRECT, meta);
+						meta.put("lowest", 1 + "");
+						meta.put("highest", c + "");
+						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_INCORRECT,
+								meta);
 					}
 					/*
 					 * if (oldTask.getSuperTask() != null) { if
@@ -278,13 +279,14 @@ public class TaskController {
 					// UpdateEntitiesHelper.checkAndUpdateTask(oldTask,
 					// updatedTask);
 					oldTask.update(updatedTask);
-					oldTask.updateReadyStatus();
 					taskDAO.save(oldTask);
+					oldTask.updateReadyStatus();
 					ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
 					eSConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
 					return JSonResponseHelper.successfullyUpdated(oldTask);
 				} else {
-					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+					return JSonResponseHelper.createResponse(false, "bad_request",
+							ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 				}
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
@@ -384,8 +386,9 @@ public class TaskController {
 						if (ct.getMaxAmountOfVolunteers() > 0) {
 							val += ct.getMaxAmountOfVolunteers();
 						} else {
-							return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_HAS_OPEN_AMOUNT);
-}
+							return JSonResponseHelper.createResponse(false, "bad_request",
+									ErrorCause.TASK_HAS_OPEN_AMOUNT);
+						}
 					}
 
 					t.setMaxAmountOfVolunteers(val);
@@ -398,7 +401,7 @@ public class TaskController {
 
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
-}
+			}
 		} else {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
@@ -423,22 +426,19 @@ public class TaskController {
 
 		int c = checkAmountOfVolunteers(t, t.getMaxAmountOfVolunteers(), false);
 
-		System.out.println("answer: " + c);
-		
-		if(st.getTaskType() == TaskType.ORGANISATIONAL && t.getTaskType() == TaskType.SHIFT){
+		if (st.getTaskType() == TaskType.ORGANISATIONAL && t.getTaskType() == TaskType.SHIFT) {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ORGANISATIONAL_EXTENDS_SHIFT);
 		}
-		
-		if(st.getTaskType() == TaskType.WORKABLE && t.getTaskType() == TaskType.ORGANISATIONAL){
+
+		if (st.getTaskType() == TaskType.WORKABLE && t.getTaskType() == TaskType.ORGANISATIONAL) {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.WORKABLE_EXTENDS_ORGANISATIONAL);
 		}
-		
-		if(st.getTaskType() == TaskType.WORKABLE && t.getTaskType() == TaskType.WORKABLE){
+
+		if (st.getTaskType() == TaskType.WORKABLE && t.getTaskType() == TaskType.WORKABLE) {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.WORKABLE_EXTENDS_WORKABLE);
 		}
 
-		
-		if(st.getTaskType() == TaskType.SHIFT){
+		if (st.getTaskType() == TaskType.SHIFT) {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.SHIFT_EXTENDS);
 		}
 
@@ -446,8 +446,8 @@ public class TaskController {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_TOO_HIGH);
 		} else if (c > 0) {
 			HashMap<String, Object> meta = new HashMap<>();
-			meta.put("lowest", 1+"");
-			meta.put("highest", c+"");
+			meta.put("lowest", 1 + "");
+			meta.put("highest", c + "");
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_INCORRECT, meta);
 		}
 
@@ -458,11 +458,17 @@ public class TaskController {
 		 * "Amount of volunteers has to be between 1 and " +
 		 * st.possibleNumberOfVolunteers()); } }
 		 */
+		if (t.getStartTime() == null) {
+			t.setStartTime(st.getStartTime());
+		}
+		if (t.getEndTime() == null) {
+			t.setEndTime(st.getEndTime());
+		}
 		t.setTaskState(st.getTaskState());
 		t.setReadyToPublish(st.isReadyToPublish());
 		t.setCreator(u);
-		t.updateReadyStatus();
 		taskDAO.save(t);
+		t.updateReadyStatus();
 
 		return JSonResponseHelper.successfullyCreated(t);
 
@@ -539,10 +545,10 @@ public class TaskController {
 						}
 					}
 				}
-				
+
 				HashMap<String, Object> meta = new HashMap<>();
 				meta.put("result", fullresponse);
-				
+
 				return JSonResponseHelper.createResponse(true, meta, RESTAction.CREATE);
 
 			} else {
@@ -773,15 +779,15 @@ public class TaskController {
 					meta.put("action", "QUANTITY_UPDATED");
 					meta.put("material", m);
 					meta.put("subscription", ums);
-					
+
 					return JSonResponseHelper.createResponse(st, true, meta, RESTAction.GET);
 				}
-				
+
 				ErrorCause cause = ErrorCause.QUANTITY_TOO_HIGH;
-				
-				if(status.equals("QUANTITY_TOO_SMALL")){
+
+				if (status.equals("QUANTITY_TOO_SMALL")) {
 					cause = ErrorCause.QUANTITY_TOO_SMALL;
-				}else if(status.equals("QUANTITY_TOO_HIGH")){
+				} else if (status.equals("QUANTITY_TOO_HIGH")) {
 					cause = ErrorCause.QUANTITY_TOO_HIGH;
 				}
 
@@ -821,16 +827,15 @@ public class TaskController {
 
 				if (ums != null) {
 
-
 					HashMap<String, Object> meta = new HashMap<>();
 					meta.put("task_id", st.getId() + "");
 					meta.put("material_id", m.getId() + "");
 					meta.put("action", "UNSUBSCRIBED");
 					meta.put("task", st);
 					meta.put("subscription", ums);
-					
+
 					ResponseEntity<String> v = JSonResponseHelper.createResponse(m, true, meta, RESTAction.GET);
-					
+
 					m.getSubscribedUsers().remove(ums);
 					userMaterialSubscriptionDAO.delete(ums);
 
@@ -851,37 +856,31 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	/*
-	@RequestMapping(value = { "/{task_id}/publish/ready/single",
-			"/{task_id}/publish/ready/single/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> readyforPublish(@PathVariable(value = "task_id") Long taskId) {
-		Task t = taskDAO.findOne(taskId);
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
-
-				if (t.fieldsFilled()) {
-					if (t.childTasksReady()) {
-						t.setReadyToPublish(true);
-						taskDAO.save(t);
-						return JSonResponseHelper.successFullyUpdated(t);
-					} else {
-						return JSonResponseHelper.createResponse(false, "bad_request", "CHILDREN_NOT_READY");
-					}
-				} else {
-					return JSonResponseHelper.createResponse(false, "bad_request", "TASK_NOT_READY");
-				}
-
-			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
-			}
-		} else {
-			return JSonResponseHelper.idNotFound();
-		}
-	}*/
+	 * @RequestMapping(value = { "/{task_id}/publish/ready/single",
+	 * "/{task_id}/publish/ready/single/" }, method = RequestMethod.GET,
+	 * produces = "application/json")
+	 * 
+	 * @ResponseBody public ResponseEntity<String>
+	 * readyforPublish(@PathVariable(value = "task_id") Long taskId) { Task t =
+	 * taskDAO.findOne(taskId); UsernamePasswordAuthenticationToken userDetails
+	 * = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+	 * .getContext().getAuthentication(); CracUser user =
+	 * userDAO.findByName(userDetails.getName());
+	 * 
+	 * if (t != null) { if (user.hasTaskPermissions(t)) {
+	 * 
+	 * if (t.fieldsFilled()) { if (t.childTasksReady()) {
+	 * t.setReadyToPublish(true); taskDAO.save(t); return
+	 * JSonResponseHelper.successFullyUpdated(t); } else { return
+	 * JSonResponseHelper.createResponse(false, "bad_request",
+	 * "CHILDREN_NOT_READY"); } } else { return
+	 * JSonResponseHelper.createResponse(false, "bad_request",
+	 * "TASK_NOT_READY"); }
+	 * 
+	 * } else { return JSonResponseHelper.createResponse(false, "bad_request",
+	 * "PERMISSIONS_NOT_SUFFICIENT"); } } else { return
+	 * JSonResponseHelper.idNotFound(); } }
+	 */
 
 	/**
 	 * Sets target task and all children ready to be published
@@ -890,32 +889,27 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	/*
-	@RequestMapping(value = { "/{task_id}/publish/ready/tree",
-			"/{task_id}/publish/ready/tree/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> forcePublish(@PathVariable(value = "task_id") Long taskId) {
-		Task t = taskDAO.findOne(taskId);
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
-				HashMap<String, String> results = new HashMap<>();
-				t.readyToPublishTree(results, taskDAO);
-				if (results.size() == 0) {
-					return JSonResponseHelper.successFullyUpdated(t);
-				} else {
-					return JSonResponseHelper.messageArray(results);
-				}
-
-			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", "PERMISSIONS_NOT_SUFFICIENT");
-			}
-		} else {
-			return JSonResponseHelper.idNotFound();
-		}
-	}*/
+	 * @RequestMapping(value = { "/{task_id}/publish/ready/tree",
+	 * "/{task_id}/publish/ready/tree/" }, method = RequestMethod.GET, produces
+	 * = "application/json")
+	 * 
+	 * @ResponseBody public ResponseEntity<String>
+	 * forcePublish(@PathVariable(value = "task_id") Long taskId) { Task t =
+	 * taskDAO.findOne(taskId); UsernamePasswordAuthenticationToken userDetails
+	 * = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+	 * .getContext().getAuthentication(); CracUser user =
+	 * userDAO.findByName(userDetails.getName());
+	 * 
+	 * if (t != null) { if (user.hasTaskPermissions(t)) { HashMap<String,
+	 * String> results = new HashMap<>(); t.readyToPublishTree(results,
+	 * taskDAO); if (results.size() == 0) { return
+	 * JSonResponseHelper.successFullyUpdated(t); } else { return
+	 * JSonResponseHelper.messageArray(results); }
+	 * 
+	 * } else { return JSonResponseHelper.createResponse(false, "bad_request",
+	 * "PERMISSIONS_NOT_SUFFICIENT"); } } else { return
+	 * JSonResponseHelper.idNotFound(); } }
+	 */
 
 	/**
 	 * Copy target task
@@ -936,7 +930,7 @@ public class TaskController {
 
 		if (original.getSuperTask() != null) {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_BE_COPIED);
-}
+		}
 
 		Task copy = original.copy(null);
 		copy.setCreator(user);
@@ -1079,7 +1073,7 @@ public class TaskController {
 				}
 				HashMap<String, Object> meta = new HashMap<>();
 				meta.put("result", fullresponse);
-				
+
 				return JSonResponseHelper.createResponse(true, meta, RESTAction.CREATE);
 
 			} else {
@@ -1195,7 +1189,7 @@ public class TaskController {
 				}
 				HashMap<String, Object> meta = new HashMap<>();
 				meta.put("result", fullresponse);
-				
+
 				return JSonResponseHelper.createResponse(true, meta, RESTAction.CREATE);
 
 			} else {
@@ -1262,42 +1256,37 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	/*
-	@RequestMapping(value = { "/{task_id}/periodic/set",
-			"/{task_id}/priodic/set/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> setTaskPeriodical(@RequestBody String json,
-			@PathVariable(value = "task_id") Long task_id) {
-
-		Task toSet = taskDAO.findOne(task_id);
-
-		if (toSet != null) {
-			if (toSet.getSuperTask() != null) {
-				return JSonResponseHelper.actionNotPossible("child-tasks can't be set periodical");
-			} else {
-				RepetitionDate nrd;
-				ObjectMapper mapper = new ObjectMapper();
-
-				try {
-					nrd = mapper.readValue(json, RepetitionDate.class);
-				} catch (JsonMappingException e) {
-					System.out.println(e.toString());
-					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-				}
-				toSet.setTaskRepetitionState(TaskRepetitionState.PERIODIC);
-				RepetitionDate ord = toSet.getRepetitionDate();
-				repetitionDateDAO.save(nrd);
-				toSet.setRepetitionDate(nrd);
-				taskDAO.save(toSet);
-				repetitionDateDAO.delete(ord);
-				return JSonResponseHelper.successFullAction("task set to periodical");
-			}
-		} else {
-			return JSonResponseHelper.createGeneralResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-	}*/
+	 * @RequestMapping(value = { "/{task_id}/periodic/set",
+	 * "/{task_id}/priodic/set/" }, method = RequestMethod.POST, produces =
+	 * "application/json", consumes = "application/json")
+	 * 
+	 * @ResponseBody public ResponseEntity<String>
+	 * setTaskPeriodical(@RequestBody String json,
+	 * 
+	 * @PathVariable(value = "task_id") Long task_id) {
+	 * 
+	 * Task toSet = taskDAO.findOne(task_id);
+	 * 
+	 * if (toSet != null) { if (toSet.getSuperTask() != null) { return
+	 * JSonResponseHelper.
+	 * actionNotPossible("child-tasks can't be set periodical"); } else {
+	 * RepetitionDate nrd; ObjectMapper mapper = new ObjectMapper();
+	 * 
+	 * try { nrd = mapper.readValue(json, RepetitionDate.class); } catch
+	 * (JsonMappingException e) { System.out.println(e.toString()); return
+	 * JSonResponseHelper.createGeneralResponse(false, "bad_request",
+	 * ErrorCause.JSON_MAP_ERROR); } catch (IOException e) {
+	 * System.out.println(e.toString()); return
+	 * JSonResponseHelper.createGeneralResponse(false, "bad_request",
+	 * ErrorCause.JSON_READ_ERROR); }
+	 * toSet.setTaskRepetitionState(TaskRepetitionState.PERIODIC);
+	 * RepetitionDate ord = toSet.getRepetitionDate();
+	 * repetitionDateDAO.save(nrd); toSet.setRepetitionDate(nrd);
+	 * taskDAO.save(toSet); repetitionDateDAO.delete(ord); return
+	 * JSonResponseHelper.successFullAction("task set to periodical"); } } else
+	 * { return JSonResponseHelper.createGeneralResponse(false, "bad_request",
+	 * ErrorCause.ID_NOT_FOUND); } }
+	 */
 
 	/**
 	 * Sets the TaskRepetitionState from periodic to once
@@ -1306,25 +1295,25 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	/*
-	@RequestMapping(value = { "/{task_id}/periodic/undo",
-			"/{task_id}/priodic/undo/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> undoTaskPeriodical(@PathVariable(value = "task_id") Long task_id) {
-
-		Task toSet = taskDAO.findOne(task_id);
-
-		if (toSet.getTaskRepetitionState() != TaskRepetitionState.PERIODIC) {
-			return JSonResponseHelper.actionNotPossible("task is not periodic");
-		} else {
-			toSet.setTaskRepetitionState(TaskRepetitionState.ONCE);
-			RepetitionDate ord = toSet.getRepetitionDate();
-			toSet.setRepetitionDate(null);
-			repetitionDateDAO.delete(ord);
-			taskDAO.save(toSet);
-			return JSonResponseHelper.successFullAction("task set to once");
-		}
-
-	}*/
+	 * @RequestMapping(value = { "/{task_id}/periodic/undo",
+	 * "/{task_id}/priodic/undo/" }, method = RequestMethod.GET, produces =
+	 * "application/json")
+	 * 
+	 * @ResponseBody public ResponseEntity<String>
+	 * undoTaskPeriodical(@PathVariable(value = "task_id") Long task_id) {
+	 * 
+	 * Task toSet = taskDAO.findOne(task_id);
+	 * 
+	 * if (toSet.getTaskRepetitionState() != TaskRepetitionState.PERIODIC) {
+	 * return JSonResponseHelper.actionNotPossible("task is not periodic"); }
+	 * else { toSet.setTaskRepetitionState(TaskRepetitionState.ONCE);
+	 * RepetitionDate ord = toSet.getRepetitionDate();
+	 * toSet.setRepetitionDate(null); repetitionDateDAO.delete(ord);
+	 * taskDAO.save(toSet); return
+	 * JSonResponseHelper.successFullAction("task set to once"); }
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Sets the relation between the logged in user and target task to done,
@@ -1350,37 +1339,43 @@ public class TaskController {
 						.getContext().getAuthentication();
 				CracUser user = userDAO.findByName(userDetails.getName());
 
-				UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
+				UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
+						TaskParticipationType.LEADING);
 
-				if (utr != null && utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					if (done.equals("true")) {
-						utr.setCompleted(true);
-					} else if (done.equals("false")) {
-						utr.setCompleted(false);
-					} else {
-						HashMap<String, Object> meta = new HashMap<>();
-						meta.put("state", done);
-						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE, meta);
-					}
-					userTaskRelDAO.save(utr);
-
-					// Check if all users are done, if yes, notify the leaders
-
-					boolean alldone = true;
-
-					for (UserTaskRel ut : task.getUserRelationships()) {
-						if (ut.getParticipationType() == TaskParticipationType.PARTICIPATING && !ut.isCompleted()) {
-							alldone = false;
-							break;
+				if (utr != null) {
+					if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+						if (done.equals("true")) {
+							utr.setCompleted(true);
+						} else if (done.equals("false")) {
+							utr.setCompleted(false);
+						} else {
+							HashMap<String, Object> meta = new HashMap<>();
+							meta.put("state", done);
+							return JSonResponseHelper.createResponse(false, "bad_request",
+									ErrorCause.STATE_NOT_AVAILABLE, meta);
 						}
-					}
+						userTaskRelDAO.save(utr);
 
-					if (alldone) {
-						//TaskDoneNotification n = new TaskDoneNotification(task_id, user.getId());
-						NotificationHelper.createTaskDone(task_id, user.getId());
-					}
+						// Check if all users are done, if yes, notify the
+						// leaders
 
-					return JSonResponseHelper.successfullyUpdated(task);
+						boolean alldone = true;
+
+						for (UserTaskRel ut : task.getUserRelationships()) {
+							if (ut.getParticipationType() == TaskParticipationType.PARTICIPATING && !ut.isCompleted()) {
+								alldone = false;
+								break;
+							}
+						}
+
+						if (alldone) {
+							// TaskDoneNotification n = new
+							// TaskDoneNotification(task_id, user.getId());
+							NotificationHelper.createTaskDone(task_id, user.getId());
+						}
+
+						return JSonResponseHelper.successfullyUpdated(task);
+					}
 				} else {
 					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.USER_NOT_PARTICIPATING);
 				}
@@ -1420,7 +1415,7 @@ public class TaskController {
 			if (task != null) {
 
 				TaskState oldState = task.getTaskState();
-				
+
 				TaskState state = TaskState.NOT_PUBLISHED;
 				int s = 0;
 
@@ -1460,7 +1455,8 @@ public class TaskController {
 					case 1:
 						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
 					case 2:
-						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_COMPLETED_BY_USERS);
+						return JSonResponseHelper.createResponse(false, "bad_request",
+								ErrorCause.NOT_COMPLETED_BY_USERS);
 					case 3:
 						state = TaskState.COMPLETED;
 						break;
@@ -1486,7 +1482,8 @@ public class TaskController {
 					case 1:
 						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
 					case 2:
-						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+						return JSonResponseHelper.createResponse(false, "bad_request",
+								ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 					case 3:
 						state = TaskState.COMPLETED;
 						break;
@@ -1497,7 +1494,8 @@ public class TaskController {
 				} else {
 					HashMap<String, Object> meta = new HashMap<>();
 					meta.put("state", stateName);
-					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE, meta);
+					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE,
+							meta);
 				}
 
 				task.setTaskState(state);
@@ -1586,10 +1584,11 @@ public class TaskController {
 		if (targetU != null && task != null) {
 
 			if (loggedU.hasTaskPermissions(task)) {
-				
+
 				LeadNomination n = new LeadNomination(loggedU.getId(), targetU.getId(), task.getId());
 				NotificationHelper.createNotification(n);
-				//NotificationHelper.createLeadNomination(loggedU.getId(), targetU.getId(), task.getId());
+				// NotificationHelper.createLeadNomination(loggedU.getId(),
+				// targetU.getId(), task.getId());
 				return JSonResponseHelper.successfullyCreated(n);
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.RESOURCE_UNCHANGEABLE);
@@ -1617,13 +1616,15 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser logged = userDAO.findByName(userDetails.getName());
 
-		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(logged, taskDAO.findOne(taskId));
+		UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(logged, taskDAO.findOne(taskId),
+				TaskParticipationType.LEADING);
 
 		if (utr != null) {
 			if (utr.getParticipationType() == TaskParticipationType.LEADING) {
 				TaskInvitation n = new TaskInvitation(logged.getId(), userId, taskId);
 				NotificationHelper.createNotification(n);
-				//NotificationHelper.createTaskInvitation(logged.getId(), userId, taskId);
+				// NotificationHelper.createTaskInvitation(logged.getId(),
+				// userId, taskId);
 				return JSonResponseHelper.successfullyCreated(n);
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
@@ -1691,7 +1692,8 @@ public class TaskController {
 	@RequestMapping(value = { "/parents", "/parents/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getParents() {
-		return JSonResponseHelper.createResponse(taskDAO.findBySuperTaskNullAndTaskStateNot(TaskState.NOT_PUBLISHED), true);
+		return JSonResponseHelper.createResponse(taskDAO.findBySuperTaskNullAndTaskStateNot(TaskState.NOT_PUBLISHED),
+				true);
 	}
 
 	/**
@@ -1758,7 +1760,8 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
 		Decider unit = new Decider();
-		return JSonResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()), true);
+		return JSonResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
+				true);
 	}
 
 	/**

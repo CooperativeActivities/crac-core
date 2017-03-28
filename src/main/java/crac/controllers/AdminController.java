@@ -255,8 +255,12 @@ public class AdminController {
 			System.out.println(e.toString());
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
+		
+		if(task.getTaskType() == TaskType.SHIFT){
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_CREATE);
+		}
+		
 		task.setCreator(user);
-		task.setTaskType(TaskType.ORGANISATIONAL);
 		task.updateReadyStatus();
 
 		try {

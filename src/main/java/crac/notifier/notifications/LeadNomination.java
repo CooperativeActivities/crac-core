@@ -61,7 +61,8 @@ public class LeadNomination extends Notification {
 		Task task = taskDAO.findOne(taskId);
 		CracUser user = userDAO.findOne(super.getTargetId());
 
-		UserTaskRel utr = userTaskRelDAO.findByUserAndTask(user, task);
+		UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
+				TaskParticipationType.LEADING);
 		
 		String message = "";
 
