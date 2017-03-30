@@ -63,7 +63,7 @@ public class Competence {
 	 */
 	
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<UserCompetenceRel> userRelationships;
 
 	@ManyToOne
@@ -81,24 +81,24 @@ public class Competence {
 	private CracUser creator;
 	
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "competence1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "competence1", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CompetenceRelationship> mappedCompetence1;
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "competence2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "competence2", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CompetenceRelationship> mappedCompetence2;
 	
 	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CompetenceTaskRel> competenceTaskRels;
 
 	@JsonIdentityReference(alwaysAsId=true)
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "mapping_competencearea_competence", joinColumns={@JoinColumn(name="competence_id")}, inverseJoinColumns={@JoinColumn(name="competenceArea_id")})
 	Set<CompetenceArea> competenceAreas;
 	
 	@JsonIdentityReference(alwaysAsId=true)
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "mapping_question_competence", joinColumns={@JoinColumn(name="competence_id")}, inverseJoinColumns={@JoinColumn(name="question_id")})
 	Set<Question> mappedQuestions;
 	

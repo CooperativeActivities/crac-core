@@ -96,6 +96,7 @@ public class JSonResponseHelper {
 		try {
 			result = mapper.writeValueAsString(r);
 		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 			return createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
 		}
 

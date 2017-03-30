@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
+import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
 import crac.models.db.entities.Comment;
 import crac.models.db.entities.CracUser;
@@ -33,6 +34,7 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.storage.CompetenceStorage;
+import crac.utility.DataAccess;
 
 public class TaskDetails {
 
@@ -49,7 +51,7 @@ public class TaskDetails {
 	private Calendar endTime;
 
 	private int minAmountOfVolunteers;
-	
+
 	private int maxAmountOfVolunteers;
 
 	private int signedUsers;
@@ -74,11 +76,15 @@ public class TaskDetails {
 
 	private Set<UserFriendDetails> userRelationships;
 
-	private Set<CompetenceRelationDetails> taskCompetences;
+	private Set<CompetenceMatchingRelationDetails> taskCompetences;
 
 	private Set<Material> materials;
-	
+
 	private TaskType taskType;
+	
+	private Set<UserTaskRel> participationDetails;
+	
+	private boolean assigned;
 
 	public TaskDetails(Task t, CracUser u) {
 		this.id = t.getId();
@@ -101,8 +107,15 @@ public class TaskDetails {
 		this.childTasks = addChildren(t);
 		this.attachments = t.getAttachments();
 		this.comments = t.getComments();
-		this.userRelationships = calcFriends(t, u);
-		this.taskCompetences = calcComps(t, u);
+		this.participationDetails = DataAccess.getRepo(UserTaskRelDAO.class).findByUserAndTask(u, t);
+		if (!this.participationDetails.isEmpty()) {
+			this.userRelationships = calcFriends(t, u);
+			this.taskCompetences = calcComps(t, u);
+			this.assigned = true;
+		} else {
+			this.participationDetails = null;
+			this.assigned = false;
+		}
 		this.materials = t.getMaterials();
 		this.taskType = t.getTaskType();
 	}
@@ -121,9 +134,9 @@ public class TaskDetails {
 
 	}
 
-	public Set<CompetenceRelationDetails> calcComps(Task t, CracUser u) {
+	public Set<CompetenceMatchingRelationDetails> calcComps(Task t, CracUser u) {
 
-		Set<CompetenceRelationDetails> list = new HashSet<>();
+		Set<CompetenceMatchingRelationDetails> list = new HashSet<>();
 
 		Set<CompetenceTaskRel> mctr = t.getMappedCompetences();
 
@@ -141,7 +154,7 @@ public class TaskDetails {
 						}
 					}
 					System.out.println("name: " + ctr.getCompetence().getName() + " val: " + bestVal);
-					CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
+					CompetenceMatchingRelationDetails cd = new CompetenceMatchingRelationDetails(ctr.getCompetence());
 					cd.setMandatory(ctr.isMandatory());
 					cd.setRelationValue(bestVal);
 					cd.setImportanceLevel(ctr.getImportanceLevel());
@@ -360,11 +373,11 @@ public class TaskDetails {
 		this.userRelationships = userRelationships;
 	}
 
-	public Set<CompetenceRelationDetails> getTaskCompetences() {
+	public Set<CompetenceMatchingRelationDetails> getTaskCompetences() {
 		return taskCompetences;
 	}
 
-	public void setTaskCompetences(Set<CompetenceRelationDetails> taskCompetences) {
+	public void setTaskCompetences(Set<CompetenceMatchingRelationDetails> taskCompetences) {
 		this.taskCompetences = taskCompetences;
 	}
 
@@ -382,6 +395,22 @@ public class TaskDetails {
 
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
+	}
+
+	public boolean isAssigned() {
+		return assigned;
+	}
+
+	public void setAssigned(boolean assigned) {
+		this.assigned = assigned;
+	}
+
+	public Set<UserTaskRel> getParticipationDetails() {
+		return participationDetails;
+	}
+
+	public void setParticipationDetails(Set<UserTaskRel> participationDetails) {
+		this.participationDetails = participationDetails;
 	}
 
 }

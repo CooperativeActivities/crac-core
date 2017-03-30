@@ -65,6 +65,14 @@ public class CompetenceArea {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public Set<Competence> getMappedCompetences() {
+		return mappedCompetences;
+	}
+
+	public void setMappedCompetences(Set<Competence> mappedCompetences) {
+		this.mappedCompetences = mappedCompetences;
+	}
 	
 	
 	

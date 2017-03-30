@@ -384,7 +384,12 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/competence/{competence_id}/add/{likeValue}/{proficiencyValue}
+	{
+		"proficiencyValue": 50,
+		"likeValue": 50
+	}
+
+POST competence/{competence_id}/add
 
 #####*Response:*
 
@@ -396,7 +401,12 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}
+	{
+		"proficiencyValue": 50,
+		"likeValue": 50
+	}
+
+PUT competence/{competence_id}/adjust
 
 #####*Response:*
 
@@ -408,7 +418,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/competence/available
+GET competence/available
 
 #####*Response:*
 
@@ -431,7 +441,7 @@ GET user/competence/available
 
 #####*Request:*
 
-GET user/competence/{competence_id}/remove
+DELETE competence/{competence_id}/remove
 
 #####*Response:*
 
@@ -440,106 +450,6 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 
 ###Task-Endpoints on logged in user
-
------------------------------------------------------------------
-
-**Removes the task with given id from the open-tasks of the currently logged in user**
-
-#####*Request:*
-
-GET user/task/{task_id}/remove
-
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
------------------------------------------------------------------
-
-**Returns target task and its relationship to the logged in user**
-
-#####*Request:*
-
-GET user/task/{task_id}
-
-
-#####*Response:*
-
-	[
-	  {
-	    "id": 1,
-	    "name": "Water the flowers",
-	    "description": "All about watering the different flowers in the garden.",
-	    ...
-	  },
-	  {
-	    "id": 1,
-	    "user": 1,
-	    "task": 1,
-	    "participationType": "PARTICIPATING"
-	  }
-	]
-
------------------------------------------------------------------
-
-**Returns all tasks of logged in user, divided in the TaskParticipationTypes**
-
-#####*Request:*
-
-GET user/task
-
-#####*Response:*
-
-	{
-	  "following": [],
-	  "participating": [
-	    {
-	      "id": 1,
-	      "name": "Water the flowers",
-	      "description": "All about watering the different flowers in the garden.",
-			...
-	    }
-	  ],
-	  "leading": []
-	}
------------------------------------------------------------------
-
-**Returns the competences of the currently logged in user, wrapped in the relationship-object**
-
-#####*Request:*
-
-GET user/competence
-
-#####*Response:*
-
-	[
-	  {
-	    "id": 16,
-	    "user": 3,
-	    "competence": {
-	      "id": 6,
-	      "name": "javascript-programming",
-	      ...
-	      ]
-	    },
-	    "likeValue": 1,
-	    "proficiencyValue": 50
-	  },
-	  {
-	    "id": 17,
-	    "user": 3,
-	    "competence": {
-	      "id": 7,
-	      "name": "php-programming",
-	      ...
-	      ]
-	    },
-	    "likeValue": 1,
-	    "proficiencyValue": 50
-	  },
-	  ...
-	]
-
 
 -----------------------------------------------------------------
 
@@ -820,7 +730,7 @@ GET /task
 
 -----------------------------------------------------------------
 
-**Returns a task object with given id and updates the task if it's ready to start**
+**Returns target task and its relationship to the logged in user (if one exists) and updates the task if it's ready to start**
 
 #####*Request:*
 
@@ -828,11 +738,7 @@ GET /task/{task_id}
 
 #####*Response:*
 
-	{
-		"id": {task_id},
-		"name": "searchedTask",
-		...
-	}
+The information about the task and its relationships is in the meta-object
 	
 -----------------------------------------------------------------
 
@@ -901,6 +807,54 @@ Json-data, either a success or a failure message
 
 DELETE /admin/task/{task_id}
 ####This function requires ADMIN-rights!
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Returns all tasks of logged in user, divided in the TaskParticipationTypes**
+
+#####*Request:*
+
+GET task/type
+
+#####*Response:*
+
+	{
+	  "following": [],
+	  "participating": [
+	    {
+	      "id": 1,
+	      "name": "Water the flowers",
+	      "description": "All about watering the different flowers in the garden.",
+			...
+	    }
+	  ],
+	  "leading": []
+	}
+	
+-----------------------------------------------------------------
+
+**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate', 'follow', or 'lead'**
+
+#####*Request:*
+
+GET task/{task_id}/add/{state_name}
+
+#####*Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Removes the task with given id from the open-tasks of the currently logged in user**
+
+#####*Request:*
+
+GET task/{task_id}/remove
+
 
 #####*Response:*
 
@@ -1263,19 +1217,6 @@ GET /task//{task_id}/invite/{user_id}
 
 Json-data, either a success or a failure message
 
-	
------------------------------------------------------------------
-
-**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate', 'follow', or 'lead'**
-
-#####*Request:*
-
-GET /user/task/{task_id}/{state_name}
-
-#####*Response:*
-
-Json-data, either a success or a failure message
-
 -----------------------------------------------------------------
 
 **Change the state of target task; Choose either 'publish', 'start', or 'complete'**
@@ -1507,37 +1448,38 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Returns an array containing all competence-relationships of the logged in user**
+**Returns the competences of the currently logged in user, wrapped in the relationship-object**
 
 #####*Request:*
 
-GET /competence
+GET competence
 
 #####*Response:*
 
 	[
 	  {
-	    "id": 10,
-	    "user": 1,
+	    "id": 16,
+	    "user": 3,
 	    "competence": {
-	      "id": 3,
-	      "name": "walking",
-			...
+	      "id": 6,
+	      "name": "javascript-programming",
+	      ...
+	      ]
 	    },
-	    "likeValue": 50,
-	    "proficiencyValue": 50,
-	    "selfAssigned": false
+	    "likeValue": 1,
+	    "proficiencyValue": 50
 	  },
 	  {
-	    "id": 14,
-	    "user": 1,
+	    "id": 17,
+	    "user": 3,
 	    "competence": {
-	      "id": 4,
-			...
+	      "id": 7,
+	      "name": "php-programming",
+	      ...
+	      ]
 	    },
-	    "likeValue": 10,
-	    "proficiencyValue": 50,
-	    "selfAssigned": false
+	    "likeValue": 1,
+	    "proficiencyValue": 50
 	  },
 	  ...
 	]
@@ -1564,6 +1506,42 @@ GET /competence/all
 			...
 		}
 	]
+
+-----------------------------------------------------------------
+
+**Returns all competences that are related to target competence, ordered by it's relation-value**
+
+#####*Request:*
+
+GET /{competence_id}/related
+
+#####*Response:*
+
+Standard response, the related-competences are part of the meta-object
+
+-----------------------------------------------------------------
+
+**Returns target competence-topic-area and its mapped competences**
+
+#####*Request:*
+
+GET /area/{area_id}
+
+#####*Response:*
+
+Standard response, the related-competences are part of the meta-object
+
+-----------------------------------------------------------------
+
+**Returns all competence-topic-areas**
+
+#####*Request:*
+
+GET /area
+
+#####*Response:*
+
+Standard response, the related-competences are part of the meta-object
 
 -----------------------------------------------------------------
 
@@ -1849,83 +1827,6 @@ PUT /admin/task -> from /task, now only usable with admin or editor permissions
 GET /task/{task_id} -> FUNCTIONALITY CHANGED, now updates the task if it's ready to start
 GET /user/task/{task_id}/{state_name} -> from /task/{task_id}/{state_name}
 
-###This is the summary of the changes to the Task-Workflow
-
-1. not published
-Admin/Editor kann Task (Task auf oberster Ebene entspricht meistens einem Projekt) erstellen
-Creator wird im Task permanent dokumentiert und und ist automatisch auch Leader des erstellten Tasks (Creator == Leader)
-Leader hat Änderungsrechte am Task
-Leader kann Felder befüllen, ändern
-Leader kann weitere CrAc-User als Leader für jeweiligen Task bestimmen
-Leader kann weitere Sub-Tasks erstellen
-Leader kann Leader für Sub-Tasks erstellen
-Leader hat generell Berechtigungen über alle Tasks/Sub-Tasks unter “seinem” Task
-Nur weil jemand globale Rolle “Editor” hat, darf er deswegen den Task nicht verändern – Editor erlaubt nur einen neuen Task zu erstellen, von welchem er dann automatisch Creator ist – ergo die genannten Privilegien erhält (Änderungsrecht, etc.)
-Alle Felder eines Tasks (außer dem “creator”-Feld) sind in diesem Status noch veränderbar
-Die Struktur des gesamten Task-Baumes ist gänzlich veränderbar (Sub-Tasks, Siblings, Leaderbestimmung, etc.)
-Not published Task ist für niemanden sichtbar außer den Admin (Schreibrechte), Editor (Leserechte), und den einzelnen Leader (generell Leserechte; bei eigenem Task/Sub-Tasks Schreibrechte) welche im gesamten Task-Baum definiert sind
-Jeder Leader eines Tasks kann für seinen Bereich bekanntgeben, dass er “ready-to-publish” ist
-Vorgehensweise von unten nach oben im Baum
-Notifikation an Super-Leader (quasi Projektverantwortlicher), wenn alle Sub-Tasks “ready-to-publish” sind, was bedeutet, dass alle Verantwortlichen das ok geben für die Veröffentlichung (es ist davon auszugehen, dass daher die Struktur für den gesamten Task überlegt und umgesetzt wurde)
-Wird ein “ready-to-publish” an einer Stelle “vergessen”, so kann der darüberliegende Leader das “ready-to-publish” erzwingen.
-
-2. published
-Wenn ein Task von einem Leader (ggf. auch Admin) veröffentlicht wird, bekommen alle User lesend Zugriff auf den Task-Baum mit den einzelnen Tasks und dabei auch folgende Funktionalitäten
-Task durchscrollen, anzeigen, Sub-Tasks öffnen
-Teilnehmen / Absagen
-Folgen / Entfolgen
-Kommentieren
-Handelt es sich um einzelne Tasks anstatt eines Task-Baumes, so gilt selbiges für die einzelnen Tasks
-Leader haben weiterhin Schreibrechte auf den Task, allerdings erste Einschränkungen nach der Veröffentlichung:
-Leader kann keine Sub-Tasks mehr von einem Blatt erstellen (da am Blatt nun ev. bereits User zugesagt haben)
-Leader kann bestimmte Felder nicht mehr verändern: Aktuell = creator, createdate, createtime
-Leader kann Status nicht mehr in den Status “notpublished” rückführen
-Leader hat aber weiterhin Rechte auf gesamten Sub-Baum “seines” Tasks
-Leader kann neue Task hinzufügen, jedoch wie bereits erwähnt nicht mehr unter einem Blatt, sondern nur mehr als Siblings zu anderen Tasks
-Anzeige in Taskliste(n)
-Aktivierung für Matching-Kalkulation
-
-
-3. started
-Im Gegensat zu den Stati unpublished/published welche für den gesamten Task-Baum (quasi das Projekt) gelten, kann jeder einzelne Task in den Status “started” hinübergeführt werden
-Die überführung in den Status “started” kann entweder manuell durch den Leader oder automatisch aufgrund des definierten Zeitraumes / Zeitpunktes erfolgen
-Sub-Task kann aber erst gestartet werden nachdem Super-Task gestartet wurde
-Ein offizieller Start eines Tasks bringt folgende Auswirkungen mit sich:
-User darf nicht mehr über das System absagen (Leader / Admin haben jedoch noch die Möglichkeit einen User händisch von der Teilnahmeliste zu entfernen)
-Teilnehmen ist weiterhin möglich, solange die max. Teilnehmeranzahl nicht erreicht ist (ggf. plus Tolleranz?  Diskussion soft/hard limit Teilnehmeranzahl)
-Follow/Unfollow ist weiterhin möglich
-Leader darf nun auch die Felder nicht mehr ändern im Task, da der Task bereits gestartet ist
-Kommentieren ist weiterhin möglich und dient u.a. dem Informationsaustausch
-Wenn die Teilnehmeranzahl erfüllt ist und der Task “in time” ist:
-Task nicht mehr in der Liste der “offenen Tasks” anzeigen (ev. sollte es eine eigene Liste “laufende Tasks” geben)
-Matching-Kalkulation abschwächen damit der Task im Matching nach hinten gereiht wird oder ggf. nicht mehr vorgeschlagen wird
-Wenn die Teilnehmeranzahl nicht erfüllt ist und der Task “in time” ist:
-Task nicht mehr in der Liste der “offenen Tasks” anzeigen
-Matching-Kalkulation noch nicht abschwächen – der Task sollte weiterhin matchen, ev. finden sich dadurch weitere Helfer
-Wenn die Teilnehmeranzahl nicht erfüllt ist und der Task “critical” ist:
-Task weiterhin in der Liste der “offenen Tasks” anzeigen
-Task ev. auf Startseite anzeigen und hervorheben
-Matching-Kalkulation anpassen damit Task eher Benutzern vorgeschlagen wird
-
-4. completed
-Jeder einzelne Task kann auf completed gesetzt werden, dabei ist jedoch zu unterscheiden, dass bei einem einzelnen Task mehrere User teilnehmen können, z.B. 3 Kuchen werden von 3 User gebacken – folglich kann jeder User seinen Task (seinen gebackenen Kuchen) für sich abschließen. Erst nachdem alle den Task abgeschlossen haben, bekommt der Leader eine Notifikation dass der Task abgeschlossen werden kann.
-Ähnlich wie beim “ready-to-publish” werden die Tasks von unten nach oben abgeschlossen – es kann kein Super-Task abgeschlossen werden, wenn der Sub-Task noch nicht abgeschlossen ist.
-Ausnahme: der Leader hat wieder die Möglichkeit ein complete zu erzwingen, z.B. falls der Benutzer darauf vergessen hat
-Nach dem der Task abgeschlossen ist können keine Änderungen mehr gemacht werden
-Diskussion: Sollte der Task wieder eröffnet werden können, z.B. wenn die Lösung nicht ausreichend ist?
-Nach dem ein Task gänzlich (von allen Usern & folglich Leader) abgeschlossen wurde, wird die Evaluierungsfunktion freigeschalten
-Task wird nicht mehr in Taskliste angezeigt (jedoch kann Task in eigener Liste “Completed Tasks” abgerufen werden um ggf. vergangene Tasks zu betrachten, beurteilen, etc.)
-Tasks wird im Matching nicht mehr berücksichtigt
-
-
-
-Anmerkungen
-Follow deutet das prinzipielle Interesse eines Users an einem Task oder einem Projekt an
-Leader und User wissen somit wer noch Interesse hätte mitzuarbeiten
-Ein Pool an ev. vorhandenen Helfern ist vorhanden
-Der Interessent (Follower) bekommt je nach Einstellungen Notifikationen zum jeweiligen Task
-Zeitraum eines Sub-Tasks muss innerhalb des Super-Tasks sein, d.h. wenn das Projekt Adventbazar von 01.10. bis zum 25.11. andauert, dann dürfen die Sub-Tasks nicht außerhalb dieses Zeitraumes sein. Wird hingegen nur ein Zeitpunkt angegeben, z.B. Adventbazar am 25.11. dann müssen die Sub-Task innerhalb des aktuellen Erstelldatums und dem 25.11. sein.
-
 -----------------------------------------------------------------
 
 ###14.12.2016
@@ -1998,3 +1899,36 @@ Look at the task-section for more info
 Endpoints to set tasks ready-to-publish are removed, this is done automatically now!  
 TaskTypes have been added! More information in the endpoint for adding tasks  
 Error-Responses are updated, more information in the error-section!
+
+-----------------------------------------------------------------
+
+####29.3.2017
+
+The Task-Workflow has been removed from the ReadMe! It can be found on SVN/contact me for information  
+
+New Endpoints (especially important for competence-recommendation) :  
+
+GET /area  
+GET /area/{area_id}  
+GET /{competence_id}/related  
+
+More infos in the competence-section!  
+
+Endpoints that are changed :  
+
+OLD -> NEW  
+
+Competence-related:  
+
+GET /user/competence/{competence_id}/add -> POST /competence/{competence_id}/add  
+GET /user/competence/{competence_id}/adjust -> PUT /competence/{competence_id}/adjust  
+GET /user/competence/{competence_id}/remove -> DELETE /competence/{competence_id}/remove  
+GET /user/competence -> GET /competence (!BOTH ENDPOINTS MERGED!)  
+
+Task-related:  
+
+GET /user/task/{task_id} -> GET /task/{task_id} (!BOTH ENDPOINTS MERGED!)  
+GET /user/task -> GET /task/type  
+GET /user/task/{task_id}/{state_name} -> PUT /task/{task_id}/add/{state_name}  
+GET /user/task/{task_id}/remove -> DELETE /task/{task_id}/remove  
+

@@ -3,6 +3,8 @@ package crac.storage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.hibernate.Hibernate;
+
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
 import crac.models.db.entities.Competence;

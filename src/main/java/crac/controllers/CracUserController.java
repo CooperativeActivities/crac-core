@@ -175,347 +175,6 @@ public class CracUserController {
 	}
 
 	/**
-	 * Add a competence with given ID to the currently logged in user, likeValue and proficiencyValue are mandatory
-	 * 
-	 * @param competenceId
-	 * @return ResponseEntity
-	 */
-
-	@RequestMapping(value = { "/competence/{competence_id}/add/{likeValue}/{proficiencyValue}",
-			"/competence/{competence_id}/add/{likeValue}/{proficiencyValue}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> addCompetence(@PathVariable(value = "competence_id") Long competenceId,
-			@PathVariable(value = "likeValue") int likeValue,
-			@PathVariable(value = "proficiencyValue") int proficiencyValue) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-		UserCompetenceRel rel = new UserCompetenceRel();
-
-		Competence competence = competenceDAO.findOne(competenceId);
-
-		if (competence != null) {
-			rel.setUser(user);
-			rel.setCompetence(competence);
-			rel.setLikeValue(likeValue);
-			rel.setProficiencyValue(proficiencyValue);
-			user.getCompetenceRelationships().add(rel);
-			userDAO.save(user);
-			return JSonResponseHelper.successfullyAssigned(competence);
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-
-	}
-
-	/**
-	 * Adjust the values of a user-competence connection
-	 * @param competenceId
-	 * @param likeValue
-	 * @param proficiencyValue
-	 * @return
-	 */
-	@RequestMapping(value = { "/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}",
-			"/competence/{competence_id}/adjust/{likeValue}/{proficiencyValue}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "competence_id") Long competenceId,
-			@PathVariable(value = "likeValue") int likeValue,
-			@PathVariable(value = "proficiencyValue") int proficiencyValue) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Competence competence = competenceDAO.findOne(competenceId);
-
-		if (competence != null) {
-			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
-			
-			if(ucr != null){
-				ucr.setLikeValue(likeValue);
-				ucr.setProficiencyValue(proficiencyValue);
-				userCompetenceRelDAO.save(ucr);
-				return JSonResponseHelper.successfullyAssigned(competence);
-			}else{
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-			}
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-
-	}
-	
-	@RequestMapping(value = { "/competence/available", "/competence/available/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> getAvailableCompetences() {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Iterable<Competence> competenceList = competenceDAO.findAll();
-
-		Set<UserCompetenceRel> competenceRels = user.getCompetenceRelationships();
-
-		ArrayList<Competence> found = new ArrayList<Competence>();
-
-		if (competenceList != null) {
-			for (Competence c : competenceList) {
-				boolean in = false;
-				for (UserCompetenceRel ucr : competenceRels) {
-					if (c.getId() == ucr.getCompetence().getId()) {
-						in = true;
-					}
-				}
-				if (!in) {
-					found.add(c);
-				}
-			}
-		}
-
-		if (found.size() != 0) {
-			return JSonResponseHelper.createResponse(found, true);		
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
-		}
-
-	}
-
-	/**
-	 * Removes target competence from the currently logged-in user
-	 * 
-	 * @param competenceId
-	 * @return ResponseEntity
-	 */
-
-	@RequestMapping(value = { "/competence/{competence_id}/remove",
-			"/competence/{competence_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> removeCompetence(@PathVariable(value = "competence_id") Long competenceId) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Competence competence = competenceDAO.findOne(competenceId);
-
-		if (competence != null) {
-			UserCompetenceRel rel = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
-			if (rel != null) {
-				userCompetenceRelDAO.delete(rel);
-				return JSonResponseHelper.successfullyDeleted(competence);
-			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-			}
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-
-	}
-
-	/**
-	 * Adds target task to the open-tasks of the logged-in user or changes it's
-	 * state
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/task/{task_id}/{state_name}",
-			"/task/{task_id}/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName,
-			@PathVariable(value = "task_id") Long taskId) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Task task = taskDAO.findOne(taskId);
-
-		if (task != null) {
-			TaskParticipationType state = TaskParticipationType.PARTICIPATING;
-			if (stateName.equals("participate")) {
-				if (task.isJoinable()) {
-					if (!task.isFull()) {
-						state = TaskParticipationType.PARTICIPATING;
-					} else {
-						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_IS_FULL);
-					}
-				} else {
-					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
-				}
-			} else if (stateName.equals("follow")) {
-				if (task.isFollowable()) {
-					state = TaskParticipationType.FOLLOWING;
-				} else {
-					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
-				}
-			}/* else if (stateName.equals("lead")) {
-				state = TaskParticipationType.LEADING;
-			} */else {
-				HashMap<String, Object> meta = new HashMap<>();
-				meta.put("state", stateName);
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE, meta);
-			}
-
-			UserTaskRel rel = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING);
-
-			if (rel == null) {
-				rel = new UserTaskRel();
-				rel.setUser(user);
-				rel.setTask(task);
-				rel.setParticipationType(state);
-				user.getTaskRelationships().add(rel);
-				userDAO.save(user);
-			} else {
-				rel.setParticipationType(state);
-				userTaskRelDAO.save(rel);
-			}
-
-			return JSonResponseHelper.successfullyAssigned(task);
-
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-
-	}
-
-	/**
-	 * Removes target task from the open-tasks of the logged-in user
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = "/task/{task_id}/remove", method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> removeTask(@PathVariable(value = "task_id") Long taskId) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Task task = taskDAO.findOne(taskId);
-
-		if (task != null) {
-			if (!task.inConduction()) {			
-				userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING));
-				return JSonResponseHelper.successfullyDeleted(task);
-			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
-			}
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-
-	}
-	
-	/**
-	 * Returns target task and its relationship to the logged in user
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/task/{task_id}",
-			"/task/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> getUserRelTask(@PathVariable(value = "task_id") Long taskId) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Task task = taskDAO.findOne(taskId);
-
-		if (task != null) {
-			UserTaskRel rel = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task, TaskParticipationType.LEADING);
-			if (rel != null) {
-				
-				HashMap<String, Object> meta = new HashMap<>();
-				meta.put("task", new TaskDetails(task, user));
-				meta.put("relationship", rel);
-				
-				return JSonResponseHelper.createResponse(user, true, meta);
-				
-			}
-
-		}
-
-		return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-
-	}
-
-	/**
-	 * Returns the competences of the currently logged in user, wrapped in the
-	 * relationship-object
-	 * 
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/competence",
-			"/competence/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> getCompetences() {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
-
-		if (competenceRels.size() != 0) {		
-			return JSonResponseHelper.createResponse(competenceRels, true);
-
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
-		}
-
-	}
-
-	/**
-	 * Returns all tasks of logged in user, divided in the
-	 * TaskParticipationTypes
-	 * 
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/task", "/task/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> getTasks() {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
-
-		if (taskRels.size() != 0) {
-			Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
-			Set<TaskShort> taskListPart = new HashSet<TaskShort>();
-			Set<TaskShort> taskListLead = new HashSet<TaskShort>();
-
-			for (UserTaskRel utr : taskRels) {
-				if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
-					taskListFollow.add(new TaskShort(utr.getTask()));
-				} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					taskListPart.add(new TaskShort(utr.getTask()));
-				} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
-					taskListLead.add(new TaskShort(utr.getTask()));
-				}
-			}
-			
-			HashMap<String, Object> meta = new HashMap<>();
-			meta.put("leading", taskListLead);
-			meta.put("following", taskListFollow);
-			meta.put("participating", taskListPart);
-			
-			return JSonResponseHelper.createResponse(user, true, meta);
-			
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
-		}
-
-	}
-
-	/**
 	 * returns a json if the logged in user is valid
 	 * 
 	 * @return ResponseEntity
@@ -543,7 +202,7 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		CracToken t = tokenDAO.findByUserId(user.getId());
 		if (t != null) {
-			
+
 			HashMap<String, Object> meta = new HashMap<>();
 			meta.put("action", "CREATE_TOKEN");
 			meta.put("issue", "TOKEN_ALREADY_CREATED");
@@ -559,7 +218,7 @@ public class CracUserController {
 			token.setCode(code);
 			token.setUserId(user.getId());
 			tokenDAO.save(token);
-			
+
 			HashMap<String, Object> meta = new HashMap<>();
 			meta.put("action", "CREATE_TOKEN");
 			meta.put("user", user);
@@ -608,14 +267,14 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Decider unit = new Decider();
-		
+
 		return JSonResponseHelper.createResponse(unit.findTasks(user, new UserFilterParameters()), true);
-		
+
 	}
-	
+
 	/**
-	 * Return a sorted list of a defined number of elements with the best fitting tasks for the
-	 * logged in user.
+	 * Return a sorted list of a defined number of elements with the best
+	 * fitting tasks for the logged in user.
 	 * 
 	 * @return ResponseEntity
 	 */
@@ -629,25 +288,24 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Decider unit = new Decider();
-		
+
 		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
-		
+
 		int count = 0;
-		
-		for(EvaluatedTask task : unit.findTasks(user, new UserFilterParameters())){
-			
-			if(count == numberOfTasks){
+
+		for (EvaluatedTask task : unit.findTasks(user, new UserFilterParameters())) {
+
+			if (count == numberOfTasks) {
 				break;
 			}
-			
-			tasks.add(task);
-			count ++;
-		}
-			
-		return JSonResponseHelper.createResponse(tasks, true);
-		
-	}
 
+			tasks.add(task);
+			count++;
+		}
+
+		return JSonResponseHelper.createResponse(tasks, true);
+
+	}
 
 	/**
 	 * Issues a friend-request-notification to target user
@@ -663,7 +321,7 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser sender = userDAO.findByName(userDetails.getName());
 		CracUser receiver = userDAO.findOne(id);
-		
+
 		FriendRequest n = new FriendRequest(sender.getId(), receiver.getId());
 		NotificationHelper.createNotification(n);
 		return JSonResponseHelper.successfullyCreated(n);
@@ -690,7 +348,7 @@ public class CracUserController {
 				rel.setFriends(false);
 				userRelationshipDAO.save(rel);
 				return JSonResponseHelper.successfullyDeleted(friend);
-				//return JSonResponseHelper.successfullUnfriend(friend);
+				// return JSonResponseHelper.successfullUnfriend(friend);
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.USERS_NOT_FRIENDS);
 			}
@@ -724,7 +382,7 @@ public class CracUserController {
 				friends.add(ur.getC1());
 			}
 		}
-		
+
 		return JSonResponseHelper.createResponse(friends, true);
 
 	}

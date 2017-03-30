@@ -68,6 +68,7 @@ import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
 import crac.models.input.MaterialMapping;
 import crac.models.output.TaskDetails;
+import crac.models.output.TaskShort;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.SimpleQuery;
 import crac.notifier.NotificationHelper;
@@ -158,7 +159,7 @@ public class TaskController {
 	}
 
 	/**
-	 * Returns target task with given id
+	 * Returns target task and its relationship to the logged in user (if one exists) and updates the task if it's ready to start
 	 * 
 	 * @param id
 	 * @return ResponseEntity
@@ -166,20 +167,165 @@ public class TaskController {
 	@RequestMapping(value = "/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "task_id") Long id) {
-		Task task = taskDAO.findOne(id);
-
+		
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task task = taskDAO.findOne(id);
 
 		if (task != null) {
 			if (task.checkStartAllowance()) {
 				task.start();
 			}
-			return JSonResponseHelper.createResponse(new TaskDetails(task, user), true);
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("task", new TaskDetails(task, user));
+
+			return JSonResponseHelper.createResponse(user, true, meta);
+		}
+
+		return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+
+	}
+	
+	/**
+	 * Adds target task to the open-tasks of the logged-in user or changes it's
+	 * state
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/add/{state_name}",
+			"/task/{task_id}/{state_name}/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName,
+			@PathVariable(value = "task_id") Long taskId) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task task = taskDAO.findOne(taskId);
+
+		if (task != null) {
+			TaskParticipationType state = TaskParticipationType.PARTICIPATING;
+			if (stateName.equals("participate")) {
+				if (task.isJoinable()) {
+					if (!task.isFull()) {
+						state = TaskParticipationType.PARTICIPATING;
+					} else {
+						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_IS_FULL);
+					}
+				} else {
+					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
+				}
+			} else if (stateName.equals("follow")) {
+				if (task.isFollowable()) {
+					state = TaskParticipationType.FOLLOWING;
+				} else {
+					return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_JOINABLE);
+				}
+			} else {
+				HashMap<String, Object> meta = new HashMap<>();
+				meta.put("state", stateName);
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE, meta);
+			}
+
+			UserTaskRel rel = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
+					TaskParticipationType.LEADING);
+
+			if (rel == null) {
+				rel = new UserTaskRel();
+				rel.setUser(user);
+				rel.setTask(task);
+				rel.setParticipationType(state);
+				user.getTaskRelationships().add(rel);
+				userDAO.save(user);
+			} else {
+				rel.setParticipationType(state);
+				userTaskRelDAO.save(rel);
+			}
+
+			return JSonResponseHelper.successfullyAssigned(task);
+
 		} else {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
+
+	}
+
+	/**
+	 * Removes target task from the open-tasks of the logged-in user
+	 * 
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = "/{task_id}/remove", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeTask(@PathVariable(value = "task_id") Long taskId) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Task task = taskDAO.findOne(taskId);
+
+		if (task != null) {
+			if (!task.inConduction()) {
+				userTaskRelDAO.delete(userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
+						TaskParticipationType.LEADING));
+				return JSonResponseHelper.successfullyDeleted(task);
+			} else {
+				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
+			}
+		} else {
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+		}
+
+	}
+	
+	/**
+	 * Returns all tasks of logged in user, divided in the
+	 * TaskParticipationTypes
+	 * 
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/type", "/type/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getTasksByType() {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
+
+		if (taskRels.size() != 0) {
+			Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
+			Set<TaskShort> taskListPart = new HashSet<TaskShort>();
+			Set<TaskShort> taskListLead = new HashSet<TaskShort>();
+
+			for (UserTaskRel utr : taskRels) {
+				if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
+					taskListFollow.add(new TaskShort(utr.getTask()));
+				} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+					taskListPart.add(new TaskShort(utr.getTask()));
+				} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
+					taskListLead.add(new TaskShort(utr.getTask()));
+				}
+			}
+
+			HashMap<String, Object> meta = new HashMap<>();
+			meta.put("leading", taskListLead);
+			meta.put("following", taskListFollow);
+			meta.put("participating", taskListPart);
+
+			return JSonResponseHelper.createResponse(user, true, meta);
+
+		} else {
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+		}
+
 	}
 
 	@RequestMapping(value = { "/{task_id}/competence/available",
