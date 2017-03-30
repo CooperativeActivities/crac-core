@@ -47,15 +47,11 @@ public class TaskMatchingWorker extends Worker {
 		addUserFilters(filters);
 
 		for (Task t : filteredTaskSet) {
-			if (t.getMappedCompetences() != null) {
-				if (t.getMappedCompetences().size() != 0) {
-					ccm = new CompetenceCollectionMatrix(user, t, filters);
-					ccm.print();
-					EvaluatedTask et = new EvaluatedTask(t, ccm.calcMatch());
-					et.setDoable(ccm.isDoable());
-					tasks.add(et);
-				}
-			}
+			ccm = new CompetenceCollectionMatrix(user, t, filters);
+			ccm.print();
+			EvaluatedTask et = new EvaluatedTask(t, ccm.calcMatch());
+			et.setDoable(ccm.isDoable());
+			tasks.add(et);
 		}
 
 		if (tasks != null) {
@@ -91,6 +87,7 @@ public class TaskMatchingWorker extends Worker {
 		ArrayList<Task> result = new ArrayList<>();
 
 		List<Task> found = taskDAO.findByTaskStateNot(TaskState.NOT_PUBLISHED);
+		System.out.println("found: " + found.size());
 		for (Task task : found) {
 			if (task.isJoinable()) {
 				boolean isConnected = false;
@@ -104,6 +101,7 @@ public class TaskMatchingWorker extends Worker {
 				}
 			}
 		}
+		System.out.println("returned: " + result.size());
 		return result;
 	}
 
@@ -113,16 +111,16 @@ public class TaskMatchingWorker extends Worker {
 			Task t = task.getTask();
 
 			if (t.getTaskState() == TaskState.STARTED) {
-				
+
 				double mval = 0.6;
 				double newval = 0;
 
-				double valAdjust = ((double)t.getParticipatingUsers() / (double)t.getMinAmountOfVolunteers());
-								
+				double valAdjust = ((double) t.getParticipatingUsers() / (double) t.getMinAmountOfVolunteers());
+
 				newval = task.getAssessment() * (1 + (1 - valAdjust) * mval);
-				
+
 				task.setAssessment((double) Math.round(newval * 100) / 100);
-				
+
 			}
 		}
 

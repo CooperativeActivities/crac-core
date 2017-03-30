@@ -3,6 +3,10 @@ package crac.notifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.Random;
 
 import crac.models.db.entities.CracUser;
@@ -22,11 +26,11 @@ public class NotificationHelper {
 	public static void createNotification(Notification n){
 		NotificationDistributor.getInstance().addNotification(n);
 	}
-	
+	/*
 	public static void createTaskDone(Long taskId, Long targetUserId) {
 		NotificationDistributor.getInstance().addNotification(new TaskDoneNotification(taskId, targetUserId));
 	}
-/*
+
 	public static FriendRequest createFriendRequest(Long sendingUserId, Long targetUserId) {
 		FriendRequest n = new FriendRequest(sendingUserId, targetUserId);
 		NotificationDistributor.getInstance().addNotification(n);
@@ -83,6 +87,7 @@ public class NotificationHelper {
 
 	public static String notificationsToString(ArrayList<Notification> notifications) {
 
+		/*
 		String s = "";
 
 		for (Notification n : notifications) {
@@ -92,6 +97,20 @@ public class NotificationHelper {
 		s = s.replaceAll(",$", "");
 
 		return "[" + s + "]";
+		*/
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String r = "";
+
+		try {
+			r = mapper.writeValueAsString(notifications);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return r;
+		
 	}
 	
 	public static String notificationsToString(HashMap<String, Notification> map) {
@@ -106,7 +125,17 @@ public class NotificationHelper {
 
 	
 	public static String notificationsToString(Notification n) {
-		return "[" + n.toJSon() + "]";
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String r = "";
+
+		try {
+			r = mapper.writeValueAsString(n);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return r;
 	}
 	
 	public static String randomString(final int length) {

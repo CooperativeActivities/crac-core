@@ -38,7 +38,7 @@ public class OtherUserEvaluation extends Notification {
 	public void setEvaluationId(long evaluationId) {
 		this.evaluationId = evaluationId;
 	}
-
+/*
 	@Override
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -47,7 +47,7 @@ public class OtherUserEvaluation extends Notification {
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}
-	}
+	}*/
 
 	@Override
 	public String accept() {

@@ -27,7 +27,7 @@ public class FriendRequest extends Notification{
 	public void setSenderId(long senderId) {
 		this.senderId = senderId;
 	}
-
+/*
 	@Override
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -36,7 +36,7 @@ public class FriendRequest extends Notification{
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}
-	}
+	}*/
 
 	@Override
 	public String accept() {

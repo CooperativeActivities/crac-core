@@ -54,7 +54,7 @@ public class NotificationController {
 	public ResponseEntity<String> getNotifications() {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		return JSonResponseHelper.createResponse(NotificationHelper.notificationsToString(NotificationHelper.getUserNotifications(user)), true);
+		return JSonResponseHelper.createResponse(NotificationHelper.getUserNotifications(user), true);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class NotificationController {
 	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getAllNotifications() {
-		return JSonResponseHelper.createResponse(NotificationHelper.notificationsToString(NotificationHelper.getAllNotifications()), true);
+		return JSonResponseHelper.createResponse(NotificationHelper.getAllNotifications(), true);
 	}
 
 	/**

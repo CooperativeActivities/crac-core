@@ -1515,9 +1515,10 @@ public class TaskController {
 						}
 
 						if (alldone) {
-							// TaskDoneNotification n = new
+							TaskDoneNotification n = new TaskDoneNotification(task_id, user.getId());
+							NotificationHelper.createNotification(n);
 							// TaskDoneNotification(task_id, user.getId());
-							NotificationHelper.createTaskDone(task_id, user.getId());
+							//NotificationHelper.createTaskDone(task_id, user.getId());
 						}
 
 						return JSonResponseHelper.successfullyUpdated(task);

@@ -23,22 +23,40 @@ public class CompetenceCollectionMatrix {
 	private Set<UserCompetenceRel> userComps;
 	private Set<CompetenceTaskRel> taskComps;
 
+	private boolean nullTask;
+	private boolean nullUser;
+
 	public CompetenceCollectionMatrix(CracUser u, Task t, FilterConfiguration m) {
 		this.u = u;
 		this.t = t;
 		this.doable = true;
+		this.nullTask = false;
+		this.nullUser = false;
 
-		this.userComps = u.getCompetenceRelationships();
 		this.taskComps = t.getMappedCompetences();
+		this.userComps = u.getCompetenceRelationships();
 
-		matrix = new MatrixField[userComps.size()][taskComps.size()];
-		rowsU = new String[userComps.size()];
-		columnsT = new String[taskComps.size()];
+		if (this.taskComps == null) {
+			this.nullTask = true;
+		} else if (this.taskComps.isEmpty()) {
+			this.nullTask = true;
+		}
 
-		buildMatrix();
-		markMandatoryViolation();
-		applyFilters(m);
+		if (this.userComps == null) {
+			this.nullUser = true;
+		} else if (this.userComps.isEmpty()) {
+			this.nullUser = true;
+		}
 
+		if (!this.nullTask && !this.nullUser) {
+			matrix = new MatrixField[userComps.size()][taskComps.size()];
+			rowsU = new String[userComps.size()];
+			columnsT = new String[taskComps.size()];
+
+			buildMatrix();
+			markMandatoryViolation();
+			applyFilters(m);
+		}
 	}
 
 	private void buildMatrix() {
@@ -95,8 +113,16 @@ public class CompetenceCollectionMatrix {
 	}
 
 	public double calcMatch() {
-		return calcMatchColumn();
-		// return calcMatchRow();
+		if (this.nullTask && this.nullUser) {
+			return 0.5;
+		} else if (this.nullTask && !this.nullUser) {
+			return 0.5;
+		}  else if (!this.nullTask && this.nullUser) {
+			return 0;
+		} else {
+			return calcMatchColumn();
+			// return calcMatchRow();
+		}
 	}
 
 	private double calcMatchColumn() {
@@ -170,44 +196,49 @@ public class CompetenceCollectionMatrix {
 	}
 
 	public void print() {
-		double[] bestRow = bestRow();
-		System.out.println("| " + u.getName() + " (User) ↓ | " + t.getName() + " (Task) → |");
-		System.out.println("_____________________________________");
-		String columnsString = "|    |";
-		for (String s : columnsT) {
-			columnsString += " " + s + " |";
-		}
-		System.out.println(columnsString + "| bestVals");
-		System.out.println("--------------------------------");
-		int rowc = 0;
-		for (MatrixField[] row : matrix) {
-			String rowString = "| " + rowsU[rowc] + "|";
-			for (MatrixField column : row) {
-				rowString += " " + column.getVal() + " |";
-			}
-			System.out.println(rowString + "| " + bestRow[rowc]);
-			System.out.println("--------------------------------");
-			rowc++;
-		}
-		String bString = "| bestVals |";
-		for (double b : bestColumn()) {
-			bString += " " + b + "|";
-		}
-		System.out.println("--------------------------------");
-		System.out.println(bString);
-		System.out.println("_____________________________________");
-		System.out.println("DOABLE: " + doable);
-		if (mandatoryViolations.size() == 0) {
-			System.out.println("NO VIOLATIONS");
+		if (this.nullTask || this.nullUser) {
+			System.out.println("_____________________________________");
+			System.out.println("Task " + t.getName() + " or User " + u.getName() + " contain empty competences!");
+			System.out.println("_____________________________________");
 		} else {
-			System.out.println("VIOLATIONS");
-			for (String s : mandatoryViolations) {
-				System.out.println(s);
+			double[] bestRow = bestRow();
+			System.out.println("| " + u.getName() + " (User) ↓ | " + t.getName() + " (Task) → |");
+			System.out.println("_____________________________________");
+			String columnsString = "|    |";
+			for (String s : columnsT) {
+				columnsString += " " + s + " |";
 			}
+			System.out.println(columnsString + "| bestVals");
+			System.out.println("--------------------------------");
+			int rowc = 0;
+			for (MatrixField[] row : matrix) {
+				String rowString = "| " + rowsU[rowc] + "|";
+				for (MatrixField column : row) {
+					rowString += " " + column.getVal() + " |";
+				}
+				System.out.println(rowString + "| " + bestRow[rowc]);
+				System.out.println("--------------------------------");
+				rowc++;
+			}
+			String bString = "| bestVals |";
+			for (double b : bestColumn()) {
+				bString += " " + b + "|";
+			}
+			System.out.println("--------------------------------");
+			System.out.println(bString);
+			System.out.println("_____________________________________");
+			System.out.println("DOABLE: " + doable);
+			if (mandatoryViolations.size() == 0) {
+				System.out.println("NO VIOLATIONS");
+			} else {
+				System.out.println("VIOLATIONS");
+				for (String s : mandatoryViolations) {
+					System.out.println(s);
+				}
+			}
+			System.out.println("RESULT FOR ROW: " + calcMatchRow());
+			System.out.println("RESULT FOR COLUMN: " + calcMatchColumn());
+			System.out.println("_____________________________________");
 		}
-		System.out.println("RESULT FOR ROW: " + calcMatchRow());
-		System.out.println("RESULT FOR COLUMN: " + calcMatchColumn());
-		System.out.println("_____________________________________");
 	}
-
 }

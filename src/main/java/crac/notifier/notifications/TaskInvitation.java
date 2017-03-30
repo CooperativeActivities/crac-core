@@ -40,7 +40,7 @@ public class TaskInvitation extends Notification{
 	public void setTaskId(long taskId) {
 		this.taskId = taskId;
 	}
-
+/*
 	@Override
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -49,7 +49,7 @@ public class TaskInvitation extends Notification{
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}
-	}
+	}*/
 
 	@Override
 	public String accept() {

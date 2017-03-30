@@ -32,7 +32,7 @@ public abstract class Notification {
 	
 	public abstract String deny();
 	
-	public abstract String toJSon();
+	//public abstract String toJSon();
 
 	public String getNotificationId() {
 		return notificationId;

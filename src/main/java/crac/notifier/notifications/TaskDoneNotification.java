@@ -34,7 +34,7 @@ public class TaskDoneNotification extends Notification{
 		super("Task is done", NotificationType.SUGGESTION, targetId);
 		this.taskId = taskId;
 	}
-	
+	/*
 	@Override
 	public String toJSon() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -43,7 +43,7 @@ public class TaskDoneNotification extends Notification{
 		} catch (JsonProcessingException e) {
 			return e.toString();
 		}
-	}
+	}*/
 
 	@Override
 	public String accept() {
