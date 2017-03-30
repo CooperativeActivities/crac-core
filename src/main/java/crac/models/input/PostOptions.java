@@ -3,7 +3,9 @@ package crac.models.input;
 public class PostOptions {
 
 	private int proficiencyValue;
+	private int importanceValue;
 	private int likeValue;
+	private boolean mandatory;
 
 	public PostOptions() {
 	}
@@ -22,6 +24,22 @@ public class PostOptions {
 
 	public void setLikeValue(int likeValue) {
 		this.likeValue = likeValue;
+	}
+
+	public boolean isMandatory() {
+		return mandatory;
+	}
+
+	public void setMandatory(boolean mandatory) {
+		this.mandatory = mandatory;
+	}
+
+	public int getImportanceValue() {
+		return importanceValue;
+	}
+
+	public void setImportanceValue(int importanceValue) {
+		this.importanceValue = importanceValue;
 	}
 
 }

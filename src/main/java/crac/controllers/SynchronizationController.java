@@ -131,6 +131,8 @@ public class SynchronizationController {
 	public void init(){
 		this.daosync();
 		this.internsync();
+		this.filtersync();
+		//this.competencesync();
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")

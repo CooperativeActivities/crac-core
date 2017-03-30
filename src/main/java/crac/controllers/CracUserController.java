@@ -252,60 +252,20 @@ public class CracUserController {
 	}
 
 	/**
-	 * Return a sorted list of elements with the best fitting tasks for the
-	 * logged in user
+	 * Return a sorted list of elements with the best fitting users for the
+	 * given task
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/findMatchingTasks",
-			"/findMatchingTasks/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/find/{task_id}",
+			"/find/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> findTasks() {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
+	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
 		Decider unit = new Decider();
-
-		return JSonResponseHelper.createResponse(unit.findTasks(user, new UserFilterParameters()), true);
-
+		return JSonResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
+				true);
 	}
 
-	/**
-	 * Return a sorted list of a defined number of elements with the best
-	 * fitting tasks for the logged in user.
-	 * 
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/findMatchingTasks/{number_of_tasks}",
-			"/findMatchingTasks/{number_of_tasks}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> findBestTasks(@PathVariable(value = "number_of_tasks") int numberOfTasks) {
-
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		Decider unit = new Decider();
-
-		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
-
-		int count = 0;
-
-		for (EvaluatedTask task : unit.findTasks(user, new UserFilterParameters())) {
-
-			if (count == numberOfTasks) {
-				break;
-			}
-
-			tasks.add(task);
-			count++;
-		}
-
-		return JSonResponseHelper.createResponse(tasks, true);
-
-	}
 
 	/**
 	 * Issues a friend-request-notification to target user

@@ -376,6 +376,34 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+**Return a sorted list of elements with the best fitting users for the given task**
+
+#####*Request:*
+
+GET user/find/{task_id}
+
+#####*Response:*
+
+	[
+		{ "task": {
+			"id": 1,
+			"name": "task_1",
+			...
+			}, 
+		"assessment" : 0.5,
+		"doable" : true },
+		{ "task": {
+			"id": 2,
+			"name": "task_2",
+			...
+			}, 
+		"assessment" : 0.7 ,
+		"doable" : true },
+		...
+	]
+
+-----------------------------------------------------------------
+
 ###Competence-Endpoints on logged in user
 
 -----------------------------------------------------------------
@@ -457,7 +485,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET user/findMatchingTasks
+GET task/find
 
 #####*Response:*
 
@@ -494,7 +522,7 @@ GET user/findMatchingTasks
 
 #####*Request:*
 
-GET user/findMatchingTasks/{number_of_tasks}
+GET task/find/{number_of_tasks}
 
 #####*Response:*
 
@@ -853,7 +881,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET task/{task_id}/remove
+DELETE task/{task_id}/remove
 
 
 #####*Response:*
@@ -866,7 +894,13 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-GET /task/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}
+	{
+		"proficiency": 50,
+		"importance": 50,
+		"mandatory": true
+	}
+
+POST /task/{task_id}/competence/{competence_id}/require
 
 #####*Response:*
 
@@ -952,7 +986,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-GET /task/{task_id}/competence/{competence_id}/remove
+DELETE /task/{task_id}/competence/{competence_id}/remove
 
 #####*Response:*
 
@@ -1042,7 +1076,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-GET /task/{task_id}/material/{material_id}/remove
+DELETE /task/{task_id}/material/{material_id}/remove
 
 #####*Response:*
 
@@ -1054,7 +1088,7 @@ Json-data, either a success or a failure message
 	
 #####*Request:*
 
-GET /task/{task_id}/material/{material_id}/subscribe/{quantity}
+PUT /task/{task_id}/material/{material_id}/subscribe/{quantity}
 
 #####*Response:*
 
@@ -1071,7 +1105,7 @@ QUANTITY_TOO_HIGH
 	
 #####*Request:*
 
-GET /task/{task_id}/material/{material_id}/unsubscribe
+DELETE /task/{task_id}/material/{material_id}/unsubscribe
 
 #####*Response:*
 
@@ -1085,7 +1119,7 @@ Json-data, either a success or a failure message
 
 ####Use "true" or "false" for {done_boolean}
 
-GET /task/{task_id}/done/{done_boolean}
+PUT /task/{task_id}/done/{done_boolean}
 
 #####*Response:*
 
@@ -1228,7 +1262,7 @@ Json-data, either a success or a failure message
 
 #####*Request:*
 
-GET /task/{task_id}/state/{state_name}
+PUT /task/{task_id}/state/{state_name}
 
 #####*Response:*
 
@@ -1375,7 +1409,7 @@ GET /task/parents
 
 #####*Request:*
 
-POST /task/queryES
+POST /task/elastic/query
 
 	{
 		"text": "This is a fulltext-query!"
@@ -1398,34 +1432,6 @@ POST /task/queryES
 		"assessment" : 0.7 },
 	]
 	
------------------------------------------------------------------
-
-**Return a sorted list of elements with the best fitting users for the given task**
-
-#####*Request:*
-
-GET /task/{task_id}/findMatchingUsers
-
-#####*Response:*
-
-	[
-		{ "task": {
-			"id": 1,
-			"name": "task_1",
-			...
-			}, 
-		"assessment" : 0.5,
-		"doable" : true },
-		{ "task": {
-			"id": 2,
-			"name": "task_2",
-			...
-			}, 
-		"assessment" : 0.7 ,
-		"doable" : true },
-		...
-	]
-
 
 -----------------------------------------------------------------
 
@@ -1920,15 +1926,26 @@ OLD -> NEW
 
 Competence-related:  
 
-GET /user/competence/{competence_id}/add -> POST /competence/{competence_id}/add  
-GET /user/competence/{competence_id}/adjust -> PUT /competence/{competence_id}/adjust  
+GET /user/competence/{competence_id}/add -> POST /competence/{competence_id}/add  **(PARAMETERS NOW VIA JSON)**  
+GET /user/competence/{competence_id}/adjust -> PUT /competence/{competence_id}/adjust  **(PARAMETERS NOW VIA JSON)**  
 GET /user/competence/{competence_id}/remove -> DELETE /competence/{competence_id}/remove  
-GET /user/competence -> GET /competence (!BOTH ENDPOINTS MERGED!)  
+GET /user/competence -> GET /competence **(BOTH ENDPOINTS MERGED)**  
 
 Task-related:  
 
-GET /user/task/{task_id} -> GET /task/{task_id} (!BOTH ENDPOINTS MERGED!)  
+GET /user/task/{task_id} -> GET /task/{task_id} **(BOTH ENDPOINTS MERGED)**  
 GET /user/task -> GET /task/type  
 GET /user/task/{task_id}/{state_name} -> PUT /task/{task_id}/add/{state_name}  
 GET /user/task/{task_id}/remove -> DELETE /task/{task_id}/remove  
+GET /user/findMatchingTasks -> GET /task/find  
+GET /user/findMatchingTasks/{number_of_tasks} -> GET /task/find/{number_of_tasks}  
+GET /task/{task_id}/findMatchingUsers -> GET /user/find/{task_id}   
+POST /task/queryES -> POST /task/elastic/query
+GET /task/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory} -> POST /task/{task_id}/competence/{competence_id}/require  **(PARAMETERS NOW VIA JSON)**  
+GET /task/{task_id}/material/{material_id}/remove -> DELETE /task/{task_id}/material/{material_id}/remove  
+GET /task/{task_id}/material/{material_id}/subscribe/{quantity} -> PUT /task/{task_id}/material/{material_id}/subscribe/{quantity}  
+GET /task/{task_id}/material/{material_id}/unsubscribe -> DELETE /task/{task_id}/material/{material_id}/unsubscribe  
+GET /task/{task_id}/competence/{competence_id}/remove -> DELETE /task/{task_id}/competence/{competence_id}/remove  
+GET /task/{task_id}/done/{done_boolean} -> PUT /task/{task_id}/done/{done_boolean}  
+GET /task/{task_id}/state/{state_name} -> PUT /task/{task_id}/state/{state_name}  
 

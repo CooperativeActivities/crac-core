@@ -67,6 +67,7 @@ import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
 import crac.models.input.MaterialMapping;
+import crac.models.input.PostOptions;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
 import crac.models.utility.EvaluatedTask;
@@ -159,7 +160,8 @@ public class TaskController {
 	}
 
 	/**
-	 * Returns target task and its relationship to the logged in user (if one exists) and updates the task if it's ready to start
+	 * Returns target task and its relationship to the logged in user (if one
+	 * exists) and updates the task if it's ready to start
 	 * 
 	 * @param id
 	 * @return ResponseEntity
@@ -167,7 +169,7 @@ public class TaskController {
 	@RequestMapping(value = "/{task_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "task_id") Long id) {
-		
+
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -187,7 +189,7 @@ public class TaskController {
 		return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 
 	}
-	
+
 	/**
 	 * Adds target task to the open-tasks of the logged-in user or changes it's
 	 * state
@@ -283,7 +285,7 @@ public class TaskController {
 		}
 
 	}
-	
+
 	/**
 	 * Returns all tasks of logged in user, divided in the
 	 * TaskParticipationTypes
@@ -621,6 +623,61 @@ public class TaskController {
 	}
 
 	/**
+	 * Return a sorted list of elements with the best fitting tasks for the
+	 * logged in user
+	 * 
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/find", "/find/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> findTasks() {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Decider unit = new Decider();
+
+		return JSonResponseHelper.createResponse(unit.findTasks(user, new UserFilterParameters()), true);
+
+	}
+
+	/**
+	 * Return a sorted list of a defined number of elements with the best
+	 * fitting tasks for the logged in user.
+	 * 
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/find/{number_of_tasks}",
+			"/find/{number_of_tasks}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> findBestTasks(@PathVariable(value = "number_of_tasks") int numberOfTasks) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		Decider unit = new Decider();
+
+		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
+
+		int count = 0;
+
+		for (EvaluatedTask task : unit.findTasks(user, new UserFilterParameters())) {
+
+			if (count == numberOfTasks) {
+				break;
+			}
+
+			tasks.add(task);
+			count++;
+		}
+
+		return JSonResponseHelper.createResponse(tasks, true);
+
+	}
+
+	/**
 	 * Add/Adjust multiple materials assigned to a task OR overwrite all
 	 * materials assigned to a task
 	 * 
@@ -822,7 +879,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/material/{material_id}/remove",
-			"/{task_id}/material/{material_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/material/{material_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeMaterial(@PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId) {
@@ -870,7 +927,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/material/{material_id}/subscribe/{quantity}",
-			"/{task_id}/material/{material_id}/subscribe/{quantity}/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/material/{material_id}/subscribe/{quantity}/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> subscribeMaterial(@PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId, @PathVariable(value = "quantity") Long quantity) {
@@ -953,7 +1010,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/material/{material_id}/unsubscribe",
-			"/{task_id}/material/{material_id}/unsubscribe/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/material/{material_id}/unsubscribe/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> unsubscribeMaterial(@PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId) {
@@ -1095,24 +1152,37 @@ public class TaskController {
 	 * @param competence_id
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}",
-			"/{task_id}/competence/{competence_id}/require/{proficiency}/{importance}/{mandatory}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require",
+			"/{task_id}/competence/{competence_id}/require/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> requireCompetence(@PathVariable(value = "task_id") Long task_id,
-			@PathVariable(value = "competence_id") Long competence_id,
-			@PathVariable(value = "proficiency") int proficiency, @PathVariable(value = "importance") int importance,
-			@PathVariable(value = "mandatory") boolean mandatory) {
+			@PathVariable(value = "competence_id") Long competence_id, @RequestBody String json) {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		PostOptions po;
+
+		try {
+			po = mapper.readValue(json, PostOptions.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
 		if (task != null && competence != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.confirmRole("ADMIN") && task.getTaskState() == TaskState.NOT_PUBLISHED) {
-				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, proficiency, importance, mandatory));
+				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, po.getProficiencyValue(),
+						po.getImportanceValue(), po.isMandatory()));
 				return JSonResponseHelper.successfullyAssigned(competence);
 			} else {
 				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.RESOURCE_UNCHANGEABLE);
@@ -1355,7 +1425,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/remove",
-			"/{task_id}/competence/{competence_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/competence/{competence_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeCompetence(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "competence_id") Long competence_id) {
@@ -1470,7 +1540,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/done/{done_boolean}",
-			"/{task_id}/done/{done_boolean}/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/done/{done_boolean}/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> singleUserDone(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "done_boolean") String done) {
@@ -1518,7 +1588,8 @@ public class TaskController {
 							TaskDoneNotification n = new TaskDoneNotification(task_id, user.getId());
 							NotificationHelper.createNotification(n);
 							// TaskDoneNotification(task_id, user.getId());
-							//NotificationHelper.createTaskDone(task_id, user.getId());
+							// NotificationHelper.createTaskDone(task_id,
+							// user.getId());
 						}
 
 						return JSonResponseHelper.successfullyUpdated(task);
@@ -1546,7 +1617,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/state/{state_name}",
-			"/{task_id}/state/{state_name}/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/state/{state_name}/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> changeTaskState(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "state_name") String stateName) {
@@ -1790,15 +1861,7 @@ public class TaskController {
 	@RequestMapping(value = "/taskParticipationTypes", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> taskParticipationTypes() {
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskParticipationType.values()));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(TaskParticipationType.values(), true);
 	}
 
 	/**
@@ -1809,15 +1872,7 @@ public class TaskController {
 	@RequestMapping(value = "/taskStates", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> taskStates() {
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		try {
-			return ResponseEntity.ok().body(mapper.writeValueAsString(TaskState.values()));
-		} catch (JsonProcessingException e) {
-			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
-		}
+		return JSonResponseHelper.createResponse(TaskState.values(), true);
 	}
 
 	/**
@@ -1850,8 +1905,8 @@ public class TaskController {
 	 * @param json
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/queryES",
-			"/queryES/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/elastic/query",
+			"/elastic/query/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> queryES(@RequestBody String json) {
 
@@ -1894,21 +1949,6 @@ public class TaskController {
 			}
 		}
 		return JSonResponseHelper.createResponse(et, true);
-	}
-
-	/**
-	 * Return a sorted list of elements with the best fitting users for the
-	 * given task
-	 * 
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/{task_id}/findMatchingUsers",
-			"/{task_id}/findMatchingUsers/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
-		Decider unit = new Decider();
-		return JSonResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
-				true);
 	}
 
 	/**
