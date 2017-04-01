@@ -180,10 +180,7 @@ public class TaskController {
 			if (task.checkStartAllowance()) {
 				task.start();
 			}
-			HashMap<String, Object> meta = new HashMap<>();
-			meta.put("task", new TaskDetails(task, user));
-
-			return JSonResponseHelper.createResponse(user, true, meta);
+			return JSonResponseHelper.createResponse(new TaskDetails(task, user), true);
 		}
 
 		return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);

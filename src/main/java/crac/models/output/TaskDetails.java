@@ -107,9 +107,9 @@ public class TaskDetails {
 		this.childTasks = addChildren(t);
 		this.attachments = t.getAttachments();
 		this.comments = t.getComments();
+		this.userRelationships = calcFriends(t, u);
 		this.participationDetails = DataAccess.getRepo(UserTaskRelDAO.class).findByUserAndTask(u, t);
 		if (!this.participationDetails.isEmpty()) {
-			this.userRelationships = calcFriends(t, u);
 			this.taskCompetences = calcComps(t, u);
 			this.assigned = true;
 		} else {
