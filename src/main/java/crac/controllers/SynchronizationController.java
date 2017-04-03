@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,7 @@ import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
+import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetencePermissionType;
 import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceRelationshipType;
@@ -58,6 +60,7 @@ import crac.models.komet.entities.TxExabiscompetencesDescriptor;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
 import crac.storage.CompetenceStorage;
 import crac.utility.DataAccess;
+import crac.utility.ElasticConnector;
 import crac.utility.JSonResponseHelper;
 
 @RestController
@@ -126,13 +129,28 @@ public class SynchronizationController {
 
 	@Autowired
 	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
+	
+	@Value("${crac.elastic.bindEStoSearch}")
+	private boolean bindES;
+
+	@Value("${crac.elastic.url}")
+	private String url;
+
+	@Value("${crac.elastic.port}")
+	private int port;
+
 
 	@PostConstruct
-	public void init(){
+	public void init(){		
 		this.daosync();
+		this.connectsES();
 		this.internsync();
 		this.filtersync();
 		//this.competencesync();
+	}
+	
+	private void connectsES(){
+		DataAccess.addConnector(new ElasticConnector<Task>(url, port, "crac_core", "task"), Task.class);
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")

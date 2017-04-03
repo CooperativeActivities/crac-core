@@ -44,15 +44,11 @@ import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
 import crac.models.db.entities.Task;
-import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceRelationshipType;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
-import crac.models.komet.entities.TxExabiscompetencesDescriptor;
-import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
-import crac.storage.CompetenceStorage;
-import crac.utility.ElasticConnector;
+import crac.utility.DataAccess;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
 
@@ -215,8 +211,7 @@ public class AdminController {
 		if (deleteTask != null) {
 			deleteTask.getMappedCompetences().clear();
 			deleteTask.getUserRelationships().clear();
-			ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
-			eSConnTask.delete("" + deleteTask.getId());
+			DataAccess.getConnector(Task.class).delete("" + deleteTask.getId());
 			ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(deleteTask);
 			taskDAO.delete(deleteTask);
 			return v;
@@ -277,9 +272,7 @@ public class AdminController {
 
 		userTaskRelDAO.save(newRel);
 
-		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
-
-		eSConnTask.indexOrUpdate("" + task.getId(), task);
+		DataAccess.getConnector(Task.class).indexOrUpdate("" + task.getId(), task);
 
 		return JSonResponseHelper.successfullyCreated(task);
 
@@ -474,14 +467,12 @@ public class AdminController {
 	// ELASTICSEARCH
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/refreshESTasks",
-			"/refreshESTasks/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/elastic/reset",
+			"/refreshESTasks/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> refreshESTasks() {
 
-		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
-
-		DeleteIndexResponse deleted = eSConnTask.deleteIndex();
+		DeleteIndexResponse deleted = DataAccess.getConnector(Task.class).deleteIndex();
 		if (deleted.isAcknowledged()) {
 			return JSonResponseHelper.successfullyDeleted(url);
 		} else {

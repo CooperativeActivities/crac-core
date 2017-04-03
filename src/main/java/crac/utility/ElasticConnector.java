@@ -36,44 +36,65 @@ public class ElasticConnector<T> {
 	private ObjectMapper mapper;
 	private String index;
 	private String type;
-
+	private String address;
+	private int port;
+	
 	private static final double ES_THRESHOLD = 0.05;
 
 	public ElasticConnector(String address, int port, String index, String type) {
 		mapper = new ObjectMapper();
+		this.port = port;
+		this.address = address;
+		this.index = index;
+		this.type = type;
+	}
+	
+	private void wake(){
 		try {
 			client = TransportClient.builder().build()
 					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(address), port));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		this.index = index;
-		this.type = type;
+	}
+	
+	private void close(){
+		this.client.close();
 	}
 
 	public IndexResponse indexOrUpdate(String id, T obj) {
 
+		wake();
+		
 		IndexResponse response = null;
-
 		try {
 			response = this.client.prepareIndex(index, type, id).setSource(this.mapper.writeValueAsString(obj)).get();
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 
+		close();
+		
 		return response;
 
 	}
 
 	public GetResponse get(String id) {
-		return client.prepareGet(index, type, id).get();
+		wake();
+		GetResponse r = client.prepareGet(index, type, id).get();
+		close();
+		return r;
 	}
 
 	public DeleteResponse delete(String id) {
-		return client.prepareDelete(index, type, id).get();
+		wake();
+		DeleteResponse r = client.prepareDelete(index, type, id).get();
+		close();
+		return r;
 	}
 
 	public ArrayList<EvaluatedTask> query(String searchText, TaskDAO taskDAO) {
+		wake();
 		SearchRequestBuilder search = client.prepareSearch(index).setTypes(type);
 		search.setQuery(QueryBuilders.matchQuery("name", searchText));
 		search.setQuery(QueryBuilders.matchQuery("description", searchText));
@@ -91,12 +112,14 @@ public class ElasticConnector<T> {
 				}
 			}
 		}
+		close();
 		return foundTasks;
 	}
 
 	public DeleteIndexResponse deleteIndex() {
+		wake();
 		DeleteIndexResponse response = client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
-		// client.admin().indices().flush(new FlushRequest(index)).actionGet();
+		close();
 		return response;
 	}
 

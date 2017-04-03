@@ -76,7 +76,7 @@ import crac.notifier.NotificationHelper;
 import crac.notifier.notifications.LeadNomination;
 import crac.notifier.notifications.TaskDoneNotification;
 import crac.notifier.notifications.TaskInvitation;
-import crac.utility.ElasticConnector;
+import crac.utility.DataAccess;
 import crac.utility.JSonResponseHelper;
 import crac.utility.UpdateEntitiesHelper;
 
@@ -396,7 +396,7 @@ public class TaskController {
 
 					int c = checkAmountOfVolunteers(oldTask, updatedTask.getMaxAmountOfVolunteers(), true);
 
-					System.out.println("answer: " + c);
+					//System.out.println("answer: " + c);
 
 					if (c == 0) {
 						return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_TOO_HIGH);
@@ -426,8 +426,7 @@ public class TaskController {
 					oldTask.update(updatedTask);
 					taskDAO.save(oldTask);
 					oldTask.updateReadyStatus();
-					ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
-					eSConnTask.indexOrUpdate("" + oldTask.getId(), oldTask);
+					DataAccess.getConnector(Task.class).indexOrUpdate("" + oldTask.getId(), oldTask);
 					return JSonResponseHelper.successfullyUpdated(oldTask);
 				} else {
 					return JSonResponseHelper.createResponse(false, "bad_request",
@@ -1920,28 +1919,21 @@ public class TaskController {
 			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
-		ElasticConnector<Task> eSConnTask = new ElasticConnector<Task>(url, port, "crac_core", "task");
+		ArrayList<EvaluatedTask> et = DataAccess.getConnector(Task.class).query(query.getText(), taskDAO);
 
-		ArrayList<EvaluatedTask> et = eSConnTask.query(query.getText(), taskDAO);
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
-		System.out.println("testing bindES: " + bindES);
+		Decider unit = new Decider();
 
-		if (bindES) {
+		ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters());
 
-			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-					.getContext().getAuthentication();
-			CracUser user = userDAO.findByName(userDetails.getName());
-
-			Decider unit = new Decider();
-
-			ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters());
-
-			for (EvaluatedTask ets : et) {
-				ets.setDoable(false);
-				for (EvaluatedTask etd : doables) {
-					if (etd.getTask().getId() == ets.getTask().getId()) {
-						ets.setDoable(true);
-					}
+		for (EvaluatedTask ets : et) {
+			ets.setDoable(false);
+			for (EvaluatedTask etd : doables) {
+				if (etd.getTask().getId() == ets.getTask().getId()) {
+					ets.setDoable(true);
 				}
 			}
 		}
