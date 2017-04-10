@@ -464,21 +464,6 @@ public class AdminController {
 
 	}
 
-	// ELASTICSEARCH
-
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/elastic/reset",
-			"/refreshESTasks/" }, method = RequestMethod.DELETE, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> refreshESTasks() {
-
-		DeleteIndexResponse deleted = DataAccess.getConnector(Task.class).deleteIndex();
-		if (deleted.isAcknowledged()) {
-			return JSonResponseHelper.successfullyDeleted(url);
-		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-	}
 
 	// ROLE-SECTION
 

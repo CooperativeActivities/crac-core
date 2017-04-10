@@ -26,8 +26,9 @@ public class DataAccess {
 		instance.connectors.put(t, obj);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> ElasticConnector<T> getConnector(Class<T> type){
-		return (ElasticConnector<T>) instance.connectors.get(type);
+		return (ElasticConnector<T>) instance.connectors.get(type).copy();
 	}
 	
 	//Instance of the class

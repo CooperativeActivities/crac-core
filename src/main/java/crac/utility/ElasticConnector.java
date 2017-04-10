@@ -49,6 +49,10 @@ public class ElasticConnector<T> {
 		this.type = type;
 	}
 	
+	public ElasticConnector<T> copy(){
+		return new ElasticConnector<T>(address, port, index, type);
+	}
+	
 	private void wake(){
 		try {
 			client = TransportClient.builder().build()
