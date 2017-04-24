@@ -3,13 +3,13 @@ package crac.models.storage;
 import java.util.ArrayList;
 import java.util.Set;
 
-import crac.decider.core.FilterConfiguration;
-import crac.decider.workers.config.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.FilterConfiguration;
+import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.storage.CompetenceStorage;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
-import crac.storage.CompetenceStorage;
 
 public class CompetenceCollectionMatrix {
 

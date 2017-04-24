@@ -27,8 +27,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.decider.core.Decider;
-import crac.decider.core.UserFilterParameters;
+import crac.components.matching.Decider;
+import crac.components.matching.configuration.UserFilterParameters;
+import crac.components.notifier.NotificationHelper;
+import crac.components.notifier.notifications.FriendRequest;
+import crac.components.utility.JSONResponseHelper;
+import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.RESTAction;
 import crac.enums.TaskParticipationType;
@@ -49,14 +53,10 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
+import crac.models.output.SimpleUserRelationship;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
 import crac.models.utility.EvaluatedTask;
-import crac.models.utility.SimpleUserRelationship;
-import crac.notifier.NotificationHelper;
-import crac.notifier.notifications.FriendRequest;
-import crac.utility.JSonResponseHelper;
-import crac.utility.UpdateEntitiesHelper;
 
 /**
  * REST controller for managing users.
@@ -101,7 +101,7 @@ public class CracUserController {
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
-		return JSonResponseHelper.createResponse(userDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(userDAO.findAll(), true);
 	}
 
 	/**
@@ -115,9 +115,9 @@ public class CracUserController {
 		CracUser user = userDAO.findOne(id);
 
 		if (user != null) {
-			return JSonResponseHelper.createResponse(user, true);
+			return JSONResponseHelper.createResponse(user, true);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -132,7 +132,7 @@ public class CracUserController {
 	public ResponseEntity<String> getLogged() {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
-		return JSonResponseHelper.createResponse(userDAO.findByName(userDetails.getName()), true);
+		return JSONResponseHelper.createResponse(userDAO.findByName(userDetails.getName()), true);
 	}
 
 	/**
@@ -154,10 +154,10 @@ public class CracUserController {
 			updatedUser = mapper.readValue(json, CracUser.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -167,9 +167,9 @@ public class CracUserController {
 		if (oldUser != null) {
 			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
 			userDAO.save(oldUser);
-			return JSonResponseHelper.successfullyUpdated(oldUser);
+			return JSONResponseHelper.successfullyUpdated(oldUser);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -185,7 +185,7 @@ public class CracUserController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		return JSonResponseHelper.createResponse(user, true);
+		return JSONResponseHelper.createResponse(user, true);
 
 	}
 
@@ -208,7 +208,7 @@ public class CracUserController {
 			meta.put("issue", "TOKEN_ALREADY_CREATED");
 			meta.put("user", user);
 			meta.put("roles", user.getRoles());
-			return JSonResponseHelper.createResponse(t, true, meta);
+			return JSONResponseHelper.createResponse(t, true, meta);
 		} else {
 			CracToken token = new CracToken();
 
@@ -223,7 +223,7 @@ public class CracUserController {
 			meta.put("action", "CREATE_TOKEN");
 			meta.put("user", user);
 			meta.put("roles", user.getRoles());
-			return JSonResponseHelper.createResponse(token, true, meta);
+			return JSONResponseHelper.createResponse(token, true, meta);
 		}
 
 	}
@@ -241,12 +241,12 @@ public class CracUserController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		CracToken t = tokenDAO.findByUserId(user.getId());
 		if (t != null) {
-			ResponseEntity<String> v = JSonResponseHelper.createResponse(t, true, RESTAction.DELETE);
+			ResponseEntity<String> v = JSONResponseHelper.createResponse(t, true, RESTAction.DELETE);
 			userDAO.save(user);
 			tokenDAO.delete(t);
 			return v;
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NO_TOKEN, RESTAction.DELETE);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NO_TOKEN, RESTAction.DELETE);
 		}
 
 	}
@@ -262,7 +262,7 @@ public class CracUserController {
 	@ResponseBody
 	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
 		Decider unit = new Decider();
-		return JSonResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
+		return JSONResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
 				true);
 	}
 
@@ -284,7 +284,7 @@ public class CracUserController {
 
 		FriendRequest n = new FriendRequest(sender.getId(), receiver.getId());
 		NotificationHelper.createNotification(n);
-		return JSonResponseHelper.successfullyCreated(n);
+		return JSONResponseHelper.successfullyCreated(n);
 	}
 
 	/**
@@ -307,13 +307,13 @@ public class CracUserController {
 				rel.setLikeValue(0.5);
 				rel.setFriends(false);
 				userRelationshipDAO.save(rel);
-				return JSonResponseHelper.successfullyDeleted(friend);
+				return JSONResponseHelper.successfullyDeleted(friend);
 				// return JSonResponseHelper.successfullUnfriend(friend);
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.USERS_NOT_FRIENDS);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.USERS_NOT_FRIENDS);
 			}
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -343,7 +343,7 @@ public class CracUserController {
 			}
 		}
 
-		return JSonResponseHelper.createResponse(friends, true);
+		return JSONResponseHelper.createResponse(friends, true);
 
 	}
 
@@ -370,7 +370,7 @@ public class CracUserController {
 			rels.add(new SimpleUserRelationship(ur.getC1(), ur.getLikeValue(), ur.isFriends()));
 		}
 
-		return JSonResponseHelper.createResponse(rels, true);
+		return JSONResponseHelper.createResponse(rels, true);
 
 	}
 
@@ -394,9 +394,9 @@ public class CracUserController {
 		if (role != null) {
 			user.getRoles().add(role);
 			userDAO.save(user);
-			return JSonResponseHelper.successfullyAssigned(role);
+			return JSONResponseHelper.successfullyAssigned(role);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -419,9 +419,9 @@ public class CracUserController {
 
 		if (user.getRoles().contains(role)) {
 			user.getRoles().remove(role);
-			return JSonResponseHelper.successfullyDeleted(role);
+			return JSONResponseHelper.successfullyDeleted(role);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 

@@ -28,6 +28,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.components.utility.DataAccess;
+import crac.components.utility.JSONResponseHelper;
+import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskType;
@@ -48,9 +51,6 @@ import crac.models.db.relation.CompetenceRelationshipType;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
-import crac.utility.DataAccess;
-import crac.utility.JSonResponseHelper;
-import crac.utility.UpdateEntitiesHelper;
 
 /**
  * 
@@ -126,9 +126,9 @@ public class AdminController {
 
 		if (userDAO.findByName(u.getName()) == null) {
 			userDAO.save(u);
-			return JSonResponseHelper.successfullyCreated(u);
+			return JSONResponseHelper.successfullyCreated(u);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
 		}
 
 	}
@@ -147,12 +147,12 @@ public class AdminController {
 		CracUser u = userDAO.findOne(id);
 
 		if (u != null) {
-			ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(u);
+			ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(u);
 			u.getCompetenceRelationships().clear();
 			userDAO.delete(u);
 			return v;
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -175,10 +175,10 @@ public class AdminController {
 			updatedUser = mapper.readValue(json, CracUser.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		CracUser oldUser = userDAO.findOne(id);
@@ -186,9 +186,9 @@ public class AdminController {
 		if (oldUser != null) {
 			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
 			userDAO.save(oldUser);
-			return JSonResponseHelper.successfullyUpdated(oldUser);
+			return JSONResponseHelper.successfullyUpdated(oldUser);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -212,11 +212,11 @@ public class AdminController {
 			deleteTask.getMappedCompetences().clear();
 			deleteTask.getUserRelationships().clear();
 			DataAccess.getConnector(Task.class).delete("" + deleteTask.getId());
-			ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(deleteTask);
+			ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteTask);
 			taskDAO.delete(deleteTask);
 			return v;
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -245,14 +245,14 @@ public class AdminController {
 		try {
 			task = mapper.readValue(json, Task.class);
 		} catch (JsonMappingException e) {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 		
 		if(task.getTaskType() == TaskType.SHIFT){
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_CREATE);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_CREATE);
 		}
 		
 		task.setCreator(user);
@@ -262,7 +262,7 @@ public class AdminController {
 			taskDAO.save(task);
 		} catch (Exception e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		UserTaskRel newRel = new UserTaskRel();
@@ -274,7 +274,7 @@ public class AdminController {
 
 		DataAccess.getConnector(Task.class).indexOrUpdate("" + task.getId(), task);
 
-		return JSonResponseHelper.successfullyCreated(task);
+		return JSONResponseHelper.successfullyCreated(task);
 
 	}
 
@@ -301,14 +301,14 @@ public class AdminController {
 			myCompetence = mapper.readValue(json, Competence.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 		myCompetence.setCreator(user);
 		competenceDAO.save(myCompetence);
-		return JSonResponseHelper.successfullyCreated(myCompetence);
+		return JSONResponseHelper.successfullyCreated(myCompetence);
 
 	}
 
@@ -328,10 +328,10 @@ public class AdminController {
 
 		if (deleteCompetence != null) {
 			competenceDAO.delete(deleteCompetence);
-			return JSonResponseHelper.successfullyDeleted(deleteCompetence);
+			return JSONResponseHelper.successfullyDeleted(deleteCompetence);
 
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -356,10 +356,10 @@ public class AdminController {
 			updatedCompetence = mapper.readValue(json, Competence.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		Competence oldCompetence = competenceDAO.findOne(id);
@@ -367,9 +367,9 @@ public class AdminController {
 		if (oldCompetence != null) {
 			UpdateEntitiesHelper.checkAndUpdateCompetence(oldCompetence, updatedCompetence);
 			competenceDAO.save(oldCompetence);
-			return JSonResponseHelper.successfullyUpdated(oldCompetence);
+			return JSONResponseHelper.successfullyUpdated(oldCompetence);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -392,13 +392,13 @@ public class AdminController {
 			t = mapper.readValue(json, CompetenceRelationshipType.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 		typeDAO.save(t);
-		return JSonResponseHelper.successfullyCreated(t);
+		return JSONResponseHelper.successfullyCreated(t);
 	}
 
 	/**
@@ -417,12 +417,12 @@ public class AdminController {
 		CompetenceRelationshipType type = typeDAO.findOne(id);
 
 		if (type != null) {
-			ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(type);
+			ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(type);
 			typeDAO.delete(type);
 			return v;
 
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -446,10 +446,10 @@ public class AdminController {
 			updatedCrt = mapper.readValue(json, CompetenceRelationshipType.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		CompetenceRelationshipType oldupdatedCrt = typeDAO.findOne(id);
@@ -457,9 +457,9 @@ public class AdminController {
 		if (oldupdatedCrt != null) {
 			UpdateEntitiesHelper.checkAndUpdateCompetenceRelType(oldupdatedCrt, updatedCrt);
 			typeDAO.save(oldupdatedCrt);
-			return JSonResponseHelper.successfullyUpdated(oldupdatedCrt);
+			return JSONResponseHelper.successfullyUpdated(oldupdatedCrt);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -485,9 +485,9 @@ public class AdminController {
 
 		if (roleDAO.findByName(r.getName()) == null) {
 			roleDAO.save(r);
-			return JSonResponseHelper.successfullyCreated(r);
+			return JSONResponseHelper.successfullyCreated(r);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
 		}
 
 	}
@@ -506,11 +506,11 @@ public class AdminController {
 		Role r = roleDAO.findOne(roleId);
 
 		if (r != null) {
-			ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(r);
+			ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(r);
 			roleDAO.delete(r);
 			return v;
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -533,10 +533,10 @@ public class AdminController {
 			updatedRole = mapper.readValue(json, Role.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		Role oldRole = roleDAO.findOne(roleId);
@@ -544,9 +544,9 @@ public class AdminController {
 		if (oldRole != null) {
 			oldRole.setName(updatedRole.getName());
 			roleDAO.save(oldRole);
-			return JSonResponseHelper.successfullyUpdated(oldRole);
+			return JSONResponseHelper.successfullyUpdated(oldRole);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}

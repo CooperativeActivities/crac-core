@@ -19,7 +19,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.decider.core.Decider;
+import crac.components.matching.Decider;
+import crac.components.notifier.NotificationHelper;
+import crac.components.notifier.notifications.EvaluationNotification;
+import crac.components.utility.JSONResponseHelper;
+import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
@@ -38,10 +42,6 @@ import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
-import crac.notifier.NotificationHelper;
-import crac.notifier.notifications.EvaluationNotification;
-import crac.utility.JSonResponseHelper;
-import crac.utility.UpdateEntitiesHelper;
 
 @RestController
 @RequestMapping("/evaluation")
@@ -93,9 +93,9 @@ public class EvaluationController {
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
-			return JSonResponseHelper.successfullyCreated(e);
+			return JSONResponseHelper.successfullyCreated(e);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -130,13 +130,13 @@ public class EvaluationController {
 						es.setEvaluationIdy(e.getId());
 					}
 				}
-				return JSonResponseHelper.successfullyCreated(task);
+				return JSONResponseHelper.successfullyCreated(task);
 				//return JSonResponseHelper.successfullySent();
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
 			}
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -165,9 +165,9 @@ public class EvaluationController {
 			e.setNotificationId(es.getNotificationId());
 			evaluationDAO.save(e);
 			es.setEvaluationIdy(e.getId());
-			return JSonResponseHelper.successfullyCreated(e);
+			return JSONResponseHelper.successfullyCreated(e);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 
@@ -189,7 +189,7 @@ public class EvaluationController {
 		if (originalEval != null) {
 			
 			if(originalEval.isFilled()){
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
@@ -198,10 +198,10 @@ public class EvaluationController {
 				newEval = mapper.readValue(json, Evaluation.class);
 			} catch (JsonMappingException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 			} catch (IOException e) {
 				System.out.println(e.toString());
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 			}
 
 			String notificationId = originalEval.getNotificationId();
@@ -217,11 +217,11 @@ public class EvaluationController {
 			originalEval.setNotificationId("deleted");
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);
-			return JSonResponseHelper.successfullyCreated(originalEval);
+			return JSONResponseHelper.successfullyCreated(originalEval);
 			//return JSonResponseHelper.successfullEvaluation();
 
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}

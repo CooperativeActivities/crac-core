@@ -19,12 +19,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Group;
-import crac.utility.JSonResponseHelper;
 
 /**
  * REST controller for managing groups.
@@ -44,7 +44,7 @@ public class GroupController {
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() throws JsonProcessingException {
-		return JSonResponseHelper.createResponse(groupDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(groupDAO.findAll(), true);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class GroupController {
 	@RequestMapping(value = "/{group_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "group_id") Long id) throws JsonProcessingException {
-		return JSonResponseHelper.createResponse(groupDAO.findOne(id), true);
+		return JSONResponseHelper.createResponse(groupDAO.findOne(id), true);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class GroupController {
 		myGroup.setCreator(user);
 		groupDAO.save(myGroup);
 
-		return JSonResponseHelper.successfullyCreated(myGroup);
+		return JSONResponseHelper.successfullyCreated(myGroup);
 
 	}
 
@@ -82,7 +82,7 @@ public class GroupController {
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "group_id") Long id) {
 		Group deleteGroup = groupDAO.findOne(id);
-		ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(deleteGroup);
+		ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteGroup);
 		groupDAO.delete(deleteGroup);
 		return v;
 	}
@@ -102,7 +102,7 @@ public class GroupController {
 
 		groupDAO.save(oldGroup);
 		
-		return JSonResponseHelper.successfullyUpdated(oldGroup);
+		return JSONResponseHelper.successfullyUpdated(oldGroup);
 
 	}
 

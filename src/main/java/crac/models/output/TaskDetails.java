@@ -1,24 +1,11 @@
 package crac.models.output;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-
-import crac.enums.TaskRepetitionState;
+import crac.components.storage.CompetenceStorage;
+import crac.components.utility.DataAccess;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
@@ -29,12 +16,9 @@ import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
-import crac.models.db.relation.RepetitionDate;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
-import crac.storage.CompetenceStorage;
-import crac.utility.DataAccess;
 
 public class TaskDetails {
 
@@ -76,7 +60,7 @@ public class TaskDetails {
 
 	private Set<UserFriendDetails> userRelationships;
 
-	private Set<CompetenceMatchingRelationDetails> taskCompetences;
+	private Set<CompetenceRelationDetails> taskCompetences;
 
 	private Set<Material> materials;
 
@@ -85,6 +69,8 @@ public class TaskDetails {
 	private Set<UserTaskRel> participationDetails;
 	
 	private boolean assigned;
+	
+	private boolean permissions;
 
 	public TaskDetails(Task t, CracUser u) {
 		this.id = t.getId();
@@ -118,6 +104,7 @@ public class TaskDetails {
 		}
 		this.materials = t.getMaterials();
 		this.taskType = t.getTaskType();
+		this.permissions = u.hasTaskPermissions(t);
 	}
 
 	public Set<TaskShort> addChildren(Task t) {
@@ -134,9 +121,9 @@ public class TaskDetails {
 
 	}
 
-	public Set<CompetenceMatchingRelationDetails> calcComps(Task t, CracUser u) {
+	public Set<CompetenceRelationDetails> calcComps(Task t, CracUser u) {
 
-		Set<CompetenceMatchingRelationDetails> list = new HashSet<>();
+		Set<CompetenceRelationDetails> list = new HashSet<>();
 
 		Set<CompetenceTaskRel> mctr = t.getMappedCompetences();
 
@@ -154,7 +141,7 @@ public class TaskDetails {
 						}
 					}
 					System.out.println("name: " + ctr.getCompetence().getName() + " val: " + bestVal);
-					CompetenceMatchingRelationDetails cd = new CompetenceMatchingRelationDetails(ctr.getCompetence());
+					CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
 					cd.setMandatory(ctr.isMandatory());
 					cd.setRelationValue(bestVal);
 					cd.setImportanceLevel(ctr.getImportanceLevel());
@@ -373,11 +360,11 @@ public class TaskDetails {
 		this.userRelationships = userRelationships;
 	}
 
-	public Set<CompetenceMatchingRelationDetails> getTaskCompetences() {
+	public Set<CompetenceRelationDetails> getTaskCompetences() {
 		return taskCompetences;
 	}
 
-	public void setTaskCompetences(Set<CompetenceMatchingRelationDetails> taskCompetences) {
+	public void setTaskCompetences(Set<CompetenceRelationDetails> taskCompetences) {
 		this.taskCompetences = taskCompetences;
 	}
 
@@ -411,6 +398,14 @@ public class TaskDetails {
 
 	public void setParticipationDetails(Set<UserTaskRel> participationDetails) {
 		this.participationDetails = participationDetails;
+	}
+
+	public boolean isPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(boolean permissions) {
+		this.permissions = permissions;
 	}
 
 }

@@ -24,11 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.decider.filter.ImportancyLevelFilter;
-import crac.decider.filter.LikeLevelFilter;
-import crac.decider.filter.ProficiencyLevelFilter;
-import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.config.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.filter.ImportancyLevelFilter;
+import crac.components.matching.filter.LikeLevelFilter;
+import crac.components.matching.filter.ProficiencyLevelFilter;
+import crac.components.matching.filter.UserRelationFilter;
+import crac.components.storage.CompetenceStorage;
+import crac.components.utility.DataAccess;
+import crac.components.utility.ElasticConnector;
+import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CommentDAO;
@@ -60,10 +64,6 @@ import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
 import crac.models.komet.entities.TxExabiscompetencesDescriptor;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
-import crac.storage.CompetenceStorage;
-import crac.utility.DataAccess;
-import crac.utility.ElasticConnector;
-import crac.utility.JSonResponseHelper;
 
 @RestController
 @RequestMapping("/synchronization")
@@ -184,7 +184,7 @@ public class SynchronizationController {
 		System.out.println("-------------------------------");
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "DAO");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class SynchronizationController {
 		System.out.println("-------------------------------");
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "INTERN_COMPETENCES");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class SynchronizationController {
 		this.internsync();
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "ALL");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class SynchronizationController {
 		this.internsync();
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "ALL_COMPETENCES");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -260,7 +260,7 @@ public class SynchronizationController {
 		System.out.println("||||DATABASE SYNCED||||");
 		System.out.println("-------------------------------");
 
-		return JSonResponseHelper.createResponse(m, true);
+		return JSONResponseHelper.createResponse(m, true);
 
 	}
 
@@ -483,7 +483,7 @@ public class SynchronizationController {
 		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -507,7 +507,7 @@ public class SynchronizationController {
 		addUsers();
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "TEST_DATA");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	private void addTestComps() {
@@ -936,9 +936,9 @@ public class SynchronizationController {
 
 		DeleteIndexResponse deleted = DataAccess.getConnector(Task.class).deleteIndex();
 		if (deleted.isAcknowledged()) {
-			return JSonResponseHelper.successfullyDeleted(url);
+			return JSONResponseHelper.successfullyDeleted(url);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 

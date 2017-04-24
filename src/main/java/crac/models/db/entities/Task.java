@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
@@ -39,7 +40,6 @@ import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.RepetitionDate;
 import crac.models.db.relation.UserTaskRel;
-import crac.utility.DataAccess;
 
 /**
  * The task-entity.

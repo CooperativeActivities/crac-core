@@ -6,6 +6,7 @@ public class PostOptions {
 	private int importanceValue;
 	private int likeValue;
 	private boolean mandatory;
+	private String text;
 
 	public PostOptions() {
 	}
@@ -40,6 +41,14 @@ public class PostOptions {
 
 	public void setImportanceValue(int importanceValue) {
 		this.importanceValue = importanceValue;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 }

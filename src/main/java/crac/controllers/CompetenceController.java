@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.components.storage.CompetenceStorage;
+import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.daos.CompetenceDAO;
@@ -37,8 +39,6 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.models.input.PostOptions;
 import crac.models.output.CompetenceGraphDetails;
 import crac.models.storage.AugmentedSimpleCompetence;
-import crac.storage.CompetenceStorage;
-import crac.utility.JSonResponseHelper;
 
 /**
  * REST controller for managing competences.
@@ -72,7 +72,7 @@ public class CompetenceController {
 	@RequestMapping(value = { "/all", "/all/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-		return JSonResponseHelper.createResponse(competenceDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(competenceDAO.findAll(), true);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class CompetenceController {
 			"/{competence_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> show(@PathVariable(value = "competence_id") Long id) {
-		return JSonResponseHelper.createResponse(competenceDAO.findOne(id), true);
+		return JSONResponseHelper.createResponse(competenceDAO.findOne(id), true);
 	}
 
 	/**
@@ -103,10 +103,10 @@ public class CompetenceController {
 		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
 
 		if (competenceRels.size() != 0) {		
-			return JSonResponseHelper.createResponse(competenceRels, true);
+			return JSONResponseHelper.createResponse(competenceRels, true);
 
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class CompetenceController {
 		Collections.sort(crd);
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("competences", crd);
-		return JSonResponseHelper.createResponse(c, true, meta);
+		return JSONResponseHelper.createResponse(c, true, meta);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class CompetenceController {
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("competences", a.getMappedCompetences());
 
-		return JSonResponseHelper.createResponse(a, true, meta);
+		return JSONResponseHelper.createResponse(a, true, meta);
 
 	}
 
@@ -158,13 +158,13 @@ public class CompetenceController {
 	@RequestMapping(value = { "/area", "/area/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody 
 	public ResponseEntity<String> getArea() {
-		return JSonResponseHelper.createResponse(competenceAreaDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(competenceAreaDAO.findAll(), true);
 	}
 
 	@RequestMapping(value = { "/userrels", "/userrels/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> userrels() {
-		return JSonResponseHelper.createResponse(userCompetenceRelDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(userCompetenceRelDAO.findAll(), true);
 	}
 
 	/**
@@ -188,10 +188,10 @@ public class CompetenceController {
 			po = mapper.readValue(json, PostOptions.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -204,19 +204,19 @@ public class CompetenceController {
 		if (competence != null) {
 			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
 			if (ucr != null) {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
 			} else {
 				rel.setUser(user);
 				rel.setCompetence(competence);
 				rel.setLikeValue(po.getLikeValue());
 				rel.setProficiencyValue(po.getProficiencyValue());
 				user.getCompetenceRelationships().add(rel);
-				ResponseEntity<String> v = JSonResponseHelper.successfullyCreated(rel);
+				ResponseEntity<String> v = JSONResponseHelper.successfullyCreated(rel);
 				userDAO.save(user);
 				return v;
 			}
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -243,10 +243,10 @@ public class CompetenceController {
 			po = mapper.readValue(json, PostOptions.class);
 		} catch (JsonMappingException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
 		} catch (IOException e) {
 			System.out.println(e.toString());
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -261,14 +261,14 @@ public class CompetenceController {
 			if (ucr != null) {
 				ucr.setLikeValue(po.getLikeValue());
 				ucr.setProficiencyValue(po.getProficiencyValue());
-				ResponseEntity<String> v = JSonResponseHelper.successfullyUpdated(ucr);
+				ResponseEntity<String> v = JSONResponseHelper.successfullyUpdated(ucr);
 				userCompetenceRelDAO.save(ucr);
 				return v;
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -294,16 +294,16 @@ public class CompetenceController {
 		if (competence != null) {
 			UserCompetenceRel rel = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
 			if (rel != null) {
-				ResponseEntity<String> v = JSonResponseHelper.successfullyDeleted(rel);
+				ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(rel);
 				user.getCompetenceRelationships().remove(rel);
 				competence.getUserRelationships().remove(rel);
 				userCompetenceRelDAO.delete(rel);
 				return v;
 			} else {
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -337,9 +337,9 @@ public class CompetenceController {
 		}
 
 		if (found.size() != 0) {
-			return JSonResponseHelper.createResponse(found, true);
+			return JSONResponseHelper.createResponse(found, true);
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 
 	}

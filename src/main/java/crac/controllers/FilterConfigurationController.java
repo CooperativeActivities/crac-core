@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.decider.core.MatrixFilterParameters;
-import crac.decider.filter.ImportancyLevelFilter;
-import crac.decider.filter.LikeLevelFilter;
-import crac.decider.filter.ProficiencyLevelFilter;
-import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.config.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.MatrixFilterParameters;
+import crac.components.matching.filter.ImportancyLevelFilter;
+import crac.components.matching.filter.LikeLevelFilter;
+import crac.components.matching.filter.ProficiencyLevelFilter;
+import crac.components.matching.filter.UserRelationFilter;
+import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.entities.CracUser;
-import crac.utility.JSonResponseHelper;
 
 @RestController
 @RequestMapping("/configuration")
@@ -56,12 +56,12 @@ public class FilterConfigurationController {
 			name = filterName;
 
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
 		}
 		
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("filter", name);
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -89,13 +89,13 @@ public class FilterConfigurationController {
 
 				restoreStandard();
 
-				return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
 			}	
 
-			return JSonResponseHelper.successfullyUpdated(mfp);
+			return JSONResponseHelper.successfullyUpdated(mfp);
 
 		} else {
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
 
 	}
@@ -108,7 +108,7 @@ public class FilterConfigurationController {
 			"/filter/print/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> printFilter() {
-		return JSonResponseHelper.createResponse(GlobalMatrixFilterConfig.filtersToString(), true);
+		return JSONResponseHelper.createResponse(GlobalMatrixFilterConfig.filtersToString(), true);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class FilterConfigurationController {
 		GlobalMatrixFilterConfig.clearFilters();
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("filters", "CLEARED");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class FilterConfigurationController {
 
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("filters", "RESTORED");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	public void restoreStandard() {

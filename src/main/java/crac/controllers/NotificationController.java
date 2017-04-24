@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.components.notifier.Notification;
+import crac.components.notifier.NotificationHelper;
+import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
-import crac.notifier.Notification;
-import crac.notifier.NotificationHelper;
-import crac.utility.JSonResponseHelper;
 
 @RestController
 @RequestMapping("/notification")
@@ -54,7 +54,7 @@ public class NotificationController {
 	public ResponseEntity<String> getNotifications() {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		return JSonResponseHelper.createResponse(NotificationHelper.getUserNotifications(user), true);
+		return JSONResponseHelper.createResponse(NotificationHelper.getUserNotifications(user), true);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class NotificationController {
 	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getAllNotifications() {
-		return JSonResponseHelper.createResponse(NotificationHelper.getAllNotifications(), true);
+		return JSONResponseHelper.createResponse(NotificationHelper.getAllNotifications(), true);
 	}
 
 	/**
@@ -82,10 +82,10 @@ public class NotificationController {
 			String message = n.accept();
 			HashMap<String, Object> meta = new HashMap<>();
 			meta.put("message", message);
-			return JSonResponseHelper.createResponse(n, true, meta);
+			return JSONResponseHelper.createResponse(n, true, meta);
 			//return JSonResponseHelper.successfullyAccepted(n, message);
 		}else{
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 		
 
@@ -105,10 +105,10 @@ public class NotificationController {
 			String message = n.deny();
 			HashMap<String, Object> meta = new HashMap<>();
 			meta.put("message", message);
-			return JSonResponseHelper.createResponse(n, true, meta);
+			return JSONResponseHelper.createResponse(n, true, meta);
 			//return JSonResponseHelper.successfullyDenied(n, message);
 		}else{
-			return JSonResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
 	

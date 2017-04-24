@@ -17,14 +17,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import crac.decider.core.Decider;
-import crac.decider.core.UserFilterParameters;
-import crac.decider.filter.ImportancyLevelFilter;
-import crac.decider.filter.LikeLevelFilter;
-import crac.decider.filter.ProficiencyLevelFilter;
-import crac.decider.filter.UserRelationFilter;
-import crac.decider.workers.TaskMatchingWorker;
-import crac.decider.workers.config.GlobalMatrixFilterConfig;
+import crac.components.matching.Decider;
+import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.UserFilterParameters;
+import crac.components.matching.filter.ImportancyLevelFilter;
+import crac.components.matching.filter.LikeLevelFilter;
+import crac.components.matching.filter.ProficiencyLevelFilter;
+import crac.components.matching.filter.UserRelationFilter;
+import crac.components.matching.workers.TaskMatchingWorker;
+import crac.components.storage.AugmenterUnit;
+import crac.components.storage.CompetenceStorage;
+import crac.components.utility.DataAccess;
+import crac.components.utility.ElasticConnector;
+import crac.components.utility.JSONResponseHelper;
 import crac.enums.TaskState;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
@@ -50,11 +55,6 @@ import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
 import crac.models.utility.TravelledCompetence;
-import crac.storage.AugmenterUnit;
-import crac.storage.CompetenceStorage;
-import crac.utility.DataAccess;
-import crac.utility.ElasticConnector;
-import crac.utility.JSonResponseHelper;
 
 /**
  * The main-controller used for hello world and testing
@@ -110,7 +110,7 @@ public class MainController {
 		
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("endpoint", "CALLED");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 	}
 	
 	@RequestMapping("/filters")
@@ -130,7 +130,7 @@ public class MainController {
 		
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("filters", "ADDED");
-		return JSonResponseHelper.createResponse(true, meta);
+		return JSONResponseHelper.createResponse(true, meta);
 		
 	}
 	

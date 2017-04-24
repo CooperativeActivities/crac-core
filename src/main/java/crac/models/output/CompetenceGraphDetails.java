@@ -1,12 +1,9 @@
 package crac.models.output;
 
-import javax.persistence.Column;
-
 import crac.models.db.entities.Competence;
 import crac.models.storage.AugmentedSimpleCompetence;
-import crac.models.utility.EvaluatedTask;
 
-public class CompetenceGraphDetails implements Comparable{
+public class CompetenceGraphDetails implements Comparable<Object>{
 	
 	private long id;
 
