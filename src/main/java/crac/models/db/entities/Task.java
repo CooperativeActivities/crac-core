@@ -173,6 +173,7 @@ public class Task {
 		time2.set(2031, 9, 10, 14, 30, 00);
 		this.endTime = time2;
 		*/
+		this.mappedCompetences = new HashSet<>();
 		this.materials = new HashSet<Material>();
 	}
 

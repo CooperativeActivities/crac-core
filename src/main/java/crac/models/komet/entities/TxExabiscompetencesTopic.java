@@ -4,65 +4,66 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
+import crac.models.db.entities.CompetenceArea;
 
 /**
  * The persistent class for the tx_exabiscompetences_topics database table.
  * 
  */
 @Entity
-@Table(name="tx_exabiscompetences_topics")
+@Table(name = "tx_exabiscompetences_topics")
 public class TxExabiscompetencesTopic {
 
 	@Id
 	private int uid;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String ataxonomie;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String btaxonomie;
 
 	private int cat;
 
 	private int crdate;
 
-	@Column(name="cruser_id")
+	@Column(name = "cruser_id")
 	private int cruserId;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String ctaxonomie;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String description;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String dtaxonomie;
 
 	private int epop;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String etaxonomie;
 
-	@Column(name="fe_creator")
+	@Column(name = "fe_creator")
 	private int feCreator;
 
-	@Column(name="fe_group")
+	@Column(name = "fe_group")
 	private int feGroup;
 
-	@Column(name="fe_owner")
+	@Column(name = "fe_owner")
 	private int feOwner;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String ftaxonomie;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String knowledgecheck;
 
-	@Type(type="text")
-	@Column(name="l10n_diffsource")
+	@Type(type = "text")
+	@Column(name = "l10n_diffsource")
 	private String l10nDiffsource;
 
-	@Column(name="l10n_parent")
+	@Column(name = "l10n_parent")
 	private int l10nParent;
 
 	private String learnlist;
@@ -73,14 +74,14 @@ public class TxExabiscompetencesTopic {
 
 	private int sorting;
 
-	@Type(type="text")
+	@Type(type = "text")
 	private String source;
 
 	private int sourceid;
 
 	private int subjid;
 
-	@Column(name="sys_language_uid")
+	@Column(name = "sys_language_uid")
 	private int sysLanguageUid;
 
 	@Column(columnDefinition = "TINYTEXT")
@@ -91,6 +92,14 @@ public class TxExabiscompetencesTopic {
 	private int tstamp;
 
 	public TxExabiscompetencesTopic() {
+	}
+
+	public CompetenceArea MapToCompetenceArea() {
+		CompetenceArea area = new CompetenceArea();
+		area.setId(this.getUid());
+		area.setDescription(this.getDescription());
+		area.setName(this.getTitleshort());
+		return area;
 	}
 
 	public int getUid() {

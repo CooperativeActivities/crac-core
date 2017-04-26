@@ -95,6 +95,7 @@ public class TaskDetails {
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
 		this.participationDetails = DataAccess.getRepo(UserTaskRelDAO.class).findByUserAndTask(u, t);
+		this.taskCompetences = new HashSet<>();
 		if (!this.participationDetails.isEmpty()) {
 			this.taskCompetences = calcComps(t, u);
 			this.assigned = true;

@@ -1,10 +1,15 @@
 package crac.models.komet.entities;
 
+import java.util.HashSet;
+
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
+import crac.components.utility.DataAccess;
+import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.entities.Competence;
+import crac.models.db.entities.CompetenceArea;
 
 
 /**
@@ -107,6 +112,12 @@ public class TxExabiscompetencesDescriptor{
 		c.setId(this.uid);
 		c.setName(this.titleshort);
 		c.setDescription(this.title);
+		CompetenceArea ca = DataAccess.getRepo(CompetenceAreaDAO.class).findOne((long)this.topicid);
+		if(ca != null){
+			HashSet<CompetenceArea> areas = new HashSet<>();
+			areas.add(ca);
+			c.setCompetenceAreas(areas);
+		}
 		return c;
 	}
 

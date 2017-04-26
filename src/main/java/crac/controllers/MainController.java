@@ -51,6 +51,10 @@ import crac.models.db.relation.CompetenceRelationshipType;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.RepetitionDate;
 import crac.models.db.relation.UserCompetenceRel;
+import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
+import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
+import crac.models.komet.entities.TxExabiscompetencesDescriptorsTopicidMm;
+import crac.models.komet.entities.TxExabiscompetencesTopic;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.storage.SimpleCompetence;
 import crac.models.storage.SimpleCompetenceRelation;
@@ -92,6 +96,13 @@ public class MainController {
 	@Autowired
 	private CompetencePermissionTypeDAO competencePermissionTypeDAO;
 	
+	@Autowired
+	private TxExabiscompetencesTopicDAO txExabiscompetencesTopicDAO;
+	
+	@Autowired
+	private TxExabiscompetencesDescriptorsTopicidMmDAO txExabiscompetencesDescriptorsTopicidMmDAO;
+
+	
 	@Value("${crac.elastic.url}")
     private String url;
 	
@@ -105,12 +116,20 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> test() {
 		
-		System.out.println(DataAccess.getRepo(CracUserDAO.class).findOne((long)1).getName());
-		System.out.println(DataAccess.getRepo(CompetenceDAO.class).findOne((long)3456).getName());
+		int count1 = 0;
+		int count2 = 0;
 		
-		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("endpoint", "CALLED");
-		return JSONResponseHelper.createResponse(true, meta);
+		for(TxExabiscompetencesDescriptorsTopicidMm single : txExabiscompetencesDescriptorsTopicidMmDAO.findAll()){
+			count1++;
+		}
+		
+		for(TxExabiscompetencesTopic single : txExabiscompetencesTopicDAO.findAll()){
+			count2++;
+		}
+
+		System.out.println("Count1: "+count1+" , Count2: "+count2);
+		
+		return JSONResponseHelper.createResponse(txExabiscompetencesTopicDAO.findAll(), true);
 	}
 	
 	@RequestMapping("/filters")

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class CompetenceArea {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "competence_area_id")
 	private long id;
 

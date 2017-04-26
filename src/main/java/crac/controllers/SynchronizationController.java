@@ -36,6 +36,7 @@ import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CommentDAO;
+import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
@@ -54,6 +55,7 @@ import crac.models.db.daos.UserMaterialSubscriptionDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Competence;
+import crac.models.db.entities.CompetenceArea;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
 import crac.models.db.entities.Task;
@@ -62,8 +64,10 @@ import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceRelationshipType;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
+import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
 import crac.models.komet.entities.TxExabiscompetencesDescriptor;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
+import crac.models.komet.entities.TxExabiscompetencesTopic;
 
 @RestController
 @RequestMapping("/synchronization")
@@ -77,6 +81,9 @@ public class SynchronizationController {
 
 	@Autowired
 	private CompetenceDAO competenceDAO;
+	
+	@Autowired
+	private CompetenceAreaDAO competenceAreaDAO;
 
 	@Autowired
 	private CompetencePermissionTypeDAO competencePermissionTypeDAO;
@@ -131,6 +138,9 @@ public class SynchronizationController {
 
 	@Autowired
 	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
+	
+	@Autowired
+	private TxExabiscompetencesTopicDAO txExabiscompetencesTopicDAO;
 
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
@@ -162,6 +172,7 @@ public class SynchronizationController {
 		DataAccess.addRepo(attachmentDAO);
 		DataAccess.addRepo(commentDAO);
 		DataAccess.addRepo(competenceDAO);
+		DataAccess.addRepo(competenceAreaDAO);
 		DataAccess.addRepo(competencePermissionTypeDAO);
 		DataAccess.addRepo(competenceRelationshipDAO);
 		DataAccess.addRepo(competenceRelationshipTypeDAO);
@@ -253,6 +264,7 @@ public class SynchronizationController {
 	public ResponseEntity<String> dbsync() {
 		HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m = new HashMap<>();
 
+		handleTopics();
 		handleCompetences(m);
 		handleRelationships(m);
 
@@ -263,6 +275,57 @@ public class SynchronizationController {
 		return JSONResponseHelper.createResponse(m, true);
 
 	}
+	
+	private void handleTopics(){
+		Iterable<TxExabiscompetencesTopic> kometTopicList = txExabiscompetencesTopicDAO.findAll();
+		Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
+		HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
+		
+		ArrayList<CompetenceArea> newc = new ArrayList<>();
+		ArrayList<CompetenceArea> updatec = new ArrayList<>();
+		ArrayList<CompetenceArea> deletec = new ArrayList<>();
+
+		for (CompetenceArea c : cracAreaList) {
+			cracAreaMap.put(c.getId(), c);
+		}
+
+		for (TxExabiscompetencesTopic single : kometTopicList) {
+			if (!cracAreaMap.containsKey((long) single.getUid())) {
+				newc.add(single.MapToCompetenceArea());
+			} else {
+				updatec.add(single.MapToCompetenceArea());
+				cracAreaMap.remove((long) single.getUid());
+			}
+		}
+
+		for (Map.Entry<Long, CompetenceArea> set : cracAreaMap.entrySet()) {
+			deletec.add(set.getValue());
+		}
+
+		handleNewCompetenceAreas(newc);
+		handleUpdatedCompetenceAreas(updatec);
+		//handleDeletedCompetenceAreas(deletec);
+		
+	}
+	
+	private void handleNewCompetenceAreas(ArrayList<CompetenceArea> competences) {
+		for (CompetenceArea c : competences) {
+			competenceAreaDAO.save(c);
+		}
+	}
+
+	private void handleUpdatedCompetenceAreas(ArrayList<CompetenceArea> competences) {
+		for (CompetenceArea c : competences) {
+			competenceAreaDAO.save(c);
+		}
+	}
+
+	private void handleDeletedCompetenceAreas(ArrayList<CompetenceArea> competences) {
+		for (CompetenceArea c : competences) {
+			competenceAreaDAO.delete(c);
+		}
+	}
+
 
 	private void handleRelationships(HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
 		Iterable<TxExabiscompetencesDescriptorsDescriptorMm> kometRelationshipList = txExabiscompetencesDescriptorsDescriptorMmDAO
