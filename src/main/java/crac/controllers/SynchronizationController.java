@@ -563,7 +563,7 @@ public class SynchronizationController {
 		System.out.println("||||DATA SYNCED||||");
 		System.out.println("-------------------------------");
 
-		//refreshESTasks();
+		// refreshESTasks();
 		addCompetenceRelationshipTypes();
 		addRoles();
 		// addTestComps();
@@ -674,13 +674,16 @@ public class SynchronizationController {
 		System.out.println("--roles synced--");
 		System.out.println("-------------------------------");
 
-		Role userRole = new Role();
-		userRole.setName("USER");
-		roleDAO.save(userRole);
-
-		Role editorRole = new Role();
-		editorRole.setName("EDITOR");
-		roleDAO.save(editorRole);
+		if (roleDAO.findByName("USER") == null) {
+			Role userRole = new Role();
+			userRole.setName("USER");
+			roleDAO.save(userRole);
+		}
+		if (roleDAO.findByName("EDITOR") == null) {
+			Role editorRole = new Role();
+			editorRole.setName("EDITOR");
+			roleDAO.save(editorRole);
+		}
 	}
 
 	private void addCompetenceRelationshipTypes() {
