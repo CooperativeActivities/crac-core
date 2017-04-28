@@ -369,32 +369,36 @@ public class SynchronizationController {
 	private void handleNewCompetenceRelationships(ArrayList<CompetenceRelationship> competencerels,
 			HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
 		for (CompetenceRelationship c : competencerels) {
-			competenceRelationshipDAO.save(c);
 
-			String comp1id = c.getCompetence1().getId() + "";
-			String comp2id = c.getCompetence2().getId() + "";
+			if (c.getCompetence1() != null && c.getCompetence2() == null) {
 
-			HashMap<String, String> comp1 = new HashMap<>();
-			HashMap<String, String> comp2 = new HashMap<>();
+				competenceRelationshipDAO.save(c);
 
-			if (m.get("created").containsKey(comp1id)) {
-				comp1 = m.get("created").get(comp1id).get("relations");
-			} else if (m.get("updated").containsKey(comp1id)) {
-				comp1 = m.get("updated").get(comp1id).get("relations");
+				String comp1id = c.getCompetence1().getId() + "";
+				String comp2id = c.getCompetence2().getId() + "";
+
+				HashMap<String, String> comp1 = new HashMap<>();
+				HashMap<String, String> comp2 = new HashMap<>();
+
+				if (m.get("created").containsKey(comp1id)) {
+					comp1 = m.get("created").get(comp1id).get("relations");
+				} else if (m.get("updated").containsKey(comp1id)) {
+					comp1 = m.get("updated").get(comp1id).get("relations");
+				}
+
+				if (m.get("created").containsKey(comp2id)) {
+					comp2 = m.get("created").get(comp2id).get("relations");
+				} else if (m.get("updated").containsKey(comp2id)) {
+					comp2 = m.get("updated").get(comp2id).get("relations");
+				}
+
+				if (comp1 != null && comp2 != null) {
+					comp1.put(comp2id + "", "CREATE");
+					comp2.put(comp1id + "", "CREATE");
+				}
 			}
-
-			if (m.get("created").containsKey(comp2id)) {
-				comp2 = m.get("created").get(comp2id).get("relations");
-			} else if (m.get("updated").containsKey(comp2id)) {
-				comp2 = m.get("updated").get(comp2id).get("relations");
-			}
-
-			if (comp1 != null && comp2 != null) {
-				comp1.put(comp2id + "", "CREATE");
-				comp2.put(comp1id + "", "CREATE");
-			}
-
 		}
+
 	}
 
 	private void handleUpdatedCompetenceRelationships(ArrayList<CompetenceRelationship> competencerels,
