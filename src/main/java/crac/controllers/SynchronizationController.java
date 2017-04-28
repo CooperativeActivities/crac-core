@@ -563,7 +563,7 @@ public class SynchronizationController {
 		System.out.println("||||DATA SYNCED||||");
 		System.out.println("-------------------------------");
 
-		refreshESTasks();
+		//refreshESTasks();
 		addCompetenceRelationshipTypes();
 		addRoles();
 		// addTestComps();
