@@ -290,11 +290,13 @@ public class SynchronizationController {
 		}
 
 		for (TxExabiscompetencesTopic single : kometTopicList) {
-			if (!cracAreaMap.containsKey((long) single.getUid())) {
-				newc.add(single.MapToCompetenceArea());
-			} else {
-				updatec.add(single.MapToCompetenceArea());
-				cracAreaMap.remove((long) single.getUid());
+			if (!single.getTitleshort().equals("")) {
+				if (!cracAreaMap.containsKey((long) single.getUid())) {
+					newc.add(single.MapToCompetenceArea());
+				} else {
+					updatec.add(single.MapToCompetenceArea());
+					cracAreaMap.remove((long) single.getUid());
+				}
 			}
 		}
 
