@@ -81,7 +81,7 @@ public class SynchronizationController {
 
 	@Autowired
 	private CompetenceDAO competenceDAO;
-	
+
 	@Autowired
 	private CompetenceAreaDAO competenceAreaDAO;
 
@@ -138,7 +138,7 @@ public class SynchronizationController {
 
 	@Autowired
 	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
-	
+
 	@Autowired
 	private TxExabiscompetencesTopicDAO txExabiscompetencesTopicDAO;
 
@@ -275,12 +275,12 @@ public class SynchronizationController {
 		return JSONResponseHelper.createResponse(m, true);
 
 	}
-	
-	private void handleTopics(){
+
+	private void handleTopics() {
 		Iterable<TxExabiscompetencesTopic> kometTopicList = txExabiscompetencesTopicDAO.findAll();
 		Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
 		HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
-		
+
 		ArrayList<CompetenceArea> newc = new ArrayList<>();
 		ArrayList<CompetenceArea> updatec = new ArrayList<>();
 		ArrayList<CompetenceArea> deletec = new ArrayList<>();
@@ -304,10 +304,10 @@ public class SynchronizationController {
 
 		handleNewCompetenceAreas(newc);
 		handleUpdatedCompetenceAreas(updatec);
-		//handleDeletedCompetenceAreas(deletec);
-		
+		// handleDeletedCompetenceAreas(deletec);
+
 	}
-	
+
 	private void handleNewCompetenceAreas(ArrayList<CompetenceArea> competences) {
 		for (CompetenceArea c : competences) {
 			competenceAreaDAO.save(c);
@@ -325,7 +325,6 @@ public class SynchronizationController {
 			competenceAreaDAO.delete(c);
 		}
 	}
-
 
 	private void handleRelationships(HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
 		Iterable<TxExabiscompetencesDescriptorsDescriptorMm> kometRelationshipList = txExabiscompetencesDescriptorsDescriptorMmDAO
@@ -448,11 +447,13 @@ public class SynchronizationController {
 		ArrayList<Competence> deletec = new ArrayList<>();
 
 		for (TxExabiscompetencesDescriptor single : kometCompetenceList) {
-			if (!cracCompetenceMap.containsKey((long) single.getUid())) {
-				newc.add(single.mapToCompetence());
-			} else {
-				updatec.add(single.mapToCompetence());
-				cracCompetenceMap.remove((long) single.getUid());
+			if (!single.getTitleshort().equals("")) {
+				if (!cracCompetenceMap.containsKey((long) single.getUid())) {
+					newc.add(single.mapToCompetence());
+				} else {
+					updatec.add(single.mapToCompetence());
+					cracCompetenceMap.remove((long) single.getUid());
+				}
 			}
 		}
 

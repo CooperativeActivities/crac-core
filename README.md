@@ -1519,7 +1519,7 @@ GET /competence/all
 
 #####*Request:*
 
-GET /{competence_id}/related
+GET /competence/{competence_id}/related
 
 #####*Response:*
 
@@ -1531,7 +1531,7 @@ Standard response, the related-competences are part of the meta-object
 
 #####*Request:*
 
-GET /area/{area_id}
+GET /competence/area/{area_id}
 
 #####*Response:*
 
@@ -1543,7 +1543,7 @@ Standard response, the related-competences are part of the meta-object
 
 #####*Request:*
 
-GET /area
+GET /competence/area
 
 #####*Response:*
 
