@@ -370,7 +370,7 @@ public class SynchronizationController {
 			HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
 		for (CompetenceRelationship c : competencerels) {
 
-			if (c.getCompetence1() != null && c.getCompetence2() == null) {
+			if (c.getCompetence1() != null && c.getCompetence2() != null) {
 
 				competenceRelationshipDAO.save(c);
 
