@@ -6,42 +6,42 @@
 
 -----------------------------------------------------------------
 
-###THIS SYSTEM IS USING THE REST-CONCEPT! THE USED FRONTEND IS NEVER PERMANENTLY CONNECTED TO THE BACKEND!
+### THIS SYSTEM IS USING THE REST-CONCEPT! THE USED FRONTEND IS NEVER PERMANENTLY CONNECTED TO THE BACKEND!
 
-###As a result, the credentials (name and password) OR a valid token must always be delivered in the header of the request for authentication!
+### As a result, the credentials (name and password) OR a valid token must always be delivered in the header of the request for authentication!
 
 The credentials have to be encoded, according to the Basic-Authentication standards.
 If this is not the case, the server will just return a 401 "unauthorized"-message!
 
-####If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
+#### If the logged in user does not posses the rights for executing the method at a given endpoint, there will be a 403-message as return value. 
 
 Eg.: A user without admin-rights tries to delete another user.
 
-###Things to consider when using PUT or POST-Methods with JSon-Data
+### Things to consider when using PUT or POST-Methods with JSon-Data
 
 The Backend is using a library called Jackson, which maps the JSon to objects and vice versa.
 This means, the fields in the JSon-data MUST match the fields of the class used in CrAc. 
 Information for that is provided down below in the details for each endpoint.
 
-###IMPORTANT: Not all fields have to be filled in! If only the name of the user should be changed, that is the only information that has to be sent via JSon. The Jackson-library takes all information sent and creates an object where it fills in all the fields it has provided data for, as long as this data does match the class-description.
+### IMPORTANT: Not all fields have to be filled in! If only the name of the user should be changed, that is the only information that has to be sent via JSon. The Jackson-library takes all information sent and creates an object where it fills in all the fields it has provided data for, as long as this data does match the class-description.
 
 In summary: Not all fields have to be sent via JSon, but the data sent MUST match the possible fields.
 
 -----------------------------------------------------------------
 
-###Login-related Endpoints
+### Login-related Endpoints
 
 -----------------------------------------------------------------
 
 **Get a valid token for the system and confirm your user**
 
-#####*Request:*
+##### *Request:*
 
 GET /user/login
 
 ->the name and password have to be added in the header as the basic-authentication
 
-#####*Response:*
+##### *Response:*
 
 If the name and password transferred in the header are correct:
 
@@ -72,25 +72,25 @@ else the standard unauthorized-message will appear:
 	
 If the user already has a valid token, the system will output it and return a message that reminds the user, that he is already logged in.
 	
-###Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
+### Now, that the user is confirmed, there is another option for authenticating to endpoints, the token.
 The value of the token return by this endpoint can just be added to the header of the request in the custom-field "Token".
 If it's valid, the system will act like the user is sending his actual name and password.
-###The user can still authenticate via basic-authentication!
+### The user can still authenticate via basic-authentication!
 
 -----------------------------------------------------------------
 
 **Delete your token**
 
-#####*Request:*
+##### *Request:*
 
 GET /user/logout
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message, depending on the VALID (through basic authentication) user already having a token or not.
 	
 This endpoint will delete the token that was created by calling the login-endpoint!
-####If no basic-authentication is provided, the user now has no access to the system!
+#### If no basic-authentication is provided, the user now has no access to the system!
 
 -----------------------------------------------------------------
 
@@ -105,14 +105,14 @@ These are the endpoints that allow those actions (also test-data can be created 
 
 **Copy test-data to the platform and fully synchronize all competences from KOMET**
 
-#####*Request:*
+##### *Request:*
 
 GET /synchronization/full
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 This endpoint includes all synchronization-functionality available!
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message.
 
@@ -120,14 +120,14 @@ Either a success or a failure-message.
 
 **Fully synchronize all competences from KOMET**
 
-#####*Request:*
+##### *Request:*
 
 GET /synchronization/competences
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 This endpoint copies all competence-related data from the KOMET-DB to the CrAc-DB and caches them to the intern storage. It only works if the databases are configured correctly!
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message.
 
@@ -135,14 +135,14 @@ Either a success or a failure-message.
 
 **Synchronize all competences from KOMET-DB to CrAc-DB**
 
-#####*Request:*
+##### *Request:*
 
 GET /synchronization/database
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 This endpoint copies all competence-related data from the KOMET-DB to the CrAc-DB.
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message.
 
@@ -150,14 +150,14 @@ Either a success or a failure-message.
 
 **Synchronizes the competences of the DB into the Competence-Storage of the application and caches the relations**
 
-#####*Request:*
+##### *Request:*
 
 GET /synchronization/intern
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 This endpoint copies and caches the competences data of the CrAc-DB into the intern storage.
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message.
 
@@ -165,14 +165,14 @@ Either a success or a failure-message.
 
 **Add filters to the configuration**
 
-#####*Request:*
+##### *Request:*
 
 GET /synchronization/filter
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 This endpoint adds matching-matrix-filters to the filter-configuration.
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message.
 
@@ -180,24 +180,24 @@ Either a success or a failure-message.
 
 **Copy test-data to the platform**
 
-#####*Request:*
+##### *Request:*
 
 GET /synchronization/data
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 This endpoint adds test-data to the platform.
 
-#####*Response:*
+##### *Response:*
 
 Either a success or a failure-message.
 
 -----------------------------------------------------------------
 
-###User-Functions
+### User-Functions
 
 -----------------------------------------------------------------
 
-###Errors
+### Errors
 
 -----------------------------------------------------------------
 
@@ -231,11 +231,11 @@ QUANTITY_TOO_SMALL, QUANTITY_TOO_HIGH, QUANTITY_INCORRECT, DATASETS_ALREADY_EXIS
 
 **Get all users**
 
-#####*Request:*
+##### *Request:*
 
 GET /user/all
 
-#####*Response:*
+##### *Response:*
 
 An array containing all users
 
@@ -256,7 +256,7 @@ An array containing all users
 	
 **Get one user by ID**
 
-#####*Request:*
+##### *Request:*
 
 GET /user/{id}
 
@@ -274,11 +274,11 @@ A user object with given id
 
 **Create a new user**
 
-#####*Request:*
+##### *Request:*
 
 POST /admin/user
 
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 	{
 	    "name":"test",
@@ -290,7 +290,7 @@ POST /admin/user
 	    "email":"asd@asd"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -298,12 +298,12 @@ Json-data, either a success or a failure message
 
 **Delete a user with given ID**
 
-#####*Request:*
+##### *Request:*
 
 DELETE /admin/user/{id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -311,10 +311,10 @@ Json-data, either a success or a failure message
 
 **Update the data of a user with given ID**
 
-#####*Request:*
+##### *Request:*
 
 PUT /admin/user/{id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 Updates a user by given ID
 
@@ -328,7 +328,7 @@ Updates a user by given ID
 	    "email":"asd@asd"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -336,11 +336,11 @@ Json-data, either a success or a failure message
 
 **Get the data of the currently logged in user**
 
-#####*Request:*
+##### *Request:*
 
 GET /user
 
-#####*Response:*
+##### *Response:*
 
 The object of the currently logged in user
 
@@ -354,7 +354,7 @@ The object of the currently logged in user
 
 **Update the data of the currently logged in user**
 
-#####*Request:*
+##### *Request:*
 
 PUT /user
 
@@ -370,7 +370,7 @@ Updates the currently logged in user
 	    "email":"asd@asd"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -378,11 +378,11 @@ Json-data, either a success or a failure message
 
 **Return a sorted list of elements with the best fitting users for the given task**
 
-#####*Request:*
+##### *Request:*
 
 GET user/find/{task_id}
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{ "task": {
@@ -404,13 +404,13 @@ GET user/find/{task_id}
 
 -----------------------------------------------------------------
 
-###Competence-Endpoints on logged in user
+### Competence-Endpoints on logged in user
 
 -----------------------------------------------------------------
 
 **Add a competence with given ID to the currently logged in user, likeValue and proficiencyValue are mandatory**
 
-#####*Request:*
+##### *Request:*
 
 	{
 		"proficiencyValue": 50,
@@ -419,7 +419,7 @@ GET user/find/{task_id}
 
 POST competence/{competence_id}/add
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -427,7 +427,7 @@ Json-data, either a success or a failure message
 
 **Adjust the values of a user-competence connection**
 
-#####*Request:*
+##### *Request:*
 
 	{
 		"proficiencyValue": 50,
@@ -436,7 +436,7 @@ Json-data, either a success or a failure message
 
 PUT competence/{competence_id}/adjust
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -444,11 +444,11 @@ Json-data, either a success or a failure message
 
 **Show all competences, that are and not yet connected available to a user**
 
-#####*Request:*
+##### *Request:*
 
 GET competence/available
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{
@@ -467,27 +467,27 @@ GET competence/available
 
 **Remove a competence with given ID from the currently logged in user**
 
-#####*Request:*
+##### *Request:*
 
 DELETE competence/{competence_id}/remove
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-###Task-Endpoints on logged in user
+### Task-Endpoints on logged in user
 
 -----------------------------------------------------------------
 
 **Returns a sorted list of elements with the best fitting tasks for the logged in user**
 
-#####*Request:*
+##### *Request:*
 
 GET task/find
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -520,11 +520,11 @@ GET task/find
 
 **Return a sorted list of a defined number of elements with the best fitting tasks for the logged in user**
 
-#####*Request:*
+##### *Request:*
 
 GET task/find/{number_of_tasks}
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -549,11 +549,11 @@ GET task/find/{number_of_tasks}
 
 **Issues a friend-request-notification to target user**
 
-#####*Request:*
+##### *Request:*
 
 GET user/{user_id}/friend
 
-#####*Response:*
+##### *Response:*
 
 Json-data, a success
 
@@ -561,11 +561,11 @@ Json-data, a success
 
 **Shows the friends of the logged in user**
 
-#####*Request:*
+##### *Request:*
 
 GET user/friends
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{
@@ -584,11 +584,11 @@ GET user/friends
 
 **Unfriends target user**
 
-#####*Request:*
+##### *Request:*
 
 GET user/{user_id}/unfriend
 
-#####*Response:*
+##### *Response:*
 
 Json-data, a success
 
@@ -596,11 +596,11 @@ Json-data, a success
 
 **Shows the relationships of the logged in user**
 
-#####*Request:*
+##### *Request:*
 
 GET user/relationships
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -626,42 +626,42 @@ GET user/relationships
 -----------------------------------------------------------------
 
 **Adds a role to the logged in User**
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
-#####*Request:*
+##### *Request:*
 
 GET user/role/{role_id}/add
 
-#####*Response:*
+##### *Response:*
 
 Json-data, a success
 	
 -----------------------------------------------------------------
 
 **Removes a role from the logged in user**
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
-#####*Request:*
+##### *Request:*
 
 GET user/role/{role_id}/remove
 
-#####*Response:*
+##### *Response:*
 
 Json-data, a success
 
 -----------------------------------------------------------------
 
-###Role-Endpoints
+### Role-Endpoints
 
 -----------------------------------------------------------------
 
 **Returns all possible roles**
 
-#####*Request:*
+##### *Request:*
 
 GET /role
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -684,12 +684,12 @@ GET /role
 
 **Deletes the role with given id**
 	
-#####*Request:*
+##### *Request:*
 
 DELETE /admin/role/{role_id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -697,16 +697,16 @@ Json-data, either a success or a failure message
 
 **Creates a new role**
 	
-#####*Request:*
+##### *Request:*
 
 POST /admin/role
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 	{
 	    "name": "DUMMYROLE"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -714,34 +714,34 @@ Json-data, either a success or a failure message
 
 **Updates the role with given id**
 	
-#####*Request:*
+##### *Request:*
 
 PUT /admin/role/{role_id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
 	{
 	    "name": "DUMMYROLE"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-###Task-Endpoints
+### Task-Endpoints
 
-####EXTEND TASKS FOR SUBTASKS
+#### EXTEND TASKS FOR SUBTASKS
 
 -----------------------------------------------------------------
 
 **Returns an array containing all tasks**
 
-#####*Request:*
+##### *Request:*
 
 GET /task
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{
@@ -760,11 +760,11 @@ GET /task
 
 **Returns target task and its relationship to the logged in user (if one exists) and updates the task if it's ready to start**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{task_id}
 
-#####*Response:*
+##### *Response:*
 
 The information about the task and its relationships is in the meta-object
 	
@@ -772,10 +772,10 @@ The information about the task and its relationships is in the meta-object
 
 **Updates the task with given id**
 	
-#####*Request:*
+##### *Request:*
 
 PUT /task/{task_id}
-####This function requires permission!
+#### This function requires permission!
 
 	{
 	    "name": "testTask",
@@ -794,7 +794,7 @@ ORGANISATIONAL: Can't be participated, only for organization purposes
 WORKABLE: These are the tasks volunteers can be participate on  
 SHIFT: Workable tasks can be divided into shifts for marking time-spans on a task  
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -802,7 +802,7 @@ Json-data, either a success or a failure message
 
 **Creates a new task**
 	
-#####*Request:*
+##### *Request:*
 
 POST /admin/task
 
@@ -823,7 +823,7 @@ ORGANISATIONAL: Can't be participated, only for organization purposes
 WORKABLE: These are the tasks volunteers can be participate on  
 SHIFT: Workable tasks can be divided into shifts for marking time-spans on a task  
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -831,12 +831,12 @@ Json-data, either a success or a failure message
 
 **Deletes the task with given id**
 	
-#####*Request:*
+##### *Request:*
 
 DELETE /admin/task/{task_id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -844,11 +844,11 @@ Json-data, either a success or a failure message
 
 **Returns all tasks of logged in user, divided in the TaskParticipationTypes**
 
-#####*Request:*
+##### *Request:*
 
 GET task/type
 
-#####*Response:*
+##### *Response:*
 
 	{
 	  "following": [],
@@ -867,11 +867,11 @@ GET task/type
 
 **Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate', 'follow', or 'lead'**
 
-#####*Request:*
+##### *Request:*
 
 GET task/{task_id}/add/{state_name}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -879,12 +879,12 @@ Json-data, either a success or a failure message
 
 **Removes the task with given id from the open-tasks of the currently logged in user**
 
-#####*Request:*
+##### *Request:*
 
 DELETE task/{task_id}/remove
 
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -892,7 +892,7 @@ Json-data, either a success or a failure message
 	
 **Adds target competence to target task, it is mandatory to add the proficiency, importanceLvl and the mandatoryflag (as boolean)**
 	
-#####*Request:*
+##### *Request:*
 
 	{
 		"proficiency": 50,
@@ -902,7 +902,7 @@ Json-data, either a success or a failure message
 
 POST /task/{task_id}/competence/{competence_id}/require
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -910,7 +910,7 @@ Json-data, either a success or a failure message
 	
 **Add multiple competences**
 	
-#####*Request:*
+##### *Request:*
 
 Post a JSON-file with an array containing competence-ids and meta-data.  
 
@@ -944,7 +944,7 @@ mandatory (0 [for false] or 1 [for true])
 		}
 	]
 
-#####*Response:*
+##### *Response:*
 
 	{
 	  "success": true,
@@ -969,14 +969,14 @@ Json-data, either a success or a failure message
 	
 **Overwrites all assigned competences with given competences**
 	
-#####*Request:*
+##### *Request:*
 
-####This endpoint works exactly as the one above ( .../require), except it overwrite all previously assigned competences!
+#### This endpoint works exactly as the one above ( .../require), except it overwrite all previously assigned competences!
 Post a JSON-file with an array containing competence-ids and meta-data.
 
 PUT /task/{task_id}/competence/overwrite
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -984,11 +984,11 @@ Json-data, either a success or a failure message
 	
 **Removes a competence by given id to a task by given id**
 	
-#####*Request:*
+##### *Request:*
 
 DELETE /task/{task_id}/competence/{competence_id}/remove
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -996,7 +996,7 @@ Json-data, either a success or a failure message
 	
 **Add/Adjust multiple materials assigned to a task OR overwrite all materials assigned to a task**
 	
-#####*Request:*
+##### *Request:*
 
 POST /task/{task_id}/material/multiple/{action}
 
@@ -1008,7 +1008,7 @@ As action, either add or overwrite can be put!
 		"quantity": 3
 	}
 
-#####*Response:*
+##### *Response:*
 
 In details, the key of the object is the ID of the material:
 
@@ -1038,7 +1038,7 @@ ALREADY_EXISTS_VALUES_ADJUSTED, ID_NOT_VALID, CREATED, NOT_CREATED, NOT_ASSIGNED
 	
 **Add a material to target task**
 	
-#####*Request:*
+##### *Request:*
 
 POST /task/{task_id}/material/add
 
@@ -1048,7 +1048,7 @@ POST /task/{task_id}/material/add
 		"quantity": 3
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1056,7 +1056,7 @@ Json-data, either a success or a failure message
 	
 **Update fields of target material on target task**
 	
-#####*Request:*
+##### *Request:*
 
 PUT /task/{task_id}/material/{material_id}/update
 
@@ -1066,7 +1066,7 @@ PUT /task/{task_id}/material/{material_id}/update
 		"quantity": 3
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1074,11 +1074,11 @@ Json-data, either a success or a failure message
 	
 **Remove a material from target task**
 	
-#####*Request:*
+##### *Request:*
 
 DELETE /task/{task_id}/material/{material_id}/remove
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1086,11 +1086,11 @@ Json-data, either a success or a failure message
 	
 **Subscribe to a material of a task with a quantity, or change the quantity if already subscribed**
 	
-#####*Request:*
+##### *Request:*
 
 PUT /task/{task_id}/material/{material_id}/subscribe/{quantity}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1103,11 +1103,11 @@ QUANTITY_TOO_HIGH
 	
 **Unsubscribe to a subscribed material**
 	
-#####*Request:*
+##### *Request:*
 
 DELETE /task/{task_id}/material/{material_id}/unsubscribe
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1115,24 +1115,24 @@ Json-data, either a success or a failure message
 	
 **Sets the relation between the logged in user and target task to done, meaning the user completed the task**
 	
-#####*Request:*
+##### *Request:*
 
-####Use "true" or "false" for {done_boolean}
+#### Use "true" or "false" for {done_boolean}
 
 PUT /task/{task_id}/done/{done_boolean}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 **Returns an array with all tasks that contain given task_name in their name**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/searchDirect/{task_name}
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{
@@ -1151,7 +1151,7 @@ GET /task/searchDirect/{task_name}
 
 **Creates a task, that is set as the child of the chosen existing task**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{supertask_id}/extend
 
@@ -1178,7 +1178,7 @@ ORGANISATIONAL can only extend to another ORGANISATIONAL or WORKABLE,
 WORKABLE can only extend multiple SHIFT-tasks,  
 every other extension is denied by the backend.  
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1186,11 +1186,11 @@ Json-data, either a success or a failure message
 
 **Copy target task (work in progress)**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{task_id}/copy
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1198,11 +1198,11 @@ Json-data, either a success or a failure message
 
 **Updates the value of an task with an open amount of volunteers, based on the amount of volunteers on their child-tasks**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{task_id}/updateAmountOfVolunteers
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1210,7 +1210,7 @@ Json-data, either a success or a failure message
 
 **Sets the TaskRepetitionState from once to periodic if possible, mandatory to add a date as json**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{task_id}/periodic/set
 
@@ -1223,7 +1223,7 @@ GET /task/{task_id}/periodic/set
 	   
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1231,11 +1231,11 @@ Json-data, either a success or a failure message
 
 **Resets the TaskRepetitionState from periodic to once**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{task_id}/periodic/undo
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1243,11 +1243,11 @@ Json-data, either a success or a failure message
 
 **Issues an invite-notification to the target-user**
 
-#####*Request:*
+##### *Request:*
 
 GET /task//{task_id}/invite/{user_id}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1260,11 +1260,11 @@ Json-data, either a success or a failure message
 *STARTED: Only allowed when the parent task is started and if sequential, the previous task is completed*
 *COMPLETED: A task can only be completed when its children are all completed or if it has none*
 
-#####*Request:*
+##### *Request:*
 
 PUT /task/{task_id}/state/{state_name}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1312,11 +1312,11 @@ Possible failures:
 
 **Starts all tasks, that fullfill the prerequisites and are ready to starts**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/updateStarted
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1324,11 +1324,11 @@ Json-data, either a success or a failure message
 
 **Nominate someone as the leader of a task as creator**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/{task_id}/nominateLeader/{user_id}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1336,11 +1336,11 @@ Json-data, either a success or a failure message
 
 **Returns the values for the enum taskParticipationType**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/taskParticipationTypes
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  "PARTICIPATING",
@@ -1352,11 +1352,11 @@ GET /task/taskParticipationTypes
 
 **Returns the values for the enum taskState**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/taskStates
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  "NOT_PUBLISHED",
@@ -1369,11 +1369,11 @@ GET /task/taskStates
 
 **Returns the values for the enum taskType**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/taskTypes
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  "PARALLEL",
@@ -1384,11 +1384,11 @@ GET /task/taskTypes
 
 **Returns all tasks, that are supertasks**
 
-#####*Request:*
+##### *Request:*
 
 GET /task/parents
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{
@@ -1407,7 +1407,7 @@ GET /task/parents
 
 **Fulltext-queries all tasks with Elasticsearch and returns the found ones. If bound to competence-system, compares if tasks are doable**
 
-#####*Request:*
+##### *Request:*
 
 POST /task/elastic/query
 
@@ -1415,7 +1415,7 @@ POST /task/elastic/query
 		"text": "This is a fulltext-query!"
 	}
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{ "task": {
@@ -1435,32 +1435,17 @@ POST /task/elastic/query
 
 -----------------------------------------------------------------
 
-###Competence-Endpoints
-
------------------------------------------------------------------
-
-**Synchronizes the competences of the DB into the CompetenceStorage of the application and caches the relations**
-##VERY IMPORTANT:
--> When booting the system, this is done automatically. Later on, if there is a change on the DB, this HAS to be called,
-since internally, the system only works with the cached data!
-
-#####*Request:*
-
-GET /admin/sync
-
-#####*Response:*
-
-Json-data, either a success or a failure message
+### Competence-Endpoints
 
 -----------------------------------------------------------------
 
 **Returns the competences of the currently logged in user, wrapped in the relationship-object**
 
-#####*Request:*
+##### *Request:*
 
 GET competence
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -1494,11 +1479,11 @@ GET competence
 
 **Returns an array containing all competences**
 
-#####*Request:*
+##### *Request:*
 
 GET /competence/all
 
-#####*Response:*
+##### *Response:*
 
 	[
 		{
@@ -1517,11 +1502,11 @@ GET /competence/all
 
 **Returns all competences that are related to target competence, ordered by it's relation-value**
 
-#####*Request:*
+##### *Request:*
 
 GET /competence/{competence_id}/related
 
-#####*Response:*
+##### *Response:*
 
 Standard response, the related-competences are part of the meta-object
 
@@ -1529,11 +1514,11 @@ Standard response, the related-competences are part of the meta-object
 
 **Returns target competence-topic-area and its mapped competences**
 
-#####*Request:*
+##### *Request:*
 
 GET /competence/area/{area_id}
 
-#####*Response:*
+##### *Response:*
 
 Standard response, the related-competences are part of the meta-object
 
@@ -1541,23 +1526,23 @@ Standard response, the related-competences are part of the meta-object
 
 **Returns all competence-topic-areas**
 
-#####*Request:*
+##### *Request:*
 
 GET /competence/area
 
-#####*Response:*
+##### *Response:*
 
 Standard response, the related-competences are part of the meta-object
 
 -----------------------------------------------------------------
 
-**Returns a user object with given id**
+**Returns a competence object with given id**
 
-#####*Request:*
+##### *Request:*
 
 GET /competence/{competence_id}
 
-#####*Response:*
+##### *Response:*
 
 	{
 		"id": {competence_id},
@@ -1569,18 +1554,18 @@ GET /competence/{competence_id}
 
 **Creates a new competence**
 
-#####*Request:*
+##### *Request:*
 
 POST /admin/competence
 
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights! Only use for testing, this should be not used live!
 
 	{
 	    "name":"testCompetence",
 	    "description": "this is a competence"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1588,12 +1573,12 @@ Json-data, either a success or a failure message
 
 **Deletes competence by given ID**
 
-#####*Request:*
+##### *Request:*
 
 DELETE /admin/competence/{competence_id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights! Only use for testing, this should be not used live!
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1601,17 +1586,17 @@ Json-data, either a success or a failure message
 
 **Updates a competence by given ID**
 
-#####*Request:*
+##### *Request:*
 
 PUT /admin/competence/{competence_id}
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights! Only use for testing, this should be not used live!
 
 	{
 	    "name":"testCompetence",
 	    "description": "this is a competence"
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1619,40 +1604,41 @@ Json-data, either a success or a failure message
 
 **Connects two competences via a type and additional values**
 
-#####*Request:*
+##### *Request:*
 
 POST /competence/{competence1_id}/connect/{competence2_id}/type/{type_id}
+#### Only use for testing, this should be not used live!
 
 	{
 	    "uniDirection": true
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-###Filter-Configuration-Endpoints
+### Filter-Configuration-Endpoints
 These endpoints handle the filter-configuration of the User-Task-Allocation (the matrix-part)
 
 -----------------------------------------------------------------
 **Adds a filter to the filter-configuration, based on it's name**
 
-#####*Request:*
+##### *Request:*
 
 GET /configuration/filter/add/{filter_name}
 
 The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message when an invalid filter-name has been used.
 
 -----------------------------------------------------------------
 **Adds multiple filters to the filter-configuration, based on the list of filters in the posted JSon-file**
 
-#####*Request:*
+##### *Request:*
 
 POST /configuration/filter/add
 
@@ -1662,7 +1648,7 @@ The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, 
 		"parameters": ["ImportancyLevelFilter", "LikeLevelFilter", "ProficiencyLevelFilter", "LikeLevelFilter"]
 	}
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message when only invalid filter-names have been used.
 If that is the case, the configuration resets itself to the standard configuration.
@@ -1671,11 +1657,11 @@ This configuration consists of: LikeLevelFilter, ImportancyLevelFilter, Proficie
 -----------------------------------------------------------------
 **Returns a list of all active filters**
 
-#####*Request:*
+##### *Request:*
 
 GET /configuration/filter/print
 
-#####*Response:*
+##### *Response:*
 
 	{
 	  "success": "true",
@@ -1685,41 +1671,41 @@ GET /configuration/filter/print
 -----------------------------------------------------------------
 **Clears (empties) the list of active filters**
 
-#####*Request:*
+##### *Request:*
 
 GET /configuration/filter/clear
 
-#####*Response:*
+##### *Response:*
 
 Json-data, a success
 
 -----------------------------------------------------------------
 **Restores the standard state of the filter-configuration**
 
-#####*Request:*
+##### *Request:*
 
 This endpoint restores the standard state of the configuration, consisting of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
 
 GET /configuration/filter/restore
 
-#####*Response:*
+##### *Response:*
 
 Json-data, a success.
 
 -----------------------------------------------------------------
 
-###Notifications-Endpoints
+### Notifications-Endpoints
 These endpoints handle already issued notifications for the most parts
 
 -----------------------------------------------------------------
 
 **Returns all notifications, which target the logged in user**
 
-#####*Request:*
+##### *Request:*
 
 GET /notification
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -1738,13 +1724,13 @@ GET /notification
 
 **Returns all notifications in the system**
 
-#####*Request:*
+##### *Request:*
 
 GET /notification/admin
 
-####This function requires ADMIN-rights!
+#### This function requires ADMIN-rights!
 
-#####*Response:*
+##### *Response:*
 
 	[
 	  {
@@ -1768,11 +1754,11 @@ GET /notification/admin
 
 **Triggers the accept-method of the notification and deletes it**
 
-#####*Request:*
+##### *Request:*
 
 GET /notification/{notification_id}/accept
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 
@@ -1780,23 +1766,23 @@ Json-data, either a success or a failure message
 
 **Triggers the deny-method of the notification and deletes it**
 
-#####*Request:*
+##### *Request:*
 
 GET /notification/{notification_id}/deny
 
-#####*Response:*
+##### *Response:*
 
 Json-data, either a success or a failure message
 	
 -----------------------------------------------------------------
 	
-##CHANGES
+## CHANGES
 
 In this section, changes and their dates are noted.
 
 -----------------------------------------------------------------
 
-###25.10.2016
+### 25.10.2016
 
 Role-System implemented -> see section Role-Endpoints
 The endpoint for the role-enums has been removed
@@ -1807,100 +1793,100 @@ if used, change it to the "login"-endpoint
 
 -----------------------------------------------------------------
 
-###11.11.2016
+### 11.11.2016
 
 Endpoint-change -> Assigned competences of user now at the /competence-endpoint, all competences at the endpoint /competence/all
 
 -----------------------------------------------------------------
 
-###16.11.2016
+### 16.11.2016
 
 Endpoint-change -> A single task + task-user-relationship is available at the /user/task/{task_id}-endpoint
 
 -----------------------------------------------------------------
 
-###27.11.2016
+### 27.11.2016
 
-With the big changes to tasks, the following endpoints have been implemented:
-GET /task/{task_id}/publish/ready/single -> NEW
-GET /task/{task_id}/publish/ready/tree -> NEW
-GET /task/{task_id}/done/{done_boolean} -> NEW
-GET /task/updateStarted -> NEW
+With the big changes to tasks, the following endpoints have been implemented:  
+GET /task/{task_id}/publish/ready/single -> NEW  
+GET /task/{task_id}/publish/ready/tree -> NEW  
+GET /task/{task_id}/done/{done_boolean} -> NEW  
+GET /task/updateStarted -> NEW  
 
-The following endpoints where changed:
-GET /task/{task_id}/state/{state_name} -> FUNCTIONALITY CHANGED
-PUT /admin/task -> from /task, now only usable with admin or editor permissions
-GET /task/{task_id} -> FUNCTIONALITY CHANGED, now updates the task if it's ready to start
-GET /user/task/{task_id}/{state_name} -> from /task/{task_id}/{state_name}
-
------------------------------------------------------------------
-
-###14.12.2016
-
-Change to how the amount of volunteers on tasks is handled
-The attribute can be set to any positive number, meaning the concrete amount of volunteers, or to "0", meaning an infinite number
-of volunteers can join the task. This "0" can also be updated to a concrete amount, based on the amount that's placed on the child-tasks:
-
-GET /task/{task_id}/updateAmountOfVolunteers -> NEW
+The following endpoints where changed:  
+GET /task/{task_id}/state/{state_name} -> FUNCTIONALITY CHANGED  
+PUT /admin/task -> from /task, now only usable with admin or editor permissions  
+GET /task/{task_id} -> FUNCTIONALITY CHANGED, now updates the task if it's ready to start  
+GET /user/task/{task_id}/{state_name} -> from /task/{task_id}/{state_name}  
 
 -----------------------------------------------------------------
 
-###16.12.2016
+### 14.12.2016
 
-Change to the endpoint, that gets users for a specific task.
+Change to how the amount of volunteers on tasks is handled  
+The attribute can be set to any positive number, meaning the concrete amount of volunteers, or to "0", meaning an infinite number  
+of volunteers can join the task. This "0" can also be updated to a concrete amount, based on the amount that's placed on the child-tasks:  
 
-GET /task/{task_id}/findMatchingUsers -> from /task/findMatchingUsers/{task_id}
-
-##MAJOR UPDATE TO THE MATCHING-SYSTEM!!!!
--> Competences are synchronized from the DB into the running system for performance-reasons now, and thus MUST be synchronized by hand if there is a change on KOMET! This can be done by calling the following endpoint with ADMIN-permissions:
-
-GET /admin/sync -> NEW
+GET /task/{task_id}/updateAmountOfVolunteers -> NEW  
 
 -----------------------------------------------------------------
 
-####23.1.2017
+### 16.12.2016
 
-A new filter-configuration has been added to the system.
-These filters influence the matching between users and tasks and can be added and removed.
-There are 4 filter-types at the moment:
-LikeLevelFilter (changed matching-values based on the user's affection towards a competence), ImportancyLevelFilter (changed matching-values based on the importance of the competence), ProficiencyLevelFilter (changes matching-values based on the users proficiency and the tasks needed proficiency in a competence) and UserRelationFilter (changes the matching-values based on the relation of the searching user to already participating users).
+Change to the endpoint, that gets users for a specific task.  
 
-Look up the filter-section of the readMe details to the endpoints.
+GET /task/{task_id}/findMatchingUsers -> from /task/findMatchingUsers/{task_id}  
 
------------------------------------------------------------------
+## MAJOR UPDATE TO THE MATCHING-SYSTEM!!!!  
+-> Competences are synchronized from the DB into the running system for performance-reasons now, and thus MUST be synchronized by hand if there is a   change on KOMET! This can be done by calling the following endpoint with ADMIN-permissions:  
 
-####24.1.2017
-
-A new endpoint returns a specified amount of best matches.
-
-GET /user/findMatchingTasks/{number_of_tasks} -> NEW
+GET /admin/sync -> NEW  
 
 -----------------------------------------------------------------
 
-####12.2.2017
+#### 23.1.2017  
 
-Materials can now be assigned to tasks.
-Endpoints for that are in the task-section.
+A new filter-configuration has been added to the system.  
+These filters influence the matching between users and tasks and can be added and removed.  
+There are 4 filter-types at the moment:  
+LikeLevelFilter (changed matching-values based on the user's affection towards a competence), ImportancyLevelFilter (changed matching-values based on the importance of the competence), ProficiencyLevelFilter (changes matching-values based on the users proficiency and the tasks needed proficiency in a competence) and UserRelationFilter (changes the matching-values based on the relation of the searching user to already participating users).  
 
-GET /task/{task_id}/material/add -> NEW
-GET /task/{task_id}/material/update/{material_id} -> NEW
-GET /task/{task_id}/material/remove/{material_id} -> NEW
-
------------------------------------------------------------------
-
-####18.2.2017
-
-Materials can be subscribed to (with a quantity) by the logged in user.
-Adding a material returns the material-id.
-
-GET /task/{task_id}/material/{material_id}/subscribe/{quantity} -> NEW
-GET /task/{task_id}/material/{material_id}/unsubscribe -> NEW
-
-Look at the task-section for more info
+Look up the filter-section of the readMe details to the endpoints.  
 
 -----------------------------------------------------------------
 
-####20.3.2017
+#### 24.1.2017
+
+A new endpoint returns a specified amount of best matches.  
+
+GET /user/findMatchingTasks/{number_of_tasks} -> NEW  
+
+-----------------------------------------------------------------
+
+#### 12.2.2017
+
+Materials can now be assigned to tasks.  
+Endpoints for that are in the task-section.  
+
+GET /task/{task_id}/material/add -> NEW  
+GET /task/{task_id}/material/update/{material_id} -> NEW  
+GET /task/{task_id}/material/remove/{material_id} -> NEW  
+
+-----------------------------------------------------------------
+
+#### 18.2.2017  
+
+Materials can be subscribed to (with a quantity) by the logged in user.  
+Adding a material returns the material-id.  
+
+GET /task/{task_id}/material/{material_id}/subscribe/{quantity} -> NEW  
+GET /task/{task_id}/material/{material_id}/unsubscribe -> NEW  
+
+Look at the task-section for more info  
+ 
+-----------------------------------------------------------------
+
+#### 20.3.2017
 
 Endpoints to set tasks ready-to-publish are removed, this is done automatically now!  
 TaskTypes have been added! More information in the endpoint for adding tasks  
@@ -1908,7 +1894,7 @@ Error-Responses are updated, more information in the error-section!
 
 -----------------------------------------------------------------
 
-####29.3.2017
+#### 29.3.2017
 
 The Task-Workflow has been removed from the ReadMe! It can be found on SVN/contact me for information  
 
