@@ -1,8 +1,8 @@
-##CrAc
+## CrAc
 
-##Endpoints (This is a work in progress! The documentation may be not up-to-date from time to time!)
+## Endpoints (This is a work in progress! The documentation may be not up-to-date from time to time!)
 
-###Important Informations (please read carefully before using any endpoints)
+### Important Informations (please read carefully before using any endpoints)
 
 -----------------------------------------------------------------
 
