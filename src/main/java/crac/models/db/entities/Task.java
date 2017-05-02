@@ -59,7 +59,13 @@ public class Task {
 
 	private String description;
 
+	private String address;
+
 	private String location;
+
+	private double lat;
+
+	private double lng;
 
 	@NotNull
 	@Column(name = "start_time")
@@ -166,13 +172,11 @@ public class Task {
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
 		/*
-		Calendar time = new GregorianCalendar();
-		time.set(2030, 9, 10, 14, 30, 00);
-		this.startTime = time;
-		Calendar time2 = new GregorianCalendar();
-		time2.set(2031, 9, 10, 14, 30, 00);
-		this.endTime = time2;
-		*/
+		 * Calendar time = new GregorianCalendar(); time.set(2030, 9, 10, 14,
+		 * 30, 00); this.startTime = time; Calendar time2 = new
+		 * GregorianCalendar(); time2.set(2031, 9, 10, 14, 30, 00); this.endTime
+		 * = time2;
+		 */
 		this.mappedCompetences = new HashSet<>();
 		this.materials = new HashSet<Material>();
 	}
@@ -296,7 +300,7 @@ public class Task {
 	@JsonIgnore
 	public boolean updateReadyStatus() {
 		boolean ready = this.fieldsFilled() && this.childTasksReady();
-		if(this.getTaskType() == TaskType.ORGANISATIONAL && !this.hasChildTasks()){
+		if (this.getTaskType() == TaskType.ORGANISATIONAL && !this.hasChildTasks()) {
 			ready = false;
 		}
 		this.readyToPublish = ready;
@@ -762,10 +766,33 @@ public class Task {
 		if (t.getFeedback() != null) {
 			this.setFeedback(t.getFeedback());
 		}
-/*
-		if (t.getTaskType() != null) {
-			this.setTaskType(t.getTaskType());
-		}*/
+		/*
+		 * if (t.getTaskType() != null) { this.setTaskType(t.getTaskType()); }
+		 */
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLng() {
+		return lng;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
 	}
 
 }
