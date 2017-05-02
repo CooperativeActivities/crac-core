@@ -1,5 +1,6 @@
 package crac.models.db.entities;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -109,11 +110,13 @@ public class Competence {
 	 */
 
 	public Competence(String name, String description) {
+		this.competenceAreas = new HashSet<>();
 		this.name = name;
 		this.description = description;
 	}
 
 	public Competence() {
+		this.competenceAreas = new HashSet<>();
 		this.name = "default";
 		this.description = "default";
 	}
@@ -200,6 +203,10 @@ public class Competence {
 
 	public void setCompetenceAreas(Set<CompetenceArea> competenceAreas) {
 		this.competenceAreas = competenceAreas;
+	}
+	
+	public void addCompetenceArea(CompetenceArea area){
+		this.competenceAreas.add(area);
 	}
 
 	public int getKometId() {

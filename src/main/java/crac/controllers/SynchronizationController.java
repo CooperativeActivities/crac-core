@@ -64,9 +64,11 @@ import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceRelationshipType;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
+import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
 import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
 import crac.models.komet.entities.TxExabiscompetencesDescriptor;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
+import crac.models.komet.entities.TxExabiscompetencesDescriptorsTopicidMm;
 import crac.models.komet.entities.TxExabiscompetencesTopic;
 
 @RestController
@@ -138,6 +140,9 @@ public class SynchronizationController {
 
 	@Autowired
 	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
+
+	@Autowired
+	private TxExabiscompetencesDescriptorsTopicidMmDAO txExabiscompetencesDescriptorsTopicidMmDAO;
 
 	@Autowired
 	private TxExabiscompetencesTopicDAO txExabiscompetencesTopicDAO;
@@ -265,6 +270,7 @@ public class SynchronizationController {
 		HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m = new HashMap<>();
 
 		handleTopics();
+		// handleTopicRelationships();
 		handleCompetences(m);
 		handleRelationships(m);
 
@@ -275,6 +281,41 @@ public class SynchronizationController {
 		return JSONResponseHelper.createResponse(m, true);
 
 	}
+/*
+	private void handleTopicRelationships() {
+		Iterable<TxExabiscompetencesDescriptorsTopicidMm> kometTopicRelList = txExabiscompetencesDescriptorsTopicidMmDAO
+				.findAll();
+		Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
+		HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
+
+		ArrayList<CompetenceArea> newc = new ArrayList<>();
+		ArrayList<CompetenceArea> updatec = new ArrayList<>();
+		ArrayList<CompetenceArea> deletec = new ArrayList<>();
+
+		for (CompetenceArea c : cracAreaList) {
+			cracAreaMap.put(c.getId(), c);
+		}
+
+		for (TxExabiscompetencesTopic single : kometTopicList) {
+			if (!single.getTitle().equals("")) {
+				if (!cracAreaMap.containsKey((long) single.getUid())) {
+					newc.add(single.MapToCompetenceArea());
+				} else {
+					updatec.add(single.MapToCompetenceArea());
+					cracAreaMap.remove((long) single.getUid());
+				}
+			}
+		}
+
+		for (Map.Entry<Long, CompetenceArea> set : cracAreaMap.entrySet()) {
+			deletec.add(set.getValue());
+		}
+
+		handleNewCompetenceAreas(newc);
+		handleUpdatedCompetenceAreas(updatec);
+		// handleDeletedCompetenceAreas(deletec);
+
+	}*/
 
 	private void handleTopics() {
 		Iterable<TxExabiscompetencesTopic> kometTopicList = txExabiscompetencesTopicDAO.findAll();
@@ -498,6 +539,12 @@ public class SynchronizationController {
 			action.put("name", "CREATE");
 			compid.put("action", action);
 			compid.put("relations", new HashMap<String, String>());
+
+			for (TxExabiscompetencesDescriptorsTopicidMm conn : txExabiscompetencesDescriptorsTopicidMmDAO
+					.findByUidLocal((int) c.getId())) {
+				c.addCompetenceArea(competenceAreaDAO.findOne((long) conn.getUidForeign()));
+			}
+
 			competenceDAO.save(c);
 			m.put(c.getId() + "", compid);
 		}
