@@ -98,7 +98,7 @@ public class TxExabiscompetencesTopic {
 		CompetenceArea area = new CompetenceArea();
 		area.setId(this.getUid());
 		area.setDescription(this.getDescription().replaceAll("<"+".*"+">", ""));
-		area.setName(this.getTitleshort().replaceAll("<"+".*"+">", ""));
+		area.setName(this.getTitle().replaceAll("<"+".*"+">", ""));
 		return area;
 	}
 

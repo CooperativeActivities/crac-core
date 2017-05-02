@@ -94,7 +94,7 @@ This endpoint will delete the token that was created by calling the login-endpoi
 
 -----------------------------------------------------------------
 
-###Synchronization-related Endpoints
+### Synchronization-related Endpoints
 
 -----------------------------------------------------------------
 
@@ -201,7 +201,7 @@ Either a success or a failure-message.
 
 -----------------------------------------------------------------
 
-**Errors of Endpoints are presented in the following format:**
+**Responses of Endpoints are presented in the following format:**
 
 The following JSON is just an example;  
 "type" contains the type of the data (eg Task, User etc).  
@@ -260,7 +260,7 @@ An array containing all users
 
 GET /user/{id}
 
-#####*Response:*
+##### *Response:*
 
 A user object with given id
 
