@@ -280,10 +280,16 @@ public class TaskController {
 
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
 
+		Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
+		Set<TaskShort> taskListPart = new HashSet<TaskShort>();
+		Set<TaskShort> taskListLead = new HashSet<TaskShort>();
+		
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("leading", taskListLead);
+		meta.put("following", taskListFollow);
+		meta.put("participating", taskListPart);
+
 		if (taskRels.size() != 0) {
-			Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
-			Set<TaskShort> taskListPart = new HashSet<TaskShort>();
-			Set<TaskShort> taskListLead = new HashSet<TaskShort>();
 
 			for (UserTaskRel utr : taskRels) {
 				if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
@@ -294,17 +300,9 @@ public class TaskController {
 					taskListLead.add(new TaskShort(utr.getTask()));
 				}
 			}
-
-			HashMap<String, Object> meta = new HashMap<>();
-			meta.put("leading", taskListLead);
-			meta.put("following", taskListFollow);
-			meta.put("participating", taskListPart);
-
-			return JSONResponseHelper.createResponse(user, true, meta);
-
-		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
 		}
+		
+		return JSONResponseHelper.createResponse(user, true, meta);
 
 	}
 
