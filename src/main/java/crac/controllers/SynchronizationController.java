@@ -290,7 +290,7 @@ public class SynchronizationController {
 		}
 
 		for (TxExabiscompetencesTopic single : kometTopicList) {
-			if (!single.getTitleshort().equals("")) {
+			if (!single.getTitle().equals("")) {
 				if (!cracAreaMap.containsKey((long) single.getUid())) {
 					newc.add(single.MapToCompetenceArea());
 				} else {
