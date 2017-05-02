@@ -52,6 +52,7 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
@@ -283,7 +284,7 @@ public class TaskController {
 		Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
 		Set<TaskShort> taskListPart = new HashSet<TaskShort>();
 		Set<TaskShort> taskListLead = new HashSet<TaskShort>();
-		
+
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("leading", taskListLead);
 		meta.put("following", taskListFollow);
@@ -301,7 +302,7 @@ public class TaskController {
 				}
 			}
 		}
-		
+
 		return JSONResponseHelper.createResponse(user, true, meta);
 
 	}
@@ -375,7 +376,7 @@ public class TaskController {
 
 					int c = checkAmountOfVolunteers(oldTask, updatedTask.getMaxAmountOfVolunteers(), true);
 
-					//System.out.println("answer: " + c);
+					// System.out.println("answer: " + c);
 
 					if (c == 0) {
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_TOO_HIGH);
@@ -1415,6 +1416,8 @@ public class TaskController {
 		if (task != null && competence != null && ctr != null) {
 			if (user.getCreatedTasks().contains(task) && task.getTaskState() == TaskState.NOT_PUBLISHED
 					|| user.confirmRole("ADMIN") && task.getTaskState() == TaskState.NOT_PUBLISHED) {
+				task.getMappedCompetences().remove(ctr);
+				competence.getCompetenceTaskRels().remove(ctr);
 				competenceTaskRelDAO.delete(ctr);
 				return JSONResponseHelper.successfullyDeleted(competence);
 			} else {
@@ -1423,6 +1426,55 @@ public class TaskController {
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
+	}
+
+	/**
+	 * Adjust the values of a task-competence connection
+	 * @param taskId
+	 * @param competenceId
+	 * @param json
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/adjust",
+			"/{competence_id}/adjust/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "task_id") Long taskId, @PathVariable(value = "competence_id") Long competenceId,
+			@RequestBody String json) {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		PostOptions po;
+
+		try {
+			po = mapper.readValue(json, PostOptions.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
+
+		Task task = taskDAO.findOne(taskId);
+		Competence competence = competenceDAO.findOne(competenceId);
+
+		if (competence != null && task != null) {
+			CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
+
+			if (ctr != null) {
+				ctr.setImportanceLevel(po.getImportanceValue());
+				ctr.setMandatory(po.isMandatory());
+				ctr.setNeededProficiencyLevel(po.getProficiencyValue());
+				ResponseEntity<String> v = JSONResponseHelper.successfullyUpdated(ctr);
+				competenceTaskRelDAO.save(ctr);
+				return v;
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			}
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+		}
+
 	}
 
 	/**

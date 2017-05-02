@@ -907,6 +907,24 @@ POST /task/{task_id}/competence/{competence_id}/require
 Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
+
+**Adjust the values of a task-competence connection**
+	
+##### *Request:*
+
+	{
+		"proficiency": 50,
+		"importance": 50,
+		"mandatory": true
+	}
+
+PUT /task/{task_id}/competence/{competence_id}/adjust
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
 	
 **Add multiple competences**
 	
