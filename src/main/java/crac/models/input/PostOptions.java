@@ -2,6 +2,7 @@ package crac.models.input;
 
 public class PostOptions {
 
+	private int id;
 	private int importanceLevel;
 	private int neededProficiencyLevel;
 	private int proficiencyValue;
@@ -67,6 +68,14 @@ public class PostOptions {
 
 	public void setNeededProficiencyLevel(int neededProficiencyLevel) {
 		this.neededProficiencyLevel = neededProficiencyLevel;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }
