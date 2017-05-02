@@ -35,7 +35,6 @@ public class CompetenceArea {
 	private String name;
 	
 	@NotNull
-	@Lob
 	@Column(columnDefinition="TEXT")
 	private String description;
 	
