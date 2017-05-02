@@ -1462,9 +1462,9 @@ public class TaskController {
 			CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
 
 			if (ctr != null) {
-				ctr.setImportanceLevel(po.getImportanceValue());
+				ctr.setImportanceLevel(po.getImportanceLevel());
 				ctr.setMandatory(po.isMandatory());
-				ctr.setNeededProficiencyLevel(po.getProficiencyValue());
+				ctr.setNeededProficiencyLevel(po.getNeededProficiencyLevel());
 				ResponseEntity<String> v = JSONResponseHelper.successfullyUpdated(ctr);
 				competenceTaskRelDAO.save(ctr);
 				return v;
