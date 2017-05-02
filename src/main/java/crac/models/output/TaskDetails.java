@@ -28,7 +28,13 @@ public class TaskDetails {
 
 	private String description;
 
+	private String address;
+
 	private String location;
+
+	private double lat;
+
+	private double lng;
 
 	private Calendar startTime;
 
@@ -77,7 +83,10 @@ public class TaskDetails {
 		this.creationDate = t.getCreationDate();
 		this.name = t.getName();
 		this.description = t.getDescription();
+		this.address = t.getAddress();
 		this.location = t.getLocation();
+		this.lat = t.getLat();
+		this.lng = t.getLng();
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
 		this.maxAmountOfVolunteers = t.getMaxAmountOfVolunteers();
@@ -407,6 +416,30 @@ public class TaskDetails {
 
 	public void setPermissions(boolean permissions) {
 		this.permissions = permissions;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLng() {
+		return lng;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
 	}
 
 }
