@@ -766,6 +766,18 @@ public class Task {
 		if (t.getFeedback() != null) {
 			this.setFeedback(t.getFeedback());
 		}
+		
+		if(!t.getAddress().equals("")){
+			this.setAddress(t.getAddress());
+		}
+		
+		if(t.getLat() != 0){
+			this.setLat(t.getLat());
+		}
+		
+		if(t.getLng() != 0){
+			this.setLng(t.getLng());
+		}
 		/*
 		 * if (t.getTaskType() != null) { this.setTaskType(t.getTaskType()); }
 		 */
