@@ -767,7 +767,7 @@ public class Task {
 			this.setFeedback(t.getFeedback());
 		}
 		
-		if(!t.getAddress().equals("")){
+		if(t.getAddress() != null){
 			this.setAddress(t.getAddress());
 		}
 		
