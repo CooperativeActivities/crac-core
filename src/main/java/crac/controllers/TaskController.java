@@ -355,7 +355,7 @@ public class TaskController {
 	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id) {
 		Task oldTask = taskDAO.findOne(id);
 
-		if (!oldTask.inConduction()) {
+		if (oldTask.getTaskState() != TaskState.COMPLETED) {
 			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 					.getContext().getAuthentication();
 			CracUser user = userDAO.findByName(userDetails.getName());
