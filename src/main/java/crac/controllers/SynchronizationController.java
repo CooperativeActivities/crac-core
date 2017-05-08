@@ -958,7 +958,7 @@ public class SynchronizationController {
 
 		SandraADMIN.setName("SandraADMIN");
 		SandraADMIN.setFirstName("Sandra");
-		SandraADMIN.setLastName("Sandra");
+		SandraADMIN.setLastName("Wolkerstorfer");
 		SandraADMIN.setPassword(bcryptEncoder.encode("default"));
 		SandraADMIN.addRole(roleDAO.findByName("ADMIN"));
 		SandraADMIN.setPhone("35678987654");
@@ -969,7 +969,7 @@ public class SynchronizationController {
 
 		SandraUSER.setName("SandraUSER");
 		SandraUSER.setFirstName("Sandra");
-		SandraUSER.setLastName("Sandra");
+		SandraUSER.setLastName("Wolkerstorfer");
 		SandraUSER.setPassword(bcryptEncoder.encode("default"));
 		SandraUSER.addRole(roleDAO.findByName("USER"));
 		SandraUSER.setPhone("35678987654");
@@ -980,7 +980,7 @@ public class SynchronizationController {
 
 		DanielADMIN.setName("DanielADMIN");
 		DanielADMIN.setFirstName("Daniel");
-		DanielADMIN.setLastName("Daniel");
+		DanielADMIN.setLastName("Braden");
 		DanielADMIN.setPassword(bcryptEncoder.encode("default"));
 		DanielADMIN.addRole(roleDAO.findByName("ADMIN"));
 		DanielADMIN.setPhone("35678987654");
@@ -991,7 +991,7 @@ public class SynchronizationController {
 
 		DanielUSER.setName("DanielUSER");
 		DanielUSER.setFirstName("Daniel");
-		DanielUSER.setLastName("Daniel");
+		DanielUSER.setLastName("Braden");
 		DanielUSER.setPassword(bcryptEncoder.encode("default"));
 		DanielUSER.addRole(roleDAO.findByName("USER"));
 		DanielUSER.setPhone("35678987654");
@@ -1002,7 +1002,7 @@ public class SynchronizationController {
 
 		SusanneADMIN.setName("SusanneADMIN");
 		SusanneADMIN.setFirstName("Susanne");
-		SusanneADMIN.setLastName("Susanne");
+		SusanneADMIN.setLastName("Stiller");
 		SusanneADMIN.setPassword(bcryptEncoder.encode("default"));
 		SusanneADMIN.addRole(roleDAO.findByName("ADMIN"));
 		SusanneADMIN.setPhone("35678987654");
@@ -1013,7 +1013,7 @@ public class SynchronizationController {
 
 		SusanneUSER.setName("SusanneUSER");
 		SusanneUSER.setFirstName("Susanne");
-		SusanneUSER.setLastName("Susanne");
+		SusanneUSER.setLastName("Stiller");
 		SusanneUSER.setPassword(bcryptEncoder.encode("default"));
 		SusanneUSER.addRole(roleDAO.findByName("USER"));
 		SusanneUSER.setPhone("35678987654");
