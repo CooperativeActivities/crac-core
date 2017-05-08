@@ -112,24 +112,104 @@ public class MainController {
 	@Value("${crac.boot.enable}")
     private boolean bootEnabled;
 		
-	@RequestMapping("/test")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/include")
 	@ResponseBody
 	public ResponseEntity<String> test() {
 		
-		int count1 = 0;
-		int count2 = 0;
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 		
-		for(TxExabiscompetencesDescriptorsTopicidMm single : txExabiscompetencesDescriptorsTopicidMmDAO.findAll()){
-			count1++;
-		}
-		
-		for(TxExabiscompetencesTopic single : txExabiscompetencesTopicDAO.findAll()){
-			count2++;
-		}
+		//New testing accounts for Birgit
 
-		System.out.println("Count1: "+count1+" , Count2: "+count2);
+		CracUser SandraADMIN = new CracUser();
+
+		SandraADMIN.setName("SandraADMIN");
+		SandraADMIN.setFirstName("Sandra");
+		SandraADMIN.setLastName("Sandra");
+		SandraADMIN.setPassword(bcryptEncoder.encode("default"));
+		SandraADMIN.addRole(roleDAO.findByName("ADMIN"));
+		SandraADMIN.setPhone("35678987654");
+		SandraADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(SandraADMIN);
+
+		CracUser SandraUSER = new CracUser();
+
+		SandraUSER.setName("SandraUSER");
+		SandraUSER.setFirstName("Sandra");
+		SandraUSER.setLastName("Sandra");
+		SandraUSER.setPassword(bcryptEncoder.encode("default"));
+		SandraUSER.addRole(roleDAO.findByName("USER"));
+		SandraUSER.setPhone("35678987654");
+		SandraUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(SandraUSER);
+
+		CracUser DanielADMIN = new CracUser();
+
+		DanielADMIN.setName("DanielADMIN");
+		DanielADMIN.setFirstName("Daniel");
+		DanielADMIN.setLastName("Daniel");
+		DanielADMIN.setPassword(bcryptEncoder.encode("default"));
+		DanielADMIN.addRole(roleDAO.findByName("ADMIN"));
+		DanielADMIN.setPhone("35678987654");
+		DanielADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(DanielADMIN);
+
+		CracUser DanielUSER = new CracUser();
+
+		DanielUSER.setName("DanielUSER");
+		DanielUSER.setFirstName("Daniel");
+		DanielUSER.setLastName("Daniel");
+		DanielUSER.setPassword(bcryptEncoder.encode("default"));
+		DanielUSER.addRole(roleDAO.findByName("USER"));
+		DanielUSER.setPhone("35678987654");
+		DanielUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(DanielUSER);
+
+		CracUser SusanneADMIN = new CracUser();
+
+		SusanneADMIN.setName("SusanneADMIN");
+		SusanneADMIN.setFirstName("Susanne");
+		SusanneADMIN.setLastName("Susanne");
+		SusanneADMIN.setPassword(bcryptEncoder.encode("default"));
+		SusanneADMIN.addRole(roleDAO.findByName("ADMIN"));
+		SusanneADMIN.setPhone("35678987654");
+		SusanneADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(SusanneADMIN);
+
+		CracUser SusanneUSER = new CracUser();
+
+		SusanneUSER.setName("SusanneUSER");
+		SusanneUSER.setFirstName("Susanne");
+		SusanneUSER.setLastName("Susanne");
+		SusanneUSER.setPassword(bcryptEncoder.encode("default"));
+		SusanneUSER.addRole(roleDAO.findByName("USER"));
+		SusanneUSER.setPhone("35678987654");
+		SusanneUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(SusanneUSER);
+
+		CracUser GerhardADMIN = new CracUser();
+
+		GerhardADMIN.setName("GerhardADMIN");
+		GerhardADMIN.setFirstName("Gerhard");
+		GerhardADMIN.setLastName("Funk");
+		GerhardADMIN.setPassword(bcryptEncoder.encode("default"));
+		GerhardADMIN.addRole(roleDAO.findByName("ADMIN"));
+		GerhardADMIN.setPhone("35678987654");
+		GerhardADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(GerhardADMIN);
+
+		CracUser GerhardUSER = new CracUser();
+
+		GerhardUSER.setName("GerhardUSER");
+		GerhardUSER.setFirstName("Gerhard");
+		GerhardUSER.setLastName("Funk");
+		GerhardUSER.setPassword(bcryptEncoder.encode("default"));
+		GerhardUSER.addRole(roleDAO.findByName("USER"));
+		GerhardUSER.setPhone("35678987654");
+		GerhardUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(GerhardUSER);
 		
-		return JSONResponseHelper.createResponse(txExabiscompetencesTopicDAO.findAll(), true);
+		return JSONResponseHelper.createResponse("included", true);
 	}
 	
 	@RequestMapping("/filters")
