@@ -71,11 +71,11 @@ public class TaskDetails {
 	private Set<Material> materials;
 
 	private TaskType taskType;
-	
+
 	private Set<UserTaskRel> participationDetails;
-	
+
 	private boolean assigned;
-	
+
 	private boolean permissions;
 
 	public TaskDetails(Task t, CracUser u) {
@@ -171,47 +171,47 @@ public class TaskDetails {
 		UserRelationship found = null;
 		boolean friend = false;
 		CracUser otherU = null;
+		Set<UserTaskRel> participantRels = t.getAllParticipants();
 
-		if (t.getUserRelationships() != null) {
-			if (t.getUserRelationships().size() != 0) {
-				for (UserTaskRel utr : t.getUserRelationships()) {
-					found = null;
-					otherU = utr.getUser();
+		if (participantRels.size() != 0) {
+			for (UserTaskRel utr : participantRels) {
+				found = null;
+				otherU = utr.getUser();
 
-					if (u.getUserRelationshipsAs1() != null) {
-						if (u.getUserRelationshipsAs1().size() != 0) {
-							for (UserRelationship ur : u.getUserRelationshipsAs1()) {
-								if (otherU.getId() == ur.getC2().getId()) {
-									found = ur;
-								}
+				if (u.getUserRelationshipsAs1() != null) {
+					if (u.getUserRelationshipsAs1().size() != 0) {
+						for (UserRelationship ur : u.getUserRelationshipsAs1()) {
+							if (otherU.getId() == ur.getC2().getId()) {
+								found = ur;
 							}
 						}
 					}
-					if (u.getUserRelationshipsAs2() != null) {
-						if (u.getUserRelationshipsAs2().size() != 0) {
-							for (UserRelationship ur : u.getUserRelationshipsAs2()) {
-								if (utr.getUser().getId() == ur.getC1().getId()) {
-									found = ur;
-								}
-							}
-						}
-					}
-
-					if (found != null) {
-						friend = found.isFriends();
-					} else {
-						friend = false;
-					}
-
-					UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr);
-
-					if (otherU.getId() == u.getId()) {
-						fd.setSelf(true);
-					}
-
-					list.add(fd);
 				}
+				if (u.getUserRelationshipsAs2() != null) {
+					if (u.getUserRelationshipsAs2().size() != 0) {
+						for (UserRelationship ur : u.getUserRelationshipsAs2()) {
+							if (utr.getUser().getId() == ur.getC1().getId()) {
+								found = ur;
+							}
+						}
+					}
+				}
+
+				if (found != null) {
+					friend = found.isFriends();
+				} else {
+					friend = false;
+				}
+
+				UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr);
+
+				if (otherU.getId() == u.getId()) {
+					fd.setSelf(true);
+				}
+
+				list.add(fd);
 			}
+
 		}
 
 		return list;

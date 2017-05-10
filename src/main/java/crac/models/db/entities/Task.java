@@ -261,7 +261,7 @@ public class Task {
 		getAllLeadersIntern(leaders);
 		return leaders;
 	}
-
+	
 	@JsonIgnore
 	private void getAllLeadersIntern(Set<CracUser> leaders) {
 
@@ -273,6 +273,33 @@ public class Task {
 			}
 			if (superTask != null) {
 				superTask.getAllLeadersIntern(leaders);
+			}
+		}
+
+	}
+
+	@JsonIgnore
+	public Set<UserTaskRel> getAllParticipants() {
+		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
+		getAllIntern(participants, TaskParticipationType.PARTICIPATING);
+		return participants;
+	}
+	
+	@JsonIgnore
+	private void getAllIntern(Set<UserTaskRel> users, TaskParticipationType type) {
+
+		if (userRelationships != null) {
+			for (UserTaskRel u : userRelationships) {
+				if (u.getParticipationType() == type) {
+					users.add(u);
+				}
+			}
+			if (childTasks != null) {
+				if(!childTasks.isEmpty()){
+					for(Task t : childTasks){
+						t.getAllIntern(users, type);
+					}
+				}
 			}
 		}
 
