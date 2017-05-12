@@ -631,18 +631,8 @@ public class Task {
 
 	public int getParticipatingUsers() {
 
-		int num = 0;
-
-		if (userRelationships != null) {
-			for (UserTaskRel rel : userRelationships) {
-				if (rel.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					num++;
-				}
-			}
-		}
-
-		return num;
-
+		return this.getAllParticipants().size();
+		
 	}
 
 	public String getFeedback() {
