@@ -14,6 +14,8 @@ public abstract class Worker {
 
 	}
 	
+	public abstract Object run();
+	
 	public String getWorkerId(){
 		return this.workerId;
 	}

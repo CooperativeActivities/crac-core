@@ -21,7 +21,8 @@ public class UserRelationEvolutionWorker extends Worker {
 		this.userRelationshipDAO = DataAccess.getRepo(UserRelationshipDAO.class);
 	}
 
-	public void run() {
+	@Override
+	public Object run() {
 		for (UserTaskRel utr : evaluation.getTask().getUserRelationships()) {
 			if (user.getId() != utr.getUser().getId()) {
 				UserRelationship ur = userRelationshipDAO.findByC1AndC2(utr.getUser(), user);
@@ -53,6 +54,8 @@ public class UserRelationEvolutionWorker extends Worker {
 				System.out.println(ur.getLikeValue());
 			}
 		}
+		return null;
 	}
+	
 
 }

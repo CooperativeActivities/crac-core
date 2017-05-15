@@ -347,7 +347,7 @@ public class SynchronizationController {
 
 		handleNewCompetenceAreas(newc);
 		handleUpdatedCompetenceAreas(updatec);
-		// handleDeletedCompetenceAreas(deletec);
+		handleDeletedCompetenceAreas(deletec);
 
 	}
 

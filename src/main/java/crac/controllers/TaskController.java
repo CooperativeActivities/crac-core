@@ -591,6 +591,7 @@ public class TaskController {
 		t.setTaskState(st.getTaskState());
 		t.setReadyToPublish(st.isReadyToPublish());
 		t.setCreator(u);
+		DataAccess.getConnector(Task.class).indexOrUpdate("" + t.getId(), t);
 		taskDAO.save(t);
 		t.updateReadyStatus();
 

@@ -89,8 +89,7 @@ public class Competence {
 	@OneToMany(mappedBy = "competence2", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CompetenceRelationship> mappedCompetence2;
 	
-	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "competence", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<CompetenceTaskRel> competenceTaskRels;
 
 	@JsonIdentityReference(alwaysAsId=true)

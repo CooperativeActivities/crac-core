@@ -37,6 +37,7 @@ import crac.enums.TaskType;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
 import crac.models.db.daos.CompetenceRelationshipTypeDAO;
+import crac.models.db.daos.CompetenceTaskRelDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.daos.RoleDAO;
@@ -48,6 +49,7 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceRelationshipType;
+import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
@@ -75,6 +77,9 @@ public class AdminController {
 
 	@Autowired
 	private GroupDAO groupDAO;
+
+	@Autowired
+	private CompetenceTaskRelDAO competenceTaskRelDAO;
 
 	@Autowired
 	private CompetenceRelationshipDAO competenceRelationshipDAO;
@@ -201,22 +206,26 @@ public class AdminController {
 	 * @param id
 	 * @return ResponseEntity
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/task/{task_id}",
 			"/task/{task_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroyTask(@PathVariable(value = "task_id") Long id) {
 		Task deleteTask = taskDAO.findOne(id);
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
-		if (deleteTask != null) {
-			deleteTask.getMappedCompetences().clear();
-			deleteTask.getUserRelationships().clear();
-			DataAccess.getConnector(Task.class).delete("" + deleteTask.getId());
-			ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteTask);
-			taskDAO.delete(deleteTask);
-			return v;
+		if (user.hasTaskPermissions(deleteTask)) {
+			if (deleteTask != null) {
+				DataAccess.getConnector(Task.class).delete("" + deleteTask.getId());
+				ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteTask);
+				taskDAO.delete(deleteTask);
+				return v;
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 		}
 
 	}
@@ -236,9 +245,6 @@ public class AdminController {
 	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
-		for (GrantedAuthority g : userDetails.getAuthorities()) {
-			System.out.println(g.getAuthority());
-		}
 		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		Task task;
@@ -250,11 +256,11 @@ public class AdminController {
 			System.out.println(e.toString());
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
-		
-		if(task.getTaskType() == TaskType.SHIFT){
+
+		if (task.getTaskType() == TaskType.SHIFT) {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_CREATE);
 		}
-		
+
 		task.setCreator(user);
 		task.updateReadyStatus();
 
@@ -463,7 +469,6 @@ public class AdminController {
 		}
 
 	}
-
 
 	// ROLE-SECTION
 

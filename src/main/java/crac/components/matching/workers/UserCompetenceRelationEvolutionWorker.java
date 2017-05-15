@@ -24,7 +24,8 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 		this.userCompetenceRelDAO = DataAccess.getRepo(UserCompetenceRelDAO.class);
 	}
 
-	public void run(){
+	@Override
+	public Object run(){
 		for(CompetenceTaskRel ctr : task.getMappedCompetences()){
 			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, ctr.getCompetence());
 			int likeValue = ucr.getLikeValue();
@@ -46,6 +47,7 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 			ucr.setProficiencyValue(profValue);
 			userCompetenceRelDAO.save(ucr);
 		}
+		return null;
 	}
 	
 }

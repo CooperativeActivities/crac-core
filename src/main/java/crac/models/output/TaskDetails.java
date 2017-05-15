@@ -91,7 +91,6 @@ public class TaskDetails {
 		this.endTime = t.getEndTime();
 		this.maxAmountOfVolunteers = t.getMaxAmountOfVolunteers();
 		this.minAmountOfVolunteers = t.getMinAmountOfVolunteers();
-		this.signedUsers = t.getParticipatingUsers();
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();
 		if (t.getSuperTask() != null) {
@@ -172,6 +171,7 @@ public class TaskDetails {
 		boolean friend = false;
 		CracUser otherU = null;
 		Set<UserTaskRel> participantRels = t.getAllParticipants();
+		this.signedUsers = participantRels.size();
 
 		if (participantRels.size() != 0) {
 			for (UserTaskRel utr : participantRels) {

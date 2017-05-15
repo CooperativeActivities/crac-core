@@ -28,6 +28,7 @@ public class UserMatchingWorker extends Worker {
 		this.userDAO = DataAccess.getRepo(CracUserDAO.class);
 	}
 
+	@Override
 	public ArrayList<EvaluatedUser> run() {
 
 		ArrayList<EvaluatedUser> users = new ArrayList<EvaluatedUser>();

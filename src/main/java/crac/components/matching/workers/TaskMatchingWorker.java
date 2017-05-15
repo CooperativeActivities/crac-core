@@ -56,6 +56,7 @@ public class TaskMatchingWorker extends Worker {
 
 		if (tasks != null) {
 			for (EvaluatedTask t : tasks) {
+				System.out.println(t.getAssessment()+ " ASSASSMENT, "+t.getTask().getId()+" THE ID");
 				if (!t.isDoable() || t.getAssessment() == 0) {
 					remove.add(t);
 				}
@@ -115,7 +116,7 @@ public class TaskMatchingWorker extends Worker {
 				double mval = 0.6;
 				double newval = 0;
 
-				double valAdjust = ((double) t.getParticipatingUsers() / (double) t.getMinAmountOfVolunteers());
+				double valAdjust = ((double) t.getAllParticipants().size() / (double) t.getMinAmountOfVolunteers());
 
 				newval = task.getAssessment() * (1 + (1 - valAdjust) * mval);
 

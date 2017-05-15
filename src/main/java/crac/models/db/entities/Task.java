@@ -155,8 +155,9 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
 	private Set<Evaluation> mappedEvaluations;
-
-	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	
+	@JsonIdentityReference(alwaysAsId=true)
+	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CompetenceTaskRel> mappedCompetences;
 
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -179,6 +180,7 @@ public class Task {
 		 */
 		this.mappedCompetences = new HashSet<>();
 		this.materials = new HashSet<Material>();
+		this.minAmountOfVolunteers = 1;
 	}
 
 	public Task copy(Task superTask) {
@@ -261,7 +263,7 @@ public class Task {
 		getAllLeadersIntern(leaders);
 		return leaders;
 	}
-	
+
 	@JsonIgnore
 	private void getAllLeadersIntern(Set<CracUser> leaders) {
 
@@ -284,19 +286,28 @@ public class Task {
 		getAllIntern(participants, TaskParticipationType.PARTICIPATING);
 		return participants;
 	}
-	
+
 	@JsonIgnore
 	private void getAllIntern(Set<UserTaskRel> users, TaskParticipationType type) {
 
 		if (userRelationships != null) {
 			for (UserTaskRel u : userRelationships) {
 				if (u.getParticipationType() == type) {
-					users.add(u);
+					boolean notPartOf = true;
+					for (UserTaskRel srel : users) {
+						if (srel.getUser().getId() == u.getUser().getId() && srel.getParticipationType() == type) {
+							notPartOf = false;
+						}
+					}
+					if (notPartOf) {
+						users.add(u);
+					}
+
 				}
 			}
 			if (childTasks != null) {
-				if(!childTasks.isEmpty()){
-					for(Task t : childTasks){
+				if (!childTasks.isEmpty()) {
+					for (Task t : childTasks) {
 						t.getAllIntern(users, type);
 					}
 				}
@@ -629,12 +640,6 @@ public class Task {
 		this.maxAmountOfVolunteers = maxAmountOfVolunteers;
 	}
 
-	public int getParticipatingUsers() {
-
-		return this.getAllParticipants().size();
-		
-	}
-
 	public String getFeedback() {
 		return feedback;
 	}
@@ -783,16 +788,16 @@ public class Task {
 		if (t.getFeedback() != null) {
 			this.setFeedback(t.getFeedback());
 		}
-		
-		if(t.getAddress() != null){
+
+		if (t.getAddress() != null) {
 			this.setAddress(t.getAddress());
 		}
-		
-		if(t.getLat() != 0){
+
+		if (t.getLat() != 0) {
 			this.setLat(t.getLat());
 		}
-		
-		if(t.getLng() != 0){
+
+		if (t.getLng() != 0) {
 			this.setLng(t.getLng());
 		}
 		/*
