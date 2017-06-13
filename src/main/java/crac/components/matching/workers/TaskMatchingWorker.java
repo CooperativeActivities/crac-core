@@ -89,8 +89,10 @@ public class TaskMatchingWorker extends Worker {
 
 		List<Task> found = taskDAO.findByTaskStateNot(TaskState.NOT_PUBLISHED);
 		System.out.println("found: " + found.size());
+		
 		for (Task task : found) {
 			if (task.isJoinable()) {
+				
 				boolean isConnected = false;
 				for (UserTaskRel utr : task.getUserRelationships()) {
 					if (utr.getUser().getId() == user.getId()) {
@@ -100,6 +102,7 @@ public class TaskMatchingWorker extends Worker {
 				if (!isConnected) {
 					result.add(task);
 				}
+				
 			}
 		}
 		System.out.println("returned: " + result.size());

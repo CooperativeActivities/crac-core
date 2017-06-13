@@ -15,8 +15,8 @@ public class LikeLevelFilter extends CracFilter{
 		double value = m.getVal();
 		int likeValue = m.getUserRelation().getLikeValue();
 		
-		double newVal = value * (1 + (1 - value / 2) * (double) likeValue / 100);
-
+		double newVal = value * (1 + (1 - value) * (double) likeValue / 100);
+		
 		if (newVal > 1) {
 			newVal = 1;
 		} else if (newVal < 0) {

@@ -68,7 +68,7 @@ public class TaskDetails {
 
 	private Set<CompetenceRelationDetails> taskCompetences;
 
-	private Set<Material> materials;
+	private Set<MaterialDetails> materials;
 
 	private TaskType taskType;
 
@@ -111,9 +111,17 @@ public class TaskDetails {
 			this.participationDetails = null;
 			this.assigned = false;
 		}
-		this.materials = t.getMaterials();
+		this.materials = addMaterials(t);
 		this.taskType = t.getTaskType();
 		this.permissions = u.hasTaskPermissions(t);
+	}
+	
+	public Set<MaterialDetails> addMaterials(Task t){
+		Set<MaterialDetails> materials = new HashSet<>();
+		for(Material m : t.getMaterials()){
+			materials.add(new MaterialDetails(m));
+		}
+		return materials;
 	}
 
 	public Set<TaskShort> addChildren(Task t) {
@@ -378,11 +386,11 @@ public class TaskDetails {
 		this.taskCompetences = taskCompetences;
 	}
 
-	public Set<Material> getMaterials() {
+	public Set<MaterialDetails> getMaterials() {
 		return materials;
 	}
 
-	public void setMaterials(Set<Material> materials) {
+	public void setMaterials(Set<MaterialDetails> materials) {
 		this.materials = materials;
 	}
 

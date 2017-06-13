@@ -179,7 +179,7 @@ public class TaskController {
 	@RequestMapping(value = { "/{task_id}/add/{state_name}",
 			"/task/{task_id}/{state_name}/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> changeTaskState(@PathVariable(value = "state_name") String stateName,
+	public ResponseEntity<String> addToUser(@PathVariable(value = "state_name") String stateName,
 			@PathVariable(value = "task_id") Long taskId) {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder

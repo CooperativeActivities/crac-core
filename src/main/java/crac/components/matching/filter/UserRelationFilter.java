@@ -11,6 +11,10 @@ import crac.models.db.relation.UserTaskRel;
 import crac.models.storage.MatrixField;
 
 public class UserRelationFilter extends CracFilter {
+	
+	private CracUser setUser;
+	private double userLikeVal;
+	private boolean calc = true;
 
 	public UserRelationFilter() {
 		super("UserRelationFilter");
@@ -23,18 +27,16 @@ public class UserRelationFilter extends CracFilter {
 		CracUser user = m.getUserRelation().getUser();
 		Task task = m.getTaskRelation().getTask();
 
-		double newVal = value;
-
-		ArrayList<UserRelationship> others = getRelatedPersons(user, task);
-
-		for (UserRelationship rel : others) {
-			double likeLevel = rel.getLikeValue();
-			newVal = value * (1 + ((value / 4) * likeLevel / 2));
+		if(calc){
+			calc = false;
+			calcRelatedVal(user, task);
 		}
+			
+		double newVal = value * (1 + (1 - value) * userLikeVal/100);
 		
 		if (newVal > 1) {
 			newVal = 1;
-		} else if(newVal < 0){
+		} else if (newVal < 0) {
 			newVal = 0;
 		}
 
@@ -42,8 +44,9 @@ public class UserRelationFilter extends CracFilter {
 
 	}
 
-	private ArrayList<UserRelationship> getRelatedPersons(CracUser user, Task t) {
+	private void calcRelatedVal(CracUser user, Task t) {
 		ArrayList<UserRelationship> others = new ArrayList<>();
+		double likeAverage = 0;
 		for (UserTaskRel trel : t.getUserRelationships()) {
 			if (trel.getParticipationType() == TaskParticipationType.PARTICIPATING) {
 				for (UserRelationship urel : trel.getUser().getUserRelationshipsAs1()) {
@@ -58,7 +61,17 @@ public class UserRelationFilter extends CracFilter {
 				}
 			}
 		}
-		return others;
+		
+		for(UserRelationship rel : others){
+			likeAverage += rel.getLikeValue();
+		}
+		
+		if(others.size() > 0){
+			userLikeVal = likeAverage/others.size();
+		}else{
+			userLikeVal = 0;
+		}
+		
 	}
 
 }

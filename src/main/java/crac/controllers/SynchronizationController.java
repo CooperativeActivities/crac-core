@@ -249,7 +249,7 @@ public class SynchronizationController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/competences")
 	@ResponseBody
-	public ResponseEntity<String> competencesync() {
+	public ResponseEntity<String> syncCompetences() {
 		this.dbsync();
 		this.filtersync();
 		this.internsync();
@@ -596,8 +596,8 @@ public class SynchronizationController {
 
 		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
 		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
 		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
 		return JSONResponseHelper.createResponse(true, meta);

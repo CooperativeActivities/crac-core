@@ -21,6 +21,12 @@ public class ProficiencyLevelFilter extends CracFilter{
 			newVal = value * ((double) 1 - (((double) neededProficiency / 100) - ((double) proficiencyValue / 100)));
 		}
 		
+		if (newVal > 1) {
+			newVal = 1;
+		} else if (newVal < 0) {
+			newVal = 0;
+		}
+		
 		return newVal;
 		
 	}

@@ -145,6 +145,7 @@ public class FilterConfigurationController {
 		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
 		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
 		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
+		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
 	}
 
 }

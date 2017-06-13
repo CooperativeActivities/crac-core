@@ -182,7 +182,7 @@ public class EvaluationController {
 	@RequestMapping(value = { "/{evaluation_id}",
 			"/{evaluation_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> selfEvaluate(@RequestBody String json,
+	public ResponseEntity<String> evaluateTask(@RequestBody String json,
 			@PathVariable(value = "evaluation_id") Long evaluationId) {
 
 		Evaluation originalEval = evaluationDAO.findOne(evaluationId);
