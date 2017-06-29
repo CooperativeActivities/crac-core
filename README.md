@@ -2032,3 +2032,16 @@ GET /task/{task_id}/competence/{competence_id}/remove -> DELETE /task/{task_id}/
 GET /task/{task_id}/done/{done_boolean} -> PUT /task/{task_id}/done/{done_boolean}  
 GET /task/{task_id}/state/{state_name} -> PUT /task/{task_id}/state/{state_name}  
 
+-----------------------------------------------------------------
+
+#### 29.6.2017
+
+Changes for a better integration of the evaluation-topic have been made:  
+
+New section for "Evaluation-Endpoints"!  
+
+Endpoints for calling completed tasks (for more information, see section "Task-Endpoints":  
+
+GET /task/completed/{part_type}  
+GET /task/completed  
+
