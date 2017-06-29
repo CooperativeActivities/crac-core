@@ -842,6 +842,32 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+**Returns all completed tasks of a user by participationType**
+	
+##### *Request:*
+
+GET /task/completed/{part_type}
+
+{part_type} can be: PARTICIPATING, FOLLOWING, LEADING
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Returns all completed projects**
+	
+##### *Request:*
+
+GET /task/completed
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
 **Returns all tasks of logged in user, divided in the TaskParticipationTypes**
 
 ##### *Request:*
@@ -1794,6 +1820,59 @@ Json-data, either a success or a failure message
 	
 -----------------------------------------------------------------
 	
+### Evaluation-Endpoints
+These endpoints handle evaluations
+
+-----------------------------------------------------------------
+	
+**Creates an evaluation (notification + entity) for the logged in user for target task**
+
+##### *Request:*
+
+POST /evaluation/task/{task_id}/self
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Creates an evaluation (notification + entity) for every user, participating in target task**
+
+##### *Request:*
+
+POST /evaluation/task/{task_id}/all
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Returns all evaluations of the logged in user**
+
+##### *Request:*
+
+GET /evaluation
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Resolves the evaluation. Updates the empty evaluation with sent data and deletes the notification**
+
+##### *Request:*
+
+GET /evaluation/{evaluation_id}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
 ## CHANGES
 
 In this section, changes and their dates are noted.

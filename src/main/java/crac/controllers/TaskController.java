@@ -309,7 +309,11 @@ public class TaskController {
 
 	}
 
-	//TODO
+	/**
+	 * Returns all completed tasks of a user by participationType
+	 * @param partType
+	 * @return ResponseEntity
+	 */
 	@RequestMapping(value = { "/completed/{part_type}",
 			"/completed/{part_type}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -327,8 +331,11 @@ public class TaskController {
 		return JSONResponseHelper.createResponse(tcomp, true);
 
 	}
-	//TODO
 
+	/**
+	 * Returns all completed projects
+	 * @return ResponseEntity
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/completed/all",
 			"/completed/all/" }, method = RequestMethod.GET, produces = "application/json")

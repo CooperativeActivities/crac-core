@@ -76,7 +76,7 @@ public class EvaluationController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/task/{task_id}/self",
-			"/task/{task_id}/self/" }, method = RequestMethod.GET, produces = "application/json")
+			"/task/{task_id}/self/" }, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> createSelfEvaluation(@PathVariable(value = "task_id") Long taskId) {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -90,20 +90,21 @@ public class EvaluationController {
 
 			if (utr != null) {
 				if (task.getTaskState() == TaskState.COMPLETED) {
-					if(!utr.isEvaluationTriggered()){
-					Evaluation e = new Evaluation(user, task);
-					EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
-					NotificationHelper.createNotification(es);
-					e.setNotificationId(es.getNotificationId());
-					utr.setEvaluationTriggered(true);
-					userTaskRelDAO.save(utr);
-					evaluationDAO.save(e);
-					es.setEvaluationIdy(e.getId());
-					return JSONResponseHelper.successfullyCreated(e);
-					}else{
-						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+					if (!utr.isEvaluationTriggered()) {
+						Evaluation e = new Evaluation(user, task);
+						EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
+						NotificationHelper.createNotification(es);
+						e.setNotificationId(es.getNotificationId());
+						utr.setEvaluationTriggered(true);
+						userTaskRelDAO.save(utr);
+						evaluationDAO.save(e);
+						es.setEvaluationIdy(e.getId());
+						return JSONResponseHelper.successfullyCreated(e);
+					} else {
+						return JSONResponseHelper.createResponse(false, "bad_request",
+								ErrorCause.DATASETS_ALREADY_EXISTS);
 					}
-				}else{
+				} else {
 					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE);
 				}
 			}
@@ -113,7 +114,11 @@ public class EvaluationController {
 
 	}
 
-	// TODO
+	/**
+	 * Returns all evaluations of the logged in user
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getEvaluations() {
@@ -132,35 +137,39 @@ public class EvaluationController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/task/{task_id}/all",
-			"/task/{task_id}/all/" }, method = RequestMethod.GET, produces = "application/json")
+			"/task/{task_id}/all/" }, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> createTaskEvaluations(@PathVariable(value = "task_id") Long taskId) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser m = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			if (task.getTaskState() == TaskState.COMPLETED) {
-				CracUser user = null;
-				EvaluationNotification es = null;
+			if (m.hasTaskPermissions(task)) {
+				if (task.getTaskState() == TaskState.COMPLETED) {
+					CracUser user = null;
+					EvaluationNotification es = null;
 
-				for (UserTaskRel utr : task.getUserRelationships()) {
-					if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-						user = utr.getUser();
-						Evaluation e = new Evaluation(user, task);
-						// es =
-						// NotificationHelper.createEvaluation(user.getId(),
-						// task.getId(), e.getId());
-						es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
-						NotificationHelper.createNotification(es);
-						e.setNotificationId(es.getNotificationId());
-						evaluationDAO.save(e);
-						es.setEvaluationIdy(e.getId());
+					for (UserTaskRel utr : task.getUserRelationships()) {
+						if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+							user = utr.getUser();
+							Evaluation e = new Evaluation(user, task);
+							es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
+							NotificationHelper.createNotification(es);
+							e.setNotificationId(es.getNotificationId());
+							evaluationDAO.save(e);
+							es.setEvaluationIdy(e.getId());
+						}
 					}
+					return JSONResponseHelper.successfullyCreated(task);
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
 				}
-				return JSONResponseHelper.successfullyCreated(task);
-				// return JSonResponseHelper.successfullySent();
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
@@ -175,6 +184,7 @@ public class EvaluationController {
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
+	/*
 	@RequestMapping(value = { "/task/{task_id}/user/{user_id}",
 			"/task/{task_id}/user/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -186,9 +196,6 @@ public class EvaluationController {
 		if (user != null && task != null && userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
 				TaskParticipationType.LEADING) != null && task.getTaskState() == TaskState.COMPLETED) {
 			Evaluation e = new Evaluation(user, task);
-			// EvaluationNotification es =
-			// NotificationHelper.createEvaluation(user.getId(), task.getId(),
-			// e.getId());
 			EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
 			NotificationHelper.createNotification(es);
 			e.setNotificationId(es.getNotificationId());
@@ -198,7 +205,7 @@ public class EvaluationController {
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
-	}
+	}*/
 
 	/**
 	 * Resolves the evaluation. Updates the empty evaluation with sent data and
@@ -206,7 +213,7 @@ public class EvaluationController {
 	 * 
 	 * @param json
 	 * @param evaluationId
-	 * @return
+	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{evaluation_id}",
 			"/{evaluation_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
@@ -244,7 +251,8 @@ public class EvaluationController {
 			unit.evaluateTask(originalEval);
 
 			originalEval.setNotificationId("deleted");
-			UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationType(originalEval.getUser(), originalEval.getTask(), TaskParticipationType.PARTICIPATING);
+			UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationType(originalEval.getUser(),
+					originalEval.getTask(), TaskParticipationType.PARTICIPATING);
 			utr.setEvaluated(true);
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);
