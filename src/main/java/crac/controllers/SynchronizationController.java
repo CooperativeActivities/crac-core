@@ -347,7 +347,7 @@ public class SynchronizationController {
 
 		handleNewCompetenceAreas(newc);
 		handleUpdatedCompetenceAreas(updatec);
-		handleDeletedCompetenceAreas(deletec);
+		//handleDeletedCompetenceAreas(deletec);
 
 	}
 
@@ -405,7 +405,7 @@ public class SynchronizationController {
 
 		handleNewCompetenceRelationships(newc, m);
 		handleUpdatedCompetenceRelationships(updatec, m);
-		handleDeletedCompetenceRelationships(deletec);
+		//handleDeletedCompetenceRelationships(deletec);
 
 	}
 
@@ -526,7 +526,7 @@ public class SynchronizationController {
 
 		m.put("created", handleNewCompetences(newc));
 		m.put("updated", handleUpdatedCompetences(updatec));
-		m.put("deleted", handleDeletedCompetences(deletec));
+		//m.put("deleted", handleDeletedCompetences(deletec));
 
 	}
 

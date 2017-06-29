@@ -9,6 +9,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,7 @@ import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
 import crac.models.input.MaterialMapping;
 import crac.models.input.PostOptions;
+import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
 import crac.models.utility.EvaluatedTask;
@@ -305,6 +307,34 @@ public class TaskController {
 
 		return JSONResponseHelper.createResponse(user, true, meta);
 
+	}
+
+	//TODO
+	@RequestMapping(value = { "/completed/{part_type}",
+			"/completed/{part_type}/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getCompletedTasks(@PathVariable(value = "part_type") TaskParticipationType partType) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		Set<UserTaskRel> trels = userTaskRelDAO.findByUserAndParticipationType(user, partType);
+		Set<ArchiveTask> tcomp = new HashSet<>();
+		for(UserTaskRel tr : trels){
+			if(tr.getTask().getTaskState() == TaskState.COMPLETED){
+				tcomp.add(new ArchiveTask(tr));
+			}
+		}
+		return JSONResponseHelper.createResponse(tcomp, true);
+
+	}
+	//TODO
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/completed/all",
+			"/completed/all/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getAllCompletedTasks() {
+		return JSONResponseHelper.createResponse(taskDAO.findBySuperTaskNullAndTaskState(TaskState.COMPLETED), true);
 	}
 
 	@RequestMapping(value = { "/{task_id}/competence/available",
@@ -1431,6 +1461,7 @@ public class TaskController {
 
 	/**
 	 * Adjust the values of a task-competence connection
+	 * 
 	 * @param taskId
 	 * @param competenceId
 	 * @param json
@@ -1439,8 +1470,8 @@ public class TaskController {
 	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/adjust",
 			"/{competence_id}/adjust/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "task_id") Long taskId, @PathVariable(value = "competence_id") Long competenceId,
-			@RequestBody String json) {
+	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "task_id") Long taskId,
+			@PathVariable(value = "competence_id") Long competenceId, @RequestBody String json) {
 
 		ObjectMapper mapper = new ObjectMapper();
 

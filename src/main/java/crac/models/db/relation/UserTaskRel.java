@@ -44,7 +44,11 @@ public class UserTaskRel {
 	private TaskParticipationType participationType;
 	
 	private boolean completed;
-	
+
+	private boolean evaluated;
+
+	private boolean evaluationTriggered;
+
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "type_id")
@@ -100,6 +104,22 @@ public class UserTaskRel {
 
 	public void setType(TaskRelationshipType type) {
 		this.type = type;
+	}
+
+	public boolean isEvaluated() {
+		return evaluated;
+	}
+
+	public void setEvaluated(boolean evaluated) {
+		this.evaluated = evaluated;
+	}
+
+	public boolean isEvaluationTriggered() {
+		return evaluationTriggered;
+	}
+
+	public void setEvaluationTriggered(boolean evaluationTriggered) {
+		this.evaluationTriggered = evaluationTriggered;
 	}
 	
 }
