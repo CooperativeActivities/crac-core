@@ -281,6 +281,22 @@ public class Task {
 	}
 	
 	@JsonIgnore
+	private void getRelationshipsUp(Set<UserTaskRel> users, TaskParticipationType type) {
+
+		if (userRelationships != null) {
+			for (UserTaskRel u : userRelationships) {
+				if (u.getParticipationType() == type) {
+					users.add(u);
+				}
+			}
+			if (superTask != null) {
+				superTask.getRelationshipsUp(users, type);
+			}
+		}
+
+	}
+	
+	@JsonIgnore
 	public UserTaskRel getIndirectLead(CracUser u){
 		
 		for(UserTaskRel utr : userRelationships){
@@ -300,28 +316,21 @@ public class Task {
 	@JsonIgnore
 	public Set<UserTaskRel> getAllParticipants() {
 		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
-		getAllIntern(participants, TaskParticipationType.PARTICIPATING);
+		getRelationshipsDown(participants, TaskParticipationType.PARTICIPATING);
 		return participants;
 	}
-	
-	@JsonIgnore
-	public Set<UserTaskRel> getAllLeaderRels() {
-		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
-		getAllIntern(participants, TaskParticipationType.LEADING);
-		return participants;
-	}
-	
+		
 	@JsonIgnore
 	public Set<UserTaskRel> getAllLeaderAndParticipantRels() {
 		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
-		getAllIntern(participants, TaskParticipationType.PARTICIPATING);
-		getAllIntern(participants, TaskParticipationType.LEADING);
+		getRelationshipsDown(participants, TaskParticipationType.PARTICIPATING);
+		getRelationshipsUp(participants, TaskParticipationType.LEADING);
 		return participants;
 	}
 
 
 	@JsonIgnore
-	private void getAllIntern(Set<UserTaskRel> users, TaskParticipationType type) {
+	private void getRelationshipsDown(Set<UserTaskRel> users, TaskParticipationType type) {
 
 		if (userRelationships != null) {
 			for (UserTaskRel u : userRelationships) {
@@ -341,7 +350,7 @@ public class Task {
 			if (childTasks != null) {
 				if (!childTasks.isEmpty()) {
 					for (Task t : childTasks) {
-						t.getAllIntern(users, type);
+						t.getRelationshipsDown(users, type);
 					}
 				}
 			}
