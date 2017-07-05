@@ -303,6 +303,22 @@ public class Task {
 		getAllIntern(participants, TaskParticipationType.PARTICIPATING);
 		return participants;
 	}
+	
+	@JsonIgnore
+	public Set<UserTaskRel> getAllLeaderRels() {
+		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
+		getAllIntern(participants, TaskParticipationType.LEADING);
+		return participants;
+	}
+	
+	@JsonIgnore
+	public Set<UserTaskRel> getAllLeaderAndParticipantRels() {
+		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
+		getAllIntern(participants, TaskParticipationType.PARTICIPATING);
+		getAllIntern(participants, TaskParticipationType.LEADING);
+		return participants;
+	}
+
 
 	@JsonIgnore
 	private void getAllIntern(Set<UserTaskRel> users, TaskParticipationType type) {

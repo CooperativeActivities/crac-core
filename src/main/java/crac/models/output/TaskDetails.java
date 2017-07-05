@@ -179,7 +179,7 @@ public class TaskDetails {
 		UserRelationship found = null;
 		boolean friend = false;
 		CracUser otherU = null;
-		Set<UserTaskRel> participantRels = t.getAllParticipants();
+		Set<UserTaskRel> participantRels = t.getAllLeaderAndParticipantRels();
 		this.signedUsers = participantRels.size();
 
 		if (participantRels.size() != 0) {
