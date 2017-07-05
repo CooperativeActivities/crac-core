@@ -102,6 +102,7 @@ public class TaskDetails {
 		this.attachments = t.getAttachments();
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
+		//TODO one call!
 		this.participationDetails = DataAccess.getRepo(UserTaskRelDAO.class).findByUserAndTask(u, t);
 		this.taskCompetences = new HashSet<>();
 		if (!this.participationDetails.isEmpty()) {
@@ -109,7 +110,10 @@ public class TaskDetails {
 			this.assigned = true;
 		} else {
 			this.participationDetails = new HashSet<>();
-			this.participationDetails.add(t.getIndirectLead(u));
+			UserTaskRel rel = t.getIndirectLead(u);
+			if(rel != null){
+				this.participationDetails.add(rel);
+			}
 			this.assigned = false;
 		}
 		this.materials = addMaterials(t);
