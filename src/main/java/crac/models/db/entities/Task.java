@@ -279,6 +279,23 @@ public class Task {
 		}
 
 	}
+	
+	@JsonIgnore
+	public UserTaskRel getIndirectLead(CracUser u){
+		
+		for(UserTaskRel utr : userRelationships){
+			if(utr.getUser().getId() == u.getId()){
+				return utr;
+			}
+		}
+		
+		if(this.superTask != null){
+			return superTask.getIndirectLead(u);
+		}else{
+			return null;
+		}
+		
+	}
 
 	@JsonIgnore
 	public Set<UserTaskRel> getAllParticipants() {

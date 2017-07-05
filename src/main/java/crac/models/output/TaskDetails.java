@@ -108,7 +108,8 @@ public class TaskDetails {
 			this.taskCompetences = calcComps(t, u);
 			this.assigned = true;
 		} else {
-			this.participationDetails = null;
+			this.participationDetails = new HashSet<>();
+			this.participationDetails.add(t.getIndirectLead(u));
 			this.assigned = false;
 		}
 		this.materials = addMaterials(t);
