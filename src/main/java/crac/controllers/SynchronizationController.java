@@ -560,6 +560,12 @@ public class SynchronizationController {
 			action.put("name", "UPDATE");
 			compid.put("action", action);
 			compid.put("relations", new HashMap<String, String>());
+			
+			for (TxExabiscompetencesDescriptorsTopicidMm conn : txExabiscompetencesDescriptorsTopicidMmDAO
+					.findByUidLocal((int) c.getId())) {
+				c.addCompetenceArea(competenceAreaDAO.findOne((long) conn.getUidForeign()));
+			}
+			
 			competenceDAO.save(c);
 			m.put(c.getId() + "", compid);
 		}
