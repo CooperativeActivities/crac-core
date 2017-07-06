@@ -1865,7 +1865,14 @@ Json-data, either a success or a failure message
 
 ##### *Request:*
 
-GET /evaluation/{evaluation_id}
+PUT /evaluation/{evaluation_id}
+
+for current evaluation send these attributes with arbitrary values:
+
+	{
+	    "likeValOthers": 0.5,
+	    "likeValTask": 0.5,
+	}
 
 ##### *Response:*
 
