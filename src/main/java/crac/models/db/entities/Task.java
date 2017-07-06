@@ -563,7 +563,7 @@ public class Task {
 			Set<UserTaskRel> ur = this.getUserRelationships();
 			boolean usersDone = true;
 			for (UserTaskRel u : ur) {
-				if (!u.isCompleted()) {
+				if (!u.isCompleted() && u.getParticipationType() == TaskParticipationType.PARTICIPATING) {
 					usersDone = false;
 				}
 			}
