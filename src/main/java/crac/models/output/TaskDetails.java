@@ -105,8 +105,8 @@ public class TaskDetails {
 		//TODO one call!
 		this.participationDetails = DataAccess.getRepo(UserTaskRelDAO.class).findByUserAndTask(u, t);
 		this.taskCompetences = new HashSet<>();
+		this.taskCompetences = calcComps(t, u);
 		if (!this.participationDetails.isEmpty()) {
-			this.taskCompetences = calcComps(t, u);
 			this.assigned = true;
 		} else {
 			this.participationDetails = new HashSet<>();
@@ -148,7 +148,7 @@ public class TaskDetails {
 		Set<CompetenceRelationDetails> list = new HashSet<>();
 
 		Set<CompetenceTaskRel> mctr = t.getMappedCompetences();
-
+		
 		if (mctr != null) {
 			if (mctr.size() != 0) {
 				for (CompetenceTaskRel ctr : mctr) {
@@ -173,6 +173,7 @@ public class TaskDetails {
 				}
 			}
 		}
+
 		return list;
 
 	}
