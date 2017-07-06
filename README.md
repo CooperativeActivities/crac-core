@@ -1871,7 +1871,7 @@ for current evaluation send these attributes with arbitrary values:
 
 	{
 	    "likeValOthers": 0.5,
-	    "likeValTask": 0.5,
+	    "likeValTask": 0.5
 	}
 
 ##### *Response:*
