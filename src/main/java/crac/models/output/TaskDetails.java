@@ -185,8 +185,8 @@ public class TaskDetails {
 		boolean friend = false;
 		CracUser otherU = null;
 		Set<UserTaskRel> participantRels = t.getAllLeaderAndParticipantRels();
-		//TODO adjust
-		this.signedUsers = participantRels.size();
+		//TODO better optimized way
+		this.signedUsers = t.getAllParticipants().size();
 
 		if (participantRels.size() != 0) {
 			for (UserTaskRel utr : participantRels) {
