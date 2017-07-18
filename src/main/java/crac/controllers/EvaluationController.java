@@ -1,6 +1,9 @@
 package crac.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +45,7 @@ import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
+import crac.models.output.OpenEvaluation;
 
 @RestController
 @RequestMapping("/evaluation")
@@ -90,16 +94,8 @@ public class EvaluationController {
 
 			if (utr != null) {
 				if (task.getTaskState() == TaskState.COMPLETED) {
-					if (!utr.isEvaluationTriggered()) {
-						Evaluation e = new Evaluation(user, task);
-						EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
-						NotificationHelper.createNotification(es);
-						e.setNotificationId(es.getNotificationId());
-						utr.setEvaluationTriggered(true);
-						userTaskRelDAO.save(utr);
-						evaluationDAO.save(e);
-						es.setEvaluationIdy(e.getId());
-						return JSONResponseHelper.successfullyCreated(e);
+					if (!utr.isEvalTriggered()) {
+						return JSONResponseHelper.successfullyCreated(utr.triggerEval());
 					} else {
 						return JSONResponseHelper.createResponse(false, "bad_request",
 								ErrorCause.DATASETS_ALREADY_EXISTS);
@@ -112,21 +108,6 @@ public class EvaluationController {
 
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 
-	}
-
-	/**
-	 * Returns all evaluations of the logged in user
-	 * 
-	 * @return
-	 */
-	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> getEvaluations() {
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		return JSONResponseHelper.createResponse(evaluationDAO.findByUserAndFilled(user, false), true);
 	}
 
 	/**
@@ -143,28 +124,25 @@ public class EvaluationController {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
-		CracUser m = userDAO.findByName(userDetails.getName());
+		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			if (m.hasTaskPermissions(task)) {
+			if (user.hasTaskPermissions(task)) {
 				if (task.getTaskState() == TaskState.COMPLETED) {
-					CracUser user = null;
-					EvaluationNotification es = null;
-
+					boolean allTriggered = true;
 					for (UserTaskRel utr : task.getUserRelationships()) {
-						if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-							user = utr.getUser();
-							Evaluation e = new Evaluation(user, task);
-							es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
-							NotificationHelper.createNotification(es);
-							e.setNotificationId(es.getNotificationId());
-							evaluationDAO.save(e);
-							es.setEvaluationIdy(e.getId());
+						if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING
+								&& !utr.isEvalTriggered()) {
+							allTriggered = false;
+							utr.triggerEval();
 						}
 					}
-					return JSONResponseHelper.successfullyCreated(task);
+					if(allTriggered){
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALL_EVALS_TRIGGERED);
+					}
+					return JSONResponseHelper.successfullyUpdated(task);
 				} else {
 					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
 				}
@@ -177,6 +155,30 @@ public class EvaluationController {
 	}
 
 	/**
+	 * Returns all evaluations of the logged in user
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> getEvaluations() {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		
+		Set<UserTaskRel> rels = userTaskRelDAO.blub(user);
+		HashSet<OpenEvaluation> evals = new HashSet<>();
+		
+		if(rels != null){
+			for(UserTaskRel rel : rels){
+				evals.add(new OpenEvaluation(rel));
+			}
+		}
+		
+		return JSONResponseHelper.createResponse(evals, true);
+	}
+
+	/**
 	 * Creates an evaluation (notification + entity) for target user,
 	 * participating in target task
 	 * 
@@ -185,27 +187,28 @@ public class EvaluationController {
 	 * @return ResponseEntity
 	 */
 	/*
-	@RequestMapping(value = { "/task/{task_id}/user/{user_id}",
-			"/task/{task_id}/user/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> createUserEvaluation(@PathVariable(value = "user_id") Long userId,
-			@PathVariable(value = "task_id") Long taskId) {
-		CracUser user = userDAO.findOne(userId);
-		Task task = taskDAO.findOne(taskId);
-
-		if (user != null && task != null && userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
-				TaskParticipationType.LEADING) != null && task.getTaskState() == TaskState.COMPLETED) {
-			Evaluation e = new Evaluation(user, task);
-			EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
-			NotificationHelper.createNotification(es);
-			e.setNotificationId(es.getNotificationId());
-			evaluationDAO.save(e);
-			es.setEvaluationIdy(e.getId());
-			return JSONResponseHelper.successfullyCreated(e);
-		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
-		}
-	}*/
+	 * @RequestMapping(value = { "/task/{task_id}/user/{user_id}",
+	 * "/task/{task_id}/user/{user_id}/" }, method = RequestMethod.GET, produces
+	 * = "application/json")
+	 * 
+	 * @ResponseBody public ResponseEntity<String>
+	 * createUserEvaluation(@PathVariable(value = "user_id") Long userId,
+	 * 
+	 * @PathVariable(value = "task_id") Long taskId) { CracUser user =
+	 * userDAO.findOne(userId); Task task = taskDAO.findOne(taskId);
+	 * 
+	 * if (user != null && task != null &&
+	 * userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
+	 * TaskParticipationType.LEADING) != null && task.getTaskState() ==
+	 * TaskState.COMPLETED) { Evaluation e = new Evaluation(user, task);
+	 * EvaluationNotification es = new EvaluationNotification(user.getId(),
+	 * task.getId(), e.getId()); NotificationHelper.createNotification(es);
+	 * e.setNotificationId(es.getNotificationId()); evaluationDAO.save(e);
+	 * es.setEvaluationIdy(e.getId()); return
+	 * JSONResponseHelper.successfullyCreated(e); } else { return
+	 * JSONResponseHelper.createResponse(false, "bad_request",
+	 * ErrorCause.ID_NOT_FOUND); } }
+	 */
 
 	/**
 	 * Resolves the evaluation. Updates the empty evaluation with sent data and
@@ -242,8 +245,6 @@ public class EvaluationController {
 
 			String notificationId = originalEval.getNotificationId();
 			UpdateEntitiesHelper.checkAndUpdateEvaluation(originalEval, newEval);
-			originalEval.setFilled(true);
-			// postProcessEvaluation(originalEval);
 
 			Decider unit = new Decider();
 
@@ -251,13 +252,13 @@ public class EvaluationController {
 			unit.evaluateTask(originalEval);
 
 			originalEval.setNotificationId("deleted");
-			UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationType(originalEval.getUser(),
-					originalEval.getTask(), TaskParticipationType.PARTICIPATING);
-			utr.setEvaluated(true);
+			UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationType(
+					originalEval.getUserTaskRel().getUser(), originalEval.getUserTaskRel().getTask(),
+					TaskParticipationType.PARTICIPATING);
+			originalEval.setFilled(true);
 			evaluationDAO.save(originalEval);
 			NotificationHelper.deleteNotification(notificationId);
 			return JSONResponseHelper.successfullyCreated(originalEval);
-			// return JSonResponseHelper.successfullEvaluation();
 
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
@@ -267,10 +268,11 @@ public class EvaluationController {
 
 	// TODO redo when search is done
 	private void postProcessEvaluation(Evaluation e) {
-		Task task = e.getTask();
+		Task task = e.getUserTaskRel().getTask();
 
 		for (CompetenceTaskRel c : task.getMappedCompetences()) {
-			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUser(), c.getCompetence());
+			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUserTaskRel().getUser(),
+					c.getCompetence());
 
 			if (uc != null) {
 				// uc.setLikeValue(uc.getLikeValue() *
@@ -282,13 +284,13 @@ public class EvaluationController {
 		}
 
 		for (UserTaskRel utr : task.getUserRelationships()) {
-			UserRelationship ur = userRelationshipDAO.findByC1AndC2(e.getUser(), utr.getUser());
+			UserRelationship ur = userRelationshipDAO.findByC1AndC2(e.getUserTaskRel().getUser(), utr.getUser());
 
 			if (ur != null) {
 				ur.setLikeValue(ur.getLikeValue() * adjustValues(e.getLikeValOthers()));
 			} else {
 				ur = new UserRelationship();
-				ur.setC1(e.getUser());
+				ur.setC1(e.getUserTaskRel().getUser());
 				ur.setC2(utr.getUser());
 				ur.setFriends(false);
 				ur.setLikeValue(adjustValues(e.getLikeValOthers()));

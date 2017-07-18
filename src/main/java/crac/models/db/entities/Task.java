@@ -92,9 +92,6 @@ public class Task {
 	@Column(name = "task_type")
 	private TaskType taskType;
 
-	@Column(name = "task_repetition_state")
-	private TaskRepetitionState taskRepetitionState;
-
 	@Column(name = "ready_to_publish")
 	private boolean readyToPublish;
 
@@ -151,10 +148,6 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Comment> comments;
-
-	@JsonIdentityReference(alwaysAsId = true)
-	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-	private Set<Evaluation> mappedEvaluations;
 	
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -169,7 +162,6 @@ public class Task {
 
 	public Task() {
 		this.taskState = TaskState.NOT_PUBLISHED;
-		this.taskRepetitionState = TaskRepetitionState.ONCE;
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
 		/*
@@ -722,28 +714,12 @@ public class Task {
 		this.taskState = taskState;
 	}
 
-	public TaskRepetitionState getTaskRepetitionState() {
-		return taskRepetitionState;
-	}
-
-	public void setTaskRepetitionState(TaskRepetitionState taskRepetitionState) {
-		this.taskRepetitionState = taskRepetitionState;
-	}
-
 	public RepetitionDate getRepetitionDate() {
 		return repetitionDate;
 	}
 
 	public void setRepetitionDate(RepetitionDate repetitionDate) {
 		this.repetitionDate = repetitionDate;
-	}
-
-	public Set<Evaluation> getMappedEvaluations() {
-		return mappedEvaluations;
-	}
-
-	public void setMappedEvaluations(Set<Evaluation> mappedEvaluations) {
-		this.mappedEvaluations = mappedEvaluations;
 	}
 
 	public Set<CompetenceTaskRel> getMappedCompetences() {

@@ -1,22 +1,30 @@
 package crac.models.db.relation;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.components.notifier.NotificationHelper;
+import crac.components.notifier.notifications.EvaluationNotification;
+import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
+import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 
 @Entity
@@ -43,11 +51,12 @@ public class UserTaskRel {
 	@Column(name = "participation_type")
 	private TaskParticipationType participationType;
 	
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "userTaskRel", cascade = CascadeType.PERSIST)
+	private Evaluation evaluation;
+	
 	private boolean completed;
 
-	private boolean evaluated;
-
-	private boolean evaluationTriggered;
+	private boolean evalTriggered;
 
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
@@ -60,6 +69,22 @@ public class UserTaskRel {
 
 	public long getId() {
 		return id;
+	}
+	
+	public Evaluation triggerEval(){
+		Evaluation e = new Evaluation(this);
+		
+		EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
+		NotificationHelper.createNotification(es);
+		
+		e.setNotificationId(es.getNotificationId());
+		es.setEvaluationId(e.getId());
+		
+		this.evaluation = e;
+		this.setEvalTriggered(true);
+		DataAccess.getRepo(UserTaskRelDAO.class).save(this);
+		
+		return e;
 	}
 
 	public void setId(long id) {
@@ -106,20 +131,20 @@ public class UserTaskRel {
 		this.type = type;
 	}
 
-	public boolean isEvaluated() {
-		return evaluated;
+	public Evaluation getEvaluation() {
+		return evaluation;
 	}
 
-	public void setEvaluated(boolean evaluated) {
-		this.evaluated = evaluated;
+	public void setEvaluation(Evaluation evaluation) {
+		this.evaluation = evaluation;
 	}
 
-	public boolean isEvaluationTriggered() {
-		return evaluationTriggered;
+	public boolean isEvalTriggered() {
+		return evalTriggered;
 	}
 
-	public void setEvaluationTriggered(boolean evaluationTriggered) {
-		this.evaluationTriggered = evaluationTriggered;
+	public void setEvalTriggered(boolean evalTriggered) {
+		this.evalTriggered = evalTriggered;
 	}
 	
 }

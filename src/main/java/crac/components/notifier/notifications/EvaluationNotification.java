@@ -33,7 +33,7 @@ public class EvaluationNotification extends Notification {
 		return evaluationId;
 	}
 
-	public void setEvaluationIdy(long evaluationId) {
+	public void setEvaluationId(long evaluationId) {
 		this.evaluationId = evaluationId;
 	}
 /*

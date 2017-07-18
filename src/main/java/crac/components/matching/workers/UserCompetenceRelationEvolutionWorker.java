@@ -19,8 +19,8 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 
 	public UserCompetenceRelationEvolutionWorker(Evaluation evaluation) {
 		super();
-		this.user = evaluation.getUser();
-		this.task = evaluation.getTask();
+		this.user = evaluation.getUserTaskRel().getUser();
+		this.task = evaluation.getUserTaskRel().getTask();
 		this.evaluation = evaluation;
 		this.userCompetenceRelDAO = DataAccess.getRepo(UserCompetenceRelDAO.class);
 	}

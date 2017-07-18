@@ -2,12 +2,15 @@ package crac.models.output;
 
 import java.util.Calendar;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
 import crac.enums.TaskState;
+import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 
 public class ArchiveTask {
-	
+
 	private long id;
 
 	private String name;
@@ -17,20 +20,28 @@ public class ArchiveTask {
 	private Calendar startTime;
 
 	private Calendar endTime;
-	
-	private boolean evaluated;
 
-	private boolean evaluationTriggered;
+	private boolean evalComplete;
+
+	private boolean evalTriggered;
 	
-	public ArchiveTask(UserTaskRel rel){
+	@JsonIdentityReference(alwaysAsId = true)
+	private Evaluation evaluation;
+
+	public ArchiveTask(UserTaskRel rel) {
 		Task t = rel.getTask();
 		this.id = t.getId();
 		this.name = t.getName();
 		this.description = t.getDescription();
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
-		this.evaluated = rel.isEvaluated();
-		this.evaluationTriggered = rel.isEvaluationTriggered();
+		if (rel.getEvaluation() != null) {
+			this.evalComplete = rel.getEvaluation().isFilled();
+		} else {
+			this.evalComplete = false;
+		}
+		this.evalTriggered = rel.isEvalTriggered();
+		this.evaluation = rel.getEvaluation();
 	}
 
 	public long getId() {
@@ -73,20 +84,28 @@ public class ArchiveTask {
 		this.endTime = endTime;
 	}
 
-	public boolean isEvaluated() {
-		return evaluated;
+	public boolean isEvalComplete() {
+		return evalComplete;
 	}
 
-	public void setEvaluated(boolean evaluated) {
-		this.evaluated = evaluated;
+	public void setEvalComplete(boolean evalComplete) {
+		this.evalComplete = evalComplete;
 	}
 
-	public boolean isEvaluationTriggered() {
-		return evaluationTriggered;
+	public boolean isEvalTriggered() {
+		return evalTriggered;
 	}
 
-	public void setEvaluationTriggered(boolean evaluationTriggered) {
-		this.evaluationTriggered = evaluationTriggered;
+	public void setEvalTriggered(boolean evalTriggered) {
+		this.evalTriggered = evalTriggered;
+	}
+
+	public Evaluation getEvaluation() {
+		return evaluation;
+	}
+
+	public void setEvaluation(Evaluation evaluation) {
+		this.evaluation = evaluation;
 	}
 
 }

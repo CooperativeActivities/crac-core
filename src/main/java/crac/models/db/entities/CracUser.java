@@ -77,14 +77,6 @@ public class CracUser {
 	private String address;
 		
 	/**
-	 * defines a one to many relation with the evaluation-entity
-	 */
-
-	@JsonIdentityReference(alwaysAsId=true)
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<Evaluation> evaluations;
-	
-	/**
 	 * defines a one to many relation with the task-entity
 	 */
 
@@ -333,14 +325,6 @@ public class CracUser {
 
 	public void setTaskRelationships(Set<UserTaskRel> taskRelationships) {
 		this.taskRelationships = taskRelationships;
-	}
-
-	public Set<Evaluation> getEvaluations() {
-		return evaluations;
-	}
-
-	public void setEvaluations(Set<Evaluation> evaluations) {
-		this.evaluations = evaluations;
 	}
 
 	public Set<UserRelationship> getUserRelationshipsAs1() {

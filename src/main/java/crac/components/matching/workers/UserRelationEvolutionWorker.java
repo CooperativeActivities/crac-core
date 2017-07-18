@@ -16,14 +16,14 @@ public class UserRelationEvolutionWorker extends Worker {
 
 	public UserRelationEvolutionWorker(Evaluation evaluation) {
 		super();
-		this.user = evaluation.getUser();
+		this.user = evaluation.getUserTaskRel().getUser();
 		this.evaluation = evaluation;
 		this.userRelationshipDAO = DataAccess.getRepo(UserRelationshipDAO.class);
 	}
 
 	@Override
 	public Object run() {
-		for (UserTaskRel utr : evaluation.getTask().getUserRelationships()) {
+		for (UserTaskRel utr : evaluation.getUserTaskRel().getTask().getUserRelationships()) {
 			if (user.getId() != utr.getUser().getId()) {
 				UserRelationship ur = userRelationshipDAO.findByC1AndC2(utr.getUser(), user);
 				if (ur == null) {
@@ -48,7 +48,7 @@ public class UserRelationEvolutionWorker extends Worker {
 					updated = -1;
 				}
 
-				ur.setLikeValue(updated);
+				ur.setLikeValue((double) Math.round(updated * 100) / 100);
 
 				userRelationshipDAO.save(ur);
 				System.out.println(ur.getLikeValue());

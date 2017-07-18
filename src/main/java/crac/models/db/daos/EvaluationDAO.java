@@ -17,6 +17,5 @@ import crac.models.db.entities.Task;
  */
 @Transactional
 public interface EvaluationDAO extends CrudRepository<Evaluation, Long> {
-	public List<Evaluation> findByUserAndFilled(CracUser user, boolean filled);
-
+	
 }

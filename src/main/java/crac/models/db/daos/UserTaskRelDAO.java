@@ -3,7 +3,9 @@ package crac.models.db.daos;
 
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import crac.enums.TaskParticipationType;
@@ -23,4 +25,7 @@ public interface UserTaskRelDAO extends CrudRepository<UserTaskRel, Long> {
 	public UserTaskRel findByUserAndTaskAndParticipationTypeNot(CracUser user, Task task, TaskParticipationType participationTyp);
 	public Set<UserTaskRel> findByParticipationTypeAndTask(TaskParticipationType participationTyp, Task task);
 	public Set<UserTaskRel> findByUser (CracUser user);
+	
+	@Query("select r from UserTaskRel r where r.user = :u and r.evaluation.filled = false")
+	public Set<UserTaskRel> blub(@Param("u") CracUser c);
 }

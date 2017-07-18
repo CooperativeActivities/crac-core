@@ -891,11 +891,11 @@ GET task/type
 	
 -----------------------------------------------------------------
 
-**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate', 'follow', or 'lead'**
+**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate' or 'follow'**
 
 ##### *Request:*
 
-GET task/{task_id}/add/{state_name}
+PUT task/{task_id}/add/{state_name}
 
 ##### *Response:*
 
