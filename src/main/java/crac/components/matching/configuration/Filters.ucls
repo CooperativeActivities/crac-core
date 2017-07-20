@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.13" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="crac.components.matching.CracFilter" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/matching/CracFilter.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="1" language="java" name="crac.components.matching.CracMatchingFilter" project="crac-app" 
+    file="/crac-app/src/main/java/crac/components/matching/CracMatchingFilter.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="617" y="89"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -40,8 +40,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="crac.components.matching.filter.ImportancyLevelFilter" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/matching/filter/ImportancyLevelFilter.java" binary="false" 
+  <class id="5" language="java" name="crac.components.matching.filter.matching.ImportancyLevelFilter" project="crac-app" 
+    file="/crac-app/src/main/java/crac/components/matching/filter/matching/ImportancyLevelFilter.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="334" y="311"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -50,8 +50,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="crac.components.matching.filter.LikeLevelFilter" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/matching/filter/LikeLevelFilter.java" binary="false" 
+  <class id="6" language="java" name="crac.components.matching.filter.matching.LikeLevelFilter" project="crac-app" 
+    file="/crac-app/src/main/java/crac/components/matching/filter/matching/LikeLevelFilter.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="494" y="309"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -60,8 +60,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="crac.components.matching.filter.ProficiencyLevelFilter" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/matching/filter/ProficiencyLevelFilter.java" binary="false" 
+  <class id="7" language="java" name="crac.components.matching.filter.matching.ProficiencyLevelFilter" 
+    project="crac-app" 
+    file="/crac-app/src/main/java/crac/components/matching/filter/matching/ProficiencyLevelFilter.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="652" y="296"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -70,8 +71,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="crac.components.matching.filter.UserRelationFilter" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/matching/filter/UserRelationFilter.java" binary="false" 
+  <class id="8" language="java" name="crac.components.matching.filter.matching.UserRelationFilter" project="crac-app" 
+    file="/crac-app/src/main/java/crac/components/matching/filter/matching/UserRelationFilter.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="899" y="288"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -92,57 +93,57 @@
     </display>  
   </class>  
   <generalization id="10">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="1"/>  
-  </generalization>  
-  <association id="11">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="12" name="instance">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </attribute>      
-      <multiplicity id="13" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization id="14">    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="1"/>  
-  </generalization>  
-  <generalization id="15">    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="1"/>  
   </generalization>  
-  <association id="16">    
+  <association id="11">    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="17" name="filters">        
+      <attribute id="12" name="filters">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
-      <multiplicity id="18" minimum="0" maximum="2147483647">        
+      <multiplicity id="13" minimum="0" maximum="2147483647">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="1" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="19">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="1"/>  
-  </generalization>  
-  <association id="20">    
+  <association id="14">    
     <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="21" name="config">        
+      <attribute id="15" name="config">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
-      <multiplicity id="22" minimum="0" maximum="1">        
+      <multiplicity id="16" minimum="0" maximum="1">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <association id="17">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="18" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="19" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="20">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="21">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="22">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    

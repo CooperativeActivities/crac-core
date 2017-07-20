@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import crac.models.db.daos.CommentDAO;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetenceTaskRelDAO;
 import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.GroupDAO;
 import crac.models.db.daos.MaterialDAO;
 import crac.models.db.daos.RepetitionDateDAO;
 import crac.models.db.daos.RoleDAO;
@@ -49,6 +51,7 @@ import crac.models.db.daos.UserMaterialSubscriptionDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Comment;
 import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
@@ -71,6 +74,9 @@ import crac.models.utility.EvaluatedTask;
 @RestController
 @RequestMapping("/task")
 public class TaskController {
+
+	@Autowired
+	private GroupDAO groupDAO;
 
 	@Autowired
 	private TaskDAO taskDAO;
@@ -101,6 +107,9 @@ public class TaskController {
 
 	@Autowired
 	private MaterialDAO materialDAO;
+	
+	@Autowired
+	private Decider decider;
 
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
@@ -311,6 +320,7 @@ public class TaskController {
 
 	/**
 	 * Returns all completed tasks of a user by participationType
+	 * 
 	 * @param partType
 	 * @return ResponseEntity
 	 */
@@ -323,8 +333,8 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		Set<UserTaskRel> trels = userTaskRelDAO.findByUserAndParticipationType(user, partType);
 		Set<ArchiveTask> tcomp = new HashSet<>();
-		for(UserTaskRel tr : trels){
-			if(tr.getTask().getTaskState() == TaskState.COMPLETED){
+		for (UserTaskRel tr : trels) {
+			if (tr.getTask().getTaskState() == TaskState.COMPLETED) {
 				tcomp.add(new ArchiveTask(tr));
 			}
 		}
@@ -334,6 +344,7 @@ public class TaskController {
 
 	/**
 	 * Returns all completed projects
+	 * 
 	 * @return ResponseEntity
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
@@ -650,9 +661,8 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Decider unit = new Decider();
 
-		return JSONResponseHelper.createResponse(unit.findTasks(user, new UserFilterParameters()), true);
+		return JSONResponseHelper.createResponse(decider.findTasks(user, new UserFilterParameters()), true);
 
 	}
 
@@ -1890,31 +1900,47 @@ public class TaskController {
 	 * @param taskId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/invite/{user_id}",
-			"/{task_id}/invite/{user_id}/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/invite/{inv_type}/{inv_id}",
+			"/{task_id}/invite/{inv_type}/{inv_id}/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> invitePerson(@PathVariable(value = "user_id") Long userId,
-			@PathVariable(value = "task_id") Long taskId) {
+	public ResponseEntity<String> invitePerson(@PathVariable(value = "inv_id") Long invId,
+			@PathVariable(value = "task_id") Long taskId, @PathVariable(value = "inv_type") String invType) {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
-		CracUser logged = userDAO.findByName(userDetails.getName());
+		CracUser user = userDAO.findByName(userDetails.getName());
+		Task task = taskDAO.findOne(taskId);
+		List<CracUser> users = new ArrayList<>();
 
-		UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(logged, taskDAO.findOne(taskId),
-				TaskParticipationType.LEADING);
-
-		if (utr != null) {
-			if (utr.getParticipationType() == TaskParticipationType.LEADING) {
-				TaskInvitation n = new TaskInvitation(logged.getId(), userId, taskId);
-				NotificationHelper.createNotification(n);
-				// NotificationHelper.createTaskInvitation(logged.getId(),
-				// userId, taskId);
-				return JSONResponseHelper.successfullyCreated(n);
+		if (user.hasTaskPermissions(task)) {
+			if (task != null) {
+				if (invType.equals("user")) {
+					CracUser inv = userDAO.findOne(invId);
+					if (inv != null) {
+						users.add(inv);
+					} else {
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+					}
+				} else if (invType.equals("group")) {
+					CracGroup inv = groupDAO.findOne(invId);
+					if (inv != null) {
+						for (CracUser u : inv.getEnroledUsers()) {
+							users.add(u);
+						}
+					} else {
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+					}
+				}
+				for (CracUser u : users) {
+					TaskInvitation n = new TaskInvitation(user.getId(), u.getId(), taskId);
+					NotificationHelper.createNotification(n);
+				}
+				return JSONResponseHelper.successfullyCreated(users);
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 		}
 
 	}

@@ -1,16 +1,16 @@
-package crac.components.matching.filter;
+package crac.components.matching.filter.matching;
 
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracMatchingFilter;
 import crac.models.storage.MatrixField;
 
-public class ProficiencyLevelFilter extends CracFilter{
+public class ProficiencyLevelFilter extends CracMatchingFilter{
 
 	public ProficiencyLevelFilter() {
 		super("ProficiencyLevelFilter");
 	}
 
 	@Override
-	public double apply(MatrixField m) {
+	public Double apply(MatrixField m) {
 
 		double value = m.getVal();
 		int neededProficiency = m.getTaskRelation().getNeededProficiencyLevel();

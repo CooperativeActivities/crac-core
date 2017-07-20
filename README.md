@@ -1289,7 +1289,7 @@ Json-data, either a success or a failure message
 
 ##### *Request:*
 
-GET /task//{task_id}/invite/{user_id}
+PUT /task/{task_id}/invite/{user_id}
 
 ##### *Response:*
 

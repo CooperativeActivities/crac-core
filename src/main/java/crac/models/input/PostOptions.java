@@ -3,6 +3,7 @@ package crac.models.input;
 public class PostOptions {
 
 	private int id;
+	private String name;
 	private int importanceLevel;
 	private int neededProficiencyLevel;
 	private int proficiencyValue;
@@ -10,8 +11,13 @@ public class PostOptions {
 	private int likeValue;
 	private boolean mandatory;
 	private String text;
+	private String firstName;
+	private String lastName;
 
 	public PostOptions() {
+		text = "";
+		firstName = "";
+		lastName = "";
 	}
 
 	public int getProficiencyValue() {
@@ -76,6 +82,30 @@ public class PostOptions {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 }

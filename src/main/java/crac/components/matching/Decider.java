@@ -2,6 +2,10 @@ package crac.components.matching;
 
 import java.util.ArrayList;
 
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.workers.TaskMatchingWorker;
 import crac.components.matching.workers.UserCompetenceRelationEvolutionWorker;
@@ -13,11 +17,15 @@ import crac.models.db.entities.Task;
 import crac.models.utility.EvaluatedTask;
 import crac.models.utility.EvaluatedUser;
 
+@Service
 public class Decider {
 	
+	@Autowired
+	private WorkerFactory wf;
+	
 	public ArrayList<EvaluatedTask> findTasks(CracUser u, UserFilterParameters up){
-		
-		TaskMatchingWorker worker = new TaskMatchingWorker(u, up);
+				
+		TaskMatchingWorker worker = wf.createTmWorker(u, up);
 		ArrayList<EvaluatedTask> list = worker.run();
 		
 		return list;

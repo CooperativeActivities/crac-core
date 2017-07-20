@@ -98,7 +98,7 @@ public class CracUser {
 
 	@JsonIdentityReference(alwaysAsId=true)
 	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
-	private Set<Group> createdGroups;
+	private Set<CracGroup> createdGroups;
 
 	/**
 	 * defines a many to many relation with the UserCompetenceRel-entity
@@ -134,7 +134,7 @@ public class CracUser {
 	
 	@ManyToMany(mappedBy = "enroledUsers", fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId=true)
-	private Set<Group> groups;
+	private Set<CracGroup> groups;
 	
 	/**
 	 * defines a one to one relation with the attachment-entity
@@ -287,19 +287,19 @@ public class CracUser {
 		this.birthDate = birthDate;
 	}
 
-	public Set<Group> getCreatedGroups() {
+	public Set<CracGroup> getCreatedGroups() {
 		return createdGroups;
 	}
 
-	public void setCreatedGroups(Set<Group> createdGroups) {
+	public void setCreatedGroups(Set<CracGroup> createdGroups) {
 		this.createdGroups = createdGroups;
 	}
 	
-	public Set<Group> getGroups() {
+	public Set<CracGroup> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(Set<Group> groups) {
+	public void setGroups(Set<CracGroup> groups) {
 		this.groups = groups;
 	}
 

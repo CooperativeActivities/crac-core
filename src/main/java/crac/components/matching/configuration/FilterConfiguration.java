@@ -2,20 +2,20 @@ package crac.components.matching.configuration;
 
 import java.util.ArrayList;
 
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracMatchingFilter;
 import crac.models.storage.MatrixField;
 
 public class FilterConfiguration {
 	
-	private ArrayList<CracFilter> filters = new ArrayList<>();
+	private ArrayList<CracMatchingFilter> filters = new ArrayList<>();
 
 	public void applyFilters(MatrixField m){
-		for(CracFilter filter : filters){
+		for(CracMatchingFilter filter : filters){
 			m.setVal(filter.apply(m));
 		}
 	}
 	
-	public void addFilter(CracFilter filter){
+	public void addFilter(CracMatchingFilter filter){
 		filters.add(filter);
 	}
 	
@@ -24,14 +24,14 @@ public class FilterConfiguration {
 	}
 	
 	public void printFilters(){
-		for(CracFilter filter : filters){
+		for(CracMatchingFilter filter : filters){
 			filter.speak();
 		}
 	}
 	
 	public String filtersToString(){
 		String s = "";
-		for(CracFilter filter : filters){
+		for(CracMatchingFilter filter : filters){
 			s += filter.speakString() + " ";
 		}
 		return s;
@@ -39,7 +39,7 @@ public class FilterConfiguration {
 	
 	public FilterConfiguration clone(){
 		FilterConfiguration m = new FilterConfiguration();
-		for(CracFilter filter : filters){
+		for(CracMatchingFilter filter : filters){
 			m.addFilter(filter);
 		}
 		return m;

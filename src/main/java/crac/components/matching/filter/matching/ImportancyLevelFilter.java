@@ -1,16 +1,16 @@
-package crac.components.matching.filter;
+package crac.components.matching.filter.matching;
 
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracMatchingFilter;
 import crac.models.storage.MatrixField;
 
-public class ImportancyLevelFilter extends CracFilter{
+public class ImportancyLevelFilter extends CracMatchingFilter{
 
 	public ImportancyLevelFilter() {
 		super("ImportancyLevelFilter");
 	}
 
 	@Override
-	public double apply(MatrixField m) {
+	public Double apply(MatrixField m) {
 		double value = m.getVal();
 		int importancyValue = m.getTaskRelation().getImportanceLevel();
 		

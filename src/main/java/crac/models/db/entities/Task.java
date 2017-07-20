@@ -155,6 +155,9 @@ public class Task {
 
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Material> materials;
+	
+	@ManyToMany(mappedBy = "restrictedTasks", fetch = FetchType.LAZY)
+	private Set<CracGroup> restrictingGroups;
 
 	/**
 	 * constructors

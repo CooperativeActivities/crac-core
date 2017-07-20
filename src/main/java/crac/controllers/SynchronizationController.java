@@ -25,10 +25,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.components.matching.configuration.GlobalMatrixFilterConfig;
-import crac.components.matching.filter.ImportancyLevelFilter;
-import crac.components.matching.filter.LikeLevelFilter;
-import crac.components.matching.filter.ProficiencyLevelFilter;
-import crac.components.matching.filter.UserRelationFilter;
+import crac.components.matching.filter.matching.ImportancyLevelFilter;
+import crac.components.matching.filter.matching.LikeLevelFilter;
+import crac.components.matching.filter.matching.ProficiencyLevelFilter;
+import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.storage.CompetenceStorage;
 import crac.components.utility.DataAccess;
 import crac.components.utility.ElasticConnector;

@@ -7,7 +7,7 @@ import crac.components.matching.Worker;
 import crac.components.matching.configuration.FilterConfiguration;
 import crac.components.matching.configuration.GlobalMatrixFilterConfig;
 import crac.components.matching.configuration.UserFilterParameters;
-import crac.components.matching.filter.UserRelationFilter;
+import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.utility.DataAccess;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;

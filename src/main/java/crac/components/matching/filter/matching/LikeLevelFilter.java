@@ -1,16 +1,16 @@
-package crac.components.matching.filter;
+package crac.components.matching.filter.matching;
 
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracMatchingFilter;
 import crac.models.storage.MatrixField;
 
-public class LikeLevelFilter extends CracFilter{
+public class LikeLevelFilter extends CracMatchingFilter{
 
 	public LikeLevelFilter() {
 		super("LikeLevelFilter");
 	}
 
 	@Override
-	public double apply(MatrixField m) {
+	public Double apply(MatrixField m) {
 		
 		double value = m.getVal();
 		int likeValue = m.getUserRelation().getLikeValue();

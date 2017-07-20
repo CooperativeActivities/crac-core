@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import crac.components.matching.CracFilter;
+import crac.components.matching.CracPreMatchingFilter;
 import crac.components.matching.Worker;
 import crac.components.matching.configuration.FilterConfiguration;
 import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.PreMatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
-import crac.components.matching.filter.UserRelationFilter;
+import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.utility.DataAccess;
 import crac.enums.TaskState;
+import crac.enums.TaskType;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
@@ -23,12 +30,14 @@ public class TaskMatchingWorker extends Worker {
 	private CracUser user;
 	private TaskDAO taskDAO;
 	private UserFilterParameters up;
+	private PreMatchingConfiguration pmc;
 
-	public TaskMatchingWorker(CracUser u, UserFilterParameters up) {
-		super();
+	public TaskMatchingWorker(CracUser u, UserFilterParameters up, PreMatchingConfiguration pmc) {
 		this.up = up;
 		this.user = u;
 		this.taskDAO = DataAccess.getRepo(TaskDAO.class);
+		this.pmc = pmc;
+		System.out.println("worker created");
 	}
 
 	public ArrayList<EvaluatedTask> run() {
@@ -37,8 +46,22 @@ public class TaskMatchingWorker extends Worker {
 		ArrayList<EvaluatedTask> remove = new ArrayList<EvaluatedTask>();
 		CompetenceCollectionMatrix ccm;
 
+		
+		
 		// load a filtered amount of tasks
-		ArrayList<Task> filteredTaskSet = loadFilteredTasks();
+		//ArrayList<Task> taskSet = loadFilteredTasks();
+		
+		List<Task> taskSet = taskDAO.selectMatchableTasks(TaskState.PUBLISHED, TaskState.STARTED, TaskType.WORKABLE, TaskType.SHIFT, user);
+		
+		//PreMatchingFilters
+		
+		List<Task> filteredTaskSet = new ArrayList<>();
+		
+		for(CracPreMatchingFilter filter : pmc.getFilters()){
+			filteredTaskSet = filter.apply(taskSet);
+		}
+		
+		//------------------------
 
 		// load the filters for matrix matching
 		FilterConfiguration filters = GlobalMatrixFilterConfig.cloneConfiguration();

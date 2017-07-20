@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.components.matching.configuration.GlobalMatrixFilterConfig;
 import crac.components.matching.configuration.MatrixFilterParameters;
-import crac.components.matching.filter.ImportancyLevelFilter;
-import crac.components.matching.filter.LikeLevelFilter;
-import crac.components.matching.filter.ProficiencyLevelFilter;
-import crac.components.matching.filter.UserRelationFilter;
+import crac.components.matching.filter.matching.ImportancyLevelFilter;
+import crac.components.matching.filter.matching.LikeLevelFilter;
+import crac.components.matching.filter.matching.ProficiencyLevelFilter;
+import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.entities.CracUser;

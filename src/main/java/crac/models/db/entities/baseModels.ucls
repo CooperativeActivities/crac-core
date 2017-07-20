@@ -3,7 +3,7 @@
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="crac.models.db.entities.Competence" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/entities/Competence.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="203" width="322" x="340" y="-103"/>    
+    <position height="184" width="327" x="233" y="-49"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -12,7 +12,7 @@
   </class>  
   <class id="2" language="java" name="crac.models.db.entities.CracUser" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/entities/CracUser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="344" width="322" x="1238" y="360"/>    
+    <position height="256" width="322" x="1373" y="-87"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -21,265 +21,576 @@
   </class>  
   <class id="3" language="java" name="crac.models.db.entities.Task" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/entities/Task.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="420" width="301" x="752" y="1230"/>    
+    <position height="399" width="359" x="214" y="498"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="crac.models.db.relation.CompetenceRelationship" project="crac-app" 
+  <class id="4" language="java" name="crac.models.db.entities.CompetenceArea" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/CompetenceArea.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="112" width="264" x="251" y="277"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="crac.models.db.entities.Comment" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/Comment.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="112" width="137" x="-112" y="621"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="crac.models.db.entities.CracToken" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/CracToken.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="112" width="127" x="1870" y="201"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="crac.models.db.entities.Evaluation" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/Evaluation.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="182" width="199" x="921" y="626"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="crac.models.db.entities.CracGroup" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/CracGroup.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="128" width="211" x="1442" y="876"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="crac.models.db.entities.Material" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/Material.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="128" width="304" x="1042" y="884"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="crac.models.db.entities.Role" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/entities/Role.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="111" width="354" x="1660" y="584"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="crac.models.db.relation.CompetenceRelationship" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/relation/CompetenceRelationship.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="112" width="236" x="458" y="663"/>    
+    <position height="92" width="236" x="-227" y="36"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="crac.models.db.relation.CompetenceTaskRel" project="crac-app" 
+  <class id="12" language="java" name="crac.models.db.relation.CompetenceRelationshipType" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/relation/CompetenceRelationshipType.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="127" width="320" x="-226" y="263"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="crac.models.db.relation.CompetenceTaskRel" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/relation/CompetenceTaskRel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="131" width="285" x="78" y="1123"/>    
+    <position height="128" width="285" x="735" y="133"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="crac.models.db.relation.UserCompetenceRel" project="crac-app" 
+  <class id="14" language="java" name="crac.models.db.relation.UserCompetenceRel" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/relation/UserCompetenceRel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="132" width="268" x="1030" y="-49"/>    
+    <position height="128" width="268" x="815" y="-148"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="crac.models.db.relation.UserTaskRel" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/db/relation/UserTaskRel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="53" width="256" x="716" y="452"/>    
+  <class id="15" language="java" name="crac.models.db.relation.UserMaterialSubscription" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/relation/UserMaterialSubscription.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="92" width="266" x="1205" y="613"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="crac.models.db.relation.UserRelationship" project="crac-app" 
+  <class id="16" language="java" name="crac.models.db.relation.UserRelationship" project="crac-app" 
     file="/crac-app/src/main/java/crac/models/db/relation/UserRelationship.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="112" width="150" x="1441" y="1391"/>    
+    <position height="108" width="150" x="1920" y="-89"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <association id="9">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="10" name="task"/>      
-      <multiplicity id="11" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="12">    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="13" name="competence"/>      
-      <multiplicity id="14" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="15">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="16" name="childTasks"/>      
-      <multiplicity id="17" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
+  <class id="17" language="java" name="crac.models.db.relation.UserTaskRel" project="crac-app" 
+    file="/crac-app/src/main/java/crac/models/db/relation/UserTaskRel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="147" width="256" x="1004" y="393"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
   <association id="18">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="19" name="competence1"/>      
-      <multiplicity id="20" minimum="0" maximum="1"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="19" name="userRelationshipsAs1"/>      
+      <multiplicity id="20" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
+    <end type="TARGET" refId="16" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="21">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="22" name="competenceRelationships"/>      
-      <multiplicity id="23" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="22" name="task"/>      
+      <multiplicity id="23" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
+    <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="24">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="25" name="userRelationshipsAs1"/>      
-      <multiplicity id="26" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="25" name="userTaskRel"/>      
+      <multiplicity id="26" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
+    <end type="TARGET" refId="17" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="27">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="28" name="userRelationships"/>      
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="28" name="materials"/>      
       <multiplicity id="29" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
+    <end type="TARGET" refId="9" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="30">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="31" name="creator"/>      
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="31" name="material"/>      
       <multiplicity id="32" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="33">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="34" name="c1"/>      
+      <multiplicity id="35" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="33">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="34" name="mappedCompetence2"/>      
-      <multiplicity id="35" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="4" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
   <association id="36">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="37" name="user"/>      
-      <multiplicity id="38" minimum="0" maximum="1"/>    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="37" name="user">        
+        <position height="18" width="30" x="1628" y="209"/>      
+      </attribute>      
+      <multiplicity id="38" minimum="0" maximum="1">        
+        <position height="16" width="23" x="1657" y="209"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="39">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="40" name="superTask"/>      
-      <multiplicity id="41" minimum="0" maximum="1"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="40" name="task">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </attribute>      
+      <multiplicity id="41" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="42">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="43" name="userRelationships"/>      
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="43" name="mappedCompetence1"/>      
       <multiplicity id="44" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="7" navigable="true"/>    
+    <end type="TARGET" refId="11" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="45">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="46" name="mappedCompetence1"/>      
-      <multiplicity id="47" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="46" name="createdGroups">        
+        <position height="18" width="81" x="1500" y="831"/>      
+      </attribute>      
+      <multiplicity id="47" minimum="0" maximum="2147483647">        
+        <position height="16" width="21" x="1584" y="834"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="4" navigable="true"/>    
+    <end type="TARGET" refId="8" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="48">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="49" name="c2"/>      
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="49" name="competence1"/>      
       <multiplicity id="50" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="51">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="52" name="competenceTaskRels"/>      
-      <multiplicity id="53" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="54">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="55" name="competence2"/>      
-      <multiplicity id="56" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="1" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="57">    
+  <association id="51">    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="58" name="createdTasks"/>      
-      <multiplicity id="59" minimum="0" maximum="2147483647"/>    
+      <attribute id="52" name="taskRelationships"/>      
+      <multiplicity id="53" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="54">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="55" name="superTask">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </attribute>      
+      <multiplicity id="56" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="57">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="58" name="task"/>      
+      <multiplicity id="59" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="60">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="61" name="user"/>      
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="61" name="evaluation"/>      
       <multiplicity id="62" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="63">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="64" name="createdCompetences"/>      
-      <multiplicity id="65" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="66">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="67" name="c1"/>      
-      <multiplicity id="68" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="69">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="70" name="taskRelationships"/>      
-      <multiplicity id="71" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="7" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="72">    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="73" name="task"/>      
-      <multiplicity id="74" minimum="0" maximum="1"/>    
+  <association id="63">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="64" name="roles"/>      
+      <multiplicity id="65" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
+    <end type="TARGET" refId="10" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="75">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="76" name="mappedCompetences"/>      
-      <multiplicity id="77" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="78">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="79" name="competence"/>      
-      <multiplicity id="80" minimum="0" maximum="1"/>    
+  <association id="66">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="67" name="createdCompetences">        
+        <position height="0" width="0" x="115" y="85"/>      
+      </attribute>      
+      <multiplicity id="68" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="115" y="85"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="1" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="81">    
+  <association id="69">    
     <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="82" name="creator"/>      
-      <multiplicity id="83" minimum="0" maximum="1"/>    
+      <attribute id="70" name="userRelationships"/>      
+      <multiplicity id="71" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="72">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="73" name="competence2"/>      
+      <multiplicity id="74" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="75">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="76" name="enroledUsers">        
+        <position height="18" width="73" x="1331" y="187"/>      
+      </attribute>      
+      <multiplicity id="77" minimum="0" maximum="2147483647">        
+        <position height="16" width="21" x="1402" y="190"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="78">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="79" name="user"/>      
+      <multiplicity id="80" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="81">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="82" name="creator">        
+        <position height="18" width="43" x="1589" y="179"/>      
+      </attribute>      
+      <multiplicity id="83" minimum="0" maximum="1">        
+        <position height="16" width="23" x="1628" y="181"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="84">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="85" name="creator">        
+        <position height="0" width="0" x="-126" y="28"/>      
+      </attribute>      
+      <multiplicity id="86" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-126" y="28"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="87">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="88" name="mappedRelationships"/>      
+      <multiplicity id="89" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="90">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="91" name="user">        
+        <position height="18" width="30" x="1431" y="187"/>      
+      </attribute>      
+      <multiplicity id="92" minimum="0" maximum="1">        
+        <position height="16" width="23" x="1459" y="190"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="93">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="94" name="childTasks">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </attribute>      
+      <multiplicity id="95" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="96">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="97" name="type"/>      
+      <multiplicity id="98" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="99">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="100" name="task"/>      
+      <multiplicity id="101" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="102">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="103" name="competenceAreas">        
+        <position height="0" width="0" x="98" y="-14"/>      
+      </attribute>      
+      <multiplicity id="104" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="98" y="-14"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="105">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="106" name="competence"/>      
+      <multiplicity id="107" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="108">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="109" name="competence"/>      
+      <multiplicity id="110" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="111">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="112" name="c2"/>      
+      <multiplicity id="113" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="114">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="115" name="competenceTaskRels"/>      
+      <multiplicity id="116" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="117">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="118" name="userRelationships"/>      
+      <multiplicity id="119" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="120">    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="85" name="userRelationshipsAs2"/>      
-      <multiplicity id="86" minimum="0" maximum="2147483647"/>    
+      <attribute id="121" name="userRelationshipsAs2"/>      
+      <multiplicity id="122" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="123">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="124" name="mappedCompetence2"/>      
+      <multiplicity id="125" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="126">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="127" name="mappedCompetences">        
+        <position height="0" width="0" x="115" y="85"/>      
+      </attribute>      
+      <multiplicity id="128" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="115" y="85"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="129">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="130" name="groups">        
+        <position height="18" width="42" x="1622" y="838"/>      
+      </attribute>      
+      <multiplicity id="131" minimum="0" maximum="2147483647">        
+        <position height="16" width="21" x="1666" y="840"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="132">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="133" name="subscribedMaterials"/>      
+      <multiplicity id="134" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="135">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="136" name="subscribedUsers"/>      
+      <multiplicity id="137" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="138">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="139" name="createdTasks">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </attribute>      
+      <multiplicity id="140" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-642" y="229"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="141">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="142" name="comments">        
+        <position height="0" width="0" x="-644" y="-1"/>      
+      </attribute>      
+      <multiplicity id="143" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-644" y="-1"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="144">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="145" name="competenceRelationships"/>      
+      <multiplicity id="146" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="147">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="148" name="creator">        
+        <position height="0" width="0" x="-126" y="28"/>      
+      </attribute>      
+      <multiplicity id="149" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-126" y="28"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="150">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="151" name="mappedUser">        
+        <position height="18" width="71" x="1487" y="185"/>      
+      </attribute>      
+      <multiplicity id="152" minimum="0" maximum="2147483647">        
+        <position height="16" width="21" x="1556" y="189"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="153">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="154" name="mappedCompetences"/>      
+      <multiplicity id="155" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 

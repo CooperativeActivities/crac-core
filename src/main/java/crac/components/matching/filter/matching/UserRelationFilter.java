@@ -1,8 +1,8 @@
-package crac.components.matching.filter;
+package crac.components.matching.filter.matching;
 
 import java.util.ArrayList;
 
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracMatchingFilter;
 import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
@@ -10,7 +10,7 @@ import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.storage.MatrixField;
 
-public class UserRelationFilter extends CracFilter {
+public class UserRelationFilter extends CracMatchingFilter {
 	
 	private CracUser setUser;
 	private double userLikeVal;
@@ -21,7 +21,7 @@ public class UserRelationFilter extends CracFilter {
 	}
 
 	@Override
-	public double apply(MatrixField m) {
+	public Double apply(MatrixField m) {
 
 		double value = m.getVal();
 		CracUser user = m.getUserRelation().getUser();

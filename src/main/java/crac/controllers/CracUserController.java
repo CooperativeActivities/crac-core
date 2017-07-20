@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +49,13 @@ import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Role;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
+import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
@@ -266,7 +269,6 @@ public class CracUserController {
 				true);
 	}
 
-
 	/**
 	 * Issues a friend-request-notification to target user
 	 * 
@@ -425,30 +427,25 @@ public class CracUserController {
 		}
 	}
 
-	// KEEP OR DELETE
-
 	/**
 	 * Adds target group to the groups of the logged-in user
 	 * 
 	 * @param groupId
 	 * @return ResponseEntity
 	 */
-	/*
-	 * @RequestMapping(value = "/group/{group_id}/enter", method =
-	 * RequestMethod.GET, produces = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * enterGroup(@PathVariable(value = "group_id") Long groupId) {
-	 * 
-	 * UserDetails userDetails = (UserDetails)
-	 * SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	 * 
-	 * Group myGroup= groupDAO.findOne(groupId); CracUser myUser =
-	 * userDAO.findByName(userDetails.getUsername());
-	 * myGroup.getEnroledUsers().add(myUser); groupDAO.save(myGroup); return
-	 * ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() +
-	 * "\", \"group\":\"" + myGroup.getName() + "\", \"assigned\":\"true\"}"); }
-	 */
+
+	@RequestMapping(value = "/group/{group_id}/enter", method = RequestMethod.PUT, produces = "application/json")
+
+	@ResponseBody
+	public ResponseEntity<String> enterGroup(@PathVariable(value = "group_id") Long groupId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		CracGroup g = groupDAO.findOne(groupId);
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+		g.addUser(user);
+		return JSONResponseHelper.successfullyUpdated(user);
+	}
 
 	/**
 	 * Removes target group from the groups of the logged-in user
@@ -456,21 +453,53 @@ public class CracUserController {
 	 * @param groupId
 	 * @return ResponseEntity
 	 */
-	/*
-	 * @RequestMapping(value = "/group/{group_id}/leave", method =
-	 * RequestMethod.GET, produces = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * leaveGroup(@PathVariable(value = "group_id") Long groupId) {
-	 * 
-	 * UserDetails userDetails = (UserDetails)
-	 * SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	 * 
-	 * Group myGroup= groupDAO.findOne(groupId); CracUser myUser =
-	 * userDAO.findByName(userDetails.getUsername());
-	 * myGroup.getEnroledUsers().remove(myUser); groupDAO.save(myGroup); return
-	 * ResponseEntity.ok().body("{\"user\":\"" + myUser.getName() +
-	 * "\", \"group\":\"" + myGroup.getName() + "\", \"removed\":\"true\"}"); }
-	 */
+
+	@RequestMapping(value = "/group/{group_id}/leave", method = RequestMethod.DELETE, produces = "application/json")
+
+	@ResponseBody
+	public ResponseEntity<String> leaveGroup(@PathVariable(value = "group_id") Long groupId) {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		CracGroup g = groupDAO.findOne(groupId);
+		CracUser user = userDAO.findByName(userDetails.getUsername());
+		g.removeUser(user);
+		return JSONResponseHelper.successfullyUpdated(user);
+	}
+	
+	@RequestMapping(value = { "/search", "/search/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> searchUsers(@RequestBody String json){
+		ObjectMapper mapper = new ObjectMapper();
+		PostOptions mapping = null;
+		try {
+			mapping = mapper.readValue(json, PostOptions.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
+
+		List<CracUser> result = new ArrayList<>();
+		
+		String firstName = mapping.getFirstName();
+		String lastName = mapping.getLastName();
+		
+		if(lastName.equals("") && firstName.equals("")){
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+		}else if(lastName.equals("") && !firstName.equals("")){
+			result = userDAO.findByFirstName(firstName);
+		}else if(!lastName.equals("") && mapping.getFirstName().equals("")){
+			result = userDAO.findByLastName(firstName);
+		}else{
+			result = userDAO.findByFirstNameAndLastName(firstName, lastName);
+		}
+		
+		return JSONResponseHelper.createResponse(result, true);
+
+	}
+
 
 }

@@ -2,7 +2,7 @@ package crac.components.matching.configuration;
 
 import java.util.ArrayList;
 
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracMatchingFilter;
 import crac.models.storage.MatrixField;
 
 public class GlobalMatrixFilterConfig {
@@ -11,7 +11,7 @@ public class GlobalMatrixFilterConfig {
 	
 	private static GlobalMatrixFilterConfig instance = new GlobalMatrixFilterConfig();
 
-	public static void addFilter(CracFilter filter){
+	public static void addFilter(CracMatchingFilter filter){
 		filter.addSpeak();
 		instance.config.addFilter(filter);
 	}
