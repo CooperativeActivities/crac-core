@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crac.components.matching.configuration.UserFilterParameters;
+import crac.components.matching.factories.WorkerFactory;
 import crac.components.matching.workers.TaskMatchingWorker;
 import crac.components.matching.workers.UserCompetenceRelationEvolutionWorker;
 import crac.components.matching.workers.UserMatchingWorker;
@@ -32,7 +33,7 @@ public class Decider {
 	}
 	
 	public ArrayList<EvaluatedUser> findUsers(Task task, UserFilterParameters up){
-		UserMatchingWorker worker = new UserMatchingWorker(task, up);
+		UserMatchingWorker worker = wf.createUmWorker(task, up);
 		ArrayList<EvaluatedUser> list = worker.run();
 		return list;
 	}

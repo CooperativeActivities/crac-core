@@ -1,4 +1,4 @@
-package crac.components.matching;
+package crac.components.matching.interfaces;
 
 public interface CracFilter<U, T> {
 	

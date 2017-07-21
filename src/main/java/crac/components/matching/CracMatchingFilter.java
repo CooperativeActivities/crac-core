@@ -1,5 +1,6 @@
 package crac.components.matching;
 
+import crac.components.matching.interfaces.CracFilter;
 import crac.models.storage.MatrixField;
 
 public abstract class CracMatchingFilter implements CracFilter<Double, MatrixField> {

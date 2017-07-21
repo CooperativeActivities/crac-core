@@ -1,16 +1,17 @@
 package crac.components.matching;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import crac.components.matching.interfaces.CracFilter;
 import crac.models.db.entities.Task;
-import crac.models.utility.MatchingInformation;
+import crac.models.utility.EvaluatedTask;
 
-public abstract class CracPreMatchingFilter implements CracFilter<List<Task>, MatchingInformation> {
+public abstract class CracPostMatchingFilter implements CracFilter<ArrayList<EvaluatedTask>, ArrayList<EvaluatedTask>> {
 	
 	private String name;
 	
-	public CracPreMatchingFilter(String name) {
+	public CracPostMatchingFilter(String name) {
 		this.name = name;
 	}
 
@@ -27,6 +28,6 @@ public abstract class CracPreMatchingFilter implements CracFilter<List<Task>, Ma
 	}
 
 	@Override
-	public abstract List<Task> apply(MatchingInformation mi);
+	public abstract ArrayList<EvaluatedTask> apply(ArrayList<EvaluatedTask> list);
 		
 }

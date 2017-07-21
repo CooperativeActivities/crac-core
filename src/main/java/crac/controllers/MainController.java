@@ -1,37 +1,22 @@
 package crac.controllers;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import crac.components.matching.Decider;
-import crac.components.matching.configuration.GlobalMatrixFilterConfig;
-import crac.components.matching.configuration.UserFilterParameters;
+import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.matching.filter.matching.ImportancyLevelFilter;
 import crac.components.matching.filter.matching.LikeLevelFilter;
 import crac.components.matching.filter.matching.ProficiencyLevelFilter;
-import crac.components.matching.filter.matching.UserRelationFilter;
-import crac.components.matching.workers.TaskMatchingWorker;
-import crac.components.storage.AugmenterUnit;
 import crac.components.storage.CompetenceStorage;
-import crac.components.utility.DataAccess;
-import crac.components.utility.ElasticConnector;
 import crac.components.utility.JSONResponseHelper;
-import crac.enums.TaskState;
-import crac.enums.TaskType;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
@@ -43,25 +28,9 @@ import crac.models.db.daos.RoleDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
-import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
-import crac.models.db.entities.Role;
-import crac.models.db.entities.Task;
-import crac.models.db.relation.CompetencePermissionType;
-import crac.models.db.relation.CompetenceRelationship;
-import crac.models.db.relation.CompetenceRelationshipType;
-import crac.models.db.relation.CompetenceTaskRel;
-import crac.models.db.relation.RepetitionDate;
-import crac.models.db.relation.UserCompetenceRel;
-import crac.models.db.relation.UserRelationship;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
 import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
-import crac.models.komet.entities.TxExabiscompetencesDescriptorsTopicidMm;
-import crac.models.komet.entities.TxExabiscompetencesTopic;
-import crac.models.storage.CompetenceCollectionMatrix;
-import crac.models.storage.SimpleCompetence;
-import crac.models.storage.SimpleCompetenceRelation;
-import crac.models.utility.TravelledCompetence;
 
 /**
  * The main-controller used for hello world and testing
@@ -108,6 +77,8 @@ public class MainController {
 	@Autowired
 	private TxExabiscompetencesDescriptorsTopicidMmDAO txExabiscompetencesDescriptorsTopicidMmDAO;
 
+	@Autowired
+	private MatchingConfiguration matchingConfig;
 	
 	@Value("${crac.elastic.url}")
     private String url;
@@ -226,10 +197,10 @@ public class MainController {
 		
 		System.out.println("-----------------------");
 		System.out.println("Adding Filters!");
-		GlobalMatrixFilterConfig.clearFilters();
-		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
+		matchingConfig.clearFilters();
+		matchingConfig.addFilter(new ProficiencyLevelFilter());
+		matchingConfig.addFilter(new LikeLevelFilter());
+		matchingConfig.addFilter(new ImportancyLevelFilter());
 		System.out.println("-----------------------");
 		
 		HashMap<String, Object> meta = new HashMap<>();

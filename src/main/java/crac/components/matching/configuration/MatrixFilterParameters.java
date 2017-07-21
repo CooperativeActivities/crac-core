@@ -2,40 +2,29 @@ package crac.components.matching.configuration;
 
 import java.util.List;
 
-import crac.components.matching.filter.matching.ImportancyLevelFilter;
-import crac.components.matching.filter.matching.LikeLevelFilter;
-import crac.components.matching.filter.matching.ProficiencyLevelFilter;
-import crac.components.matching.filter.matching.UserRelationFilter;
+import crac.components.matching.CracMatchingFilter;
+import crac.components.matching.factories.MatchingFilterFactory;
 
 public class MatrixFilterParameters {
 
 	private List<String> parameters;
+	private MatchingFilterFactory mff;
 
 	public MatrixFilterParameters() {
 	}
 
-	public boolean apply() {
+	public boolean apply(MatchingConfiguration matchingConfig) {
 		int count = 0;
 		for (String p : parameters) {
-			if (p.equals("LikeLevelFilter")) {
-				GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
-				count++;
-			} else if (p.equals("ImportancyLevelFilter")) {
-				GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
-				count++;
-
-			} else if (p.equals("ProficiencyLevelFilter")) {
-				GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
-				count++;
-
-			} else if (p.equals("UserRelationFilter")) {
-				GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
-				count++;
+			CracMatchingFilter f = mff.createMatchingFilter(p);
+			if (f != null) {
+				matchingConfig.addFilter(f);
 			}
+			count++;
 		}
-		if(count == 0){
+		if (count == 0) {
 			return false;
-		}else{
+		} else {
 			return true;
 		}
 	}

@@ -3,6 +3,7 @@ package crac.controllers;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.matching.configuration.MatrixFilterParameters;
 import crac.components.matching.filter.matching.ImportancyLevelFilter;
 import crac.components.matching.filter.matching.LikeLevelFilter;
@@ -21,11 +22,13 @@ import crac.components.matching.filter.matching.ProficiencyLevelFilter;
 import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
-import crac.models.db.entities.CracUser;
 
 @RestController
 @RequestMapping("/configuration")
 public class FilterConfigurationController {
+	
+	@Autowired
+	private MatchingConfiguration matchingConfig;
 
 	/**
 	 * Adds a filter to the filter-configuration, based on it's name
@@ -40,19 +43,19 @@ public class FilterConfigurationController {
 		String name = "";
 
 		if (filterName.equals("LikeLevelFilter")) {
-			GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
+			matchingConfig.addFilter(new LikeLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("ImportancyLevelFilter")) {
-			GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
+			matchingConfig.addFilter(new ImportancyLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("ProficiencyLevelFilter")) {
-			GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
+			matchingConfig.addFilter(new ProficiencyLevelFilter());
 			name = filterName;
 
 		} else if (filterName.equals("UserRelationFilter")) {
-			GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
+			matchingConfig.addFilter(new UserRelationFilter());
 			name = filterName;
 
 		} else {
@@ -83,9 +86,9 @@ public class FilterConfigurationController {
 
 		if (mfp != null) {
 
-			GlobalMatrixFilterConfig.clearFilters();
+			matchingConfig.clearFilters();
 
-			if (!mfp.apply()) {
+			if (!mfp.apply(matchingConfig)) {
 
 				restoreStandard();
 
@@ -108,7 +111,7 @@ public class FilterConfigurationController {
 			"/filter/print/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> printFilter() {
-		return JSONResponseHelper.createResponse(GlobalMatrixFilterConfig.filtersToString(), true);
+		return JSONResponseHelper.createResponse(matchingConfig.filtersToString(), true);
 	}
 
 	/**
@@ -119,7 +122,7 @@ public class FilterConfigurationController {
 			"/filter/clear/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> clearFilter() {
-		GlobalMatrixFilterConfig.clearFilters();
+		matchingConfig.clearFilters();
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("filters", "CLEARED");
 		return JSONResponseHelper.createResponse(true, meta);
@@ -141,11 +144,11 @@ public class FilterConfigurationController {
 	}
 
 	public void restoreStandard() {
-		GlobalMatrixFilterConfig.clearFilters();
-		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
+		matchingConfig.clearFilters();
+		matchingConfig.addFilter(new ProficiencyLevelFilter());
+		matchingConfig.addFilter(new LikeLevelFilter());
+		matchingConfig.addFilter(new ImportancyLevelFilter());
+		matchingConfig.addFilter(new UserRelationFilter());
 	}
 
 }

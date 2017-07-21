@@ -850,4 +850,12 @@ public class Task {
 		this.lng = lng;
 	}
 
+	public Set<CracGroup> getRestrictingGroups() {
+		return restrictingGroups;
+	}
+
+	public void setRestrictingGroups(Set<CracGroup> restrictingGroups) {
+		this.restrictingGroups = restrictingGroups;
+	}
+
 }

@@ -36,7 +36,7 @@ public interface TaskDAO extends CrudRepository<Task, Long> {
 
 	public List<Task> findByTaskState(TaskState taskState);
 	
-	@Query("select t from Task t inner join t.userRelationships ur where ur.user = :u and t.taskState = :s1 or t.taskState = :s2 and t.taskType = :t1 or t.taskType = :t2")
+	@Query("select t from Task t inner join t.userRelationships ur where ur.user != :u and t.taskState = :s1 or t.taskState = :s2 and t.taskType = :t1 or t.taskType = :t2")
 	public List<Task> selectMatchableTasks(@Param("s1") TaskState state1, @Param("s2") TaskState state2, @Param("t1") TaskType type1, @Param("t2") TaskType type2, @Param("u") CracUser c);
 	
 }

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import crac.components.matching.Worker;
-import crac.components.matching.configuration.FilterConfiguration;
-import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.utility.DataAccess;
@@ -20,12 +19,14 @@ public class UserMatchingWorker extends Worker {
 	private Task task;
 	private CracUserDAO userDAO;
 	private UserFilterParameters up;
+	private MatchingConfiguration mc;
 
-	public UserMatchingWorker(Task task, UserFilterParameters up) {
+	public UserMatchingWorker(Task task, UserFilterParameters up, MatchingConfiguration mc) {
 		super();
 		this.up = up;
 		this.task = task;
 		this.userDAO = DataAccess.getRepo(CracUserDAO.class);
+		this.mc = mc;
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class UserMatchingWorker extends Worker {
 		CompetenceCollectionMatrix ccm;
 
 		// load the filters for matrix matching
-		FilterConfiguration filters = GlobalMatrixFilterConfig.cloneConfiguration();
+		MatchingConfiguration filters = (MatchingConfiguration) mc.clone();
 
 		// add user-filters to the global filters
 		addUserFilters(filters);
@@ -71,7 +72,7 @@ public class UserMatchingWorker extends Worker {
 		return users;
 	}
 
-	public void addUserFilters(FilterConfiguration m) {
+	public void addUserFilters(MatchingConfiguration m) {
 		if (up.getFriends() == 1) {
 			m.addFilter(new UserRelationFilter());
 		}

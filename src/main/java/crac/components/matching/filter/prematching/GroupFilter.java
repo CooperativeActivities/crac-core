@@ -3,9 +3,10 @@ package crac.components.matching.filter.prematching;
 import java.util.ArrayList;
 import java.util.List;
 
-import crac.components.matching.CracFilter;
 import crac.components.matching.CracPreMatchingFilter;
+import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Task;
+import crac.models.utility.MatchingInformation;
 
 public class GroupFilter extends CracPreMatchingFilter {
 
@@ -14,11 +15,22 @@ public class GroupFilter extends CracPreMatchingFilter {
 	}
 
 	@Override
-	public List<Task> apply(List<Task> tasks) {
+	public List<Task> apply(MatchingInformation mi) {
 		
 		System.out.println("group-filter applied");
 		
-		return tasks;
+		List<Task> result = new ArrayList<>();
+		
+		for(Task t : mi.getTasks()){
+			for(CracGroup g : t.getRestrictingGroups()){
+				if(g.getEnroledUsers().contains(mi.getUser())){
+					result.add(t);
+					break;
+				}
+			}
+		}
+		
+		return result;
 	}
 
 }

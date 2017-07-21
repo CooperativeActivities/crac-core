@@ -3,8 +3,7 @@ package crac.models.storage;
 import java.util.ArrayList;
 import java.util.Set;
 
-import crac.components.matching.configuration.FilterConfiguration;
-import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.storage.CompetenceStorage;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
@@ -26,7 +25,7 @@ public class CompetenceCollectionMatrix {
 	private boolean nullTask;
 	private boolean nullUser;
 
-	public CompetenceCollectionMatrix(CracUser u, Task t, FilterConfiguration m) {
+	public CompetenceCollectionMatrix(CracUser u, Task t, MatchingConfiguration m) {
 		this.u = u;
 		this.t = t;
 		this.doable = true;
@@ -78,7 +77,7 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
-	private void applyFilters(FilterConfiguration m) {
+	private void applyFilters(MatchingConfiguration m) {
 
 		for (MatrixField[] row : matrix) {
 

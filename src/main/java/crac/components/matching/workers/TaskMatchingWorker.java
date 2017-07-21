@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import crac.components.matching.CracFilter;
+import crac.components.matching.CracPostMatchingFilter;
 import crac.components.matching.CracPreMatchingFilter;
 import crac.components.matching.Worker;
-import crac.components.matching.configuration.FilterConfiguration;
-import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.MatchingConfiguration;
+import crac.components.matching.configuration.PostMatchingConfiguration;
 import crac.components.matching.configuration.PreMatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.filter.matching.UserRelationFilter;
+import crac.components.matching.interfaces.FilterConfiguration;
 import crac.components.utility.DataAccess;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
@@ -24,6 +22,7 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.storage.CompetenceCollectionMatrix;
 import crac.models.utility.EvaluatedTask;
+import crac.models.utility.MatchingInformation;
 
 public class TaskMatchingWorker extends Worker {
 
@@ -31,65 +30,59 @@ public class TaskMatchingWorker extends Worker {
 	private TaskDAO taskDAO;
 	private UserFilterParameters up;
 	private PreMatchingConfiguration pmc;
+	private MatchingConfiguration mc;
+	private PostMatchingConfiguration pomc;
 
-	public TaskMatchingWorker(CracUser u, UserFilterParameters up, PreMatchingConfiguration pmc) {
+	public TaskMatchingWorker(CracUser u, UserFilterParameters up, PreMatchingConfiguration pmc, MatchingConfiguration mc, PostMatchingConfiguration pomc) {
 		this.up = up;
 		this.user = u;
 		this.taskDAO = DataAccess.getRepo(TaskDAO.class);
 		this.pmc = pmc;
+		this.mc = mc;
+		this.pomc = pomc;
 		System.out.println("worker created");
 	}
 
 	public ArrayList<EvaluatedTask> run() {
 
 		ArrayList<EvaluatedTask> tasks = new ArrayList<EvaluatedTask>();
-		ArrayList<EvaluatedTask> remove = new ArrayList<EvaluatedTask>();
 		CompetenceCollectionMatrix ccm;
 
-		
-		
 		// load a filtered amount of tasks
-		//ArrayList<Task> taskSet = loadFilteredTasks();
 		
 		List<Task> taskSet = taskDAO.selectMatchableTasks(TaskState.PUBLISHED, TaskState.STARTED, TaskType.WORKABLE, TaskType.SHIFT, user);
 		
 		//PreMatchingFilters
 		
-		List<Task> filteredTaskSet = new ArrayList<>();
-		
+		MatchingInformation mi = new MatchingInformation(taskSet, user);
+
 		for(CracPreMatchingFilter filter : pmc.getFilters()){
-			filteredTaskSet = filter.apply(taskSet);
+			taskSet = filter.apply(mi);
 		}
 		
-		//------------------------
+		//MatchingFilters
 
-		// load the filters for matrix matching
-		FilterConfiguration filters = GlobalMatrixFilterConfig.cloneConfiguration();
-
-		// add user-filters to the global filters
+		// load the filters for matrix matching and add user-filters
+		FilterConfiguration filters = mc.clone();
 		addUserFilters(filters);
 
-		for (Task t : filteredTaskSet) {
-			ccm = new CompetenceCollectionMatrix(user, t, filters);
+		for (Task t : taskSet) {
+			ccm = new CompetenceCollectionMatrix(user, t, (MatchingConfiguration) filters);
 			ccm.print();
 			EvaluatedTask et = new EvaluatedTask(t, ccm.calcMatch());
 			et.setDoable(ccm.isDoable());
 			tasks.add(et);
 		}
+		
+		//PostMatchingFilters
+		
+		for(CracPostMatchingFilter filter : pomc.getFilters()){
+			tasks = filter.apply(tasks);
+		}
+		
+		//------------------------
 
 		if (tasks != null) {
-			for (EvaluatedTask t : tasks) {
-				System.out.println(t.getAssessment()+ " ASSASSMENT, "+t.getTask().getId()+" THE ID");
-				if (!t.isDoable() || t.getAssessment() == 0) {
-					remove.add(t);
-				}
-			}
-
-			for (EvaluatedTask t : remove) {
-				tasks.remove(t);
-			}
-
-			postModifyTasks(tasks);
 			Collections.sort(tasks);
 		}
 

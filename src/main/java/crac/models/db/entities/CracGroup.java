@@ -154,4 +154,12 @@ public class CracGroup {
 		this.creator = creator;
 	}
 
+	public Set<Task> getRestrictedTasks() {
+		return restrictedTasks;
+	}
+
+	public void setRestrictedTasks(Set<Task> restrictedTasks) {
+		this.restrictedTasks = restrictedTasks;
+	}
+
 }

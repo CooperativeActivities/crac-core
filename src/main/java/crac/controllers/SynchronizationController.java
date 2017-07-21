@@ -9,8 +9,6 @@ import javax.annotation.PostConstruct;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import crac.components.matching.configuration.GlobalMatrixFilterConfig;
+import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.matching.filter.matching.ImportancyLevelFilter;
 import crac.components.matching.filter.matching.LikeLevelFilter;
 import crac.components.matching.filter.matching.ProficiencyLevelFilter;
@@ -146,6 +141,9 @@ public class SynchronizationController {
 
 	@Autowired
 	private TxExabiscompetencesTopicDAO txExabiscompetencesTopicDAO;
+
+	@Autowired
+	private MatchingConfiguration matchingConfig;
 
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
@@ -600,10 +598,10 @@ public class SynchronizationController {
 		System.out.println("||||FILTERS SYNCED||||");
 		System.out.println("-------------------------------");
 
-		GlobalMatrixFilterConfig.addFilter(new ProficiencyLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new LikeLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new ImportancyLevelFilter());
-		GlobalMatrixFilterConfig.addFilter(new UserRelationFilter());
+		matchingConfig.addFilter(new ProficiencyLevelFilter());
+		matchingConfig.addFilter(new LikeLevelFilter());
+		matchingConfig.addFilter(new ImportancyLevelFilter());
+		matchingConfig.addFilter(new UserRelationFilter());
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
 		return JSONResponseHelper.createResponse(true, meta);
