@@ -108,6 +108,62 @@ public class AdminController {
 	@Autowired
 	private CompetenceRelationshipTypeDAO typeDAO;
 
+	// ROLE-SECTION
+
+	/**
+	 * Adds a role to target User
+	 * 
+	 * @param roleId
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/user/{user_id}/role/{role_id}/add",
+			"/user/{user_id}/role/{role_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addRole(@PathVariable(value = "role_id") Long roleId,
+			@PathVariable(value = "user_id") Long userId) {
+
+		CracUser user = userDAO.findOne(userId);
+		Role role = roleDAO.findOne(roleId);
+
+		if (role != null) {
+			if (user.getRoles().contains(role)) {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
+			} else {
+				user.getRoles().add(role);
+				userDAO.save(user);
+				return JSONResponseHelper.successfullyAssigned(role);
+			}
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+		}
+
+	}
+
+	/**
+	 * Removes a role from target user
+	 * 
+	 * @param roleId
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/user/{user_id}/role/{role_id}/remove",
+			"/user/{user_id}/role/{role_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> removeRole(@PathVariable(value = "role_id") Long roleId,
+			@PathVariable(value = "user_id") Long userId) {
+		CracUser user = userDAO.findOne(userId);
+		Role role = roleDAO.findOne(roleId);
+
+		if (user.getRoles().contains(role)) {
+			user.getRoles().remove(role);
+			userDAO.save(user);
+			return JSONResponseHelper.successfullyDeleted(role);
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+		}
+	}
+
 	// USER-SECTION
 
 	/**

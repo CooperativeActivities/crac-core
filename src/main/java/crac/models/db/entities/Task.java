@@ -158,6 +158,10 @@ public class Task {
 	
 	@ManyToMany(mappedBy = "restrictedTasks", fetch = FetchType.LAZY)
 	private Set<CracGroup> restrictingGroups;
+	
+	@ManyToMany(mappedBy = "invitedToTasks", fetch = FetchType.LAZY)
+	private Set<CracGroup> invitedGroups;
+
 
 	/**
 	 * constructors
@@ -856,6 +860,14 @@ public class Task {
 
 	public void setRestrictingGroups(Set<CracGroup> restrictingGroups) {
 		this.restrictingGroups = restrictingGroups;
+	}
+
+	public Set<CracGroup> getInvitedGroups() {
+		return invitedGroups;
+	}
+
+	public void setInvitedGroups(Set<CracGroup> invitedGroups) {
+		this.invitedGroups = invitedGroups;
 	}
 
 }

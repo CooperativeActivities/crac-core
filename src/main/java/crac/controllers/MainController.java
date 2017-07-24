@@ -184,6 +184,49 @@ public class MainController {
 		VitekaUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(VitekaUSER);
 
+		CracUser VeriADMIN = new CracUser();
+
+		VeriADMIN.setName("VeriADMIN");
+		VeriADMIN.setFirstName("Veri");
+		VeriADMIN.setLastName("Unknown");
+		VeriADMIN.setPassword(bcryptEncoder.encode("default"));
+		VeriADMIN.addRole(roleDAO.findByName("ADMIN"));
+		VeriADMIN.setPhone("35678987654");
+		VeriADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(VeriADMIN);
+
+		CracUser VeriUSER = new CracUser();
+
+		VeriUSER.setName("VeriUSER");
+		VeriUSER.setFirstName("Veri");
+		VeriUSER.setLastName("Unknown");
+		VeriUSER.setPassword(bcryptEncoder.encode("default"));
+		VeriUSER.addRole(roleDAO.findByName("USER"));
+		VeriUSER.setPhone("35678987654");
+		VeriUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(VeriUSER);
+		
+		CracUser AlexADMIN = new CracUser();
+
+		VitekaADMIN.setName("AlexADMIN");
+		AlexADMIN.setFirstName("Alex");
+		AlexADMIN.setLastName("Unknown");
+		AlexADMIN.setPassword(bcryptEncoder.encode("default"));
+		AlexADMIN.addRole(roleDAO.findByName("ADMIN"));
+		AlexADMIN.setPhone("35678987654");
+		AlexADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(AlexADMIN);
+
+		CracUser AlexUSER = new CracUser();
+
+		AlexUSER.setName("AlexUSER");
+		AlexUSER.setFirstName("Alex");
+		AlexUSER.setLastName("Unknown");
+		AlexUSER.setPassword(bcryptEncoder.encode("default"));
+		AlexUSER.addRole(roleDAO.findByName("USER"));
+		AlexUSER.setPhone("35678987654");
+		AlexUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(AlexUSER);
 
 		return JSONResponseHelper.createResponse("included", true);
 	}

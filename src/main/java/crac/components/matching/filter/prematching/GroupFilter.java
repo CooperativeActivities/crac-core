@@ -16,9 +16,7 @@ public class GroupFilter extends CracPreMatchingFilter {
 
 	@Override
 	public List<Task> apply(MatchingInformation mi) {
-		
-		System.out.println("group-filter applied");
-		
+				
 		List<Task> result = new ArrayList<>();
 		
 		for(Task t : mi.getTasks()){

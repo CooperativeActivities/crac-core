@@ -13,7 +13,8 @@ public abstract class CracPostMatchingFilter implements CracFilter<ArrayList<Eva
 	
 	public CracPostMatchingFilter(String name) {
 		this.name = name;
-	}
+		System.out.println(name+" ready!");
+}
 
 	public void addSpeak(){
 		System.out.println(name + " has been added!");

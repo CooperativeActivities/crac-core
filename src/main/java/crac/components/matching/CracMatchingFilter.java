@@ -9,7 +9,8 @@ public abstract class CracMatchingFilter implements CracFilter<Double, MatrixFie
 	
 	public CracMatchingFilter(String name) {
 		this.name = name;
-	}
+		System.out.println(name+" ready!");
+}
 
 	public void addSpeak(){
 		System.out.println(name + " has been added!");

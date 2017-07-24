@@ -50,7 +50,7 @@ public class TaskMatchingWorker extends Worker {
 
 		// load a filtered amount of tasks
 		
-		List<Task> taskSet = taskDAO.selectMatchableTasks(TaskState.PUBLISHED, TaskState.STARTED, TaskType.WORKABLE, TaskType.SHIFT, user);
+		List<Task> taskSet = taskDAO.selectMatchableTasksSimple();
 		
 		//PreMatchingFilters
 		
@@ -59,7 +59,7 @@ public class TaskMatchingWorker extends Worker {
 		for(CracPreMatchingFilter filter : pmc.getFilters()){
 			taskSet = filter.apply(mi);
 		}
-		
+
 		//MatchingFilters
 
 		// load the filters for matrix matching and add user-filters

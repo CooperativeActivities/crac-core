@@ -18,7 +18,7 @@ public class MatchingConfiguration implements FilterConfiguration {
 	
 	public MatchingConfiguration(){
 		filters = new ArrayList<>();
-	}
+}
 
 	public void applyFilters(MatrixField m){
 		for(CracMatchingFilter filter : filters){

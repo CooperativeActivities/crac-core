@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import crac.components.matching.CracPreMatchingFilter;
 import crac.components.matching.filter.prematching.GroupFilter;
+import crac.components.matching.filter.prematching.LoggedUserFilter;
 import crac.components.matching.interfaces.CracFilter;
 import crac.components.matching.interfaces.FilterConfiguration;
 
@@ -18,7 +19,6 @@ public class PreMatchingConfiguration implements FilterConfiguration {
 
 	public PreMatchingConfiguration() {
 		filters = new ArrayList<>();
-		filters.add(new GroupFilter());
 	}
 
 	@Override

@@ -12,6 +12,7 @@ public abstract class CracPreMatchingFilter implements CracFilter<List<Task>, Ma
 	
 	public CracPreMatchingFilter(String name) {
 		this.name = name;
+		System.out.println(name+" ready!");
 	}
 
 	public void addSpeak(){

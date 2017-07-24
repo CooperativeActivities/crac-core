@@ -20,10 +20,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import crac.components.matching.configuration.MatchingConfiguration;
+import crac.components.matching.configuration.PostMatchingConfiguration;
+import crac.components.matching.configuration.PreMatchingConfiguration;
 import crac.components.matching.filter.matching.ImportancyLevelFilter;
 import crac.components.matching.filter.matching.LikeLevelFilter;
 import crac.components.matching.filter.matching.ProficiencyLevelFilter;
 import crac.components.matching.filter.matching.UserRelationFilter;
+import crac.components.matching.filter.postmatching.ClearFilter;
+import crac.components.matching.filter.postmatching.MissingVolunteerFilter;
+import crac.components.matching.filter.prematching.GroupFilter;
+import crac.components.matching.filter.prematching.LoggedUserFilter;
 import crac.components.storage.CompetenceStorage;
 import crac.components.utility.DataAccess;
 import crac.components.utility.ElasticConnector;
@@ -143,7 +149,13 @@ public class SynchronizationController {
 	private TxExabiscompetencesTopicDAO txExabiscompetencesTopicDAO;
 
 	@Autowired
+	private PreMatchingConfiguration preMatchingConfiguration;
+
+	@Autowired
 	private MatchingConfiguration matchingConfig;
+
+	@Autowired
+	private PostMatchingConfiguration postMatchingConfiguration;
 
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
@@ -597,11 +609,18 @@ public class SynchronizationController {
 		System.out.println("-------------------------------");
 		System.out.println("||||FILTERS SYNCED||||");
 		System.out.println("-------------------------------");
+		
+		preMatchingConfiguration.addFilter(new LoggedUserFilter());
+		preMatchingConfiguration.addFilter(new GroupFilter());
 
 		matchingConfig.addFilter(new ProficiencyLevelFilter());
 		matchingConfig.addFilter(new LikeLevelFilter());
 		matchingConfig.addFilter(new ImportancyLevelFilter());
 		matchingConfig.addFilter(new UserRelationFilter());
+		
+		postMatchingConfiguration.addFilter(new ClearFilter());
+		postMatchingConfiguration.addFilter(new MissingVolunteerFilter());
+		
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
 		return JSONResponseHelper.createResponse(true, meta);
@@ -1138,6 +1157,142 @@ public class SynchronizationController {
 		cvvol3.setEmail("Mustermail@internet.at");
 		userDAO.save(cvvol3);
 
+		//Add fwds
+		
+		CracUser BradenADMIN = new CracUser();
+
+		BradenADMIN.setName("BradenADMIN");
+		BradenADMIN.setFirstName("Daniel");
+		BradenADMIN.setLastName("Braden");
+		BradenADMIN.setPassword(bcryptEncoder.encode("default"));
+		BradenADMIN.addRole(roleDAO.findByName("ADMIN"));
+		BradenADMIN.setPhone("35678987654");
+		BradenADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(BradenADMIN);
+
+		CracUser BradenUSER = new CracUser();
+
+		BradenUSER.setName("BradenUSER");
+		BradenUSER.setFirstName("Daniel");
+		BradenUSER.setLastName("Braden");
+		BradenUSER.setPassword(bcryptEncoder.encode("default"));
+		BradenUSER.addRole(roleDAO.findByName("USER"));
+		BradenUSER.setPhone("35678987654");
+		BradenUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(BradenUSER);
+
+		CracUser StillerADMIN = new CracUser();
+
+		StillerADMIN.setName("StillerADMIN");
+		StillerADMIN.setFirstName("Susanne");
+		StillerADMIN.setLastName("Stiller");
+		StillerADMIN.setPassword(bcryptEncoder.encode("default"));
+		StillerADMIN.addRole(roleDAO.findByName("ADMIN"));
+		StillerADMIN.setPhone("35678987654");
+		StillerADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(StillerADMIN);
+
+		CracUser StillerUSER = new CracUser();
+
+		StillerUSER.setName("StillerUSER");
+		StillerUSER.setFirstName("Susanne");
+		StillerUSER.setLastName("Stiller");
+		StillerUSER.setPassword(bcryptEncoder.encode("default"));
+		StillerUSER.addRole(roleDAO.findByName("USER"));
+		StillerUSER.setPhone("35678987654");
+		StillerUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(StillerUSER);
+		
+		CracUser VasicADMIN = new CracUser();
+
+		VasicADMIN.setName("VasicADMIN");
+		VasicADMIN.setFirstName("Mili");
+		VasicADMIN.setLastName("Vasic");
+		VasicADMIN.setPassword(bcryptEncoder.encode("default"));
+		VasicADMIN.addRole(roleDAO.findByName("ADMIN"));
+		VasicADMIN.setPhone("35678987654");
+		VasicADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(VasicADMIN);
+
+		CracUser VasicUSER = new CracUser();
+
+		VasicUSER.setName("VasicUSER");
+		VasicUSER.setFirstName("Mili");
+		VasicUSER.setLastName("Vasic");
+		VasicUSER.setPassword(bcryptEncoder.encode("default"));
+		VasicUSER.addRole(roleDAO.findByName("USER"));
+		VasicUSER.setPhone("35678987654");
+		VasicUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(VasicUSER);
+
+		CracUser VitekaADMIN = new CracUser();
+
+		VitekaADMIN.setName("VitekaADMIN");
+		VitekaADMIN.setFirstName("Anita");
+		VitekaADMIN.setLastName("Viteka");
+		VitekaADMIN.setPassword(bcryptEncoder.encode("default"));
+		VitekaADMIN.addRole(roleDAO.findByName("ADMIN"));
+		VitekaADMIN.setPhone("35678987654");
+		VitekaADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(VitekaADMIN);
+
+		CracUser VitekaUSER = new CracUser();
+
+		VitekaUSER.setName("VitekaUSER");
+		VitekaUSER.setFirstName("Anita");
+		VitekaUSER.setLastName("Viteka");
+		VitekaUSER.setPassword(bcryptEncoder.encode("default"));
+		VitekaUSER.addRole(roleDAO.findByName("USER"));
+		VitekaUSER.setPhone("35678987654");
+		VitekaUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(VitekaUSER);
+		
+		//Add praktikanten
+
+		CracUser VeriADMIN = new CracUser();
+
+		VeriADMIN.setName("VeriADMIN");
+		VeriADMIN.setFirstName("Veri");
+		VeriADMIN.setLastName("Unknown");
+		VeriADMIN.setPassword(bcryptEncoder.encode("default"));
+		VeriADMIN.addRole(roleDAO.findByName("ADMIN"));
+		VeriADMIN.setPhone("35678987654");
+		VeriADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(VeriADMIN);
+
+		CracUser VeriUSER = new CracUser();
+
+		VeriUSER.setName("VeriUSER");
+		VeriUSER.setFirstName("Veri");
+		VeriUSER.setLastName("Unknown");
+		VeriUSER.setPassword(bcryptEncoder.encode("default"));
+		VeriUSER.addRole(roleDAO.findByName("USER"));
+		VeriUSER.setPhone("35678987654");
+		VeriUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(VeriUSER);
+		
+		CracUser AlexADMIN = new CracUser();
+
+		AlexADMIN.setName("AlexADMIN");
+		AlexADMIN.setFirstName("Alex");
+		AlexADMIN.setLastName("Unknown");
+		AlexADMIN.setPassword(bcryptEncoder.encode("default"));
+		AlexADMIN.addRole(roleDAO.findByName("ADMIN"));
+		AlexADMIN.setPhone("35678987654");
+		AlexADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(AlexADMIN);
+
+		CracUser AlexUSER = new CracUser();
+
+		AlexUSER.setName("AlexUSER");
+		AlexUSER.setFirstName("Alex");
+		AlexUSER.setLastName("Unknown");
+		AlexUSER.setPassword(bcryptEncoder.encode("default"));
+		AlexUSER.addRole(roleDAO.findByName("USER"));
+		AlexUSER.setPhone("35678987654");
+		AlexUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(AlexUSER);
+		
 	}
 
 	// ELASTICSEARCH

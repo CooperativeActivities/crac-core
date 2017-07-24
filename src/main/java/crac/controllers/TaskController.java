@@ -1924,6 +1924,11 @@ public class TaskController {
 				} else if (invType.equals("group")) {
 					CracGroup inv = groupDAO.findOne(invId);
 					if (inv != null) {
+						if(!inv.getInvitedToTasks().contains(task)){
+							inv.getInvitedToTasks().add(task);
+						}else{
+							return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
+						}
 						for (CracUser u : inv.getEnroledUsers()) {
 							users.add(u);
 						}

@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +34,6 @@ import crac.components.utility.JSONResponseHelper;
 import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.RESTAction;
-import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
@@ -46,20 +43,13 @@ import crac.models.db.daos.TokenDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
-import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
-import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Role;
-import crac.models.db.entities.Task;
-import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
-import crac.models.db.relation.UserTaskRel;
 import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
-import crac.models.output.TaskDetails;
-import crac.models.output.TaskShort;
-import crac.models.utility.EvaluatedTask;
 
 /**
  * REST controller for managing users.
@@ -394,9 +384,13 @@ public class CracUserController {
 		Role role = roleDAO.findOne(roleId);
 
 		if (role != null) {
-			user.getRoles().add(role);
-			userDAO.save(user);
-			return JSONResponseHelper.successfullyAssigned(role);
+			if (user.getRoles().contains(role)) {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
+			} else {
+				user.getRoles().add(role);
+				userDAO.save(user);
+				return JSONResponseHelper.successfullyAssigned(role);
+			}
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
@@ -421,6 +415,7 @@ public class CracUserController {
 
 		if (user.getRoles().contains(role)) {
 			user.getRoles().remove(role);
+			userDAO.save(user);
 			return JSONResponseHelper.successfullyDeleted(role);
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);

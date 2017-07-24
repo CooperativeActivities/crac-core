@@ -17,7 +17,7 @@ public class PostMatchingConfiguration implements FilterConfiguration {
 
 	public PostMatchingConfiguration() {
 		filters = new ArrayList<>();
-	}
+}
 
 	@Override
 	public void clearFilters() {

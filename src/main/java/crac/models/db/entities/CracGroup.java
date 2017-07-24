@@ -66,6 +66,10 @@ public class CracGroup {
 	@JoinTable(name = "group_task_restrictions", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
 	private Set<Task> restrictedTasks;
 	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "group_task_invitations", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
+	private Set<Task> invitedToTasks;
+	
 	/**
 	 * constructors
 	 */
@@ -160,6 +164,14 @@ public class CracGroup {
 
 	public void setRestrictedTasks(Set<Task> restrictedTasks) {
 		this.restrictedTasks = restrictedTasks;
+	}
+
+	public Set<Task> getInvitedToTasks() {
+		return invitedToTasks;
+	}
+
+	public void setInvitedToTasks(Set<Task> invitedToTasks) {
+		this.invitedToTasks = invitedToTasks;
 	}
 
 }
