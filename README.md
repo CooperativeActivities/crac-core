@@ -283,7 +283,6 @@ POST /admin/user
 	{
 	    "name":"test",
 	    "password": "test",
-	    "role":"USER",
 	    "firstName":"TestHans",
 	    "lastName":"TestName",
 	    "phone":"234",
@@ -321,7 +320,6 @@ Updates a user by given ID
 	{
 	    "name":"test",
 	    "password": "test",
-	    "role":"USER",
 	    "firstName":"TestHans",
 	    "lastName":"TestName",
 	    "phone":"234",
@@ -363,7 +361,6 @@ Updates the currently logged in user
 	{
 	    "name":"currentUser",
 	    "password": "test",
-	    "role":"ADMIN",
 	    "firstName":"TestHans",
 	    "lastName":"TestName",
 	    "phone":"234",
@@ -630,7 +627,7 @@ GET user/relationships
 
 ##### *Request:*
 
-GET user/role/{role_id}/add
+PUT user/role/{role_id}/add
 
 ##### *Response:*
 
@@ -643,11 +640,38 @@ Json-data, a success
 
 ##### *Request:*
 
-GET user/role/{role_id}/remove
+DELETE user/role/{role_id}/remove
 
 ##### *Response:*
 
 Json-data, a success
+
+-----------------------------------------------------------------
+
+**Adds a role to target User**
+#### This function requires ADMIN-rights!
+
+##### *Request:*
+
+PUT admin/user/{user_id}/role/{role_id}/add
+
+##### *Response:*
+
+Json-data, a success
+	
+-----------------------------------------------------------------
+
+**Removes a role from target user**
+#### This function requires ADMIN-rights!
+
+##### *Request:*
+
+DELETE admin/user/{user_id}/role/{role_id}/add
+
+##### *Response:*
+
+Json-data, a success
+
 
 -----------------------------------------------------------------
 
@@ -2169,4 +2193,6 @@ GET /task/completed
 Endpoints for groups have been added:  
 
 New section "Group-Endpoints"!  
-Endpoint for inviting users to a task is now PUT /task/{task_id}/invite/{inv_type}/{inv_id}
+Endpoint for inviting users to a task is now PUT /task/{task_id}/invite/{inv_type}/{inv_id}  
+
+Endpoints for roles have changed --> see the "User-Endpoints"!  

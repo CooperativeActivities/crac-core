@@ -118,7 +118,7 @@ public class AdminController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/user/{user_id}/role/{role_id}/add",
-			"/user/{user_id}/role/{role_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
+			"/user/{user_id}/role/{role_id}/add/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addRole(@PathVariable(value = "role_id") Long roleId,
 			@PathVariable(value = "user_id") Long userId) {
@@ -148,7 +148,7 @@ public class AdminController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/user/{user_id}/role/{role_id}/remove",
-			"/user/{user_id}/role/{role_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+			"/user/{user_id}/role/{role_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeRole(@PathVariable(value = "role_id") Long roleId,
 			@PathVariable(value = "user_id") Long userId) {

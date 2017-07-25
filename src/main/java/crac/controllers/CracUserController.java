@@ -374,7 +374,7 @@ public class CracUserController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/role/{role_id}/add",
-			"/role/{role_id}/add/" }, method = RequestMethod.GET, produces = "application/json")
+			"/role/{role_id}/add/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addRole(@PathVariable(value = "role_id") Long roleId) {
 
@@ -405,7 +405,7 @@ public class CracUserController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/role/{role_id}/remove",
-			"/role/{role_id}/remove/" }, method = RequestMethod.GET, produces = "application/json")
+			"/role/{role_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeRole(@PathVariable(value = "role_id") Long roleId) {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
