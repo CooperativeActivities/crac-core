@@ -68,6 +68,9 @@ public class EvaluationController {
 
 	@Autowired
 	UserRelationshipDAO userRelationshipDAO;
+	
+	@Autowired
+	private Decider decider;
 
 	@Value("${crac.eval.decreaseValues}")
 	private int decreaseValuesFactor;
@@ -246,10 +249,8 @@ public class EvaluationController {
 			String notificationId = originalEval.getNotificationId();
 			UpdateEntitiesHelper.checkAndUpdateEvaluation(originalEval, newEval);
 
-			Decider unit = new Decider();
-
-			unit.evaluateUsers(originalEval);
-			unit.evaluateTask(originalEval);
+			decider.evaluateUsers(originalEval);
+			decider.evaluateTask(originalEval);
 
 			originalEval.setNotificationId("deleted");
 			UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationType(

@@ -681,13 +681,11 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Decider unit = new Decider();
-
 		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
 
 		int count = 0;
 
-		for (EvaluatedTask task : unit.findTasks(user, new UserFilterParameters())) {
+		for (EvaluatedTask task : decider.findTasks(user, new UserFilterParameters())) {
 
 			if (count == numberOfTasks) {
 				break;
@@ -2026,9 +2024,7 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Decider unit = new Decider();
-
-		ArrayList<EvaluatedTask> doables = unit.findTasks(user, new UserFilterParameters());
+		ArrayList<EvaluatedTask> doables = decider.findTasks(user, new UserFilterParameters());
 
 		for (EvaluatedTask ets : et) {
 			ets.setDoable(false);

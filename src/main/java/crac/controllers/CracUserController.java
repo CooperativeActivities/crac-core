@@ -85,6 +85,9 @@ public class CracUserController {
 
 	@Autowired
 	private TokenDAO tokenDAO;
+	
+	@Autowired
+	private Decider decider;
 
 	/**
 	 * Returns all users
@@ -254,8 +257,7 @@ public class CracUserController {
 			"/find/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
-		Decider unit = new Decider();
-		return JSONResponseHelper.createResponse(unit.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
+		return JSONResponseHelper.createResponse(decider.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
 				true);
 	}
 
