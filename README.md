@@ -1285,11 +1285,14 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Issues an invite-notification to the target-user**
+**Issues an invite-notification to the target user or group**
 
 ##### *Request:*
 
-PUT /task/{task_id}/invite/{user_id}
+PUT /task/{task_id}/invite/{inv_type}/{inv_id}
+
+{inv_type} can either be "user" or "group". {inv_id} then has to either be the user-id or the group-id.
+In case of a group, the task is added to the "invitedToTasks"-List of the given task.
 
 ##### *Response:*
 
@@ -1880,6 +1883,113 @@ Json-data, either a success or a failure message
 	
 -----------------------------------------------------------------
 
+### Group-Endpoints
+These endpoints handle groups
+
+-----------------------------------------------------------------
+	
+**Get all groups**
+
+##### *Request:*
+
+GET /group
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Get the group with given ID**
+
+##### *Request:*
+
+GET /group/{group_id}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Create a new group, creator is the logged-in user**
+
+##### *Request:*
+
+POST /group
+
+	{
+		"name": "groupExample",
+		"description": "An example of a group",
+		"maxEnrols": 5
+	}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Delete the group with given ID**
+
+##### *Request:*
+
+DELETE /group/{group_id}
+
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Update the group with given ID**
+
+##### *Request:*
+
+PUT /group/{group_id}
+
+	{
+		"name": "groupExample",
+		"description": "An example of a group",
+		"maxEnrols": 5
+	}
+	
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Add multiple users to a group**
+
+##### *Request:*
+
+PUT /group/{group_id}/add/multiple
+
+Multiple users can be added to a given group by posting them in one JSON-document like this:
+
+	[
+		{
+			"id": 1,
+			"name": user1
+		},
+		{
+			"id": 3,
+			"name": user3
+		},
+		{
+			"id": 8,
+			"name": user8
+		}
+	]
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
 ## CHANGES
 
 In this section, changes and their dates are noted.
@@ -2052,3 +2162,11 @@ Endpoints for calling completed tasks (for more information, see section "Task-E
 GET /task/completed/{part_type}  
 GET /task/completed  
 
+-----------------------------------------------------------------
+
+#### 25.7.2017
+
+Endpoints for groups have been added:  
+
+New section "Group-Endpoints"!  
+Endpoint for inviting users to a task is now PUT /task/{task_id}/invite/{inv_type}/{inv_id}

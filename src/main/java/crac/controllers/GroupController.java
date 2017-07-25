@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,34 +41,45 @@ public class GroupController {
 	private CracUserDAO userDAO;
 
 	/**
-	 * GET / or blank -> get all groups.
+	 * Get all groups
 	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> index() throws JsonProcessingException {
+	public ResponseEntity<String> index() {
 		return JSONResponseHelper.createResponse(groupDAO.findAll(), true);
 	}
 
 	/**
-	 * GET /{group_id} -> get the group with given ID.
+	 * Get the group with given ID
 	 */
 	@RequestMapping(value = "/{group_id}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> show(@PathVariable(value = "group_id") Long id) throws JsonProcessingException {
+	public ResponseEntity<String> show(@PathVariable(value = "group_id") Long id) {
 		return JSONResponseHelper.createResponse(groupDAO.findOne(id), true);
 	}
 
 	/**
-	 * POST / or blank -> create a new group, creator is the logged-in user.
+	 * Create a new group, creator is the logged-in user
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/admin/", "/admin" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/",
+			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> create(@RequestBody String json) throws JsonMappingException, IOException {
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+	public ResponseEntity<String> create(@RequestBody String json) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
-		CracGroup myGroup = mapper.readValue(json, CracGroup.class);
+		CracGroup myGroup;
+		try {
+			myGroup = mapper.readValue(json, CracGroup.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
 		myGroup.setCreator(user);
 		groupDAO.save(myGroup);
 
@@ -76,10 +88,11 @@ public class GroupController {
 	}
 
 	/**
-	 * DELETE /{group_id} -> delete the group with given ID.
+	 * Delete the group with given ID
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/admin/{group_id}", "/admin/{group_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = { "/{group_id}",
+			"/{group_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> destroy(@PathVariable(value = "group_id") Long id) {
 		CracGroup deleteGroup = groupDAO.findOne(id);
@@ -89,10 +102,11 @@ public class GroupController {
 	}
 
 	/**
-	 * PUT /{group_id} -> update the group with given ID.
+	 * Update the group with given ID
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/admin/{group_id}", "/admin/{group_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{group_id}",
+			"/{group_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "group_id") Long id)
 			throws JsonMappingException, IOException {
@@ -102,15 +116,22 @@ public class GroupController {
 		oldGroup = updatedGroup;
 
 		groupDAO.save(oldGroup);
-		
+
 		return JSONResponseHelper.successfullyUpdated(oldGroup);
 
 	}
 
+	/**
+	 * Add multiple users to a group
+	 * @param json
+	 * @param id
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = { "/{group_id}/add/multiple", "/{group_id}/add/multiple/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{group_id}/add/multiple",
+			"/{group_id}/add/multiple/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addMultiple(@RequestBody String json, @PathVariable(value = "group_id") Long id){
+	public ResponseEntity<String> addMultiple(@RequestBody String json, @PathVariable(value = "group_id") Long id) {
 		ObjectMapper mapper = new ObjectMapper();
 		PostOptions[] mappings = null;
 		try {
@@ -124,15 +145,15 @@ public class GroupController {
 		}
 		CracGroup g = groupDAO.findOne(id);
 
-		for(PostOptions p : mappings){
+		for (PostOptions p : mappings) {
 			CracUser u = userDAO.findByIdAndName(p.getId(), p.getName());
-			if(u != null){
+			if (u != null) {
 				g.addUser(u);
 			}
 		}
-		
+
 		groupDAO.save(g);
-		
+
 		return JSONResponseHelper.successfullyUpdated(g);
 
 	}
