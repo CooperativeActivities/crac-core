@@ -8,13 +8,10 @@ import crac.components.matching.CracPostMatchingFilter;
 import crac.components.matching.CracPreMatchingFilter;
 import crac.components.matching.Worker;
 import crac.components.matching.configuration.MatchingConfiguration;
-import crac.components.matching.configuration.PostMatchingConfiguration;
-import crac.components.matching.configuration.PreMatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.matching.interfaces.FilterConfiguration;
 import crac.enums.TaskState;
-import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
@@ -25,19 +22,11 @@ import crac.models.utility.MatchingInformation;
 public class TaskMatchingWorker extends Worker {
 
 	private CracUser user;
-	private TaskDAO taskDAO;
 	private UserFilterParameters up;
-	private PreMatchingConfiguration pmc;
-	private MatchingConfiguration mc;
-	private PostMatchingConfiguration pomc;
 
 	public TaskMatchingWorker(CracUser u, UserFilterParameters up) {
 		this.up = up;
 		this.user = u;
-		this.taskDAO = super.getWf().getTaskDAO();
-		this.pmc = super.getWf().getPmc();
-		this.mc = super.getWf().getMc();
-		this.pomc = super.getWf().getPomc();
 		System.out.println("worker created");
 	}
 
@@ -48,20 +37,20 @@ public class TaskMatchingWorker extends Worker {
 
 		// load a filtered amount of tasks
 		
-		List<Task> taskSet = taskDAO.selectMatchableTasksSimple();
+		List<Task> taskSet = super.getWf().getTaskDAO().selectMatchableTasksSimple();
 		
 		//PreMatchingFilters
 		
 		MatchingInformation mi = new MatchingInformation(taskSet, user);
 
-		for(CracPreMatchingFilter filter : pmc.getFilters()){
+		for(CracPreMatchingFilter filter : super.getWf().getPmc().getFilters()){
 			taskSet = filter.apply(mi);
 		}
 
 		//MatchingFilters
 
 		// load the filters for matrix matching and add user-filters
-		FilterConfiguration filters = mc.clone();
+		FilterConfiguration filters = super.getWf().getMc().clone();
 		addUserFilters(filters);
 
 		for (Task t : taskSet) {
@@ -74,7 +63,7 @@ public class TaskMatchingWorker extends Worker {
 		
 		//PostMatchingFilters
 		
-		for(CracPostMatchingFilter filter : pomc.getFilters()){
+		for(CracPostMatchingFilter filter : super.getWf().getPomc().getFilters()){
 			tasks = filter.apply(tasks);
 		}
 		
@@ -101,7 +90,7 @@ public class TaskMatchingWorker extends Worker {
 
 		ArrayList<Task> result = new ArrayList<>();
 
-		List<Task> found = taskDAO.findByTaskStateNot(TaskState.NOT_PUBLISHED);
+		List<Task> found = super.getWf().getTaskDAO().findByTaskStateNot(TaskState.NOT_PUBLISHED);
 		System.out.println("found: " + found.size());
 		
 		for (Task task : found) {

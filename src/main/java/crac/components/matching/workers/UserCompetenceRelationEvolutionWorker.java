@@ -1,7 +1,6 @@
 package crac.components.matching.workers;
 
 import crac.components.matching.Worker;
-import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
@@ -13,20 +12,18 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 	private CracUser user;
 	private Task task;
 	private Evaluation evaluation;
-	private UserCompetenceRelDAO userCompetenceRelDAO;
 
 	public UserCompetenceRelationEvolutionWorker(Evaluation evaluation) {
 		super();
 		this.user = evaluation.getUserTaskRel().getUser();
 		this.task = evaluation.getUserTaskRel().getTask();
 		this.evaluation = evaluation;
-		this.userCompetenceRelDAO = super.getWf().getUserCompetenceRelDAO();
 	}
 
 	@Override
 	public Object run() {
 		for (CompetenceTaskRel ctr : task.getMappedCompetences()) {
-			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, ctr.getCompetence());
+			UserCompetenceRel ucr = super.getWf().getUserCompetenceRelDAO().findByUserAndCompetence(user, ctr.getCompetence());
 
 			if (ucr == null) {
 				ucr = new UserCompetenceRel();
@@ -53,7 +50,7 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 
 			ucr.setLikeValue(likeValue);
 			ucr.setProficiencyValue(profValue);
-			userCompetenceRelDAO.save(ucr);
+			super.getWf().getUserCompetenceRelDAO().save(ucr);
 		}
 		return null;
 	}

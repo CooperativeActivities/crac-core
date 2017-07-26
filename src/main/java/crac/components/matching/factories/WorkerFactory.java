@@ -46,16 +46,20 @@ public class WorkerFactory {
 	
 	@Autowired
 	private CompetenceStorage cs;
+	
+	public Worker createWorker(CracUser u, UserFilterParameters up){
+		TaskMatchingWorker w = new TaskMatchingWorker(u, up);
+		w.setWf(this);
+		return w;
+	}
 
 	public TaskMatchingWorker createTmWorker(CracUser u, UserFilterParameters up){
-		System.out.println("factory called");
 		TaskMatchingWorker w = new TaskMatchingWorker(u, up);
 		w.setWf(this);
 		return w;
 	}
 
 	public UserMatchingWorker createUmWorker(Task t, UserFilterParameters up){
-		System.out.println("factory called");
 		UserMatchingWorker w = new UserMatchingWorker(t, up);
 		w.setWf(this);
 		return w;

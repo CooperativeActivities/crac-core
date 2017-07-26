@@ -1,7 +1,6 @@
 package crac.components.matching.workers;
 
 import crac.components.matching.Worker;
-import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.relation.UserRelationship;
@@ -11,22 +10,20 @@ public class UserRelationEvolutionWorker extends Worker {
 
 	private CracUser user;
 	private Evaluation evaluation;
-	private UserRelationshipDAO userRelationshipDAO;
 
 	public UserRelationEvolutionWorker(Evaluation evaluation) {
 		super();
 		this.user = evaluation.getUserTaskRel().getUser();
 		this.evaluation = evaluation;
-		this.userRelationshipDAO = super.getWf().getUserRelalationshipDAO();
 	}
 
 	@Override
 	public Object run() {
 		for (UserTaskRel utr : evaluation.getUserTaskRel().getTask().getUserRelationships()) {
 			if (user.getId() != utr.getUser().getId()) {
-				UserRelationship ur = userRelationshipDAO.findByC1AndC2(utr.getUser(), user);
+				UserRelationship ur = super.getWf().getUserRelalationshipDAO().findByC1AndC2(utr.getUser(), user);
 				if (ur == null) {
-					ur = userRelationshipDAO.findByC1AndC2(user, utr.getUser());
+					ur = super.getWf().getUserRelalationshipDAO().findByC1AndC2(user, utr.getUser());
 					if (ur == null) {
 						ur = new UserRelationship();
 						ur.setC1(user);
@@ -49,7 +46,7 @@ public class UserRelationEvolutionWorker extends Worker {
 
 				ur.setLikeValue((double) Math.round(updated * 100) / 100);
 
-				userRelationshipDAO.save(ur);
+				super.getWf().getUserRelalationshipDAO().save(ur);
 				System.out.println(ur.getLikeValue());
 			}
 		}

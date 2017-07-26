@@ -7,7 +7,6 @@ import crac.components.matching.Worker;
 import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.filter.matching.UserRelationFilter;
-import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.storage.CompetenceCollectionMatrix;
@@ -16,16 +15,11 @@ import crac.models.utility.EvaluatedUser;
 public class UserMatchingWorker extends Worker {
 
 	private Task task;
-	private CracUserDAO userDAO;
 	private UserFilterParameters up;
-	private MatchingConfiguration mc;
 
 	public UserMatchingWorker(Task task, UserFilterParameters up) {
-		super();
 		this.up = up;
 		this.task = task;
-		this.userDAO = super.getWf().getUserDAO();
-		this.mc = super.getWf().getMc();
 	}
 
 	@Override
@@ -37,12 +31,12 @@ public class UserMatchingWorker extends Worker {
 		CompetenceCollectionMatrix ccm;
 
 		// load the filters for matrix matching
-		MatchingConfiguration filters = (MatchingConfiguration) mc.clone();
+		MatchingConfiguration filters = (MatchingConfiguration) super.getWf().getMc().clone();
 
 		// add user-filters to the global filters
 		addUserFilters(filters);
 
-		for (CracUser u : userDAO.findAll()) {
+		for (CracUser u : super.getWf().getUserDAO().findAll()) {
 			if (u.getCompetenceRelationships() != null) {
 				if (u.getCompetenceRelationships().size() != 0) {
 					ccm = new CompetenceCollectionMatrix(u, task, filters, super.getWf().getCs());
