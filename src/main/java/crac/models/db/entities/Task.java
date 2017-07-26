@@ -1,9 +1,6 @@
 package crac.models.db.entities;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,24 +12,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
-import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.models.db.daos.TaskDAO;
@@ -377,15 +368,15 @@ public class Task {
 	 */
 
 	@JsonIgnore
-	public boolean updateReadyStatus() {
+	public boolean updateReadyStatus(TaskDAO taskDAO) {
 		boolean ready = this.fieldsFilled() && this.childTasksReady();
 		if (this.getTaskType() == TaskType.ORGANISATIONAL && !this.hasChildTasks()) {
 			ready = false;
 		}
 		this.readyToPublish = ready;
-		DataAccess.getRepo(TaskDAO.class).save(this);
+		taskDAO.save(this);
 		if (this.getSuperTask() != null) {
-			this.getSuperTask().updateReadyStatus();
+			this.getSuperTask().updateReadyStatus(taskDAO);
 		}
 		return ready;
 	}
@@ -501,11 +492,11 @@ public class Task {
 	// FUNCTIONS FOR STATECHANGE
 
 	@JsonIgnore
-	public int publish() {
+	public int publish(TaskDAO taskDAO) {
 
 		if (this.isSuperTask() && this.getTaskState() == TaskState.NOT_PUBLISHED && fieldsFilled()) {
 			if (childTasksReady()) {
-				setTreeState(TaskState.PUBLISHED, DataAccess.getRepo(TaskDAO.class));
+				setTreeState(TaskState.PUBLISHED, taskDAO);
 				return 3;
 			} else {
 				return 2;
@@ -516,11 +507,9 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public int unpublish() {
+	public int unpublish(UserTaskRelDAO userTaskRelDAO, TaskDAO taskDAO) {
 
 		if (this.getUserRelationships() != null) {
-
-			UserTaskRelDAO userTaskRelDAO = DataAccess.getRepo(UserTaskRelDAO.class);
 
 			for (UserTaskRel utr : this.getUserRelationships()) {
 				if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
@@ -530,7 +519,7 @@ public class Task {
 			}
 		}
 
-		setTreeState(TaskState.NOT_PUBLISHED, DataAccess.getRepo(TaskDAO.class));
+		setTreeState(TaskState.NOT_PUBLISHED, taskDAO);
 		return 3;
 	}
 
@@ -540,12 +529,12 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public int start() {
+	public int start(TaskDAO taskDAO) {
 
 		if (this.getTaskState() == TaskState.PUBLISHED) {
 			if (checkStartAllowance()) {
 				this.setTaskState(TaskState.STARTED);
-				DataAccess.getRepo(TaskDAO.class).save(this);
+				taskDAO.save(this);
 				return 3;
 			} else {
 				return 2;
@@ -578,9 +567,9 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public int forceComplete() {
+	public int forceComplete(TaskDAO taskDAO) {
 		if (this.getTaskState() == TaskState.STARTED) {
-			this.setTreeComplete(DataAccess.getRepo(TaskDAO.class));
+			this.setTreeComplete(taskDAO);
 			return 3;
 		} else {
 			return 1;

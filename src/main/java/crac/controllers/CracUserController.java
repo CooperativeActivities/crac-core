@@ -445,6 +445,7 @@ public class CracUserController {
 		CracGroup g = groupDAO.findOne(groupId);
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 		g.addUser(user);
+		groupDAO.save(g);
 		return JSONResponseHelper.successfullyUpdated(user);
 	}
 
@@ -465,6 +466,7 @@ public class CracUserController {
 		CracGroup g = groupDAO.findOne(groupId);
 		CracUser user = userDAO.findByName(userDetails.getUsername());
 		g.removeUser(user);
+		groupDAO.save(g);
 		return JSONResponseHelper.successfullyUpdated(user);
 	}
 	

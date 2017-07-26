@@ -20,9 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.components.utility.DataAccess;
-import crac.models.db.daos.GroupDAO;
-
 /**
  * The group-entity.
  */
@@ -89,7 +86,6 @@ public class CracGroup {
 	public boolean addUser(CracUser u){
 		if(enroledUsers.size() < maxEnrols){
 			enroledUsers.add(u);
-			DataAccess.getRepo(GroupDAO.class).save(this);
 			return true;
 		}else{
 			return false;
@@ -99,7 +95,6 @@ public class CracGroup {
 	public boolean removeUser(CracUser u){
 		if(enroledUsers.contains(u)){
 			enroledUsers.remove(u);
-			DataAccess.getRepo(GroupDAO.class).save(this);
 			return true;
 		}else{
 			return false;

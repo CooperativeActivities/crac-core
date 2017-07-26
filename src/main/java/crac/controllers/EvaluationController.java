@@ -166,7 +166,7 @@ public class EvaluationController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		
-		Set<UserTaskRel> rels = userTaskRelDAO.blub(user);
+		Set<UserTaskRel> rels = userTaskRelDAO.selectRelByNotFilled(user);
 		HashSet<OpenEvaluation> evals = new HashSet<>();
 		
 		if(rels != null){

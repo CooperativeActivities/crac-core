@@ -2,7 +2,6 @@ package crac.components.storage;
 
 import java.util.List;
 
-import crac.components.utility.DataAccess;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.storage.AugmentedSimpleCompetence;
 import crac.models.storage.AugmentedSimpleCompetenceCollection;
@@ -11,10 +10,10 @@ import crac.models.storage.SimpleCompetenceRelation;
 
 public class AugmenterUnit {
 	
-	private CompetenceDAO competenceDAO;
+	private CompetenceStorage storage;
 	
-	public AugmenterUnit(){
-		this.competenceDAO = DataAccess.getRepo(CompetenceDAO.class);
+	public AugmenterUnit(CompetenceStorage storage){
+		this.storage = storage;
 	}
 
 	public AugmentedSimpleCompetenceCollection augment(SimpleCompetence c) {
@@ -23,7 +22,7 @@ public class AugmenterUnit {
 
 		augmentIntern(competences, competences.getMain());
 		
-		competences.loadCompetences(competenceDAO);
+		competences.loadCompetences(storage.getCompetenceDAO());
 
 		competences.print();
 		

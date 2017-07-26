@@ -3,56 +3,54 @@ package crac.components.utility;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.TaskState;
-import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
-import crac.models.db.entities.Competence;
-import crac.models.db.entities.Task;
 import crac.models.utility.EvaluatedTask;
 
+@Service
 public class ElasticConnector<T> {
-
-	private Client client;
-	private ObjectMapper mapper;
-	private String index;
-	private String type;
+	
+	@Value("${crac.elastic.url}")
 	private String address;
+
+	@Value("${crac.elastic.port}")
 	private int port;
 	
-	private static final double ES_THRESHOLD = 0.05;
+	@Value("${crac.elastic.index}")
+	private String index;
 
-	public ElasticConnector(String address, int port, String index, String type) {
-		mapper = new ObjectMapper();
-		this.port = port;
-		this.address = address;
-		this.index = index;
-		this.type = type;
-	}
+	@Value("${crac.elastic.threshold}")
+	private double threshold;
+
+	@Autowired
+	private ObjectMapper mapper;
+
+	private Client client;
+	private String type;
 	
-	public ElasticConnector<T> copy(){
-		return new ElasticConnector<T>(address, port, index, type);
+	public ElasticConnector() {
 	}
-	
+		
 	private void wake(){
 		try {
 			client = TransportClient.builder().build()
@@ -109,7 +107,7 @@ public class ElasticConnector<T> {
 		for (SearchHit hit : sr.getHits()) {
 			Long id = Long.decode(hit.getId());
 			double score = hit.getScore();
-			if (score >= ES_THRESHOLD) {
+			if (score >= threshold) {
 				EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), score);
 				if (evTask.getTask().getTaskState() != TaskState.NOT_PUBLISHED) {
 					foundTasks.add(evTask);
@@ -127,12 +125,22 @@ public class ElasticConnector<T> {
 		return response;
 	}
 
-	public String getIndex() {
-		return index;
+	
+	
+	public String getAddress() {
+		return address;
 	}
 
-	public void setIndex(String index) {
-		this.index = index;
+	public int getPort() {
+		return port;
+	}
+
+	public double getThreshold() {
+		return threshold;
+	}
+
+	public String getIndex() {
+		return index;
 	}
 
 	public String getType() {

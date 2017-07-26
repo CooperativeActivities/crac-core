@@ -2,11 +2,13 @@ package crac.models.komet.entities;
 
 import java.util.HashSet;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import crac.components.utility.DataAccess;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CompetenceArea;
@@ -107,12 +109,12 @@ public class TxExabiscompetencesDescriptor{
 	public TxExabiscompetencesDescriptor() {
 	}
 	
-	public Competence mapToCompetence(){
+	public Competence mapToCompetence(CompetenceAreaDAO caDAO){
 		Competence c = new Competence();
 		c.setId(this.uid);
 		c.setName(this.titleshort);
 		c.setDescription(this.title);
-		CompetenceArea ca = DataAccess.getRepo(CompetenceAreaDAO.class).findOne((long)this.topicid);
+		CompetenceArea ca = caDAO.findOne((long)this.topicid);
 		if(ca != null){
 			HashSet<CompetenceArea> areas = new HashSet<>();
 			areas.add(ca);

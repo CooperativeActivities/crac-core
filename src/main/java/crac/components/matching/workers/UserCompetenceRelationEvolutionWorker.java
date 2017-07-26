@@ -1,14 +1,12 @@
 package crac.components.matching.workers;
 
 import crac.components.matching.Worker;
-import crac.components.utility.DataAccess;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
-import crac.models.db.relation.UserRelationship;
 
 public class UserCompetenceRelationEvolutionWorker extends Worker {
 
@@ -22,7 +20,7 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 		this.user = evaluation.getUserTaskRel().getUser();
 		this.task = evaluation.getUserTaskRel().getTask();
 		this.evaluation = evaluation;
-		this.userCompetenceRelDAO = DataAccess.getRepo(UserCompetenceRelDAO.class);
+		this.userCompetenceRelDAO = super.getWf().getUserCompetenceRelDAO();
 	}
 
 	@Override

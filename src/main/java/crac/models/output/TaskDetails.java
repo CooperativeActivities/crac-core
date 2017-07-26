@@ -4,11 +4,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-
 import crac.components.storage.CompetenceStorage;
-import crac.components.utility.DataAccess;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
@@ -86,7 +82,7 @@ public class TaskDetails {
 
 	private boolean permissions;
 
-	public TaskDetails(Task t, CracUser u) {
+	public TaskDetails(Task t, CracUser u, UserTaskRelDAO userTaskRelDAO, CompetenceStorage cs) {
 		this.id = t.getId();
 		this.creationDate = t.getCreationDate();
 		this.name = t.getName();
@@ -111,9 +107,9 @@ public class TaskDetails {
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
 		//TODO one call!
-		this.participationDetails = DataAccess.getRepo(UserTaskRelDAO.class).findByUserAndTask(u, t);
+		this.participationDetails = userTaskRelDAO.findByUserAndTask(u, t);
 		this.taskCompetences = new HashSet<>();
-		this.taskCompetences = calcComps(t, u);
+		this.taskCompetences = calcComps(t, u, cs);
 		if (!this.participationDetails.isEmpty()) {
 			this.assigned = true;
 		} else {
@@ -153,7 +149,7 @@ public class TaskDetails {
 
 	}
 
-	public Set<CompetenceRelationDetails> calcComps(Task t, CracUser u) {
+	public Set<CompetenceRelationDetails> calcComps(Task t, CracUser u, CompetenceStorage cs) {
 
 		Set<CompetenceRelationDetails> list = new HashSet<>();
 
@@ -165,7 +161,7 @@ public class TaskDetails {
 					double bestVal = 0;
 					if (u.getCompetenceRelationships() != null) {
 						for (UserCompetenceRel ucr : u.getCompetenceRelationships()) {
-							double newVal = CompetenceStorage.getCompetenceSimilarity(ucr.getCompetence(),
+							double newVal = cs.getCompetenceSimilarity(ucr.getCompetence(),
 									ctr.getCompetence());
 							if (newVal > bestVal) {
 								bestVal = newVal;

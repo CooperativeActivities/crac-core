@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,7 +32,6 @@ import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CompetenceArea;
 import crac.models.db.entities.CracUser;
-import crac.models.db.entities.Task;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.input.PostOptions;
 import crac.models.output.CompetenceGraphDetails;
@@ -59,10 +56,13 @@ public class CompetenceController {
 	private CompetenceRelationshipDAO relationDAO;
 
 	@Autowired
-	UserCompetenceRelDAO userCompetenceRelDAO;
+	private UserCompetenceRelDAO userCompetenceRelDAO;
 
 	@Autowired
-	CompetenceAreaDAO competenceAreaDAO;
+	private CompetenceAreaDAO competenceAreaDAO;
+	
+	@Autowired
+	private CompetenceStorage cs;
 
 	/**
 	 * Returns all competences
@@ -121,7 +121,7 @@ public class CompetenceController {
 	public ResponseEntity<String> showRelated(@PathVariable(value = "competence_id") Long id) {
 		Competence c = competenceDAO.findOne(id);
 		ArrayList<CompetenceGraphDetails> crd = new ArrayList<CompetenceGraphDetails>();
-		for (AugmentedSimpleCompetence ac : CompetenceStorage.getCollection(c).getAugmented()) {
+		for (AugmentedSimpleCompetence ac : cs.getCollection(c).getAugmented()) {
 			if (ac.getConcreteComp().getId() != c.getId()) {
 				crd.add(new CompetenceGraphDetails(ac));
 			}

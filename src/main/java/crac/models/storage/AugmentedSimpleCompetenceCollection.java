@@ -11,8 +11,8 @@ public class AugmentedSimpleCompetenceCollection {
 	private AugmentedSimpleCompetence main;
 	private ArrayList<AugmentedSimpleCompetence> augmented;
 
-	public AugmentedSimpleCompetenceCollection(Competence main) {
-		this.main = new AugmentedSimpleCompetence(CompetenceStorage.getCompetence(main.getId()));
+	public AugmentedSimpleCompetenceCollection(Competence main, CompetenceStorage cs) {
+		this.main = new AugmentedSimpleCompetence(cs.getCompetence(main.getId()));
 		this.main.setStepsDone(0);
 		this.main.setSimilarity(1);
 		this.augmented = new ArrayList<AugmentedSimpleCompetence>();

@@ -31,7 +31,8 @@ import crac.components.notifier.Notification;
 import crac.components.notifier.notifications.LeadNomination;
 import crac.components.notifier.notifications.TaskDoneNotification;
 import crac.components.notifier.notifications.TaskInvitation;
-import crac.components.utility.DataAccess;
+import crac.components.storage.CompetenceStorage;
+import crac.components.utility.ElasticConnector;
 import crac.components.utility.JSONResponseHelper;
 import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
@@ -111,17 +112,19 @@ public class TaskController {
 	@Autowired
 	private Decider decider;
 
-	@Value("${crac.elastic.bindEStoSearch}")
-	private boolean bindES;
-
-	@Value("${crac.elastic.url}")
-	private String url;
-
-	@Value("${crac.elastic.port}")
-	private int port;
+	@Autowired
+	private ElasticConnector<Task> ect;
+	
+	@Autowired
+	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
+		ect.setType(type);
+	}
 
 	@Autowired
 	private NotificationFactory nf;
+	
+	@Autowired
+	private CompetenceStorage cs;
 
 	/**
 	 * Returns all tasks
@@ -146,7 +149,7 @@ public class TaskController {
 		Iterable<Task> taskList = taskDAO.findAll();
 
 		for (Task t : taskList) {
-			t.start();
+			t.start(taskDAO);
 		}
 
 		HashMap<String, Object> meta = new HashMap<>();
@@ -174,9 +177,9 @@ public class TaskController {
 
 		if (task != null) {
 			if (task.checkStartAllowance()) {
-				task.start();
+				task.start(taskDAO);
 			}
-			return JSONResponseHelper.createResponse(new TaskDetails(task, user), true);
+			return JSONResponseHelper.createResponse(new TaskDetails(task, user, userTaskRelDAO, cs), true);
 		}
 
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
@@ -456,8 +459,8 @@ public class TaskController {
 					// updatedTask);
 					oldTask.update(updatedTask);
 					taskDAO.save(oldTask);
-					oldTask.updateReadyStatus();
-					DataAccess.getConnector(Task.class).indexOrUpdate("" + oldTask.getId(), oldTask);
+					oldTask.updateReadyStatus(taskDAO);
+					ect.indexOrUpdate("" + oldTask.getId(), oldTask);
 					return JSONResponseHelper.successfullyUpdated(oldTask);
 				} else {
 					return JSONResponseHelper.createResponse(false, "bad_request",
@@ -642,9 +645,9 @@ public class TaskController {
 		t.setTaskState(st.getTaskState());
 		t.setReadyToPublish(st.isReadyToPublish());
 		t.setCreator(u);
-		DataAccess.getConnector(Task.class).indexOrUpdate("" + t.getId(), t);
+		ect.indexOrUpdate("" + t.getId(), t);
 		taskDAO.save(t);
-		t.updateReadyStatus();
+		t.updateReadyStatus(taskDAO);
 
 		return JSONResponseHelper.successfullyCreated(t);
 
@@ -1717,7 +1720,7 @@ public class TaskController {
 				int s = 0;
 
 				if (stateName.equals("publish")) {
-					s = task.publish();
+					s = task.publish(taskDAO);
 					switch (s) {
 					case 1:
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
@@ -1732,7 +1735,7 @@ public class TaskController {
 
 				} else if (stateName.equals("start")) {
 
-					s = task.start();
+					s = task.start(taskDAO);
 					switch (s) {
 					case 1:
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
@@ -1763,7 +1766,7 @@ public class TaskController {
 
 				} else if (stateName.equals("unpublish")) {
 
-					s = task.unpublish();
+					s = task.unpublish(userTaskRelDAO, taskDAO);
 					switch (s) {
 					case 3:
 						state = TaskState.NOT_PUBLISHED;
@@ -1774,7 +1777,7 @@ public class TaskController {
 
 				} else if (stateName.equals("forceComplete")) {
 
-					s = task.forceComplete();
+					s = task.forceComplete(taskDAO);
 					switch (s) {
 					case 1:
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_NOT_READY);
@@ -2025,7 +2028,7 @@ public class TaskController {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
-		ArrayList<EvaluatedTask> et = DataAccess.getConnector(Task.class).query(query.getText(), taskDAO);
+		ArrayList<EvaluatedTask> et = ect.query(query.getText(), taskDAO);
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();

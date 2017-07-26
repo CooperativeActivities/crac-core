@@ -7,7 +7,6 @@ import crac.components.matching.Worker;
 import crac.components.matching.configuration.MatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.filter.matching.UserRelationFilter;
-import crac.components.utility.DataAccess;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
@@ -21,12 +20,12 @@ public class UserMatchingWorker extends Worker {
 	private UserFilterParameters up;
 	private MatchingConfiguration mc;
 
-	public UserMatchingWorker(Task task, UserFilterParameters up, MatchingConfiguration mc) {
+	public UserMatchingWorker(Task task, UserFilterParameters up) {
 		super();
 		this.up = up;
 		this.task = task;
-		this.userDAO = DataAccess.getRepo(CracUserDAO.class);
-		this.mc = mc;
+		this.userDAO = super.getWf().getUserDAO();
+		this.mc = super.getWf().getMc();
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class UserMatchingWorker extends Worker {
 		for (CracUser u : userDAO.findAll()) {
 			if (u.getCompetenceRelationships() != null) {
 				if (u.getCompetenceRelationships().size() != 0) {
-					ccm = new CompetenceCollectionMatrix(u, task, filters);
+					ccm = new CompetenceCollectionMatrix(u, task, filters, super.getWf().getCs());
 					ccm.print();
 					EvaluatedUser eu = new EvaluatedUser(u, ccm.calcMatch());
 					eu.setDoable(ccm.isDoable());

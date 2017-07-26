@@ -22,6 +22,7 @@ import crac.components.notifier.Notification;
 import crac.components.notifier.notifications.FriendRequest;
 import crac.components.notifier.notifications.TaskInvitation;
 import crac.components.storage.CompetenceStorage;
+import crac.components.utility.ElasticConnector;
 import crac.components.utility.JSONResponseHelper;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
@@ -35,6 +36,7 @@ import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Task;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
 import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
 
@@ -89,30 +91,33 @@ public class MainController {
 	@Autowired
 	private NotificationFactory nf;
 	
-	@Value("${crac.elastic.url}")
-    private String url;
+	@Autowired
+	private CompetenceStorage cs;
+		
+	@Autowired
+	private ElasticConnector<Task> ect;
 	
-	@Value("${crac.elastic.port}")
-    private int port;
-	
-	@Value("${crac.boot.enable}")
-    private boolean bootEnabled;
-	
+	@Autowired
+	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
+		ect.setType(type);
+	}
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/test")
 	@ResponseBody
 	public ResponseEntity<String> test() {
 		
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
+		System.out.println("--------------------------------");
+		System.out.println("ES-Config");
+		System.out.println("--------------------------------");
+		System.out.println(ect.getIndex()+" --> Index");
+		System.out.println(ect.getType()+" --> Type");
+		System.out.println(ect.getAddress()+" --> Address");
+		System.out.println(ect.getPort()+" --> Port");
+		System.out.println(ect.getThreshold()+" --> Threshold");
+		System.out.println("--------------------------------");
 		
-		HashMap<String, Long> ids = new HashMap<>();
-		ids.put("task", 1l);
-		
-		Notification n = nf.createNotification(TaskInvitation.class, user.getId(), user.getId(), ids);
-		
-		return JSONResponseHelper.createResponse(n, true);
+		return JSONResponseHelper.createResponse("done", true);
 		
 	}
 
@@ -264,7 +269,7 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> filters() {
 		
-		CompetenceStorage.synchronize();
+		cs.synchronize();
 
 		
 		System.out.println("-----------------------");

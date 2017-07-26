@@ -1,7 +1,6 @@
 package crac.components.matching.workers;
 
 import crac.components.matching.Worker;
-import crac.components.utility.DataAccess;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
@@ -18,7 +17,7 @@ public class UserRelationEvolutionWorker extends Worker {
 		super();
 		this.user = evaluation.getUserTaskRel().getUser();
 		this.evaluation = evaluation;
-		this.userRelationshipDAO = DataAccess.getRepo(UserRelationshipDAO.class);
+		this.userRelationshipDAO = super.getWf().getUserRelalationshipDAO();
 	}
 
 	@Override

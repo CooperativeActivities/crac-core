@@ -27,5 +27,5 @@ public interface UserTaskRelDAO extends CrudRepository<UserTaskRel, Long> {
 	public Set<UserTaskRel> findByUser (CracUser user);
 	
 	@Query("select r from UserTaskRel r where r.user = :u and r.evaluation.filled = false")
-	public Set<UserTaskRel> blub(@Param("u") CracUser c);
+	public Set<UserTaskRel> selectRelByNotFilled(@Param("u") CracUser c);
 }

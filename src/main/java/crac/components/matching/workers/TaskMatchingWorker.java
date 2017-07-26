@@ -13,9 +13,7 @@ import crac.components.matching.configuration.PreMatchingConfiguration;
 import crac.components.matching.configuration.UserFilterParameters;
 import crac.components.matching.filter.matching.UserRelationFilter;
 import crac.components.matching.interfaces.FilterConfiguration;
-import crac.components.utility.DataAccess;
 import crac.enums.TaskState;
-import crac.enums.TaskType;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
@@ -33,13 +31,13 @@ public class TaskMatchingWorker extends Worker {
 	private MatchingConfiguration mc;
 	private PostMatchingConfiguration pomc;
 
-	public TaskMatchingWorker(CracUser u, UserFilterParameters up, PreMatchingConfiguration pmc, MatchingConfiguration mc, PostMatchingConfiguration pomc) {
+	public TaskMatchingWorker(CracUser u, UserFilterParameters up) {
 		this.up = up;
 		this.user = u;
-		this.taskDAO = DataAccess.getRepo(TaskDAO.class);
-		this.pmc = pmc;
-		this.mc = mc;
-		this.pomc = pomc;
+		this.taskDAO = super.getWf().getTaskDAO();
+		this.pmc = super.getWf().getPmc();
+		this.mc = super.getWf().getMc();
+		this.pomc = super.getWf().getPomc();
 		System.out.println("worker created");
 	}
 
@@ -67,7 +65,7 @@ public class TaskMatchingWorker extends Worker {
 		addUserFilters(filters);
 
 		for (Task t : taskSet) {
-			ccm = new CompetenceCollectionMatrix(user, t, (MatchingConfiguration) filters);
+			ccm = new CompetenceCollectionMatrix(user, t, (MatchingConfiguration) filters, super.getWf().getCs());
 			ccm.print();
 			EvaluatedTask et = new EvaluatedTask(t, ccm.calcMatch());
 			et.setDoable(ccm.isDoable());

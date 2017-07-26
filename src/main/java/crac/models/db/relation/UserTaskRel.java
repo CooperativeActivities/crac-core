@@ -23,9 +23,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import crac.components.matching.factories.NotificationFactory;
 import crac.components.notifier.Notification;
 import crac.components.notifier.notifications.EvaluationNotification;
-import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
-import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
@@ -86,7 +84,7 @@ public class UserTaskRel {
 		
 		this.evaluation = e;
 		this.setEvalTriggered(true);
-		DataAccess.getRepo(UserTaskRelDAO.class).save(this);
+		nf.getUserTaskRelDAO().save(this);
 		
 		return e;
 	}

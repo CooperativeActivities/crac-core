@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import crac.components.notifier.Notification;
 import crac.components.notifier.NotificationType;
-import crac.components.utility.DataAccess;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.Task;
 
@@ -45,7 +44,7 @@ public class OtherUserEvaluation extends Notification {
 	@Override
 	public String accept() {
 		
-		TaskDAO taskDAO = DataAccess.getRepo(TaskDAO.class);
+		TaskDAO taskDAO = super.getNf().getTaskDAO();
 		Task task = taskDAO.findOne(taskId);
 
 		String message = "Self-Evaluation accepted for: "+task.getName()+". Please fill out form.";

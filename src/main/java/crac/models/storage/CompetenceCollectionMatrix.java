@@ -12,6 +12,7 @@ import crac.models.db.relation.UserCompetenceRel;
 
 public class CompetenceCollectionMatrix {
 
+	private CompetenceStorage cs;
 	private MatrixField[][] matrix;
 	private String[] rowsU;
 	private String[] columnsT;
@@ -25,7 +26,8 @@ public class CompetenceCollectionMatrix {
 	private boolean nullTask;
 	private boolean nullUser;
 
-	public CompetenceCollectionMatrix(CracUser u, Task t, MatchingConfiguration m) {
+	public CompetenceCollectionMatrix(CracUser u, Task t, MatchingConfiguration m, CompetenceStorage cs) {
+		this.cs = cs;
 		this.u = u;
 		this.t = t;
 		this.doable = true;
@@ -70,7 +72,7 @@ public class CompetenceCollectionMatrix {
 					columnsT[tCount] = ctr.getCompetence().getName();
 				}
 				matrix[uCount][tCount] = new MatrixField(ctr, ucr,
-						CompetenceStorage.getCompetenceSimilarity(ucr.getCompetence(), ctr.getCompetence()));
+						cs.getCompetenceSimilarity(ucr.getCompetence(), ctr.getCompetence()));
 				tCount++;
 			}
 			uCount++;

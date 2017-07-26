@@ -1,21 +1,13 @@
 package crac.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.utility.DataAccess;
+import crac.components.utility.ElasticConnector;
 import crac.components.utility.JSONResponseHelper;
 import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
@@ -49,7 +40,6 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceRelationshipType;
-import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
@@ -99,12 +89,14 @@ public class AdminController {
 	@Autowired
 	private TxExabiscompetencesDescriptorsDescriptorMmDAO txExabiscompetencesDescriptorsDescriptorMmDAO;
 
-	@Value("${crac.elastic.url}")
-	private String url;
-
-	@Value("${crac.elastic.port}")
-	private int port;
-
+	@Autowired
+	private ElasticConnector<Task> ect;
+	
+	@Autowired
+	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
+		ect.setType(type);
+	}
+	
 	@Autowired
 	private CompetenceRelationshipTypeDAO typeDAO;
 
@@ -273,7 +265,7 @@ public class AdminController {
 
 		if (user.hasTaskPermissions(deleteTask)) {
 			if (deleteTask != null) {
-				DataAccess.getConnector(Task.class).delete("" + deleteTask.getId());
+				ect.delete("" + deleteTask.getId());
 				ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteTask);
 				taskDAO.delete(deleteTask);
 				return v;
@@ -318,7 +310,7 @@ public class AdminController {
 		}
 
 		task.setCreator(user);
-		task.updateReadyStatus();
+		task.updateReadyStatus(taskDAO);
 
 		try {
 			taskDAO.save(task);
@@ -334,7 +326,7 @@ public class AdminController {
 
 		userTaskRelDAO.save(newRel);
 
-		DataAccess.getConnector(Task.class).indexOrUpdate("" + task.getId(), task);
+		ect.indexOrUpdate("" + task.getId(), task);
 
 		return JSONResponseHelper.successfullyCreated(task);
 

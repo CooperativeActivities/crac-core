@@ -31,7 +31,6 @@ import crac.components.matching.filter.postmatching.MissingVolunteerFilter;
 import crac.components.matching.filter.prematching.GroupFilter;
 import crac.components.matching.filter.prematching.LoggedUserFilter;
 import crac.components.storage.CompetenceStorage;
-import crac.components.utility.DataAccess;
 import crac.components.utility.ElasticConnector;
 import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
@@ -156,61 +155,29 @@ public class SynchronizationController {
 
 	@Autowired
 	private PostMatchingConfiguration postMatchingConfiguration;
-
-	@Value("${crac.elastic.bindEStoSearch}")
-	private boolean bindES;
+	
+	@Autowired
+	private CompetenceStorage cs;
+	
+	@Autowired
+	private ElasticConnector<Task> ect;
+	
+	@Autowired
+	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
+		ect.setType(type);
+	}
 
 	@Value("${crac.elastic.url}")
 	private String url;
-
-	@Value("${crac.elastic.port}")
-	private int port;
+	
+	@Value("${crac.elastic.bindEStoSearch}")
+	private boolean bindES;
 
 	@PostConstruct
 	public void init() {
-		this.daosync();
-		this.connectsES();
 		this.internsync();
 		this.filtersync();
 		// this.competencesync();
-	}
-
-	private void connectsES() {
-		DataAccess.addConnector(new ElasticConnector<Task>(url, port, "crac_core", "task"), Task.class);
-	}
-
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping("/dao")
-	@ResponseBody
-	public ResponseEntity<String> daosync() {
-
-		DataAccess.addRepo(attachmentDAO);
-		DataAccess.addRepo(commentDAO);
-		DataAccess.addRepo(competenceDAO);
-		DataAccess.addRepo(competenceAreaDAO);
-		DataAccess.addRepo(competencePermissionTypeDAO);
-		DataAccess.addRepo(competenceRelationshipDAO);
-		DataAccess.addRepo(competenceRelationshipTypeDAO);
-		DataAccess.addRepo(competenceTaskRelDAO);
-		DataAccess.addRepo(userDAO);
-		DataAccess.addRepo(evaluationDAO);
-		DataAccess.addRepo(groupDAO);
-		DataAccess.addRepo(materialDAO);
-		DataAccess.addRepo(repetitionDateDAO);
-		DataAccess.addRepo(roleDAO);
-		DataAccess.addRepo(taskDAO);
-		DataAccess.addRepo(taskRelationshipTypeDAO);
-		DataAccess.addRepo(userCompetenceRelDAO);
-		DataAccess.addRepo(userMaterialSubscriptionDAO);
-		DataAccess.addRepo(userRelationshipDAO);
-		DataAccess.addRepo(userTaskRelDAO);
-
-		System.out.println("-------------------------------");
-		System.out.println("||||DAO||||");
-		System.out.println("-------------------------------");
-		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("sync", "DAO");
-		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
@@ -223,7 +190,7 @@ public class SynchronizationController {
 	@RequestMapping("/intern")
 	@ResponseBody
 	public ResponseEntity<String> internsync() {
-		CompetenceStorage.synchronize();
+		cs.synchronize();
 		System.out.println("-------------------------------");
 		System.out.println("||||INTERN COMPETENCES SYNCED||||");
 		System.out.println("-------------------------------");
@@ -506,9 +473,9 @@ public class SynchronizationController {
 		for (TxExabiscompetencesDescriptor single : kometCompetenceList) {
 			if (!single.getTitleshort().equals("")) {
 				if (!cracCompetenceMap.containsKey((long) single.getUid())) {
-					newc.add(single.mapToCompetence());
+					newc.add(single.mapToCompetence(competenceAreaDAO));
 				} else {
-					updatec.add(single.mapToCompetence());
+					updatec.add(single.mapToCompetence(competenceAreaDAO));
 					cracCompetenceMap.remove((long) single.getUid());
 				}
 			}
@@ -1303,7 +1270,7 @@ public class SynchronizationController {
 	@ResponseBody
 	public ResponseEntity<String> refreshESTasks() {
 
-		DeleteIndexResponse deleted = DataAccess.getConnector(Task.class).deleteIndex();
+		DeleteIndexResponse deleted = ect.deleteIndex();
 		if (deleted.isAcknowledged()) {
 			return JSONResponseHelper.successfullyDeleted(url);
 		} else {

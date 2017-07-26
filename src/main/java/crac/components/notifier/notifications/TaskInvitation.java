@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import crac.components.notifier.Notification;
 import crac.components.notifier.NotificationType;
-import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
@@ -30,9 +29,9 @@ public class TaskInvitation extends Notification{
 	@Override
 	public String accept() {
 		
-		UserTaskRelDAO userTaskRelDAO = DataAccess.getRepo(UserTaskRelDAO.class);
-		CracUserDAO userDAO = DataAccess.getRepo(CracUserDAO.class);
-		TaskDAO taskDAO = DataAccess.getRepo(TaskDAO.class);
+		UserTaskRelDAO userTaskRelDAO = super.getNf().getUserTaskRelDAO();
+		CracUserDAO userDAO = super.getNf().getUserDAO();
+		TaskDAO taskDAO = super.getNf().getTaskDAO();
 
 		UserTaskRel utl = new UserTaskRel();
 		
