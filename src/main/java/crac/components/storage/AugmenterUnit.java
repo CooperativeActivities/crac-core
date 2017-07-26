@@ -71,7 +71,7 @@ public class AugmenterUnit {
 			double distance) {
 
 		target.setStepsDone(parent.getStepsDone() + 1);
-		target.setSimilarity(parent.getSimilarity() * distance);
+		target.setSimilarity((double) Math.round((parent.getSimilarity() * distance) * 100) / 100);
 
 	}
 
