@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+
 import crac.components.storage.CompetenceStorage;
 import crac.components.utility.DataAccess;
 import crac.enums.TaskState;
@@ -11,6 +14,7 @@ import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
 import crac.models.db.entities.Comment;
+import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Material;
@@ -73,6 +77,10 @@ public class TaskDetails {
 	private TaskType taskType;
 
 	private Set<UserTaskRel> participationDetails;
+	
+	private Set<CracGroup> restrictingGroups;
+	
+	private Set<CracGroup> invitedGroups;
 
 	private boolean assigned;
 
@@ -119,6 +127,8 @@ public class TaskDetails {
 		this.materials = addMaterials(t);
 		this.taskType = t.getTaskType();
 		this.permissions = u.hasTaskPermissions(t);
+		this.invitedGroups = t.getInvitedGroups();
+		this.restrictingGroups = t.getRestrictingGroups();
 	}
 	
 	public Set<MaterialDetails> addMaterials(Task t){
@@ -455,6 +465,22 @@ public class TaskDetails {
 
 	public void setLng(double lng) {
 		this.lng = lng;
+	}
+
+	public Set<CracGroup> getRestrictingGroups() {
+		return restrictingGroups;
+	}
+
+	public void setRestrictingGroups(Set<CracGroup> restrictingGroups) {
+		this.restrictingGroups = restrictingGroups;
+	}
+
+	public Set<CracGroup> getInvitedGroups() {
+		return invitedGroups;
+	}
+
+	public void setInvitedGroups(Set<CracGroup> invitedGroups) {
+		this.invitedGroups = invitedGroups;
 	}
 
 }

@@ -1,5 +1,7 @@
 package crac.models.db.relation;
 
+import java.util.HashMap;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.components.notifier.NotificationHelper;
+import crac.components.matching.factories.NotificationFactory;
+import crac.components.notifier.Notification;
 import crac.components.notifier.notifications.EvaluationNotification;
 import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
@@ -71,14 +74,15 @@ public class UserTaskRel {
 		return id;
 	}
 	
-	public Evaluation triggerEval(){
+	public Evaluation triggerEval(NotificationFactory nf){
 		Evaluation e = new Evaluation(this);
 		
-		EvaluationNotification es = new EvaluationNotification(user.getId(), task.getId(), e.getId());
-		NotificationHelper.createNotification(es);
+		HashMap<String, Long> ids = new HashMap<>();
+		ids.put("task", task.getId());
+		ids.put("evaluation", e.getId());
+		Notification es = nf.createNotification(EvaluationNotification.class, user.getId(), -1l, ids);
 		
 		e.setNotificationId(es.getNotificationId());
-		es.setEvaluationId(e.getId());
 		
 		this.evaluation = e;
 		this.setEvalTriggered(true);

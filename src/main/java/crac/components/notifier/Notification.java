@@ -3,14 +3,17 @@ package crac.components.notifier;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import org.springframework.data.repository.CrudRepository;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import crac.models.db.entities.CracUser;
+import crac.components.matching.factories.NotificationFactory;
+import crac.models.utility.RandomUtility;
 
 public abstract class Notification {
 	
 	private String notificationId;
 	
+	private Long senderId;
+
 	private Long targetId;
 	
 	private Calendar creationTime;
@@ -19,18 +22,25 @@ public abstract class Notification {
 	
 	private NotificationType type;
 	
-	public Notification(String name, NotificationType type, Long targetId){
+	@JsonIgnore
+	private NotificationFactory nf;
+		
+	public Notification(String name, NotificationType type){
 		this.name = name;
 		this.type = type;
 		this.creationTime = Calendar.getInstance();
-		this.notificationId = NotificationHelper.randomString(20);
-		this.targetId = targetId;
-
+		this.notificationId = RandomUtility.randomString(20);
+	}
+	
+	public void destroy(){
+		nf.deleteNotificationById(this.getNotificationId());
 	}
 	
 	public abstract String accept();
 	
 	public abstract String deny();
+	
+	public abstract void inject(HashMap<String, Long> ids);
 	
 	//public abstract String toJSon();
 
@@ -74,5 +84,20 @@ public abstract class Notification {
 		this.creationTime = creationTime;
 	}
 
-	
+	public Long getSenderId() {
+		return senderId;
+	}
+
+	public void setSenderId(Long senderId) {
+		this.senderId = senderId;
+	}
+
+	public NotificationFactory getNf() {
+		return nf;
+	}
+
+	public void setNf(NotificationFactory nf) {
+		this.nf = nf;
+	}
+
 }

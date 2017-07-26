@@ -1,10 +1,8 @@
 package crac.components.notifier.notifications;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 
 import crac.components.notifier.Notification;
-import crac.components.notifier.NotificationHelper;
 import crac.components.notifier.NotificationType;
 import crac.components.utility.DataAccess;
 import crac.models.db.daos.TaskDAO;
@@ -16,38 +14,33 @@ public class OtherUserEvaluation extends Notification {
 	private Long evaluationId;
 	private Long toEvaluateId;
 
-	public OtherUserEvaluation(Long targetId, Long taskId, Long evaluationId, Long toEvaluateId) {
-		super("Other User-Evaluation", NotificationType.MESSAGE, targetId);
-		this.taskId = taskId;
-		this.evaluationId = evaluationId;
-		this.toEvaluateId = toEvaluateId;
+	public OtherUserEvaluation() {
+		super("Other User-Evaluation", NotificationType.MESSAGE);
 	}
 
-	public long getTaskId() {
+	public Long getTaskId() {
 		return taskId;
 	}
 
-	public void setTaskId(long taskId) {
+	public void setTaskId(Long taskId) {
 		this.taskId = taskId;
 	}
-	
-	public long getEvaluationId() {
+
+	public Long getEvaluationId() {
 		return evaluationId;
 	}
 
-	public void setEvaluationId(long evaluationId) {
+	public void setEvaluationId(Long evaluationId) {
 		this.evaluationId = evaluationId;
 	}
-/*
-	@Override
-	public String toJSon() {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return mapper.writeValueAsString((OtherUserEvaluation) this);
-		} catch (JsonProcessingException e) {
-			return e.toString();
-		}
-	}*/
+
+	public Long getToEvaluateId() {
+		return toEvaluateId;
+	}
+
+	public void setToEvaluateId(Long toEvaluateId) {
+		this.toEvaluateId = toEvaluateId;
+	}
 
 	@Override
 	public String accept() {
@@ -56,7 +49,7 @@ public class OtherUserEvaluation extends Notification {
 		Task task = taskDAO.findOne(taskId);
 
 		String message = "Self-Evaluation accepted for: "+task.getName()+". Please fill out form.";
-		
+		super.destroy();
 		System.out.println(message);
 		return message;
 
@@ -64,10 +57,17 @@ public class OtherUserEvaluation extends Notification {
 
 	@Override
 	public String deny() {
-		NotificationHelper.deleteNotification(this.getNotificationId());
+		super.destroy();
 		System.out.println("Self-Evaluation denied");
 		return "Self-Evaluation denied";
 
+	}
+
+	@Override
+	public void inject(HashMap<String, Long> ids) {
+		this.taskId = ids.get("task");
+		this.evaluationId = ids.get("evaluation");
+		this.toEvaluateId = ids.get("toEvaluate");
 	}
 
 }

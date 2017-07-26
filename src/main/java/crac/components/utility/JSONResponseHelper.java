@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import crac.enums.ErrorCause;
 import crac.enums.RESTAction;
@@ -92,6 +93,8 @@ public class JSONResponseHelper {
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
 		String result = "";
 		try {
 			result = mapper.writeValueAsString(r);

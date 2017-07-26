@@ -1,10 +1,8 @@
 package crac.components.notifier.notifications;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 
 import crac.components.notifier.Notification;
-import crac.components.notifier.NotificationHelper;
 import crac.components.notifier.NotificationType;
 import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
@@ -14,25 +12,13 @@ import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.relation.UserTaskRel;
 
 public class TaskInvitation extends Notification{
-	
-	private long senderId;
-	
+		
 	private long taskId;
 	
-	public TaskInvitation(Long senderId, Long targetId, Long taskId){
-		super("Task Invitation", NotificationType.SUGGESTION, targetId);
-		this.senderId = senderId;
-		this.taskId = taskId;
+	public TaskInvitation(){
+		super("Task Invitation", NotificationType.SUGGESTION);
 	}
 	
-	public long getSenderId() {
-		return senderId;
-	}
-
-	public void setSenderId(long senderId) {
-		this.senderId = senderId;
-	}
-
 	public long getTaskId() {
 		return taskId;
 	}
@@ -40,16 +26,6 @@ public class TaskInvitation extends Notification{
 	public void setTaskId(long taskId) {
 		this.taskId = taskId;
 	}
-/*
-	@Override
-	public String toJSon() {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return mapper.writeValueAsString((TaskInvitation)this);
-		} catch (JsonProcessingException e) {
-			return e.toString();
-		}
-	}*/
 
 	@Override
 	public String accept() {
@@ -66,17 +42,22 @@ public class TaskInvitation extends Notification{
 		
 		userTaskRelDAO.save(utl);
 		
-		NotificationHelper.deleteNotification(this.getNotificationId());
+		super.destroy();
 		System.out.println("Task-invitation accepted");
 		return "accepted";
 	}
 
 	@Override
 	public String deny() {
-		NotificationHelper.deleteNotification(this.getNotificationId());
+		super.destroy();
 		System.out.println("Friend-request denied");
 		return "denied";
 		
+	}
+
+	@Override
+	public void inject(HashMap<String, Long> ids) {
+		this.taskId = ids.get("task");
 	}
 	
 }

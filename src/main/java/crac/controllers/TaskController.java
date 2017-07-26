@@ -26,7 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.components.matching.Decider;
 import crac.components.matching.configuration.UserFilterParameters;
-import crac.components.notifier.NotificationHelper;
+import crac.components.matching.factories.NotificationFactory;
+import crac.components.notifier.Notification;
 import crac.components.notifier.notifications.LeadNomination;
 import crac.components.notifier.notifications.TaskDoneNotification;
 import crac.components.notifier.notifications.TaskInvitation;
@@ -56,7 +57,6 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
-import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
@@ -107,7 +107,7 @@ public class TaskController {
 
 	@Autowired
 	private MaterialDAO materialDAO;
-	
+
 	@Autowired
 	private Decider decider;
 
@@ -119,6 +119,9 @@ public class TaskController {
 
 	@Value("${crac.elastic.port}")
 	private int port;
+
+	@Autowired
+	private NotificationFactory nf;
 
 	/**
 	 * Returns all tasks
@@ -660,7 +663,6 @@ public class TaskController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-
 
 		return JSONResponseHelper.createResponse(decider.findTasks(user, new UserFilterParameters()), true);
 
@@ -1659,8 +1661,11 @@ public class TaskController {
 						}
 
 						if (alldone) {
-							TaskDoneNotification n = new TaskDoneNotification(task_id, user.getId());
-							NotificationHelper.createNotification(n);
+							HashMap<String, Long> ids = new HashMap<>();
+							ids.put("task", task_id);
+							for (CracUser l : task.getAllLeaders()) {
+								nf.createNotification(TaskDoneNotification.class, l.getId(), -1l, ids);
+							}
 							// TaskDoneNotification(task_id, user.getId());
 							// NotificationHelper.createTaskDone(task_id,
 							// user.getId());
@@ -1877,8 +1882,9 @@ public class TaskController {
 
 			if (loggedU.hasTaskPermissions(task)) {
 
-				LeadNomination n = new LeadNomination(loggedU.getId(), targetU.getId(), task.getId());
-				NotificationHelper.createNotification(n);
+				HashMap<String, Long> ids = new HashMap<>();
+				ids.put("task", task.getId());
+				Notification n = nf.createNotification(LeadNomination.class, targetU.getId(), loggedU.getId(), ids);
 				// NotificationHelper.createLeadNomination(loggedU.getId(),
 				// targetU.getId(), task.getId());
 				return JSONResponseHelper.successfullyCreated(n);
@@ -1922,9 +1928,9 @@ public class TaskController {
 				} else if (invType.equals("group")) {
 					CracGroup inv = groupDAO.findOne(invId);
 					if (inv != null) {
-						if(!inv.getInvitedToTasks().contains(task)){
+						if (!inv.getInvitedToTasks().contains(task)) {
 							inv.getInvitedToTasks().add(task);
-						}else{
+						} else {
 							return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
 						}
 						for (CracUser u : inv.getEnroledUsers()) {
@@ -1935,8 +1941,9 @@ public class TaskController {
 					}
 				}
 				for (CracUser u : users) {
-					TaskInvitation n = new TaskInvitation(user.getId(), u.getId(), taskId);
-					NotificationHelper.createNotification(n);
+					HashMap<String, Long> ids = new HashMap<>();
+					ids.put("task", taskId);
+					nf.createNotification(TaskInvitation.class, u.getId(), user.getId(), ids);
 				}
 				return JSONResponseHelper.successfullyCreated(users);
 			} else {

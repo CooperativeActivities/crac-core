@@ -1,12 +1,9 @@
 package crac.components.notifier.notifications;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 
 import crac.components.notifier.Notification;
-import crac.components.notifier.NotificationHelper;
 import crac.components.notifier.NotificationType;
-import crac.components.utility.DataAccess;
 import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
@@ -17,13 +14,10 @@ import crac.models.db.relation.UserTaskRel;
 
 public class LeadNomination extends Notification {
 
-	private long senderId;
 	private long taskId;
 
-	public LeadNomination(Long senderId, Long targetId, Long taskId) {
-		super("Lead Nomination", NotificationType.REQUEST, targetId);
-		this.senderId = senderId;
-		this.taskId = taskId;
+	public LeadNomination() {
+		super("Lead Nomination", NotificationType.REQUEST);
 	}
 
 	public long getTaskId() {
@@ -34,29 +28,11 @@ public class LeadNomination extends Notification {
 		this.taskId = taskId;
 	}
 
-	public long getSenderId() {
-		return senderId;
-	}
-
-	public void setSenderId(long senderId) {
-		this.senderId = senderId;
-	}
-/*
-	@Override
-	public String toJSon() {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			return mapper.writeValueAsString((LeadNomination) this);
-		} catch (JsonProcessingException e) {
-			return e.toString();
-		}
-	}*/
-
 	@Override
 	public String accept() {
-		TaskDAO taskDAO = DataAccess.getRepo(TaskDAO.class);
-		UserTaskRelDAO userTaskRelDAO = DataAccess.getRepo(UserTaskRelDAO.class);
-		CracUserDAO userDAO = DataAccess.getRepo(CracUserDAO.class);
+		TaskDAO taskDAO = super.getNf().getTaskDAO();
+		UserTaskRelDAO userTaskRelDAO = super.getNf().getUserTaskRelDAO();
+		CracUserDAO userDAO = super.getNf().getUserDAO();
 
 		Task task = taskDAO.findOne(taskId);
 		CracUser user = userDAO.findOne(super.getTargetId());
@@ -84,7 +60,7 @@ public class LeadNomination extends Notification {
 			message = "New Relationship Created";
 		}
 
-		NotificationHelper.deleteNotification(this.getNotificationId());
+		super.destroy();
 		System.out.println("Leader-Nomination accepted, "+message);
 		return message;
 
@@ -92,10 +68,15 @@ public class LeadNomination extends Notification {
 
 	@Override
 	public String deny() {
-		NotificationHelper.deleteNotification(this.getNotificationId());
+		super.destroy();
 		System.out.println("Leader-Nomination denied");
 		return "denied";
 
+	}
+
+	@Override
+	public void inject(HashMap<String, Long> ids) {
+		this.taskId = ids.get("task");
 	}
 
 }

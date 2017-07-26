@@ -6,15 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import crac.components.matching.configuration.MatchingConfiguration;
+import crac.components.matching.factories.NotificationFactory;
 import crac.components.matching.filter.matching.ImportancyLevelFilter;
 import crac.components.matching.filter.matching.LikeLevelFilter;
 import crac.components.matching.filter.matching.ProficiencyLevelFilter;
+import crac.components.notifier.Notification;
+import crac.components.notifier.notifications.FriendRequest;
+import crac.components.notifier.notifications.TaskInvitation;
 import crac.components.storage.CompetenceStorage;
 import crac.components.utility.JSONResponseHelper;
 import crac.models.db.daos.CompetenceDAO;
@@ -80,6 +86,9 @@ public class MainController {
 	@Autowired
 	private MatchingConfiguration matchingConfig;
 	
+	@Autowired
+	private NotificationFactory nf;
+	
 	@Value("${crac.elastic.url}")
     private String url;
 	
@@ -88,11 +97,31 @@ public class MainController {
 	
 	@Value("${crac.boot.enable}")
     private boolean bootEnabled;
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/test")
+	@ResponseBody
+	public ResponseEntity<String> test() {
+		
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		
+		HashMap<String, Long> ids = new HashMap<>();
+		ids.put("task", 1l);
+		
+		Notification n = nf.createNotification(TaskInvitation.class, user.getId(), user.getId(), ids);
+		
+		return JSONResponseHelper.createResponse(n, true);
+		
+	}
+
+		
 		
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/include")
 	@ResponseBody
-	public ResponseEntity<String> test() {
+	public ResponseEntity<String> include() {
 		
 		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 

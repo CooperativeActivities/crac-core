@@ -28,7 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.components.matching.Decider;
 import crac.components.matching.configuration.UserFilterParameters;
-import crac.components.notifier.NotificationHelper;
+import crac.components.matching.factories.NotificationFactory;
+import crac.components.notifier.Notification;
 import crac.components.notifier.notifications.FriendRequest;
 import crac.components.utility.JSONResponseHelper;
 import crac.components.utility.UpdateEntitiesHelper;
@@ -88,6 +89,9 @@ public class CracUserController {
 	
 	@Autowired
 	private Decider decider;
+	
+	@Autowired
+	private NotificationFactory nf;
 
 	/**
 	 * Returns all users
@@ -274,10 +278,10 @@ public class CracUserController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser sender = userDAO.findByName(userDetails.getName());
-		CracUser receiver = userDAO.findOne(id);
+		CracUser target = userDAO.findOne(id);
 
-		FriendRequest n = new FriendRequest(sender.getId(), receiver.getId());
-		NotificationHelper.createNotification(n);
+		Notification n = nf.createNotification(FriendRequest.class, target.getId(), sender.getId(), null);
+		
 		return JSONResponseHelper.successfullyCreated(n);
 	}
 

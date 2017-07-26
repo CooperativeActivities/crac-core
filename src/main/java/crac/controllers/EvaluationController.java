@@ -1,7 +1,6 @@
 package crac.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,18 +16,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.components.matching.Decider;
-import crac.components.notifier.NotificationHelper;
-import crac.components.notifier.notifications.EvaluationNotification;
+import crac.components.matching.factories.NotificationFactory;
 import crac.components.utility.JSONResponseHelper;
 import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
-import crac.enums.TaskRepetitionState;
 import crac.enums.TaskState;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.EvaluationDAO;
@@ -37,7 +32,6 @@ import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
-import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
@@ -72,6 +66,9 @@ public class EvaluationController {
 	@Autowired
 	private Decider decider;
 
+	@Autowired
+	private NotificationFactory nf;
+
 	@Value("${crac.eval.decreaseValues}")
 	private int decreaseValuesFactor;
 
@@ -98,7 +95,7 @@ public class EvaluationController {
 			if (utr != null) {
 				if (task.getTaskState() == TaskState.COMPLETED) {
 					if (!utr.isEvalTriggered()) {
-						return JSONResponseHelper.successfullyCreated(utr.triggerEval());
+						return JSONResponseHelper.successfullyCreated(utr.triggerEval(nf));
 					} else {
 						return JSONResponseHelper.createResponse(false, "bad_request",
 								ErrorCause.DATASETS_ALREADY_EXISTS);
@@ -139,7 +136,7 @@ public class EvaluationController {
 						if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING
 								&& !utr.isEvalTriggered()) {
 							allTriggered = false;
-							utr.triggerEval();
+							utr.triggerEval(nf);
 						}
 					}
 					if(allTriggered){
@@ -258,7 +255,7 @@ public class EvaluationController {
 					TaskParticipationType.PARTICIPATING);
 			originalEval.setFilled(true);
 			evaluationDAO.save(originalEval);
-			NotificationHelper.deleteNotification(notificationId);
+			nf.deleteNotificationById(notificationId);
 			return JSONResponseHelper.successfullyCreated(originalEval);
 
 		} else {
