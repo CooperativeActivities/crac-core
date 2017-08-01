@@ -10,6 +10,11 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.utility.MatchingInformation;
 
+/**
+ * Filters a pool of tasks for the ones that the logged in user is not already related to
+ * @author David
+ *
+ */
 public class LoggedUserFilter extends CracPreMatchingFilter {
 
 	public LoggedUserFilter() {
@@ -33,6 +38,7 @@ public class LoggedUserFilter extends CracPreMatchingFilter {
 				}				
 		}
 
+		System.out.println("Applied: "+super.speakString());
 		
 		return result;
 	}

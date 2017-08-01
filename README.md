@@ -1324,6 +1324,42 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
+**Restrict a task to target group**
+
+##### *Request:*
+
+PUT /task/{task_id}/restrict/group/{group_id}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Restrict a task to multiple groups and replace the groups already there**
+
+##### *Request:*
+
+PUT /task/{task_id}/restrict/group/multiple  
+
+	[
+		{
+			"id": 1
+		},
+		{
+			"id": 3
+		},
+		{
+			"id": 8
+		}
+	]
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
 **Change the state of target task; Choose either 'publish', 'start', or 'complete'**
 *For each state different prerequisite have to be fullfilled:*
 *NOT_PUBLISHED: Default state*
@@ -2194,5 +2230,6 @@ Endpoints for groups have been added:
 
 New section "Group-Endpoints"!  
 Endpoint for inviting users to a task is now PUT /task/{task_id}/invite/{inv_type}/{inv_id}  
+Endpoint for restricting a task to different groups PUT /task/{task_id}/restrict/group/{group_id}
 
 Endpoints for roles have changed --> see the "User-Endpoints"!  

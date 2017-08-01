@@ -22,54 +22,64 @@ import crac.models.db.relation.UserTaskRel;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "evaluations")
 public class Evaluation {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "evaluation_id")
 	private long id;
-		
-	@JsonIdentityReference(alwaysAsId=true)
+
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToOne(fetch = FetchType.LAZY)
 	private UserTaskRel userTaskRel;
-	
-	@Column(name="like_val_others")
+
+	@Column(name = "like_val_others")
 	private double likeValOthers;
-	
-	@Column(name="like_val_task")
+
+	@Column(name = "like_val_task")
 	private double likeValTask;
-	
-	@Column(name="like_val_organisation")
+
+	@Column(name = "like_val_organisation")
 	private double likeValOrganisation;
-	
+
 	private String feedback;
-	
+
 	@NotNull
-	@Column(name="notification_id")
+	@Column(name = "notification_id")
 	private String notificationId;
-	
+
 	@NotNull
 	private boolean filled;
-	
+
 	/**
 	 * Defines a many to one relationship with the CracUser-entity
 	 */
-		
+
 	/**
 	 * constructors
 	 */
-	
+
 	public Evaluation() {
 	}
-	
+
 	public Evaluation(UserTaskRel userTaskRel) {
 		this.userTaskRel = userTaskRel;
 		this.filled = false;
 	}
 
+	public void update(Evaluation e) {
+		if (e.getFeedback() != null) {
+			this.setFeedback(e.getFeedback());
+		}
+
+		this.setLikeValOrganisation(e.getLikeValOrganisation());
+		this.setLikeValOthers(e.getLikeValOthers());
+		this.setLikeValTask(e.getLikeValTask());
+	}
+
 	/**
 	 * getters and setters
 	 */
-	
+
 	public long getId() {
 		return id;
 	}

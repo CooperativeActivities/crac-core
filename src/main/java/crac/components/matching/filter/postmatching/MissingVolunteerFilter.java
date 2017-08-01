@@ -35,6 +35,8 @@ public class MissingVolunteerFilter extends CracPostMatchingFilter {
 
 			}
 		}
+		System.out.println("Applied: "+super.speakString());
+		
 		return list;
 	}
 

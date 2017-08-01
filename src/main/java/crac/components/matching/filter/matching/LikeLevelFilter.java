@@ -22,6 +22,8 @@ public class LikeLevelFilter extends CracMatchingFilter{
 		} else if (newVal < 0) {
 			newVal = 0;
 		}
+		System.out.println("Applied: "+super.speakString());
+		
 
 		return newVal;
 		

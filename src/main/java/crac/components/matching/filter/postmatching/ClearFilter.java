@@ -24,6 +24,8 @@ public class ClearFilter extends CracPostMatchingFilter {
 		for (EvaluatedTask t : remove) {
 			list.remove(t);
 		}
+		System.out.println("Applied: "+super.speakString());
+		
 		return list;
 	}
 

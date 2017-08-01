@@ -114,15 +114,15 @@ public class TaskController {
 
 	@Autowired
 	private ElasticConnector<Task> ect;
-	
+
 	@Autowired
-	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
+	public void configureES(ElasticConnector<Task> ect, @Value("task") String type) {
 		ect.setType(type);
 	}
 
 	@Autowired
 	private NotificationFactory nf;
-	
+
 	@Autowired
 	private CompetenceStorage cs;
 
@@ -1949,6 +1949,111 @@ public class TaskController {
 					nf.createNotification(TaskInvitation.class, u.getId(), user.getId(), ids);
 				}
 				return JSONResponseHelper.successfullyCreated(users);
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			}
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+		}
+
+	}
+
+	/**
+	 * Restrict a task to target group
+	 * 
+	 * @param userId
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/restrict/group/{group_id}",
+			"/{task_id}/restrict/group/{group_id}/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> restrictTask(@PathVariable(value = "group_id") Long groupId,
+			@PathVariable(value = "task_id") Long taskId) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		Task task = taskDAO.findOne(taskId);
+
+		if (user.hasTaskPermissions(task)) {
+			if (task != null) {
+				CracGroup group = groupDAO.findOne(groupId);
+				if (group != null) {
+					if (!group.getRestrictedTasks().contains(task)) {
+						group.getRestrictedTasks().add(task);
+					} else {
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
+					}
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				}
+				return JSONResponseHelper.successfullyUpdated(task);
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			}
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+		}
+
+	}
+
+	/**
+	 * Restrict a task to multiple groups and replace the groups already there
+	 * 
+	 * @param userId
+	 * @param taskId
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/restrict/group/multiple",
+			"/{task_id}/restrict/group/multiple/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> inviteMultipleGroups(@RequestBody String json,
+			@PathVariable(value = "task_id") Long taskId) {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		Task task = taskDAO.findOne(taskId);
+
+		if (user.hasTaskPermissions(task)) {
+			if (task != null) {
+
+				ObjectMapper mapper = new ObjectMapper();
+
+				PostOptions[] mappings = null;
+				try {
+					mappings = mapper.readValue(json, PostOptions[].class);
+				} catch (JsonMappingException e) {
+					System.out.println(e.toString());
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+				} catch (IOException e) {
+					System.out.println(e.toString());
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+				}
+
+				CracGroup group;
+
+				if (mappings != null) {
+
+					for(CracGroup g : task.getRestrictingGroups()){
+						g.getRestrictedTasks().remove(task);
+					}
+
+					for (PostOptions po : mappings) {
+						group = groupDAO.findOne((long) po.getId());
+						if (group != null) {
+							group.getRestrictedTasks().add(task);
+						}
+						groupDAO.save(group);
+					}
+					
+					
+					return JSONResponseHelper.successfullyUpdated(task);
+
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				}
 			} else {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 			}

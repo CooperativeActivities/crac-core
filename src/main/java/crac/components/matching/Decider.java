@@ -1,6 +1,7 @@
 package crac.components.matching;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,26 +27,31 @@ public class Decider {
 	
 	public ArrayList<EvaluatedTask> findTasks(CracUser u, UserFilterParameters up){
 				
-		TaskMatchingWorker worker = wf.createTmWorker(u, up);
-		ArrayList<EvaluatedTask> list = worker.run();
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("user", u);
+		params.put("userFilterParameters", up);
+		TaskMatchingWorker w = (TaskMatchingWorker) wf.createWorker(TaskMatchingWorker.class, params);
+		ArrayList<EvaluatedTask> list = w.run();
 		
 		return list;
 	}
 	
 	public ArrayList<EvaluatedUser> findUsers(Task task, UserFilterParameters up){
-		UserMatchingWorker worker = wf.createUmWorker(task, up);
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("task", task);
+		params.put("userFilterParameters", up);
+		UserMatchingWorker worker = (UserMatchingWorker) wf.createWorker(UserMatchingWorker.class, params);
 		ArrayList<EvaluatedUser> list = worker.run();
 		return list;
 	}
 	
-	public void evaluateUsers(Evaluation e){
-		UserRelationEvolutionWorker w = new UserRelationEvolutionWorker(e);
-		w.run();
+	public void evaluate(Evaluation evaluation){
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("evaluation", evaluation);
+		UserCompetenceRelationEvolutionWorker w1 = (UserCompetenceRelationEvolutionWorker) wf.createWorker(UserCompetenceRelationEvolutionWorker.class, params);
+		UserRelationEvolutionWorker w2 = (UserRelationEvolutionWorker) wf.createWorker(UserRelationEvolutionWorker.class, params);
+		w1.run();
+		w2.run();
 	}
 	
-	public void evaluateTask(Evaluation e){
-		UserCompetenceRelationEvolutionWorker w = new UserCompetenceRelationEvolutionWorker(e);
-		w.run();
-	}
-
 }

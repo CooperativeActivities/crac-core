@@ -128,7 +128,7 @@ public class UpdateEntitiesHelper {
 		}
 
 	}
-
+/*
 	public static void checkAndUpdateEvaluation(Evaluation old, Evaluation updated){
 		
 		if(updated.getFeedback() != null){
@@ -139,5 +139,5 @@ public class UpdateEntitiesHelper {
 		old.setLikeValOthers(updated.getLikeValOthers());
 		old.setLikeValTask(updated.getLikeValTask());
 	}
-	
+*/	
 }

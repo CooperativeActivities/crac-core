@@ -40,6 +40,8 @@ public class UserRelationFilter extends CracMatchingFilter {
 			newVal = 0;
 		}
 
+		System.out.println("Applied: "+super.speakString());
+		
 		return newVal;
 
 	}

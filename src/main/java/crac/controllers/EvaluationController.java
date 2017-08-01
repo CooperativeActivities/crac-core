@@ -62,7 +62,7 @@ public class EvaluationController {
 
 	@Autowired
 	UserRelationshipDAO userRelationshipDAO;
-	
+
 	@Autowired
 	private Decider decider;
 
@@ -139,7 +139,7 @@ public class EvaluationController {
 							utr.triggerEval(nf);
 						}
 					}
-					if(allTriggered){
+					if (allTriggered) {
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALL_EVALS_TRIGGERED);
 					}
 					return JSONResponseHelper.successfullyUpdated(task);
@@ -165,16 +165,16 @@ public class EvaluationController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		
+
 		Set<UserTaskRel> rels = userTaskRelDAO.selectRelByNotFilled(user);
 		HashSet<OpenEvaluation> evals = new HashSet<>();
-		
-		if(rels != null){
-			for(UserTaskRel rel : rels){
+
+		if (rels != null) {
+			for (UserTaskRel rel : rels) {
 				evals.add(new OpenEvaluation(rel));
 			}
 		}
-		
+
 		return JSONResponseHelper.createResponse(evals, true);
 	}
 
@@ -224,15 +224,24 @@ public class EvaluationController {
 	public ResponseEntity<String> evaluateTask(@RequestBody String json,
 			@PathVariable(value = "evaluation_id") Long evaluationId) {
 
-		Evaluation originalEval = evaluationDAO.findOne(evaluationId);
-		if (originalEval != null) {
+		Evaluation eval = evaluationDAO.findOne(evaluationId);
+		if (eval != null) {
 
-			if (originalEval.isFilled()) {
+			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+					.getContext().getAuthentication();
+			CracUser user = userDAO.findByName(userDetails.getName());
+
+			if (eval.getUserTaskRel().getUser() != user && !user.confirmRole("ADMIN")) {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+			}
+			
+			if (eval.isFilled()) {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
 			Evaluation newEval;
+
 			try {
 				newEval = mapper.readValue(json, Evaluation.class);
 			} catch (JsonMappingException e) {
@@ -243,71 +252,22 @@ public class EvaluationController {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 			}
 
-			String notificationId = originalEval.getNotificationId();
-			UpdateEntitiesHelper.checkAndUpdateEvaluation(originalEval, newEval);
+			String notificationId = eval.getNotificationId();
+			eval.update(newEval);
 
-			decider.evaluateUsers(originalEval);
-			decider.evaluateTask(originalEval);
+			decider.evaluate(eval);
 
-			originalEval.setNotificationId("deleted");
-			UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationType(
-					originalEval.getUserTaskRel().getUser(), originalEval.getUserTaskRel().getTask(),
-					TaskParticipationType.PARTICIPATING);
-			originalEval.setFilled(true);
-			evaluationDAO.save(originalEval);
+			eval.setNotificationId("deleted");
+			eval.setFilled(true);
+			evaluationDAO.save(eval);
+
 			nf.deleteNotificationById(notificationId);
-			return JSONResponseHelper.successfullyCreated(originalEval);
+			return JSONResponseHelper.successfullyCreated(eval);
 
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
-	}
-
-	// TODO redo when search is done
-	private void postProcessEvaluation(Evaluation e) {
-		Task task = e.getUserTaskRel().getTask();
-
-		for (CompetenceTaskRel c : task.getMappedCompetences()) {
-			UserCompetenceRel uc = userCompetenceRelDAO.findByUserAndCompetence(e.getUserTaskRel().getUser(),
-					c.getCompetence());
-
-			if (uc != null) {
-				// uc.setLikeValue(uc.getLikeValue() *
-				// adjustValues(e.getLikeValTask()));
-			}
-
-			userCompetenceRelDAO.save(uc);
-
-		}
-
-		for (UserTaskRel utr : task.getUserRelationships()) {
-			UserRelationship ur = userRelationshipDAO.findByC1AndC2(e.getUserTaskRel().getUser(), utr.getUser());
-
-			if (ur != null) {
-				ur.setLikeValue(ur.getLikeValue() * adjustValues(e.getLikeValOthers()));
-			} else {
-				ur = new UserRelationship();
-				ur.setC1(e.getUserTaskRel().getUser());
-				ur.setC2(utr.getUser());
-				ur.setFriends(false);
-				ur.setLikeValue(adjustValues(e.getLikeValOthers()));
-			}
-
-			userRelationshipDAO.save(ur);
-
-		}
-
-	}
-
-	private double adjustValues(double val) {
-		double result = val;
-
-		for (int i = 0; i < decreaseValuesFactor; i++) {
-			result = (result + 1) / 2;
-		}
-
-		return result;
 	}
 
 }

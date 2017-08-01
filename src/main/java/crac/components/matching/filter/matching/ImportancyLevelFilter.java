@@ -21,6 +21,8 @@ public class ImportancyLevelFilter extends CracMatchingFilter{
 		if (value != 1) {
 			newVal = value * (1 - ((double) importancyValue / 300));
 		}
+		System.out.println("Applied: "+super.speakString());
+		
 		return newVal;
 		
 	}
