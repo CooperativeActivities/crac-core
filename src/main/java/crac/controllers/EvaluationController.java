@@ -34,7 +34,7 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.output.OpenEvaluation;
 import crac.module.matching.Decider;
-import crac.module.matching.factories.NotificationFactory;
+import crac.module.notifier.factory.NotificationFactory;
 import crac.module.utility.JSONResponseHelper;
 
 @RestController

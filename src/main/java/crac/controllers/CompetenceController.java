@@ -33,7 +33,7 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.input.PostOptions;
 import crac.models.output.CompetenceGraphDetails;
-import crac.models.storage.AugmentedSimpleCompetence;
+import crac.module.matching.helpers.AugmentedSimpleCompetence;
 import crac.module.storage.CompetenceStorage;
 import crac.module.utility.JSONResponseHelper;
 

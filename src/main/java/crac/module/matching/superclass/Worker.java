@@ -1,7 +1,7 @@
 package crac.module.matching.superclass;
 
-import crac.models.utility.RandomUtility;
 import crac.module.matching.factories.WorkerFactory;
+import crac.module.utility.RandomUtility;
 
 public abstract class Worker {
 	

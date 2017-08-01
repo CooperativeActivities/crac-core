@@ -1,6 +1,6 @@
 package crac.module.matching.filter.matching;
 
-import crac.models.storage.MatrixField;
+import crac.module.matching.helpers.MatrixField;
 import crac.module.matching.superclass.CracMatchingFilter;
 
 public class ProficiencyLevelFilter extends CracMatchingFilter{

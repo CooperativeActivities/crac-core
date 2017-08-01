@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import crac.models.db.entities.Task;
-import crac.models.utility.EvaluatedTask;
+import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.interfaces.CracFilter;
 
 public abstract class CracPostMatchingFilter implements CracFilter<ArrayList<EvaluatedTask>, ArrayList<EvaluatedTask>> {

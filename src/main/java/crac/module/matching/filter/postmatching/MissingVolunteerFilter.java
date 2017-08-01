@@ -6,8 +6,8 @@ import java.util.List;
 import crac.enums.TaskState;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Task;
-import crac.models.utility.EvaluatedTask;
-import crac.models.utility.MatchingInformation;
+import crac.module.matching.helpers.EvaluatedTask;
+import crac.module.matching.helpers.MatchingInformation;
 import crac.module.matching.superclass.CracPostMatchingFilter;
 import crac.module.matching.superclass.CracPreMatchingFilter;
 

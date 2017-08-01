@@ -1,4 +1,4 @@
-package crac.models.utility;
+package crac.module.matching.helpers;
 
 import java.util.List;
 

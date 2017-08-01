@@ -3,7 +3,7 @@ package crac.module.matching.superclass;
 import java.util.List;
 
 import crac.models.db.entities.Task;
-import crac.models.utility.MatchingInformation;
+import crac.module.matching.helpers.MatchingInformation;
 import crac.module.matching.interfaces.CracFilter;
 
 public abstract class CracPreMatchingFilter implements CracFilter<List<Task>, MatchingInformation> {

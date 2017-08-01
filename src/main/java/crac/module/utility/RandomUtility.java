@@ -1,4 +1,4 @@
-package crac.models.utility;
+package crac.module.utility;
 
 import java.util.Random;
 

@@ -7,7 +7,7 @@ import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
-import crac.models.utility.MatchingInformation;
+import crac.module.matching.helpers.MatchingInformation;
 import crac.module.matching.superclass.CracPreMatchingFilter;
 
 /**

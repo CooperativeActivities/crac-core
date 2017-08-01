@@ -6,7 +6,7 @@ import java.util.Set;
 
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Task;
-import crac.models.utility.MatchingInformation;
+import crac.module.matching.helpers.MatchingInformation;
 import crac.module.matching.superclass.CracPreMatchingFilter;
 
 public class GroupFilter extends CracPreMatchingFilter {

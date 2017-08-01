@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.TaskState;
 import crac.models.db.daos.TaskDAO;
-import crac.models.utility.EvaluatedTask;
+import crac.module.matching.helpers.EvaluatedTask;
 
 @Service
 public class ElasticConnector<T> {

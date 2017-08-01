@@ -5,11 +5,11 @@ import java.util.Collections;
 
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
-import crac.models.storage.CompetenceCollectionMatrix;
-import crac.models.utility.EvaluatedUser;
 import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.matching.filter.matching.UserRelationFilter;
+import crac.module.matching.helpers.CompetenceCollectionMatrix;
+import crac.module.matching.helpers.EvaluatedUser;
 import crac.module.matching.superclass.Worker;
 
 public class UserMatchingWorker extends Worker {

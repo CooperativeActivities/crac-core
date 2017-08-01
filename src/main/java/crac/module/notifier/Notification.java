@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import crac.models.utility.RandomUtility;
-import crac.module.matching.factories.NotificationFactory;
+import crac.module.notifier.factory.NotificationFactory;
+import crac.module.utility.RandomUtility;
 
 public abstract class Notification {
 	

@@ -19,8 +19,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="crac.models.storage.AugmentedSimpleCompetence" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/AugmentedSimpleCompetence.java" binary="false" 
+  <class id="3" language="java" name="crac.module.matching.helpers.AugmentedSimpleCompetence" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/AugmentedSimpleCompetence.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="673" y="676"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -29,8 +29,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="crac.models.storage.AugmentedSimpleCompetenceCollection" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/AugmentedSimpleCompetenceCollection.java" binary="false" 
+  <class id="4" language="java" name="crac.module.matching.helpers.AugmentedSimpleCompetenceCollection" 
+    project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/AugmentedSimpleCompetenceCollection.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="272" y="614"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -39,8 +40,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="crac.models.storage.SimpleCompetence" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/SimpleCompetence.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="5" language="java" name="crac.module.matching.helpers.SimpleCompetence" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/SimpleCompetence.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="902" y="360"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -48,8 +50,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="crac.models.storage.SimpleCompetenceRelation" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/SimpleCompetenceRelation.java" binary="false" 
+  <class id="6" language="java" name="crac.module.matching.helpers.SimpleCompetenceRelation" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/SimpleCompetenceRelation.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1040" y="596"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 

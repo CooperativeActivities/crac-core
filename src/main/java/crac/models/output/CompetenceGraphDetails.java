@@ -1,7 +1,7 @@
 package crac.models.output;
 
 import crac.models.db.entities.Competence;
-import crac.models.storage.AugmentedSimpleCompetence;
+import crac.module.matching.helpers.AugmentedSimpleCompetence;
 
 public class CompetenceGraphDetails implements Comparable<Object>{
 	

@@ -15,9 +15,9 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
-import crac.models.storage.AugmentedSimpleCompetenceCollection;
-import crac.models.storage.SimpleCompetence;
-import crac.models.storage.SimpleCompetenceRelation;
+import crac.module.matching.helpers.AugmentedSimpleCompetenceCollection;
+import crac.module.matching.helpers.SimpleCompetence;
+import crac.module.matching.helpers.SimpleCompetenceRelation;
 
 @Component
 @Scope("singleton")

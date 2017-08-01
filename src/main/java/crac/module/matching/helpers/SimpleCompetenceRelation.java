@@ -1,4 +1,4 @@
-package crac.models.storage;
+package crac.module.matching.helpers;
 
 public class SimpleCompetenceRelation {
 	

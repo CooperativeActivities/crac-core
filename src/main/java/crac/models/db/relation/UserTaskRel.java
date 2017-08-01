@@ -24,8 +24,8 @@ import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
-import crac.module.matching.factories.NotificationFactory;
 import crac.module.notifier.Notification;
+import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.EvaluationNotification;
 
 @Entity

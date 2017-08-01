@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import crac.models.storage.MatrixField;
+import crac.module.matching.helpers.MatrixField;
 import crac.module.matching.interfaces.CracFilter;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.CracMatchingFilter;

@@ -2,7 +2,7 @@ package crac.module.matching.filter.postmatching;
 
 import java.util.ArrayList;
 
-import crac.models.utility.EvaluatedTask;
+import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.superclass.CracPostMatchingFilter;
 
 public class ClearFilter extends CracPostMatchingFilter {

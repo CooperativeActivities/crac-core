@@ -7,7 +7,7 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
-import crac.models.storage.MatrixField;
+import crac.module.matching.helpers.MatrixField;
 import crac.module.matching.superclass.CracMatchingFilter;
 
 public class UserRelationFilter extends CracMatchingFilter {

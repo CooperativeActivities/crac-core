@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.13" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="crac.models.storage.SimpleCompetenceRelation" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/SimpleCompetenceRelation.java" binary="false" 
+  <class id="1" language="java" name="crac.module.matching.helpers.SimpleCompetenceRelation" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/SimpleCompetenceRelation.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="602" y="241"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -11,8 +11,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="crac.models.storage.SimpleCompetence" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/SimpleCompetence.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="2" language="java" name="crac.module.matching.helpers.SimpleCompetence" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/SimpleCompetence.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="152" y="301"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -38,8 +39,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="crac.models.storage.AugmentedSimpleCompetenceCollection" project="crac-app" 
-    file="/crac-app/src/main/java/crac/models/storage/AugmentedSimpleCompetenceCollection.java" binary="false" 
+  <class id="5" language="java" name="crac.module.matching.helpers.AugmentedSimpleCompetenceCollection" 
+    project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/matching/helpers/AugmentedSimpleCompetenceCollection.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="548" y="-20"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 

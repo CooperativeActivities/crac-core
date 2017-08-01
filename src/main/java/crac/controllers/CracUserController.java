@@ -46,8 +46,8 @@ import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
-import crac.module.matching.factories.NotificationFactory;
 import crac.module.notifier.Notification;
+import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.FriendRequest;
 import crac.module.utility.JSONResponseHelper;
 

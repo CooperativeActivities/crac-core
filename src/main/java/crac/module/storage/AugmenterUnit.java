@@ -3,10 +3,10 @@ package crac.module.storage;
 import java.util.List;
 
 import crac.models.db.daos.CompetenceDAO;
-import crac.models.storage.AugmentedSimpleCompetence;
-import crac.models.storage.AugmentedSimpleCompetenceCollection;
-import crac.models.storage.SimpleCompetence;
-import crac.models.storage.SimpleCompetenceRelation;
+import crac.module.matching.helpers.AugmentedSimpleCompetence;
+import crac.module.matching.helpers.AugmentedSimpleCompetenceCollection;
+import crac.module.matching.helpers.SimpleCompetence;
+import crac.module.matching.helpers.SimpleCompetenceRelation;
 
 public class AugmenterUnit {
 	

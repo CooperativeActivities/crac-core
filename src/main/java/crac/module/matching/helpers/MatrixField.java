@@ -1,4 +1,4 @@
-package crac.models.storage;
+package crac.module.matching.helpers;
 
 import crac.models.db.entities.Competence;
 import crac.models.db.relation.CompetenceTaskRel;
