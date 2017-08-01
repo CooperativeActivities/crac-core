@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.utility.ElasticConnector;
-import crac.components.utility.JSONResponseHelper;
-import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskType;
@@ -43,6 +40,8 @@ import crac.models.db.relation.CompetenceRelationshipType;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
+import crac.module.utility.ElasticConnector;
+import crac.module.utility.JSONResponseHelper;
 
 /**
  * 
@@ -237,7 +236,7 @@ public class AdminController {
 		CracUser oldUser = userDAO.findOne(id);
 
 		if (oldUser != null) {
-			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
+			oldUser.update(updatedUser);
 			userDAO.save(oldUser);
 			return JSONResponseHelper.successfullyUpdated(oldUser);
 		} else {
@@ -419,7 +418,7 @@ public class AdminController {
 		Competence oldCompetence = competenceDAO.findOne(id);
 
 		if (oldCompetence != null) {
-			UpdateEntitiesHelper.checkAndUpdateCompetence(oldCompetence, updatedCompetence);
+			oldCompetence.update(updatedCompetence);
 			competenceDAO.save(oldCompetence);
 			return JSONResponseHelper.successfullyUpdated(oldCompetence);
 		} else {
@@ -509,7 +508,7 @@ public class AdminController {
 		CompetenceRelationshipType oldupdatedCrt = typeDAO.findOne(id);
 
 		if (oldupdatedCrt != null) {
-			UpdateEntitiesHelper.checkAndUpdateCompetenceRelType(oldupdatedCrt, updatedCrt);
+			oldupdatedCrt.update(updatedCrt);
 			typeDAO.save(oldupdatedCrt);
 			return JSONResponseHelper.successfullyUpdated(oldupdatedCrt);
 		} else {

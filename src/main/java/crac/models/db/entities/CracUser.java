@@ -161,6 +161,40 @@ public class CracUser {
 		this.roles = new HashSet<Role>(); 
 	}
 	
+	@JsonIgnore
+	public void update(CracUser u){
+		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+
+		if (u.getPassword() != null) {
+			this.setPassword(bcryptEncoder.encode(u.getPassword()));
+		}
+		
+		if (u.getName() != null) {
+			this.setName(u.getName());
+		}
+		if (u.getFirstName() != null) {
+			this.setFirstName(u.getFirstName());
+		}
+		if (u.getLastName() != null) {
+			this.setLastName(u.getLastName());
+		}
+		if (u.getBirthDate() != null) {
+			this.setBirthDate(u.getBirthDate());
+		}
+		if (u.getEmail() != null) {
+			this.setEmail(u.getEmail());
+		}
+		if (u.getAddress() != null) {
+			this.setAddress(u.getAddress());
+		}
+		if (u.getPhone() != null) {
+			this.setPhone(u.getPhone());
+		}
+		if (u.getStatus() != null) {
+			this.setStatus(u.getStatus());
+		}
+	}
+	
 	//UTILITY----------------
 	
 	@JsonIgnore

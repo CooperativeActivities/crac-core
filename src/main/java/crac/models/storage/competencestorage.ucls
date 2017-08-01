@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.13" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="crac.components.storage.CompetenceStorage" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/storage/CompetenceStorage.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="1" language="java" name="crac.module.storage.CompetenceStorage" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/storage/CompetenceStorage.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="348" y="149"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -10,8 +10,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="crac.components.storage.AugmenterUnit" project="crac-app" 
-    file="/crac-app/src/main/java/crac/components/storage/AugmenterUnit.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="2" language="java" name="crac.module.storage.AugmenterUnit" project="crac-app" 
+    file="/crac-app/src/main/java/crac/module/storage/AugmenterUnit.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="879" y="79"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -71,39 +71,39 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="10">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="11" name="related">        
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="11" name="augmented">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
-      <multiplicity id="12" minimum="0" maximum="1">        
+      <multiplicity id="12" minimum="0" maximum="2147483647">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
+    <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="13">    
     <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="14" name="cache">        
+      <attribute id="14" name="competences">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
       <multiplicity id="15" minimum="0" maximum="2147483647">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    
-    <end type="TARGET" refId="4" navigable="true"/>    
+    <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="16">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="17" name="augmented">        
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="17" name="cache">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
       <multiplicity id="18" minimum="0" maximum="2147483647">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
+    <end type="TARGET" refId="4" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="19">    
@@ -119,35 +119,23 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="22">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="23" name="instance">        
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="23" name="comp">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
       <multiplicity id="24" minimum="0" maximum="1">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="25">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="26" name="competences">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </attribute>      
-      <multiplicity id="27" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </multiplicity>    
-    </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="28">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="29" name="comp">        
+  <association id="25">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="26" name="related">        
         <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
-      <multiplicity id="30" minimum="0" maximum="1">        
+      <multiplicity id="27" minimum="0" maximum="1">        
         <position height="0" width="0" x="0" y="0"/>      
       </multiplicity>    
     </end>    

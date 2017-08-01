@@ -3,12 +3,12 @@ package crac.models.storage;
 import java.util.ArrayList;
 import java.util.Set;
 
-import crac.components.matching.configuration.MatchingConfiguration;
-import crac.components.storage.CompetenceStorage;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
+import crac.module.matching.configuration.MatchingConfiguration;
+import crac.module.storage.CompetenceStorage;
 
 public class CompetenceCollectionMatrix {
 

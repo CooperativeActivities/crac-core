@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.storage.CompetenceStorage;
-import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.daos.CompetenceDAO;
@@ -36,6 +34,8 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.models.input.PostOptions;
 import crac.models.output.CompetenceGraphDetails;
 import crac.models.storage.AugmentedSimpleCompetence;
+import crac.module.storage.CompetenceStorage;
+import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing competences.

@@ -20,12 +20,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.input.PostOptions;
+import crac.module.utility.JSONResponseHelper;
 import crac.models.db.entities.CracGroup;
 
 /**

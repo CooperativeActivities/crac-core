@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.matching.configuration.MatchingConfiguration;
-import crac.components.matching.configuration.MatrixFilterParameters;
-import crac.components.matching.filter.matching.ImportancyLevelFilter;
-import crac.components.matching.filter.matching.LikeLevelFilter;
-import crac.components.matching.filter.matching.ProficiencyLevelFilter;
-import crac.components.matching.filter.matching.UserRelationFilter;
-import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
+import crac.module.matching.configuration.MatchingConfiguration;
+import crac.module.matching.configuration.MatrixFilterParameters;
+import crac.module.matching.filter.matching.ImportancyLevelFilter;
+import crac.module.matching.filter.matching.LikeLevelFilter;
+import crac.module.matching.filter.matching.ProficiencyLevelFilter;
+import crac.module.matching.filter.matching.UserRelationFilter;
+import crac.module.utility.JSONResponseHelper;
 
 @RestController
 @RequestMapping("/configuration")

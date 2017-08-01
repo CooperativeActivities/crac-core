@@ -24,17 +24,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.matching.Decider;
-import crac.components.matching.configuration.UserFilterParameters;
-import crac.components.matching.factories.NotificationFactory;
-import crac.components.notifier.Notification;
-import crac.components.notifier.notifications.LeadNomination;
-import crac.components.notifier.notifications.TaskDoneNotification;
-import crac.components.notifier.notifications.TaskInvitation;
-import crac.components.storage.CompetenceStorage;
-import crac.components.utility.ElasticConnector;
-import crac.components.utility.JSONResponseHelper;
-import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.RESTAction;
 import crac.enums.TaskParticipationType;
@@ -67,6 +56,16 @@ import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
 import crac.models.utility.EvaluatedTask;
+import crac.module.matching.Decider;
+import crac.module.matching.configuration.UserFilterParameters;
+import crac.module.matching.factories.NotificationFactory;
+import crac.module.notifier.Notification;
+import crac.module.notifier.notifications.LeadNomination;
+import crac.module.notifier.notifications.TaskDoneNotification;
+import crac.module.notifier.notifications.TaskInvitation;
+import crac.module.storage.CompetenceStorage;
+import crac.module.utility.ElasticConnector;
+import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing tasks.
@@ -880,7 +879,7 @@ public class TaskController {
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 					}
 
-					UpdateEntitiesHelper.checkAndUpdateMaterial(old, updated);
+					old.update(updated);
 					materialDAO.save(old);
 
 					return JSONResponseHelper.successfullyUpdated(st);

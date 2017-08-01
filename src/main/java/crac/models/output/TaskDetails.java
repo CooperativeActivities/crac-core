@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import crac.components.storage.CompetenceStorage;
 import crac.enums.TaskState;
 import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
@@ -19,6 +18,7 @@ import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
+import crac.module.storage.CompetenceStorage;
 
 public class TaskDetails {
 

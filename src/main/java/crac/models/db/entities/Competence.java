@@ -119,6 +119,18 @@ public class Competence {
 		this.name = "default";
 		this.description = "default";
 	}
+	
+	public void update(Competence c){
+		if (c.getName() != null) {
+			this.setName(c.getName());
+		}
+		if (c.getDescription() != null) {
+			this.setDescription(c.getDescription());
+		}
+		if (c.getPermissionType() != null) {
+			this.setPermissionType(c.getPermissionType());
+		}
+	}
 
 	/**
 	 * getters and setters

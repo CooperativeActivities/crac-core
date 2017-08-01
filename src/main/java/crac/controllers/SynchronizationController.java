@@ -19,20 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import crac.components.matching.configuration.MatchingConfiguration;
-import crac.components.matching.configuration.PostMatchingConfiguration;
-import crac.components.matching.configuration.PreMatchingConfiguration;
-import crac.components.matching.filter.matching.ImportancyLevelFilter;
-import crac.components.matching.filter.matching.LikeLevelFilter;
-import crac.components.matching.filter.matching.ProficiencyLevelFilter;
-import crac.components.matching.filter.matching.UserRelationFilter;
-import crac.components.matching.filter.postmatching.ClearFilter;
-import crac.components.matching.filter.postmatching.MissingVolunteerFilter;
-import crac.components.matching.filter.prematching.GroupFilter;
-import crac.components.matching.filter.prematching.LoggedUserFilter;
-import crac.components.storage.CompetenceStorage;
-import crac.components.utility.ElasticConnector;
-import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CommentDAO;
@@ -70,6 +56,20 @@ import crac.models.komet.entities.TxExabiscompetencesDescriptor;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsDescriptorMm;
 import crac.models.komet.entities.TxExabiscompetencesDescriptorsTopicidMm;
 import crac.models.komet.entities.TxExabiscompetencesTopic;
+import crac.module.matching.configuration.MatchingConfiguration;
+import crac.module.matching.configuration.PostMatchingConfiguration;
+import crac.module.matching.configuration.PreMatchingConfiguration;
+import crac.module.matching.filter.matching.ImportancyLevelFilter;
+import crac.module.matching.filter.matching.LikeLevelFilter;
+import crac.module.matching.filter.matching.ProficiencyLevelFilter;
+import crac.module.matching.filter.matching.UserRelationFilter;
+import crac.module.matching.filter.postmatching.ClearFilter;
+import crac.module.matching.filter.postmatching.MissingVolunteerFilter;
+import crac.module.matching.filter.prematching.GroupFilter;
+import crac.module.matching.filter.prematching.LoggedUserFilter;
+import crac.module.storage.CompetenceStorage;
+import crac.module.utility.ElasticConnector;
+import crac.module.utility.JSONResponseHelper;
 
 @RestController
 @RequestMapping("/synchronization")

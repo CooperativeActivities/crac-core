@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import crac.components.matching.factories.NotificationFactory;
-import crac.components.notifier.Notification;
-import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
+import crac.module.matching.factories.NotificationFactory;
+import crac.module.notifier.Notification;
+import crac.module.utility.JSONResponseHelper;
 
 @RestController
 @RequestMapping("/notification")

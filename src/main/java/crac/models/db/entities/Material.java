@@ -66,6 +66,18 @@ public class Material {
 		}
 
 	}
+	
+	public void update(Material m){
+		if (m.getName() != null) {
+			this.setName(m.getName());
+		}
+		if (m.getDescription() != null) {
+			this.setDescription(m.getDescription());
+		}
+		if (m.getQuantity() > 0) {
+			this.setQuantity(m.getQuantity());
+		}
+	}
 
 	public String subscribable(Long additionalq, UserMaterialSubscription um) {
 		if (additionalq <= 0) {

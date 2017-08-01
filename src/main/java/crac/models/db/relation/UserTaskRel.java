@@ -20,13 +20,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import crac.components.matching.factories.NotificationFactory;
-import crac.components.notifier.Notification;
-import crac.components.notifier.notifications.EvaluationNotification;
 import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
+import crac.module.matching.factories.NotificationFactory;
+import crac.module.notifier.Notification;
+import crac.module.notifier.notifications.EvaluationNotification;
 
 @Entity
 @Table(name = "user_task_relationship")

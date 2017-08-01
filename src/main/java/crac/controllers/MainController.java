@@ -13,17 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import crac.components.matching.configuration.MatchingConfiguration;
-import crac.components.matching.factories.NotificationFactory;
-import crac.components.matching.filter.matching.ImportancyLevelFilter;
-import crac.components.matching.filter.matching.LikeLevelFilter;
-import crac.components.matching.filter.matching.ProficiencyLevelFilter;
-import crac.components.notifier.Notification;
-import crac.components.notifier.notifications.FriendRequest;
-import crac.components.notifier.notifications.TaskInvitation;
-import crac.components.storage.CompetenceStorage;
-import crac.components.utility.ElasticConnector;
-import crac.components.utility.JSONResponseHelper;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
@@ -39,6 +28,17 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
 import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
+import crac.module.matching.configuration.MatchingConfiguration;
+import crac.module.matching.factories.NotificationFactory;
+import crac.module.matching.filter.matching.ImportancyLevelFilter;
+import crac.module.matching.filter.matching.LikeLevelFilter;
+import crac.module.matching.filter.matching.ProficiencyLevelFilter;
+import crac.module.notifier.Notification;
+import crac.module.notifier.notifications.FriendRequest;
+import crac.module.notifier.notifications.TaskInvitation;
+import crac.module.storage.CompetenceStorage;
+import crac.module.utility.ElasticConnector;
+import crac.module.utility.JSONResponseHelper;
 
 /**
  * The main-controller used for hello world and testing

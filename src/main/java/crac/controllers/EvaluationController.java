@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.matching.Decider;
-import crac.components.matching.factories.NotificationFactory;
-import crac.components.utility.JSONResponseHelper;
 import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
@@ -36,6 +33,9 @@ import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.output.OpenEvaluation;
+import crac.module.matching.Decider;
+import crac.module.matching.factories.NotificationFactory;
+import crac.module.utility.JSONResponseHelper;
 
 @RestController
 @RequestMapping("/evaluation")

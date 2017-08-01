@@ -26,13 +26,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.components.matching.Decider;
-import crac.components.matching.configuration.UserFilterParameters;
-import crac.components.matching.factories.NotificationFactory;
-import crac.components.notifier.Notification;
-import crac.components.notifier.notifications.FriendRequest;
-import crac.components.utility.JSONResponseHelper;
-import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.RESTAction;
 import crac.models.db.daos.CompetenceDAO;
@@ -51,6 +44,12 @@ import crac.models.db.entities.Role;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
+import crac.module.matching.Decider;
+import crac.module.matching.configuration.UserFilterParameters;
+import crac.module.matching.factories.NotificationFactory;
+import crac.module.notifier.Notification;
+import crac.module.notifier.notifications.FriendRequest;
+import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing users.
@@ -165,7 +164,7 @@ public class CracUserController {
 		CracUser oldUser = userDAO.findByName(userDetails.getName());
 
 		if (oldUser != null) {
-			UpdateEntitiesHelper.checkAndUpdateUser(oldUser, updatedUser);
+			oldUser.update(updatedUser);
 			userDAO.save(oldUser);
 			return JSONResponseHelper.successfullyUpdated(oldUser);
 		} else {

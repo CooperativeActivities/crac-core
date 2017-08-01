@@ -42,6 +42,18 @@ public class CompetenceRelationshipType {
 
 	public CompetenceRelationshipType() {
 	}
+	
+	public void update(CompetenceRelationshipType crt){
+		if (crt.getName() != null) {
+			this.setName(crt.getName());
+		}
+		if (crt.getDescription() != null) {
+			this.setDescription(crt.getDescription());
+		}
+		if (crt.getDistanceVal() >= 0) {
+			this.setDistanceVal(crt.getDistanceVal());
+		}
+	}
 
 	public long getId() {
 		return id;

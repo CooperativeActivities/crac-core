@@ -2,9 +2,9 @@ package crac.models.storage;
 
 import java.util.ArrayList;
 
-import crac.components.storage.CompetenceStorage;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.entities.Competence;
+import crac.module.storage.CompetenceStorage;
 
 public class AugmentedSimpleCompetenceCollection {
 

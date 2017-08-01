@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import crac.components.utility.JSONResponseHelper;
 import crac.models.db.daos.RoleDAO;
+import crac.module.utility.JSONResponseHelper;
 
 @RestController
 @RequestMapping("/role")
