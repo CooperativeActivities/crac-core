@@ -24,19 +24,21 @@ public class MissingVolunteerFilter extends CracPostMatchingFilter {
 
 			if (t.getTaskState() == TaskState.STARTED) {
 
-				double mval = 0.6;
-				double newval = 0;
+				double modifyVal = 0.6;
+				double valAdjust = 1;
 
-				double valAdjust = ((double) t.getAllParticipants().size() / (double) t.getMinAmountOfVolunteers());
+				if ((double) t.getMinAmountOfVolunteers() != 0) {
+					valAdjust = ((double) t.getAllParticipants().size() / (double) t.getMinAmountOfVolunteers());
+				}
 
-				newval = task.getAssessment() * (1 + (1 - valAdjust) * mval);
+				double newval = task.getAssessment() * (1 + (1 - valAdjust) * modifyVal);
 
 				task.setAssessment((double) Math.round(newval * 100) / 100);
 
 			}
 		}
-		System.out.println("Applied: "+super.speakString());
-		
+		System.out.println("Applied: " + super.speakString());
+
 		return list;
 	}
 

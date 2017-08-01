@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.components.matching.Decider;
 import crac.components.matching.factories.NotificationFactory;
 import crac.components.utility.JSONResponseHelper;
-import crac.components.utility.UpdateEntitiesHelper;
 import crac.enums.ErrorCause;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskState;
@@ -35,9 +34,6 @@ import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
-import crac.models.db.relation.CompetenceTaskRel;
-import crac.models.db.relation.UserCompetenceRel;
-import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.output.OpenEvaluation;
 
@@ -177,38 +173,6 @@ public class EvaluationController {
 
 		return JSONResponseHelper.createResponse(evals, true);
 	}
-
-	/**
-	 * Creates an evaluation (notification + entity) for target user,
-	 * participating in target task
-	 * 
-	 * @param userId
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	/*
-	 * @RequestMapping(value = { "/task/{task_id}/user/{user_id}",
-	 * "/task/{task_id}/user/{user_id}/" }, method = RequestMethod.GET, produces
-	 * = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * createUserEvaluation(@PathVariable(value = "user_id") Long userId,
-	 * 
-	 * @PathVariable(value = "task_id") Long taskId) { CracUser user =
-	 * userDAO.findOne(userId); Task task = taskDAO.findOne(taskId);
-	 * 
-	 * if (user != null && task != null &&
-	 * userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
-	 * TaskParticipationType.LEADING) != null && task.getTaskState() ==
-	 * TaskState.COMPLETED) { Evaluation e = new Evaluation(user, task);
-	 * EvaluationNotification es = new EvaluationNotification(user.getId(),
-	 * task.getId(), e.getId()); NotificationHelper.createNotification(es);
-	 * e.setNotificationId(es.getNotificationId()); evaluationDAO.save(e);
-	 * es.setEvaluationIdy(e.getId()); return
-	 * JSONResponseHelper.successfullyCreated(e); } else { return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCause.ID_NOT_FOUND); } }
-	 */
 
 	/**
 	 * Resolves the evaluation. Updates the empty evaluation with sent data and
