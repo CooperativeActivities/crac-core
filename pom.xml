@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>2.3.3</version>
+			<version>5.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
