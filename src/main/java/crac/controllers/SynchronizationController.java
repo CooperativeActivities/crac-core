@@ -162,11 +162,6 @@ public class SynchronizationController {
 	@Autowired
 	private ElasticConnector<Task> ect;
 	
-	@Autowired
-	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
-		ect.setType(type);
-	}
-
 	@Value("${crac.elastic.url}")
 	private String url;
 	

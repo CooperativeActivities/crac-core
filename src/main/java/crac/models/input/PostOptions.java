@@ -13,11 +13,13 @@ public class PostOptions {
 	private String text;
 	private String firstName;
 	private String lastName;
+	private String elasticQuery;
 
 	public PostOptions() {
 		text = "";
 		firstName = "";
 		lastName = "";
+		elasticQuery = "";
 	}
 
 	public int getProficiencyValue() {
@@ -106,6 +108,14 @@ public class PostOptions {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getElasticQuery() {
+		return elasticQuery;
+	}
+
+	public void setElasticQuery(String elasticQuery) {
+		this.elasticQuery = elasticQuery;
 	}
 
 }

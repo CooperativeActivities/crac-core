@@ -1,5 +1,6 @@
 package crac.controllers;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import crac.enums.ErrorCause;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
@@ -26,8 +33,11 @@ import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
+import crac.models.input.PostOptions;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
 import crac.models.komet.daos.TxExabiscompetencesTopicDAO;
+import crac.models.utility.PersonalizedFilters;
+import crac.models.utility.TaskLookup;
 import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.matching.filter.matching.ImportancyLevelFilter;
 import crac.module.matching.filter.matching.LikeLevelFilter;
@@ -98,26 +108,40 @@ public class MainController {
 	private ElasticConnector<Task> ect;
 	
 	@Autowired
+	private TaskLookup tl;
+	
+	@Autowired
 	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
 		ect.setType(type);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping("/test")
+	@RequestMapping(value = { "/test", "/test/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> test() {
+	public ResponseEntity<String> test(@RequestBody String json) {
 		
-		System.out.println("--------------------------------");
-		System.out.println("ES-Config");
-		System.out.println("--------------------------------");
-		System.out.println(ect.getIndex()+" --> Index");
-		System.out.println(ect.getType()+" --> Type");
-		System.out.println(ect.getAddress()+" --> Address");
-		System.out.println(ect.getPort()+" --> Port");
-		System.out.println(ect.getThreshold()+" --> Threshold");
-		System.out.println("--------------------------------");
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		ObjectMapper mapper = new ObjectMapper();
+		PersonalizedFilters pf;
+		try {
+			pf = mapper.readValue(json, PersonalizedFilters.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
+
+
 		
-		return JSONResponseHelper.createResponse("done", true);
+		
+		
+		
+		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
 		
 	}
 

@@ -2,21 +2,22 @@ package crac.module.matching.configuration;
 
 import java.util.List;
 
-import crac.module.matching.factories.MatchingFilterFactory;
+import crac.module.matching.factories.CracFilterFactory;
+import crac.module.matching.interfaces.CracFilter;
 import crac.module.matching.superclass.CracMatchingFilter;
 
 public class MatrixFilterParameters {
 
-	private List<String> parameters;
-	private MatchingFilterFactory mff;
+	private List<Class<CracFilter<?,?>>> parameters;
+	private CracFilterFactory mff;
 
 	public MatrixFilterParameters() {
 	}
 
 	public boolean apply(MatchingConfiguration matchingConfig) {
 		int count = 0;
-		for (String p : parameters) {
-			CracMatchingFilter f = mff.createMatchingFilter(p);
+		for (Class<CracFilter<?,?>> p : parameters) {
+			CracMatchingFilter f = (CracMatchingFilter) mff.createMatchingFilter(p);
 			if (f != null) {
 				matchingConfig.addFilter(f);
 			}
@@ -29,12 +30,20 @@ public class MatrixFilterParameters {
 		}
 	}
 
-	public List<String> getParameters() {
+	public List<Class<CracFilter<?,?>>> getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(List<String> parameters) {
+	public void setParameters(List<Class<CracFilter<?,?>>> parameters) {
 		this.parameters = parameters;
+	}
+
+	public CracFilterFactory getMff() {
+		return mff;
+	}
+
+	public void setMff(CracFilterFactory mff) {
+		this.mff = mff;
 	}
 
 }

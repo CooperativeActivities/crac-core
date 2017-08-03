@@ -90,12 +90,7 @@ public class AdminController {
 
 	@Autowired
 	private ElasticConnector<Task> ect;
-	
-	@Autowired
-	public void configureES(ElasticConnector<Task> ect, @Value("task") String type){
-		ect.setType(type);
-	}
-	
+		
 	@Autowired
 	private CompetenceRelationshipTypeDAO typeDAO;
 

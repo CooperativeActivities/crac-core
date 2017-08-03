@@ -55,9 +55,12 @@ import crac.models.input.PostOptions;
 import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
+import crac.models.utility.PersonalizedFilters;
+import crac.models.utility.TaskLookup;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.matching.helpers.EvaluatedTask;
+import crac.module.matching.superclass.CracPreMatchingFilter;
 import crac.module.notifier.Notification;
 import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.LeadNomination;
@@ -115,25 +118,39 @@ public class TaskController {
 	private ElasticConnector<Task> ect;
 
 	@Autowired
-	public void configureES(ElasticConnector<Task> ect, @Value("task") String type) {
-		ect.setType(type);
-	}
-
-	@Autowired
 	private NotificationFactory nf;
 
 	@Autowired
 	private CompetenceStorage cs;
+	
+	@Autowired
+	private TaskLookup tl;
 
 	/**
-	 * Returns all tasks
+	 * Returns all tasks affected by the chosen filters and the elasticsearch-query
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> index() {
-		return JSONResponseHelper.createResponse(taskDAO.findAll(), true);
+	public ResponseEntity<String> index(@RequestBody String json) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		ObjectMapper mapper = new ObjectMapper();
+		PersonalizedFilters pf;
+		try {
+			pf = mapper.readValue(json, PersonalizedFilters.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
+		
+	return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
 	}
 
 	/**
@@ -2132,7 +2149,7 @@ public class TaskController {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
 
-		ArrayList<EvaluatedTask> et = ect.query(query.getText(), taskDAO);
+		ArrayList<EvaluatedTask> et = ect.query(query.getText());
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();

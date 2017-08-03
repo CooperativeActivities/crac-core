@@ -759,11 +759,22 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Returns an array containing all tasks**
+**Returns all tasks affected by the chosen filters and the elasticsearch-query**
 
 ##### *Request:*
 
-GET /task
+POST /task
+
+	{
+	    "query": "here is my query",
+	    "filters": [
+	    		"FilterName1",
+	    		"FilterName2"
+	    	]
+	}
+
+The filters that can be used right now are:  
+GroupFilter, LoggedUserFilter, others will be announced as soon as they are done.  
 
 ##### *Response:*
 
@@ -2233,3 +2244,9 @@ Endpoint for inviting users to a task is now PUT /task/{task_id}/invite/{inv_typ
 Endpoint for restricting a task to different groups PUT /task/{task_id}/restrict/group/{group_id}
 
 Endpoints for roles have changed --> see the "User-Endpoints"!  
+
+-----------------------------------------------------------------
+
+#### 3.8.2017
+
+Major change for the "get all tasks"-Endpoints --> see the "Task-Endpoints" (first entry)!  
