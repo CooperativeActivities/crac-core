@@ -5,17 +5,14 @@ import java.util.ArrayList;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import crac.module.matching.filter.prematching.GroupFilter;
-import crac.module.matching.filter.prematching.LoggedUserFilter;
-import crac.module.matching.interfaces.CracFilter;
 import crac.module.matching.interfaces.FilterConfiguration;
-import crac.module.matching.superclass.CracPreMatchingFilter;
+import crac.module.matching.superclass.ConcreteFilter;
 
 @Service
 @Scope("singleton")
 public class PreMatchingConfiguration implements FilterConfiguration {
 
-	private ArrayList<CracPreMatchingFilter> filters;
+	private ArrayList<ConcreteFilter> filters;
 
 	public PreMatchingConfiguration() {
 		filters = new ArrayList<>();
@@ -26,13 +23,13 @@ public class PreMatchingConfiguration implements FilterConfiguration {
 		filters.clear();
 	}
 
-	public ArrayList<CracPreMatchingFilter> getFilters() {
+	public ArrayList<ConcreteFilter> getFilters() {
 		return filters;
 	}
 
 	@Override
-	public void addFilter(CracFilter<?, ?> filter) {
-		filters.add((CracPreMatchingFilter) filter);		
+	public void addFilter(ConcreteFilter filter) {
+		filters.add(filter);		
 	}
 	
 	@Override

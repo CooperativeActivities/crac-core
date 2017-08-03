@@ -1,19 +1,22 @@
 package crac.module.matching.filter.postmatching;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import crac.module.matching.helpers.EvaluatedTask;
-import crac.module.matching.superclass.CracPostMatchingFilter;
+import crac.module.matching.helpers.FilterParameters;
+import crac.module.matching.superclass.ConcreteFilter;
 
-public class ClearFilter extends CracPostMatchingFilter {
+public class ClearFilter extends ConcreteFilter {
 
 	public ClearFilter() {
 		super("clear-filter");
 	}
 
 	@Override
-	public ArrayList<EvaluatedTask> apply(ArrayList<EvaluatedTask> list) {
-		ArrayList<EvaluatedTask> remove = new ArrayList<EvaluatedTask>();
+	public void apply(FilterParameters fp) {
+		List<EvaluatedTask> list = fp.getEvaluatedTasksPool();
+		List<EvaluatedTask> remove = new ArrayList<EvaluatedTask>();
 		for (EvaluatedTask t : list) {
 			if (!t.isDoable() || t.getAssessment() == 0) {
 				remove.add(t);
@@ -23,9 +26,7 @@ public class ClearFilter extends CracPostMatchingFilter {
 		for (EvaluatedTask t : remove) {
 			list.remove(t);
 		}
-		System.out.println("Applied: "+super.speakString());
-		
-		return list;
+		System.out.println("Applied: " + super.speakString());
 	}
 
 }

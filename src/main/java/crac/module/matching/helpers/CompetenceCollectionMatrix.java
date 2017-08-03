@@ -81,10 +81,13 @@ public class CompetenceCollectionMatrix {
 
 	private void applyFilters(MatchingConfiguration m) {
 
+		FilterParameters fp = new FilterParameters();
+		
 		for (MatrixField[] row : matrix) {
 
 			for (MatrixField field : row) {
-				m.applyFilters(field);
+				fp.setM(field);
+				m.applyFilters(fp);
 			}
 		}
 	}

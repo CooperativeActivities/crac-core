@@ -2,7 +2,7 @@ package crac.models.utility;
 
 import java.util.ArrayList;
 
-import crac.module.matching.superclass.CracPreMatchingFilter;
+import crac.module.matching.superclass.ConcreteFilter;
 
 public class PersonalizedFilters {
 
@@ -10,9 +10,9 @@ public class PersonalizedFilters {
 
 	private String[] filters;
 
-	private ArrayList<Class<CracPreMatchingFilter>> filtersClass;
+	private ArrayList<Class<ConcreteFilter>> filtersClass;
 
-	private ArrayList<CracPreMatchingFilter> filtersObj;
+	private ArrayList<ConcreteFilter> filtersObj;
 
 	public PersonalizedFilters() {
 		query = "";
@@ -30,7 +30,7 @@ public class PersonalizedFilters {
 				e.printStackTrace();
 			}
 			if (c != null) {
-				filtersClass.add((Class<CracPreMatchingFilter>) c);
+				filtersClass.add((Class<ConcreteFilter>) c);
 			}
 		}
 	}
@@ -43,7 +43,7 @@ public class PersonalizedFilters {
 		this.query = query;
 	}
 
-	public void addFilter(CracPreMatchingFilter filter) {
+	public void addFilter(ConcreteFilter filter) {
 		filtersObj.add(filter);
 	}
 
@@ -56,19 +56,19 @@ public class PersonalizedFilters {
 		convert();
 	}
 
-	public ArrayList<Class<CracPreMatchingFilter>> getFiltersClass() {
+	public ArrayList<Class<ConcreteFilter>> getFiltersClass() {
 		return filtersClass;
 	}
 
-	public void setFiltersClass(ArrayList<Class<CracPreMatchingFilter>> filtersClass) {
+	public void setFiltersClass(ArrayList<Class<ConcreteFilter>> filtersClass) {
 		this.filtersClass = filtersClass;
 	}
 
-	public ArrayList<CracPreMatchingFilter> getFiltersObj() {
+	public ArrayList<ConcreteFilter> getFiltersObj() {
 		return filtersObj;
 	}
 
-	public void setFiltersObj(ArrayList<CracPreMatchingFilter> filtersObj) {
+	public void setFiltersObj(ArrayList<ConcreteFilter> filtersObj) {
 		this.filtersObj = filtersObj;
 	}
 

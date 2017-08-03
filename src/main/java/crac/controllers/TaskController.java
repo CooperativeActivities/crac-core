@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,7 +59,6 @@ import crac.models.utility.TaskLookup;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.matching.helpers.EvaluatedTask;
-import crac.module.matching.superclass.CracPreMatchingFilter;
 import crac.module.notifier.Notification;
 import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.LeadNomination;

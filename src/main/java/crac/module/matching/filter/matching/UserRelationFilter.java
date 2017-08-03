@@ -1,18 +1,19 @@
 package crac.module.matching.filter.matching;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
+import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.helpers.MatrixField;
-import crac.module.matching.superclass.CracMatchingFilter;
+import crac.module.matching.superclass.ConcreteFilter;
 
-public class UserRelationFilter extends CracMatchingFilter {
+public class UserRelationFilter extends ConcreteFilter {
 	
-	private CracUser setUser;
 	private double userLikeVal;
 	private boolean calc = true;
 
@@ -21,7 +22,8 @@ public class UserRelationFilter extends CracMatchingFilter {
 	}
 
 	@Override
-	public Double apply(MatrixField m) {
+	public void apply(FilterParameters fp) {
+		MatrixField m = fp.getM();
 
 		double value = m.getVal();
 		CracUser user = m.getUserRelation().getUser();
@@ -42,7 +44,7 @@ public class UserRelationFilter extends CracMatchingFilter {
 
 		System.out.println("Applied: "+super.speakString());
 		
-		return newVal;
+		m.setVal(newVal);
 
 	}
 

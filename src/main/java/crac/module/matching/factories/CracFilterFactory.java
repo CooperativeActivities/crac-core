@@ -10,7 +10,7 @@ import crac.module.matching.interfaces.CracFilter;
 @Scope("prototype")
 public class CracFilterFactory {
 	
-	public <T extends CracFilter<?,?>> CracFilter<?,?> createMatchingFilter(Class<T> type){
+	public <T extends CracFilter> CracFilter createMatchingFilter(Class<T> type){
 				
 		return BeanUtils.instantiate(type);
 

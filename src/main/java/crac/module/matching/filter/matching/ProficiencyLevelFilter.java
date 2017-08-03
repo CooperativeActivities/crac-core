@@ -1,16 +1,20 @@
 package crac.module.matching.filter.matching;
 
-import crac.module.matching.helpers.MatrixField;
-import crac.module.matching.superclass.CracMatchingFilter;
+import java.util.HashMap;
 
-public class ProficiencyLevelFilter extends CracMatchingFilter{
+import crac.module.matching.helpers.FilterParameters;
+import crac.module.matching.helpers.MatrixField;
+import crac.module.matching.superclass.ConcreteFilter;
+
+public class ProficiencyLevelFilter extends ConcreteFilter{
 
 	public ProficiencyLevelFilter() {
 		super("ProficiencyLevelFilter");
 	}
 
 	@Override
-	public Double apply(MatrixField m) {
+	public void apply(FilterParameters fp) {
+		MatrixField m = fp.getM();
 
 		double value = m.getVal();
 		int neededProficiency = m.getTaskRelation().getNeededProficiencyLevel();
@@ -29,7 +33,7 @@ public class ProficiencyLevelFilter extends CracMatchingFilter{
 		System.out.println("Applied: "+super.speakString());
 		
 
-		return newVal;
+		m.setVal(newVal);
 		
 	}
 

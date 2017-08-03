@@ -1,17 +1,21 @@
 package crac.module.matching.filter.matching;
 
-import crac.module.matching.helpers.MatrixField;
-import crac.module.matching.superclass.CracMatchingFilter;
+import java.util.HashMap;
 
-public class LikeLevelFilter extends CracMatchingFilter{
+import crac.module.matching.helpers.FilterParameters;
+import crac.module.matching.helpers.MatrixField;
+import crac.module.matching.superclass.ConcreteFilter;
+
+public class LikeLevelFilter extends ConcreteFilter{
 
 	public LikeLevelFilter() {
 		super("LikeLevelFilter");
 	}
 
 	@Override
-	public Double apply(MatrixField m) {
-		
+	public void apply(FilterParameters fp) {
+		MatrixField m = fp.getM();
+	
 		double value = m.getVal();
 		int likeValue = m.getUserRelation().getLikeValue();
 		
@@ -25,7 +29,7 @@ public class LikeLevelFilter extends CracMatchingFilter{
 		System.out.println("Applied: "+super.speakString());
 		
 
-		return newVal;
+		m.setVal(newVal);
 		
 	}
 

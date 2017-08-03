@@ -1,18 +1,16 @@
 package crac.models.utility;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.module.matching.factories.CracFilterFactory;
-import crac.module.matching.helpers.MatchingInformation;
-import crac.module.matching.superclass.CracPreMatchingFilter;
+import crac.module.matching.helpers.FilterParameters;
+import crac.module.matching.superclass.ConcreteFilter;
 import crac.module.utility.ElasticConnector;
 
 @Component
@@ -35,10 +33,12 @@ public class TaskLookup {
 		
 		List<Task> pool = ect.queryForTasks(pf.getQuery());
 		
-		MatchingInformation mi = new MatchingInformation(pool, u);
+		FilterParameters fp = new FilterParameters();
+		fp.setTasksPool(pool);
+		fp.setUser(u);
 
-		for(CracPreMatchingFilter f : pf.getFiltersObj()){
-			pool = f.apply(mi);
+		for(ConcreteFilter f : pf.getFiltersObj()){
+			f.apply(fp);
 		}
 
 		return pool;
@@ -47,8 +47,8 @@ public class TaskLookup {
 	
 	private void createFilters(PersonalizedFilters pf){
 		
-		for(Class<CracPreMatchingFilter> s : pf.getFiltersClass()){
-			pf.addFilter((CracPreMatchingFilter) mf.createMatchingFilter(s));
+		for(Class<ConcreteFilter> s : pf.getFiltersClass()){
+			pf.addFilter((ConcreteFilter) mf.createMatchingFilter(s));
 		}
 		
 	}

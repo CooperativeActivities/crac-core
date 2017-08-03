@@ -1,16 +1,20 @@
 package crac.module.matching.filter.matching;
 
-import crac.module.matching.helpers.MatrixField;
-import crac.module.matching.superclass.CracMatchingFilter;
+import java.util.HashMap;
 
-public class ImportancyLevelFilter extends CracMatchingFilter{
+import crac.module.matching.helpers.FilterParameters;
+import crac.module.matching.helpers.MatrixField;
+import crac.module.matching.superclass.ConcreteFilter;
+
+public class ImportancyLevelFilter extends ConcreteFilter{
 
 	public ImportancyLevelFilter() {
 		super("ImportancyLevelFilter");
 	}
 
 	@Override
-	public Double apply(MatrixField m) {
+	public void apply(FilterParameters fp) {
+		MatrixField m = fp.getM();
 		double value = m.getVal();
 		int importancyValue = m.getTaskRelation().getImportanceLevel();
 		
@@ -23,7 +27,7 @@ public class ImportancyLevelFilter extends CracMatchingFilter{
 		}
 		System.out.println("Applied: "+super.speakString());
 		
-		return newVal;
+		m.setVal(newVal);
 		
 	}
 

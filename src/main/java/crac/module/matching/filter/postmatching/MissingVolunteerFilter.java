@@ -1,24 +1,22 @@
 package crac.module.matching.filter.postmatching;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import crac.enums.TaskState;
-import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
-import crac.module.matching.helpers.MatchingInformation;
-import crac.module.matching.superclass.CracPostMatchingFilter;
-import crac.module.matching.superclass.CracPreMatchingFilter;
+import crac.module.matching.helpers.FilterParameters;
+import crac.module.matching.superclass.ConcreteFilter;
 
-public class MissingVolunteerFilter extends CracPostMatchingFilter {
+public class MissingVolunteerFilter extends ConcreteFilter {
 
 	public MissingVolunteerFilter() {
 		super("missing-volunteer-filter");
 	}
 
 	@Override
-	public ArrayList<EvaluatedTask> apply(ArrayList<EvaluatedTask> list) {
+	public void apply(FilterParameters fp) {
+		List<EvaluatedTask> list = fp.getEvaluatedTasksPool();
 		for (EvaluatedTask task : list) {
 			Task t = task.getTask();
 
@@ -38,8 +36,6 @@ public class MissingVolunteerFilter extends CracPostMatchingFilter {
 			}
 		}
 		System.out.println("Applied: " + super.speakString());
-
-		return list;
 	}
 
 }

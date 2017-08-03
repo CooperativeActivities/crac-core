@@ -1,13 +1,13 @@
 package crac.module.matching.superclass;
 
-import crac.module.matching.helpers.MatrixField;
+import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.CracFilter;
 
-public abstract class CracMatchingFilter implements CracFilter<Double, MatrixField> {
+public abstract class ConcreteFilter implements CracFilter {
 	
 	private String name;
 	
-	public CracMatchingFilter(String name) {
+	public ConcreteFilter(String name) {
 		this.name = name;
 		System.out.println(name+" ready!");
 }
@@ -25,6 +25,6 @@ public abstract class CracMatchingFilter implements CracFilter<Double, MatrixFie
 	}
 
 	@Override
-	public abstract Double apply(MatrixField m);
+	public abstract void apply(FilterParameters fp);
 		
 }

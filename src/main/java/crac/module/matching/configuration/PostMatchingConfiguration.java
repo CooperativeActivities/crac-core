@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import crac.module.matching.interfaces.CracFilter;
 import crac.module.matching.interfaces.FilterConfiguration;
-import crac.module.matching.superclass.CracPostMatchingFilter;
+import crac.module.matching.superclass.ConcreteFilter;
 
 @Service
 @Scope("singleton")
 public class PostMatchingConfiguration implements FilterConfiguration {
 
-	private ArrayList<CracPostMatchingFilter> filters;
+	private ArrayList<ConcreteFilter> filters;
 
 	public PostMatchingConfiguration() {
 		filters = new ArrayList<>();
@@ -24,13 +23,13 @@ public class PostMatchingConfiguration implements FilterConfiguration {
 		filters.clear();
 	}
 
-	public ArrayList<CracPostMatchingFilter> getFilters() {
+	public ArrayList<ConcreteFilter> getFilters() {
 		return filters;
 	}
 
 	@Override
-	public void addFilter(CracFilter<?, ?> filter) {
-		filters.add((CracPostMatchingFilter) filter);		
+	public void addFilter(ConcreteFilter filter) {
+		filters.add(filter);		
 	}
 	
 	@Override

@@ -5,30 +5,29 @@ import java.util.ArrayList;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import crac.module.matching.helpers.MatrixField;
-import crac.module.matching.interfaces.CracFilter;
+import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.FilterConfiguration;
-import crac.module.matching.superclass.CracMatchingFilter;
+import crac.module.matching.superclass.ConcreteFilter;
 
 @Service
 @Scope("singleton")
 public class MatchingConfiguration implements FilterConfiguration {
 	
-	private ArrayList<CracMatchingFilter> filters;
+	private ArrayList<ConcreteFilter> filters;
 	
 	public MatchingConfiguration(){
 		filters = new ArrayList<>();
 }
 
-	public void applyFilters(MatrixField m){
-		for(CracMatchingFilter filter : filters){
-			m.setVal(filter.apply(m));
+	public void applyFilters(FilterParameters fp){
+		for(ConcreteFilter filter : filters){
+			filter.apply(fp);
 		}
 	}
 	
 	@Override
-	public void addFilter(CracFilter<?, ?> filter) {
-		filters.add((CracMatchingFilter) filter);		
+	public void addFilter(ConcreteFilter filter) {
+		filters.add(filter);		
 	}
 	
 	@Override
@@ -37,14 +36,14 @@ public class MatchingConfiguration implements FilterConfiguration {
 	}
 	
 	public void printFilters(){
-		for(CracMatchingFilter filter : filters){
+		for(ConcreteFilter filter : filters){
 			filter.speak();
 		}
 	}
 	
 	public String filtersToString(){
 		String s = "";
-		for(CracMatchingFilter filter : filters){
+		for(ConcreteFilter filter : filters){
 			s += filter.speakString() + " ";
 		}
 		return s;
@@ -53,7 +52,7 @@ public class MatchingConfiguration implements FilterConfiguration {
 	@Override
 	public FilterConfiguration clone(){
 		MatchingConfiguration m = new MatchingConfiguration();
-		for(CracMatchingFilter filter : filters){
+		for(ConcreteFilter filter : filters){
 			m.addFilter(filter);
 		}
 		return m;

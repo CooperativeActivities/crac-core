@@ -1,8 +1,9 @@
 package crac.module.matching.interfaces;
 
-public interface CracFilter<U, T> {
-	
-	public U apply(T param);
+import crac.module.matching.helpers.FilterParameters;
 
+public interface CracFilter {
+	
+	public void apply(FilterParameters fp);
 
 }

@@ -1,8 +1,10 @@
 package crac.module.matching.interfaces;
 
+import crac.module.matching.superclass.ConcreteFilter;
+
 public interface FilterConfiguration {
 	
-	public void addFilter(CracFilter<?, ?> filter);
+	public void addFilter(ConcreteFilter filter);
 
 	public void clearFilters();
 	

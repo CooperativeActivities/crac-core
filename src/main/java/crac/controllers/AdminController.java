@@ -90,7 +90,7 @@ public class AdminController {
 
 	@Autowired
 	private ElasticConnector<Task> ect;
-		
+
 	@Autowired
 	private CompetenceRelationshipTypeDAO typeDAO;
 
@@ -256,18 +256,19 @@ public class AdminController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
+		if (deleteTask != null) {
 
-		if (user.hasTaskPermissions(deleteTask)) {
-			if (deleteTask != null) {
+			if (user.hasTaskPermissions(deleteTask)) {
 				ect.delete("" + deleteTask.getId());
 				ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteTask);
 				taskDAO.delete(deleteTask);
 				return v;
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}

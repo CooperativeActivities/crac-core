@@ -13,10 +13,9 @@ import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.matching.filter.matching.UserRelationFilter;
 import crac.module.matching.helpers.CompetenceCollectionMatrix;
 import crac.module.matching.helpers.EvaluatedTask;
-import crac.module.matching.helpers.MatchingInformation;
+import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.FilterConfiguration;
-import crac.module.matching.superclass.CracPostMatchingFilter;
-import crac.module.matching.superclass.CracPreMatchingFilter;
+import crac.module.matching.superclass.ConcreteFilter;
 import crac.module.matching.superclass.Worker;
 
 public class TaskMatchingWorker extends Worker {
@@ -42,10 +41,12 @@ public class TaskMatchingWorker extends Worker {
 		
 		//PreMatchingFilters
 		
-		MatchingInformation mi = new MatchingInformation(taskSet, user);
-
-		for(CracPreMatchingFilter filter : super.getWf().getPmc().getFilters()){
-			taskSet = filter.apply(mi);
+		FilterParameters fp = new FilterParameters();
+		fp.setTasksPool(taskSet);
+		fp.setUser(user);
+		
+		for(ConcreteFilter filter : super.getWf().getPmc().getFilters()){
+			filter.apply(fp);
 		}
 
 		//MatchingFilters
@@ -64,8 +65,11 @@ public class TaskMatchingWorker extends Worker {
 		
 		//PostMatchingFilters
 		
-		for(CracPostMatchingFilter filter : super.getWf().getPomc().getFilters()){
-			tasks = filter.apply(tasks);
+		fp = new FilterParameters();
+		fp.setEvaluatedTasksPool(tasks);
+
+		for(ConcreteFilter filter : super.getWf().getPomc().getFilters()){
+			filter.apply(fp);
 		}
 		
 		//------------------------
