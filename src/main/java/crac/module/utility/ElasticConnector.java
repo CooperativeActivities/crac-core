@@ -25,7 +25,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
+//import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -71,8 +71,8 @@ public class ElasticConnector<T> {
 	private void wake() {
 		System.out.println("called on creation");
 		try {
-			//client = TransportClient.builder().build();
-			client = new PreBuiltTransportClient(Settings.EMPTY);
+			client = TransportClient.builder().build();
+			//client = new PreBuiltTransportClient(Settings.EMPTY);
 			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(address), port));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
