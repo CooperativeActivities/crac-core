@@ -3,6 +3,11 @@ package crac.module.utility;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,13 +21,16 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,12 +68,11 @@ public class ElasticConnector<T> {
 	public ElasticConnector() {
 	}
 
-	@PostConstruct
 	private void wake() {
 		System.out.println("called on creation");
 		try {
-			client = TransportClient.builder().build();
-			//client = new PreBuiltTransportClient(Settings.EMPTY);
+			//client = TransportClient.builder().build();
+			client = new PreBuiltTransportClient(Settings.EMPTY);
 			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(address), port));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -78,6 +85,7 @@ public class ElasticConnector<T> {
 		this.client.close();
 	}
 
+	@SuppressWarnings("deprecation")
 	public IndexResponse indexOrUpdate(String id, T obj) {
 
 		IndexResponse response = null;
