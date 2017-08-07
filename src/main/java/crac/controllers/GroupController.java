@@ -113,7 +113,7 @@ public class GroupController {
 		ObjectMapper mapper = new ObjectMapper();
 		CracGroup updatedGroup = mapper.readValue(json, CracGroup.class);
 		CracGroup oldGroup = groupDAO.findOne(id);
-		oldGroup = updatedGroup;
+		oldGroup.update(updatedGroup);
 
 		groupDAO.save(oldGroup);
 

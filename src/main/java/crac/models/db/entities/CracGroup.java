@@ -83,6 +83,18 @@ public class CracGroup {
 		this.maxEnrols = 0;
 	}
 	
+	public void update(CracGroup g){
+		if(!g.getName().equals("")){
+			this.setName(g.getName());
+		}
+		if(!g.getDescription().equals("")){
+			this.setDescription(g.getDescription());
+		}
+		if(g.getMaxEnrols() > 0){
+			this.setMaxEnrols(g.getMaxEnrols());
+		}
+	}
+	
 	public boolean addUser(CracUser u){
 		if(enroledUsers.size() < maxEnrols){
 			enroledUsers.add(u);

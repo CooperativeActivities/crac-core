@@ -32,8 +32,6 @@ public class DateFilter extends ConcreteFilter {
 		
 		for(Task t : fp.getTasksPool()){
 			
-			System.out.println("entered for task: "+t.getName());
-			
 			boolean minSDcheck = true;
 			boolean maxSDcheck = true;
 			boolean minEDcheck = true;
