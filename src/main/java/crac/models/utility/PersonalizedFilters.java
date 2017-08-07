@@ -1,75 +1,39 @@
 package crac.models.utility;
 
-import java.util.ArrayList;
-
+import crac.module.matching.factories.CracFilterFactory;
 import crac.module.matching.superclass.ConcreteFilter;
+import lombok.Getter;
+import lombok.Setter;
 
 public class PersonalizedFilters {
 
+	@Getter
+	@Setter
 	private String query;
 
-	private String[] filters;
-
-	private ArrayList<Class<ConcreteFilter>> filtersClass;
-
-	private ArrayList<ConcreteFilter> filtersObj;
+	@Getter
+	@Setter
+	private PersonalizedFilter[] filters;
 
 	public PersonalizedFilters() {
 		query = "";
-		filtersObj = new ArrayList<>();
-		filtersClass = new ArrayList<>();
 	}
 
-	private void convert() {
+	public void convert(CracFilterFactory mf) {
 
-		for (String s : filters) {
+		for (PersonalizedFilter f : filters) {
 			Class<?> c = null;
 			try {
-				c = Class.forName("crac.module.matching.filter.prematching." + s);
+				c = Class.forName("crac.module.utility.filter.individual." + f.getName());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 			if (c != null) {
-				filtersClass.add((Class<ConcreteFilter>) c);
+				ConcreteFilter cf = mf.createMatchingFilter((Class<ConcreteFilter>) c);
+				cf.setPf(f);
+				f.setCf(cf);
 			}
 		}
-	}
-
-	public String getQuery() {
-		return query;
-	}
-
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	public void addFilter(ConcreteFilter filter) {
-		filtersObj.add(filter);
-	}
-
-	public String[] getFilters() {
-		return filters;
-	}
-
-	public void setFilters(String[] filters) {
-		this.filters = filters;
-		convert();
-	}
-
-	public ArrayList<Class<ConcreteFilter>> getFiltersClass() {
-		return filtersClass;
-	}
-
-	public void setFiltersClass(ArrayList<Class<ConcreteFilter>> filtersClass) {
-		this.filtersClass = filtersClass;
-	}
-
-	public ArrayList<ConcreteFilter> getFiltersObj() {
-		return filtersObj;
-	}
-
-	public void setFiltersObj(ArrayList<ConcreteFilter> filtersObj) {
-		this.filtersObj = filtersObj;
 	}
 
 }

@@ -1,11 +1,23 @@
 package crac.module.matching.superclass;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import crac.models.utility.PersonalizedFilter;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.CracFilter;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class ConcreteFilter implements CracFilter {
 	
 	private String name;
+	
+	@Getter
+	@Setter
+	@JsonIgnore
+	private PersonalizedFilter pf;
 	
 	public ConcreteFilter(String name) {
 		this.name = name;

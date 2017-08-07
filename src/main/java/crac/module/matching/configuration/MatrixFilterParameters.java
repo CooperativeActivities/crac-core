@@ -8,7 +8,7 @@ import crac.module.matching.superclass.ConcreteFilter;
 
 public class MatrixFilterParameters {
 
-	private List<Class<CracFilter>> parameters;
+	private List<Class<ConcreteFilter>> parameters;
 	private CracFilterFactory mff;
 
 	public MatrixFilterParameters() {
@@ -16,8 +16,8 @@ public class MatrixFilterParameters {
 
 	public boolean apply(MatchingConfiguration matchingConfig) {
 		int count = 0;
-		for (Class<CracFilter> p : parameters) {
-			ConcreteFilter f = (ConcreteFilter) mff.createMatchingFilter(p);
+		for (Class<ConcreteFilter> p : parameters) {
+			ConcreteFilter f = mff.createMatchingFilter(p);
 			if (f != null) {
 				matchingConfig.addFilter(f);
 			}
@@ -30,11 +30,11 @@ public class MatrixFilterParameters {
 		}
 	}
 
-	public List<Class<CracFilter>> getParameters() {
+	public List<Class<ConcreteFilter>> getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(List<Class<CracFilter>> parameters) {
+	public void setParameters(List<Class<ConcreteFilter>> parameters) {
 		this.parameters = parameters;
 	}
 

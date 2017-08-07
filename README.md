@@ -765,16 +765,65 @@ Json-data, either a success or a failure message
 
 POST /task
 
+A given query reduces the pool of the found tasks to those that match the query by name or description.  
+A multitude of filters can be added, all with arbitrary [UNIQUE] parameters.  
+
+Here is an example for a possible posted JSON-Document:  
+
 	{
-	    "query": "here is my query",
-	    "filters": [
-	    		"FilterName1",
-	    		"FilterName2"
-	    	]
+    "query": "here is my query",
+    "filters": [
+    	{
+    	    "name": "FilterName1",
+    	    "params": [
+    	    	{
+    	    		"name": "paramtername1",
+    	    		"value": paramter1
+    	    	},
+    	    	{
+    	    		"name": "paramtername2",
+    	    		"value": paramter2
+    	    	}
+    	    	]
+	
+    	},
+    	{
+    	    "name": "FilterName2",
+    	    "params": [
+    	    	{
+    	    		"name": "paramtername",
+    	    		"value": paramter
+    	    	}
+    	    	]
+	
+    	}
+    	]
 	}
 
-The filters that can be used right now are:  
-GroupFilter, LoggedUserFilter, others will be announced as soon as they are done.  
+Existing filters:  
+
+	{
+    	    "name": "DateFilter",
+    	    "params": [
+    	    	{
+    	    		"name": "startDateMin",
+    	    		"value": 1499205600000
+    	    	},
+    	    	{
+    	    		"name": "startDateMax",
+    	    		"value": 1499205600000
+    	    	},
+    	    	{
+    	    		"name": "endDateMin",
+    	    		"value": 1499205600000
+    	    	},
+    	    	{
+    	    		"name": "endDateMax",
+    	    		"value": 1499205600000
+    	    	}
+    	    	]
+	
+    	}
 
 ##### *Response:*
 

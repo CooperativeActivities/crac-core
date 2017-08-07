@@ -135,12 +135,7 @@ public class MainController {
 			System.out.println(e.toString());
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
-
-
-		
-		
-		
-		
+	
 		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
 		
 	}
