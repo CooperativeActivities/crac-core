@@ -86,6 +86,11 @@ public class UserTaskRel {
 		this.setEvalTriggered(true);
 		nf.getUserTaskRelDAO().save(this);
 		
+		ids.put("task", task.getId());
+		ids.put("evaluation", e.getId());
+
+		es.inject(ids);
+		
 		return e;
 	}
 
