@@ -144,6 +144,7 @@ public class CracUser {
     @JoinColumn(name = "user_image")
 	private Attachment userImage;
 	
+	@JsonIdentityReference(alwaysAsId=true)
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "mapping_role_user", joinColumns={@JoinColumn(name="user_id")}, inverseJoinColumns={@JoinColumn(name="role_id")})
 	Set<Role> roles;
