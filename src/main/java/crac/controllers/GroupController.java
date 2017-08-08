@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,18 +14,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.ErrorCause;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
+import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.input.PostOptions;
 import crac.module.utility.JSONResponseHelper;
-import crac.models.db.entities.CracGroup;
 
 /**
  * REST controller for managing groups.
@@ -108,10 +105,18 @@ public class GroupController {
 	@RequestMapping(value = { "/{group_id}",
 			"/{group_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "group_id") Long id)
-			throws JsonMappingException, IOException {
+	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "group_id") Long id) {
 		ObjectMapper mapper = new ObjectMapper();
-		CracGroup updatedGroup = mapper.readValue(json, CracGroup.class);
+		CracGroup updatedGroup;
+		try {
+			updatedGroup = mapper.readValue(json, CracGroup.class);
+		} catch (JsonMappingException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
+		}
 		CracGroup oldGroup = groupDAO.findOne(id);
 		oldGroup.update(updatedGroup);
 
@@ -123,6 +128,7 @@ public class GroupController {
 
 	/**
 	 * Add multiple users to a group
+	 * 
 	 * @param json
 	 * @param id
 	 * @return
@@ -156,6 +162,46 @@ public class GroupController {
 
 		return JSONResponseHelper.successfullyUpdated(g);
 
+	}
+
+	/**
+	 * Add target user to a group
+	 * 
+	 * @param groupId
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/{group_id}/add/user/{user_id}",
+			"/{group_id}/add/user/{user_id}/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> addUser(@PathVariable(value = "group_id") Long groupId,
+			@PathVariable(value = "user_id") Long userId) {
+
+		CracGroup g = groupDAO.findOne(groupId);
+		CracUser user = userDAO.findOne(userId);
+		g.addUser(user);
+		groupDAO.save(g);
+		return JSONResponseHelper.successfullyUpdated(user);
+	}
+
+	/**
+	 * Removes target user from a group
+	 * 
+	 * @param groupId
+	 * @return ResponseEntity
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/{group_id}/remove/user/{user_id}",
+			"/{group_id}/remove/user/{user_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> leaveGroup(@PathVariable(value = "group_id") Long groupId,
+			@PathVariable(value = "user_id") Long userId) {
+
+		CracGroup g = groupDAO.findOne(groupId);
+		CracUser user = userDAO.findOne(userId);
+		g.removeUser(user);
+		groupDAO.save(g);
+		return JSONResponseHelper.successfullyUpdated(user);
 	}
 
 }

@@ -2107,6 +2107,30 @@ Multiple users can be added to a given group by posting them in one JSON-documen
 ##### *Response:*
 
 Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+
+**Add target user to a group**
+
+##### *Request:*
+
+PUT /group/{group_id}/add/user/{user_id}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+	
+-----------------------------------------------------------------
+
+**Removes target user from a group**
+
+##### *Request:*
+
+DELETE /group/{group_id}/remove/user/{user_id}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
 	
 -----------------------------------------------------------------
 
@@ -2299,3 +2323,9 @@ Endpoints for roles have changed --> see the "User-Endpoints"!
 #### 3.8.2017
 
 Major change for the "get all tasks"-Endpoints --> see the "Task-Endpoints" (first entry)!  
+
+-----------------------------------------------------------------
+
+#### 8.8.2017
+
+New endpoints for adding and removing users to and from groups --> see "Group-Endpoints"  
