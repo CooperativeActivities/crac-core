@@ -44,6 +44,7 @@ import crac.models.db.entities.Role;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
+import crac.models.output.UserShort;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.notifier.Notification;
@@ -99,8 +100,15 @@ public class CracUserController {
 	 */
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> index() throws JsonProcessingException {
-		return JSONResponseHelper.createResponse(userDAO.findAll(), true);
+	public ResponseEntity<String> index() {
+		
+		List<UserShort> list = new ArrayList<>();
+		
+		for(CracUser u : userDAO.findAll()){
+			list.add(new UserShort(u));
+		}
+		
+		return JSONResponseHelper.createResponse(list, true);
 	}
 
 	/**
