@@ -120,16 +120,18 @@ public class TaskController {
 
 	@Autowired
 	private CompetenceStorage cs;
-	
+
 	@Autowired
 	private TaskLookup tl;
 
 	/**
-	 * Returns all tasks affected by the chosen filters and the elasticsearch-query
+	 * Returns all tasks affected by the chosen filters and the
+	 * elasticsearch-query
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/",
+			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index(@RequestBody String json) {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -147,8 +149,8 @@ public class TaskController {
 			System.out.println(e.toString());
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
 		}
-		
-	return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
+
+		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
 	}
 
 	/**
@@ -298,7 +300,7 @@ public class TaskController {
 
 	/**
 	 * Returns all tasks of logged in user, divided in the
-	 * TaskParticipationTypes
+	 * TaskParticipationTypes, but only if they are not completed
 	 * 
 	 * @return ResponseEntity
 	 */
@@ -312,9 +314,9 @@ public class TaskController {
 
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
 
-		Set<TaskShort> taskListFollow = new HashSet<TaskShort>();
-		Set<TaskShort> taskListPart = new HashSet<TaskShort>();
-		Set<TaskShort> taskListLead = new HashSet<TaskShort>();
+		Set<TaskShort> taskListFollow = new HashSet<>();
+		Set<TaskShort> taskListPart = new HashSet<>();
+		Set<TaskShort> taskListLead = new HashSet<>();
 
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("leading", taskListLead);
@@ -324,12 +326,14 @@ public class TaskController {
 		if (taskRels.size() != 0) {
 
 			for (UserTaskRel utr : taskRels) {
-				if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
-					taskListFollow.add(new TaskShort(utr.getTask()));
-				} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					taskListPart.add(new TaskShort(utr.getTask()));
-				} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
-					taskListLead.add(new TaskShort(utr.getTask()));
+				if (!utr.isCompleted()) {
+					if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
+						taskListFollow.add(new TaskShort(utr.getTask()));
+					} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+						taskListPart.add(new TaskShort(utr.getTask()));
+					} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
+						taskListLead.add(new TaskShort(utr.getTask()));
+					}
 				}
 			}
 		}
@@ -2050,7 +2054,7 @@ public class TaskController {
 
 				if (mappings != null) {
 
-					for(CracGroup g : task.getRestrictingGroups()){
+					for (CracGroup g : task.getRestrictingGroups()) {
 						g.getRestrictedTasks().remove(task);
 					}
 
@@ -2061,8 +2065,7 @@ public class TaskController {
 						}
 						groupDAO.save(group);
 					}
-					
-					
+
 					return JSONResponseHelper.successfullyUpdated(task);
 
 				} else {

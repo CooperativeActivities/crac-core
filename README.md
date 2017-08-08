@@ -952,7 +952,7 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Returns all tasks of logged in user, divided in the TaskParticipationTypes**
+**Returns all tasks of logged in user, divided in the TaskParticipationTypes, but only if they are not completed**
 
 ##### *Request:*
 
