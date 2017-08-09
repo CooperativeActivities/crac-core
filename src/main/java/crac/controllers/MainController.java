@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.ErrorCause;
+import crac.exception.WrongParameterException;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
@@ -118,25 +119,11 @@ public class MainController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/test", "/test/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> test(@RequestBody String json) {
+	public ResponseEntity<String> test(@RequestBody String json) throws WrongParameterException {
 		
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-				.getContext().getAuthentication();
-		CracUser user = userDAO.findByName(userDetails.getName());
-
-		ObjectMapper mapper = new ObjectMapper();
-		PersonalizedFilters pf;
-		try {
-			pf = mapper.readValue(json, PersonalizedFilters.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
-	
-		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
+		throw new WrongParameterException();
+		
+		//return JSONResponseHelper.createResponse("done", true);
 		
 	}
 

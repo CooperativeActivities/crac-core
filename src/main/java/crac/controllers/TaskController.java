@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -129,26 +130,21 @@ public class TaskController {
 	 * elasticsearch-query
 	 * 
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/",
 			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> index(@RequestBody String json) {
+	public ResponseEntity<String> index(@RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalizedFilters pf;
-		try {
 			pf = mapper.readValue(json, PersonalizedFilters.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
 
 		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
 	}
@@ -420,11 +416,14 @@ public class TaskController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/{task_id}",
 			"/{task_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id) {
+	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id) throws JsonParseException, JsonMappingException, IOException {
 		Task oldTask = taskDAO.findOne(id);
 
 		if (oldTask.getTaskState() != TaskState.COMPLETED) {
@@ -436,15 +435,7 @@ public class TaskController {
 				if (user.hasTaskPermissions(oldTask)) {
 					ObjectMapper mapper = new ObjectMapper();
 					Task updatedTask;
-					try {
 						updatedTask = mapper.readValue(json, Task.class);
-					} catch (JsonMappingException e) {
-						System.out.println(e.toString());
-						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-					} catch (IOException e) {
-						System.out.println(e.toString());
-						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-					}
 
 					int c = checkAmountOfVolunteers(oldTask, updatedTask.getMaxAmountOfVolunteers(), true);
 
@@ -520,6 +511,7 @@ public class TaskController {
 	 * @param json
 	 * @param supertask_id
 	 * @return ResponseEntity
+	 * @throws JsonParseException 
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
@@ -527,7 +519,7 @@ public class TaskController {
 			"/{supertask_id}/extend/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> extendTask(@RequestBody String json,
-			@PathVariable(value = "supertask_id") Long supertask_id) {
+			@PathVariable(value = "supertask_id") Long supertask_id) throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -604,19 +596,11 @@ public class TaskController {
 
 	}
 
-	private ResponseEntity<String> persistTask(Task st, CracUser u, String json) {
+	private ResponseEntity<String> persistTask(Task st, CracUser u, String json) throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		Task t;
-		try {
 			t = mapper.readValue(json, Task.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
 
 		t.setSuperTask(st);
 
@@ -771,14 +755,7 @@ public class TaskController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				MaterialMapping[] mma = null;
-				try {
 					mma = mapper.readValue(json, MaterialMapping[].class);
-				} catch (JsonMappingException e) {
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-				}
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
 
@@ -814,11 +791,14 @@ public class TaskController {
 	 * @param json
 	 * @param taskId
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/{task_id}/material/add",
 			"/{task_id}/material/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId) {
+	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId) throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -830,15 +810,7 @@ public class TaskController {
 				ObjectMapper mapper = new ObjectMapper();
 				Material m;
 
-				try {
 					m = mapper.readValue(json, Material.class);
-				} catch (JsonMappingException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-				}
 
 				m.setTask(st);
 				st.addMaterial(m);
@@ -866,12 +838,15 @@ public class TaskController {
 	 * @param taskId
 	 * @param materialId
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/{task_id}/material/{material_id}/update",
 			"/{task_id}/material/{material_id}/update/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
-			@PathVariable(value = "material_id") Long materialId) {
+			@PathVariable(value = "material_id") Long materialId) throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -888,15 +863,7 @@ public class TaskController {
 					ObjectMapper mapper = new ObjectMapper();
 					Material updated;
 
-					try {
 						updated = mapper.readValue(json, Material.class);
-					} catch (JsonMappingException e) {
-						System.out.println(e.toString());
-						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-					} catch (IOException e) {
-						System.out.println(e.toString());
-						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-					}
 
 					old.update(updated);
 					materialDAO.save(old);
@@ -1196,12 +1163,15 @@ public class TaskController {
 	 * @param task_id
 	 * @param competence_id
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require",
 			"/{task_id}/competence/{competence_id}/require/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> requireCompetence(@PathVariable(value = "task_id") Long task_id,
-			@PathVariable(value = "competence_id") Long competence_id, @RequestBody String json) {
+			@PathVariable(value = "competence_id") Long competence_id, @RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -1211,15 +1181,7 @@ public class TaskController {
 
 		PostOptions po;
 
-		try {
 			po = mapper.readValue(json, PostOptions.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
@@ -1264,14 +1226,7 @@ public class TaskController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
-				try {
 					m = mapper.readValue(json, CompetenceTaskMapping[].class);
-				} catch (JsonMappingException e) {
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-				}
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
 
@@ -1385,14 +1340,7 @@ public class TaskController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
-				try {
 					m = mapper.readValue(json, CompetenceTaskMapping[].class);
-				} catch (JsonMappingException e) {
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-				}
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
 
@@ -1504,26 +1452,21 @@ public class TaskController {
 	 * @param competenceId
 	 * @param json
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/adjust",
 			"/{competence_id}/adjust/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "task_id") Long taskId,
-			@PathVariable(value = "competence_id") Long competenceId, @RequestBody String json) {
+			@PathVariable(value = "competence_id") Long competenceId, @RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		PostOptions po;
 
-		try {
 			po = mapper.readValue(json, PostOptions.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
 
 		Task task = taskDAO.findOne(taskId);
 		Competence competence = competenceDAO.findOne(competenceId);
@@ -2022,12 +1965,15 @@ public class TaskController {
 	 * @param userId
 	 * @param taskId
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/{task_id}/restrict/group/multiple",
 			"/{task_id}/restrict/group/multiple/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> inviteMultipleGroups(@RequestBody String json,
-			@PathVariable(value = "task_id") Long taskId) {
+			@PathVariable(value = "task_id") Long taskId) throws JsonParseException, JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -2040,15 +1986,7 @@ public class TaskController {
 				ObjectMapper mapper = new ObjectMapper();
 
 				PostOptions[] mappings = null;
-				try {
 					mappings = mapper.readValue(json, PostOptions[].class);
-				} catch (JsonMappingException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-				}
 
 				CracGroup group;
 
@@ -2131,24 +2069,19 @@ public class TaskController {
 	 * 
 	 * @param json
 	 * @return ResponseEntity
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = { "/elastic/query",
 			"/elastic/query/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> queryES(@RequestBody String json) {
+	public ResponseEntity<String> queryES(@RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		PostOptions query;
-		try {
 			query = mapper.readValue(json, PostOptions.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
 
 		ArrayList<EvaluatedTask> et = ect.query(query.getText());
 

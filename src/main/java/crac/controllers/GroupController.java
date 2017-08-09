@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,26 +58,23 @@ public class GroupController {
 
 	/**
 	 * Create a new group, creator is the logged-in user
+	 * 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/",
 			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> create(@RequestBody String json) {
+	public ResponseEntity<String> create(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		CracGroup myGroup;
-		try {
-			myGroup = mapper.readValue(json, CracGroup.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		myGroup = mapper.readValue(json, CracGroup.class);
 		myGroup.setCreator(user);
 		groupDAO.save(myGroup);
 
@@ -100,23 +98,20 @@ public class GroupController {
 
 	/**
 	 * Update the group with given ID
+	 * 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/{group_id}",
 			"/{group_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "group_id") Long id) {
+	public ResponseEntity<String> update(@RequestBody String json, @PathVariable(value = "group_id") Long id)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		CracGroup updatedGroup;
-		try {
-			updatedGroup = mapper.readValue(json, CracGroup.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		updatedGroup = mapper.readValue(json, CracGroup.class);
 		CracGroup oldGroup = groupDAO.findOne(id);
 		oldGroup.update(updatedGroup);
 
@@ -132,23 +127,19 @@ public class GroupController {
 	 * @param json
 	 * @param id
 	 * @return
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/{group_id}/add/multiple",
 			"/{group_id}/add/multiple/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addMultiple(@RequestBody String json, @PathVariable(value = "group_id") Long id) {
+	public ResponseEntity<String> addMultiple(@RequestBody String json, @PathVariable(value = "group_id") Long id)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		PostOptions[] mappings = null;
-		try {
-			mappings = mapper.readValue(json, PostOptions[].class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		mappings = mapper.readValue(json, PostOptions[].class);
 		CracGroup g = groupDAO.findOne(id);
 
 		for (PostOptions p : mappings) {

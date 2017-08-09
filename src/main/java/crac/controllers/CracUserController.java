@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,10 +87,10 @@ public class CracUserController {
 
 	@Autowired
 	private TokenDAO tokenDAO;
-	
+
 	@Autowired
 	private Decider decider;
-	
+
 	@Autowired
 	private NotificationFactory nf;
 
@@ -101,13 +102,13 @@ public class CracUserController {
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-		
+
 		List<UserShort> list = new ArrayList<>();
-		
-		for(CracUser u : userDAO.findAll()){
+
+		for (CracUser u : userDAO.findAll()) {
 			list.add(new UserShort(u));
 		}
-		
+
 		return JSONResponseHelper.createResponse(list, true);
 	}
 
@@ -148,24 +149,18 @@ public class CracUserController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
+	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
 	@RequestMapping(value = { "/",
 			"" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateLogged(@RequestBody String json) {
+	public ResponseEntity<String> updateLogged(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		CracUser updatedUser;
-		try {
-			updatedUser = mapper.readValue(json, CracUser.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		updatedUser = mapper.readValue(json, CracUser.class);
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -288,7 +283,7 @@ public class CracUserController {
 		CracUser target = userDAO.findOne(id);
 
 		Notification n = nf.createNotification(FriendRequest.class, target.getId(), sender.getId(), null);
-		
+
 		return JSONResponseHelper.successfullyCreated(n);
 	}
 
@@ -476,40 +471,33 @@ public class CracUserController {
 		groupDAO.save(g);
 		return JSONResponseHelper.successfullyUpdated(user);
 	}
-	
-	@RequestMapping(value = { "/search", "/search/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+
+	@RequestMapping(value = { "/search",
+			"/search/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> searchUsers(@RequestBody String json){
+	public ResponseEntity<String> searchUsers(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		PostOptions mapping = null;
-		try {
-			mapping = mapper.readValue(json, PostOptions.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		mapping = mapper.readValue(json, PostOptions.class);
 
 		List<CracUser> result = new ArrayList<>();
-		
+
 		String firstName = mapping.getFirstName();
 		String lastName = mapping.getLastName();
-		
-		if(lastName.equals("") && firstName.equals("")){
+
+		if (lastName.equals("") && firstName.equals("")) {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
-		}else if(lastName.equals("") && !firstName.equals("")){
+		} else if (lastName.equals("") && !firstName.equals("")) {
 			result = userDAO.findByFirstName(firstName);
-		}else if(!lastName.equals("") && mapping.getFirstName().equals("")){
+		} else if (!lastName.equals("") && mapping.getFirstName().equals("")) {
 			result = userDAO.findByLastName(firstName);
-		}else{
+		} else {
 			result = userDAO.findByFirstNameAndLastName(firstName, lastName);
 		}
-		
+
 		return JSONResponseHelper.createResponse(result, true);
 
 	}
-
 
 }

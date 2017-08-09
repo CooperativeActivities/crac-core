@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -60,7 +61,7 @@ public class CompetenceController {
 
 	@Autowired
 	private CompetenceAreaDAO competenceAreaDAO;
-	
+
 	@Autowired
 	private CompetenceStorage cs;
 
@@ -90,7 +91,8 @@ public class CompetenceController {
 
 	/**
 	 * Returns the competences of the currently logged in user, wrapped in the
-	 * relationship-object	 
+	 * relationship-object
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET, produces = "application/json")
@@ -102,7 +104,7 @@ public class CompetenceController {
 
 		Set<UserCompetenceRel> competenceRels = userCompetenceRelDAO.findByUser(user);
 
-		if (competenceRels.size() != 0) {		
+		if (competenceRels.size() != 0) {
 			return JSONResponseHelper.createResponse(competenceRels, true);
 
 		} else {
@@ -111,7 +113,9 @@ public class CompetenceController {
 	}
 
 	/**
-	 * Returns all competences that are related to target competence, ordered by it's relation-value
+	 * Returns all competences that are related to target competence, ordered by
+	 * it's relation-value
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 */
@@ -134,6 +138,7 @@ public class CompetenceController {
 
 	/**
 	 * Returns target area and its mapped competences
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 */
@@ -153,10 +158,11 @@ public class CompetenceController {
 
 	/**
 	 * Returns all competence-topic-areas
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/area", "/area/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody 
+	@ResponseBody
 	public ResponseEntity<String> getArea() {
 		return JSONResponseHelper.createResponse(competenceAreaDAO.findAll(), true);
 	}
@@ -173,26 +179,21 @@ public class CompetenceController {
 	 * 
 	 * @param competenceId
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{competence_id}/add",
 			"/{competence_id}/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addCompetence(@PathVariable(value = "competence_id") Long competenceId,
-			@RequestBody String json) {
+			@RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		PostOptions po;
 
-		try {
-			po = mapper.readValue(json, PostOptions.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		po = mapper.readValue(json, PostOptions.class);
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -228,26 +229,21 @@ public class CompetenceController {
 	 * @param likeValue
 	 * @param proficiencyValue
 	 * @return
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{competence_id}/adjust",
 			"/{competence_id}/adjust/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "competence_id") Long competenceId,
-			@RequestBody String json) {
+			@RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		PostOptions po;
 
-		try {
-			po = mapper.readValue(json, PostOptions.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		po = mapper.readValue(json, PostOptions.class);
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();

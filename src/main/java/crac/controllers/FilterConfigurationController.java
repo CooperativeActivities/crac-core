@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.ErrorCause;
@@ -26,12 +28,13 @@ import crac.module.utility.JSONResponseHelper;
 @RestController
 @RequestMapping("/configuration")
 public class FilterConfigurationController {
-	
+
 	@Autowired
 	private MatchingConfiguration matchingConfig;
 
 	/**
 	 * Adds a filter to the filter-configuration, based on it's name
+	 * 
 	 * @param filterName
 	 * @return ResponseEntity
 	 */
@@ -61,28 +64,30 @@ public class FilterConfigurationController {
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
 		}
-		
+
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("filter", name);
 		return JSONResponseHelper.createResponse(true, meta);
 	}
 
 	/**
-	 * Adds multiple filters to the filter-configuration, based on the list of filters in the posted JSon-file
+	 * Adds multiple filters to the filter-configuration, based on the list of
+	 * filters in the posted JSon-file
+	 * 
 	 * @param json
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/filter/add",
 			"/filter/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addFiltersByJson(@RequestBody String json) {
+	public ResponseEntity<String> addFiltersByJson(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		MatrixFilterParameters mfp = null;
-		try {
-			mfp = mapper.readValue(json, MatrixFilterParameters.class);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		mfp = mapper.readValue(json, MatrixFilterParameters.class);
 
 		if (mfp != null) {
 
@@ -93,7 +98,7 @@ public class FilterConfigurationController {
 				restoreStandard();
 
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
-			}	
+			}
 
 			return JSONResponseHelper.successfullyUpdated(mfp);
 
@@ -105,6 +110,7 @@ public class FilterConfigurationController {
 
 	/**
 	 * Returns a list of all active filters
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/filter/print",
@@ -116,6 +122,7 @@ public class FilterConfigurationController {
 
 	/**
 	 * Clears the list of active filters
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/filter/clear",
@@ -130,6 +137,7 @@ public class FilterConfigurationController {
 
 	/**
 	 * Restores the standard state of the filter-configuration
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/filter/restore",

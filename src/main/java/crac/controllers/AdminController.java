@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -210,23 +211,19 @@ public class AdminController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/user/{user_id}",
 			"/user/{user_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateUser(@RequestBody String json, @PathVariable(value = "user_id") Long id) {
+	public ResponseEntity<String> updateUser(@RequestBody String json, @PathVariable(value = "user_id") Long id)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		CracUser updatedUser;
-		try {
-			updatedUser = mapper.readValue(json, CracUser.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		updatedUser = mapper.readValue(json, CracUser.class);
 
 		CracUser oldUser = userDAO.findOne(id);
 
@@ -291,14 +288,7 @@ public class AdminController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		Task task;
-		try {
-			task = mapper.readValue(json, Task.class);
-		} catch (JsonMappingException e) {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		task = mapper.readValue(json, Task.class);
 
 		if (task.getTaskType() == TaskType.SHIFT) {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_CREATE);
@@ -307,12 +297,7 @@ public class AdminController {
 		task.setCreator(user);
 		task.updateReadyStatus(taskDAO);
 
-		try {
-			taskDAO.save(task);
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		taskDAO.save(task);
 
 		UserTaskRel newRel = new UserTaskRel();
 		newRel.setParticipationType(TaskParticipationType.LEADING);
@@ -334,27 +319,23 @@ public class AdminController {
 	 * 
 	 * @param json
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/competence/",
 			"/competence" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> createCompetence(@RequestBody String json) {
+	public ResponseEntity<String> createCompetence(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		ObjectMapper mapper = new ObjectMapper();
 		Competence myCompetence;
-		try {
-			myCompetence = mapper.readValue(json, Competence.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		myCompetence = mapper.readValue(json, Competence.class);
 		myCompetence.setCreator(user);
 		competenceDAO.save(myCompetence);
 		return JSONResponseHelper.successfullyCreated(myCompetence);
@@ -391,6 +372,9 @@ public class AdminController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -398,18 +382,11 @@ public class AdminController {
 			"/competence/{competence_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateCompetence(@RequestBody String json,
-			@PathVariable(value = "competence_id") Long id) {
+			@PathVariable(value = "competence_id") Long id)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		Competence updatedCompetence;
-		try {
-			updatedCompetence = mapper.readValue(json, Competence.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		updatedCompetence = mapper.readValue(json, Competence.class);
 
 		Competence oldCompetence = competenceDAO.findOne(id);
 
@@ -428,24 +405,20 @@ public class AdminController {
 	 * 
 	 * @param json
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type",
 			"competence/type/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addCompRelType(@RequestBody String json) {
+	public ResponseEntity<String> addCompRelType(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		CompetenceRelationshipType t;
-		try {
-			t = mapper.readValue(json, CompetenceRelationshipType.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		t = mapper.readValue(json, CompetenceRelationshipType.class);
 		typeDAO.save(t);
 		return JSONResponseHelper.successfullyCreated(t);
 	}
@@ -482,24 +455,20 @@ public class AdminController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "competence/type/{type_id}",
 			"/competence/type/{type_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateType(@RequestBody String json, @PathVariable(value = "type_id") Long id) {
+	public ResponseEntity<String> updateType(@RequestBody String json, @PathVariable(value = "type_id") Long id)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		CompetenceRelationshipType updatedCrt;
-		try {
-			updatedCrt = mapper.readValue(json, CompetenceRelationshipType.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		updatedCrt = mapper.readValue(json, CompetenceRelationshipType.class);
 
 		CompetenceRelationshipType oldupdatedCrt = typeDAO.findOne(id);
 
@@ -569,23 +538,19 @@ public class AdminController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/role/{role_id}",
 			"/role/{role_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateRole(@RequestBody String json, @PathVariable(value = "role_id") Long roleId) {
+	public ResponseEntity<String> updateRole(@RequestBody String json, @PathVariable(value = "role_id") Long roleId)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		Role updatedRole;
-		try {
-			updatedRole = mapper.readValue(json, Role.class);
-		} catch (JsonMappingException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-		}
+		updatedRole = mapper.readValue(json, Role.class);
 
 		Role oldRole = roleDAO.findOne(roleId);
 

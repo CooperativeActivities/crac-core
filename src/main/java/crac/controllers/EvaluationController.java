@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -181,12 +182,16 @@ public class EvaluationController {
 	 * @param json
 	 * @param evaluationId
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{evaluation_id}",
 			"/{evaluation_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> evaluateTask(@RequestBody String json,
-			@PathVariable(value = "evaluation_id") Long evaluationId) {
+			@PathVariable(value = "evaluation_id") Long evaluationId)
+			throws JsonParseException, JsonMappingException, IOException {
 
 		Evaluation eval = evaluationDAO.findOne(evaluationId);
 		if (eval != null) {
@@ -198,7 +203,7 @@ public class EvaluationController {
 			if (eval.getUserTaskRel().getUser() != user && !user.confirmRole("ADMIN")) {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 			}
-			
+
 			if (eval.isFilled()) {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
 			}
@@ -206,15 +211,7 @@ public class EvaluationController {
 			ObjectMapper mapper = new ObjectMapper();
 			Evaluation newEval;
 
-			try {
-				newEval = mapper.readValue(json, Evaluation.class);
-			} catch (JsonMappingException e) {
-				System.out.println(e.toString());
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_MAP_ERROR);
-			} catch (IOException e) {
-				System.out.println(e.toString());
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.JSON_READ_ERROR);
-			}
+			newEval = mapper.readValue(json, Evaluation.class);
 
 			String notificationId = eval.getNotificationId();
 			eval.update(newEval);
