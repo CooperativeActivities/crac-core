@@ -7,6 +7,7 @@ bin/
 build/
 dist/
 logs/
+log/
 node_modules/
 out/
 target/

@@ -864,6 +864,28 @@ The Group-Filter requires the name and id of a group to find a certain group and
     	    	]
 	
     	}
+    	
+The Creator-Filter requires the same parameters the Friend-Filter does but filters for tasks that have the given user as creator
+    	
+    	{
+    	    "name": "CreatorFilter",
+    	    "params": [
+    	    	{
+    	    		"name": "UserName",
+    	    		"value": {
+    	    			"firstName": "Max",
+    	    			"lastName": "Mustermann"
+    	    		}
+    	    	},
+    	    	{
+    	    		"name": "Musteradmin",
+    	    		"value": {
+    	    			"firstName": "Martin",
+    	    			"lastName": "Mustermann"
+    	    		}
+    	    	}
+    	    	]
+    	}
 
 ##### *Response:*
 
