@@ -17,6 +17,7 @@ public class PersonalizedFilters {
 
 	public PersonalizedFilters() {
 		query = "";
+		filters = new PersonalizedFilter[0];
 	}
 
 	public void convert(CracFilterFactory mf) {
