@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import crac.models.db.daos.CracUserDAO;
+import crac.models.db.daos.GroupDAO;
 import crac.module.matching.superclass.ConcreteFilter;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,11 @@ public class CracFilterFactory {
 	@Setter
 	CracUserDAO userDAO;
 	
+	@Autowired
+	@Getter
+	@Setter
+	GroupDAO groupDAO;
+
 	public <T extends ConcreteFilter> ConcreteFilter createMatchingFilter(Class<T> type){
 				
 		ConcreteFilter f = BeanUtils.instantiate(type);

@@ -75,21 +75,21 @@ public class AttachmentUploadController {
 
 	@RequestMapping(value = "/getImage/{image_path}/{image_size}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
-	public ResponseEntity<byte[]> getUserImage(@PathVariable(value = "image_path") String image_path, @PathVariable(value = "image_size") String image_size) {
+	public ResponseEntity<byte[]> getUserImage(@PathVariable(value = "image_path") String image_path,
+			@PathVariable(value = "image_size") String image_size) {
 
 		String path = "";
 		/*
-		
-		if(objImage.getUserId().getId() != myUser.getId()){
-			path = "uploadedFiles/bad_connection.jpg";
-		}else{
-			path = "uploadedFiles/"+objImage.getPath();
-		}*/
+		 * 
+		 * if(objImage.getUserId().getId() != myUser.getId()){ path =
+		 * "uploadedFiles/bad_connection.jpg"; }else{ path =
+		 * "uploadedFiles/"+objImage.getPath(); }
+		 */
 		System.out.println(image_path);
-		path = "uploadedFiles/"+image_path;
+		path = "uploadedFiles/" + image_path;
 
 		System.out.println();
-		
+
 		File image = new File(path);
 		byte[] imageContent = null;
 		try {
@@ -99,14 +99,12 @@ public class AttachmentUploadController {
 			e.printStackTrace();
 		}
 
-		
 		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
+		headers.setContentType(MediaType.IMAGE_JPEG);
 
 		return ResponseEntity.ok().headers(headers).body(imageContent);
 	} // method uploadFile
 
-	
 	@RequestMapping(value = "/changeFile/{attachment_id}", headers = "content-type=multipart/*", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> changeFile(@PathVariable(value = "attachment_id") Long attachment_id,
@@ -129,7 +127,7 @@ public class AttachmentUploadController {
 			// application have write permissions on such directory)
 			java.util.Date date = new java.util.Date();
 
-			filename = new Timestamp(date.getTime()).hashCode()+ uploadfile.getOriginalFilename();
+			filename = new Timestamp(date.getTime()).hashCode() + uploadfile.getOriginalFilename();
 			String directory = "uploadedFiles";
 			String filepath = Paths.get(directory, filename).toString();
 
@@ -146,7 +144,7 @@ public class AttachmentUploadController {
 
 		try {
 
-			File file = new File("uploadedFiles/"+oldFile);
+			File file = new File("uploadedFiles/" + oldFile);
 
 			if (file.delete()) {
 				System.out.println(file.getName() + " is deleted!");

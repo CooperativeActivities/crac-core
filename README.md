@@ -802,6 +802,8 @@ Here is an example for a possible posted JSON-Document:
 
 Existing filters:  
 
+The Date-Filter requires a combination of those four parameters to determine the time-intervall of the tasks
+
 	{
     	    "name": "DateFilter",
     	    "params": [
@@ -824,6 +826,8 @@ Existing filters:
     	    	]
     	}
     	
+The Friend-Filter requires a username as name or both firstname and lastname to find a user and show tasks that this user is participating
+
     	{
     	    "name": "FriendFilter",
     	    "params": [
@@ -842,6 +846,23 @@ Existing filters:
     	    		}
     	    	}
     	    	]
+    	}
+    	
+The Group-Filter requires the name and id of a group to find a certain group and will filter the tasks based on the restricting groups
+    	
+    	{
+    	    "name": "GroupFilter",
+    	    "params": [
+    	    	{
+    	    		"name": "Group1",
+    	    		"value": 1
+    	    	},
+    	    	{
+    	    		"name": "Group2",
+    	    		"value": "2"
+    	    	}
+    	    	]
+	
     	}
 
 ##### *Response:*

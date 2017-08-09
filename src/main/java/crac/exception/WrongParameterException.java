@@ -1,6 +1,6 @@
 package crac.exception;
 
-public class WrongParameterException extends Exception {
+public class WrongParameterException extends RuntimeException {
 	/**
 	 * 
 	 */

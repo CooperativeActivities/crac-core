@@ -155,16 +155,16 @@ public class SynchronizationController {
 
 	@Autowired
 	private PostMatchingConfiguration postMatchingConfiguration;
-	
+
 	@Autowired
 	private CompetenceStorage cs;
-	
+
 	@Autowired
 	private ElasticConnector<Task> ect;
-	
+
 	@Value("${crac.elastic.url}")
 	private String url;
-	
+
 	@Value("${crac.elastic.bindEStoSearch}")
 	private boolean bindES;
 
@@ -253,41 +253,33 @@ public class SynchronizationController {
 		return JSONResponseHelper.createResponse(m, true);
 
 	}
-/*
-	private void handleTopicRelationships() {
-		Iterable<TxExabiscompetencesDescriptorsTopicidMm> kometTopicRelList = txExabiscompetencesDescriptorsTopicidMmDAO
-				.findAll();
-		Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
-		HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
-
-		ArrayList<CompetenceArea> newc = new ArrayList<>();
-		ArrayList<CompetenceArea> updatec = new ArrayList<>();
-		ArrayList<CompetenceArea> deletec = new ArrayList<>();
-
-		for (CompetenceArea c : cracAreaList) {
-			cracAreaMap.put(c.getId(), c);
-		}
-
-		for (TxExabiscompetencesTopic single : kometTopicList) {
-			if (!single.getTitle().equals("")) {
-				if (!cracAreaMap.containsKey((long) single.getUid())) {
-					newc.add(single.MapToCompetenceArea());
-				} else {
-					updatec.add(single.MapToCompetenceArea());
-					cracAreaMap.remove((long) single.getUid());
-				}
-			}
-		}
-
-		for (Map.Entry<Long, CompetenceArea> set : cracAreaMap.entrySet()) {
-			deletec.add(set.getValue());
-		}
-
-		handleNewCompetenceAreas(newc);
-		handleUpdatedCompetenceAreas(updatec);
-		// handleDeletedCompetenceAreas(deletec);
-
-	}*/
+	/*
+	 * private void handleTopicRelationships() {
+	 * Iterable<TxExabiscompetencesDescriptorsTopicidMm> kometTopicRelList =
+	 * txExabiscompetencesDescriptorsTopicidMmDAO .findAll();
+	 * Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
+	 * HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
+	 * 
+	 * ArrayList<CompetenceArea> newc = new ArrayList<>();
+	 * ArrayList<CompetenceArea> updatec = new ArrayList<>();
+	 * ArrayList<CompetenceArea> deletec = new ArrayList<>();
+	 * 
+	 * for (CompetenceArea c : cracAreaList) { cracAreaMap.put(c.getId(), c); }
+	 * 
+	 * for (TxExabiscompetencesTopic single : kometTopicList) { if
+	 * (!single.getTitle().equals("")) { if (!cracAreaMap.containsKey((long)
+	 * single.getUid())) { newc.add(single.MapToCompetenceArea()); } else {
+	 * updatec.add(single.MapToCompetenceArea()); cracAreaMap.remove((long)
+	 * single.getUid()); } } }
+	 * 
+	 * for (Map.Entry<Long, CompetenceArea> set : cracAreaMap.entrySet()) {
+	 * deletec.add(set.getValue()); }
+	 * 
+	 * handleNewCompetenceAreas(newc); handleUpdatedCompetenceAreas(updatec); //
+	 * handleDeletedCompetenceAreas(deletec);
+	 * 
+	 * }
+	 */
 
 	private void handleTopics() {
 		Iterable<TxExabiscompetencesTopic> kometTopicList = txExabiscompetencesTopicDAO.findAll();
@@ -319,7 +311,7 @@ public class SynchronizationController {
 
 		handleNewCompetenceAreas(newc);
 		handleUpdatedCompetenceAreas(updatec);
-		//handleDeletedCompetenceAreas(deletec);
+		// handleDeletedCompetenceAreas(deletec);
 
 	}
 
@@ -377,7 +369,7 @@ public class SynchronizationController {
 
 		handleNewCompetenceRelationships(newc, m);
 		handleUpdatedCompetenceRelationships(updatec, m);
-		//handleDeletedCompetenceRelationships(deletec);
+		// handleDeletedCompetenceRelationships(deletec);
 
 	}
 
@@ -498,7 +490,7 @@ public class SynchronizationController {
 
 		m.put("created", handleNewCompetences(newc));
 		m.put("updated", handleUpdatedCompetences(updatec));
-		//m.put("deleted", handleDeletedCompetences(deletec));
+		// m.put("deleted", handleDeletedCompetences(deletec));
 
 	}
 
@@ -532,12 +524,12 @@ public class SynchronizationController {
 			action.put("name", "UPDATE");
 			compid.put("action", action);
 			compid.put("relations", new HashMap<String, String>());
-			
+
 			for (TxExabiscompetencesDescriptorsTopicidMm conn : txExabiscompetencesDescriptorsTopicidMmDAO
 					.findByUidLocal((int) c.getId())) {
 				c.addCompetenceArea(competenceAreaDAO.findOne((long) conn.getUidForeign()));
 			}
-			
+
 			competenceDAO.save(c);
 			m.put(c.getId() + "", compid);
 		}
@@ -571,7 +563,7 @@ public class SynchronizationController {
 		System.out.println("-------------------------------");
 		System.out.println("||||FILTERS SYNCED||||");
 		System.out.println("-------------------------------");
-		
+
 		preMatchingConfiguration.addFilter(new LoggedUserFilter());
 		preMatchingConfiguration.addFilter(new GroupFilter());
 
@@ -579,10 +571,10 @@ public class SynchronizationController {
 		matchingConfig.addFilter(new LikeLevelFilter());
 		matchingConfig.addFilter(new ImportancyLevelFilter());
 		matchingConfig.addFilter(new UserRelationFilter());
-		
+
 		postMatchingConfiguration.addFilter(new ClearFilter());
 		postMatchingConfiguration.addFilter(new MissingVolunteerFilter());
-		
+
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
 		return JSONResponseHelper.createResponse(true, meta);
@@ -936,8 +928,8 @@ public class SynchronizationController {
 		SchwingerUSER.setPhone("35678987654");
 		SchwingerUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(SchwingerUSER);
-		
-		//New testing accounts for Birgit
+
+		// New testing accounts for Birgit
 
 		CracUser SandraADMIN = new CracUser();
 
@@ -1026,7 +1018,7 @@ public class SynchronizationController {
 		GerhardUSER.setPhone("35678987654");
 		GerhardUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(GerhardUSER);
-		
+
 		// Users for Birgit
 
 		CracUser bpAdmin = new CracUser();
@@ -1119,8 +1111,8 @@ public class SynchronizationController {
 		cvvol3.setEmail("Mustermail@internet.at");
 		userDAO.save(cvvol3);
 
-		//Add fwds
-		
+		// Add fwds
+
 		CracUser BradenADMIN = new CracUser();
 
 		BradenADMIN.setName("BradenADMIN");
@@ -1164,7 +1156,7 @@ public class SynchronizationController {
 		StillerUSER.setPhone("35678987654");
 		StillerUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(StillerUSER);
-		
+
 		CracUser VasicADMIN = new CracUser();
 
 		VasicADMIN.setName("VasicADMIN");
@@ -1208,8 +1200,8 @@ public class SynchronizationController {
 		VitekaUSER.setPhone("35678987654");
 		VitekaUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(VitekaUSER);
-		
-		//Add praktikanten
+
+		// Add praktikanten
 
 		CracUser VeriADMIN = new CracUser();
 
@@ -1232,7 +1224,7 @@ public class SynchronizationController {
 		VeriUSER.setPhone("35678987654");
 		VeriUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(VeriUSER);
-		
+
 		CracUser AlexADMIN = new CracUser();
 
 		AlexADMIN.setName("AlexADMIN");
@@ -1254,7 +1246,7 @@ public class SynchronizationController {
 		AlexUSER.setPhone("35678987654");
 		AlexUSER.setEmail("Mustermail@internet.at");
 		userDAO.save(AlexUSER);
-		
+
 	}
 
 	// ELASTICSEARCH

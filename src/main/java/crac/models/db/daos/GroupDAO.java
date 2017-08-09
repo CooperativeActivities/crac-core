@@ -13,4 +13,5 @@ import crac.models.db.entities.CracGroup;
 @Transactional
 public interface GroupDAO extends CrudRepository<CracGroup, Long> {
 	public CracGroup findByName(String name);
+	public CracGroup findByIdAndName(long id, String name);
 }

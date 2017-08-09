@@ -130,21 +130,22 @@ public class TaskController {
 	 * elasticsearch-query
 	 * 
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/",
 			"" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> index(@RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
+	public ResponseEntity<String> index(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalizedFilters pf;
-			pf = mapper.readValue(json, PersonalizedFilters.class);
+		pf = mapper.readValue(json, PersonalizedFilters.class);
 
 		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
 	}
@@ -416,26 +417,27 @@ public class TaskController {
 	 * @param json
 	 * @param id
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{task_id}",
 			"/{task_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id) throws JsonParseException, JsonMappingException, IOException {
+	public ResponseEntity<String> updateTask(@RequestBody String json, @PathVariable(value = "task_id") Long id)
+			throws JsonParseException, JsonMappingException, IOException {
 		Task oldTask = taskDAO.findOne(id);
 
-		if (oldTask.getTaskState() != TaskState.COMPLETED) {
-			UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-					.getContext().getAuthentication();
-			CracUser user = userDAO.findByName(userDetails.getName());
+		if (oldTask != null) {
+			if (oldTask.getTaskState() != TaskState.COMPLETED) {
+				UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+						.getContext().getAuthentication();
+				CracUser user = userDAO.findByName(userDetails.getName());
 
-			if (oldTask != null) {
 				if (user.hasTaskPermissions(oldTask)) {
 					ObjectMapper mapper = new ObjectMapper();
 					Task updatedTask;
-						updatedTask = mapper.readValue(json, Task.class);
+					updatedTask = mapper.readValue(json, Task.class);
 
 					int c = checkAmountOfVolunteers(oldTask, updatedTask.getMaxAmountOfVolunteers(), true);
 
@@ -450,22 +452,6 @@ public class TaskController {
 						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.QUANTITY_INCORRECT,
 								meta);
 					}
-					/*
-					 * if (oldTask.getSuperTask() != null) { if
-					 * (oldTask.getSuperTask().getAmountOfVolunteers() != 0) {
-					 * int availableNumber =
-					 * oldTask.getSuperTask().possibleNumberOfVolunteers() +
-					 * oldTask.getAmountOfVolunteers(); if
-					 * (updatedTask.getAmountOfVolunteers() > availableNumber) {
-					 * if (availableNumber == 0) { return JSonResponseHelper.
-					 * actionNotPossible("Amount of volunteers is full"); } else
-					 * { return JSonResponseHelper.actionNotPossible(
-					 * "Amount of volunteers has to be between 1 and " +
-					 * availableNumber); } } } }
-					 */
-
-					// UpdateEntitiesHelper.checkAndUpdateTask(oldTask,
-					// updatedTask);
 					oldTask.update(updatedTask);
 					taskDAO.save(oldTask);
 					oldTask.updateReadyStatus(taskDAO);
@@ -476,11 +462,11 @@ public class TaskController {
 							ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
 				}
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
 			}
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.TASK_ALREADY_IN_PROCESS);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 
 	}
@@ -511,7 +497,7 @@ public class TaskController {
 	 * @param json
 	 * @param supertask_id
 	 * @return ResponseEntity
-	 * @throws JsonParseException 
+	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
@@ -519,7 +505,8 @@ public class TaskController {
 			"/{supertask_id}/extend/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> extendTask(@RequestBody String json,
-			@PathVariable(value = "supertask_id") Long supertask_id) throws JsonParseException, JsonMappingException, IOException {
+			@PathVariable(value = "supertask_id") Long supertask_id)
+			throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -596,11 +583,12 @@ public class TaskController {
 
 	}
 
-	private ResponseEntity<String> persistTask(Task st, CracUser u, String json) throws JsonParseException, JsonMappingException, IOException {
+	private ResponseEntity<String> persistTask(Task st, CracUser u, String json)
+			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		Task t;
-			t = mapper.readValue(json, Task.class);
+		t = mapper.readValue(json, Task.class);
 
 		t.setSuperTask(st);
 
@@ -755,7 +743,7 @@ public class TaskController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				MaterialMapping[] mma = null;
-					mma = mapper.readValue(json, MaterialMapping[].class);
+				mma = mapper.readValue(json, MaterialMapping[].class);
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
 
@@ -791,14 +779,15 @@ public class TaskController {
 	 * @param json
 	 * @param taskId
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{task_id}/material/add",
 			"/{task_id}/material/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId) throws JsonParseException, JsonMappingException, IOException {
+	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
+			throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -810,7 +799,7 @@ public class TaskController {
 				ObjectMapper mapper = new ObjectMapper();
 				Material m;
 
-					m = mapper.readValue(json, Material.class);
+				m = mapper.readValue(json, Material.class);
 
 				m.setTask(st);
 				st.addMaterial(m);
@@ -838,15 +827,16 @@ public class TaskController {
 	 * @param taskId
 	 * @param materialId
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{task_id}/material/{material_id}/update",
 			"/{task_id}/material/{material_id}/update/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
-			@PathVariable(value = "material_id") Long materialId) throws JsonParseException, JsonMappingException, IOException {
+			@PathVariable(value = "material_id") Long materialId)
+			throws JsonParseException, JsonMappingException, IOException {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
@@ -863,7 +853,7 @@ public class TaskController {
 					ObjectMapper mapper = new ObjectMapper();
 					Material updated;
 
-						updated = mapper.readValue(json, Material.class);
+					updated = mapper.readValue(json, Material.class);
 
 					old.update(updated);
 					materialDAO.save(old);
@@ -1163,15 +1153,16 @@ public class TaskController {
 	 * @param task_id
 	 * @param competence_id
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/require",
 			"/{task_id}/competence/{competence_id}/require/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> requireCompetence(@PathVariable(value = "task_id") Long task_id,
-			@PathVariable(value = "competence_id") Long competence_id, @RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
+			@PathVariable(value = "competence_id") Long competence_id, @RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -1181,7 +1172,7 @@ public class TaskController {
 
 		PostOptions po;
 
-			po = mapper.readValue(json, PostOptions.class);
+		po = mapper.readValue(json, PostOptions.class);
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
@@ -1226,7 +1217,7 @@ public class TaskController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
-					m = mapper.readValue(json, CompetenceTaskMapping[].class);
+				m = mapper.readValue(json, CompetenceTaskMapping[].class);
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
 
@@ -1340,7 +1331,7 @@ public class TaskController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
-					m = mapper.readValue(json, CompetenceTaskMapping[].class);
+				m = mapper.readValue(json, CompetenceTaskMapping[].class);
 
 				HashMap<String, HashMap<String, String>> fullresponse = new HashMap<>();
 
@@ -1452,21 +1443,22 @@ public class TaskController {
 	 * @param competenceId
 	 * @param json
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{task_id}/competence/{competence_id}/adjust",
 			"/{competence_id}/adjust/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> adjustCompetence(@PathVariable(value = "task_id") Long taskId,
-			@PathVariable(value = "competence_id") Long competenceId, @RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
+			@PathVariable(value = "competence_id") Long competenceId, @RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		PostOptions po;
 
-			po = mapper.readValue(json, PostOptions.class);
+		po = mapper.readValue(json, PostOptions.class);
 
 		Task task = taskDAO.findOne(taskId);
 		Competence competence = competenceDAO.findOne(competenceId);
@@ -1503,73 +1495,6 @@ public class TaskController {
 	public ResponseEntity<String> getByName(@PathVariable(value = "task_name") String task_name) {
 		return JSONResponseHelper.createResponse(taskDAO.findMultipleByNameLike("%" + task_name + "%"), true);
 	}
-
-	/**
-	 * Sets the TaskRepetitionState from once to periodic if possible, mandatory
-	 * to add a date as json
-	 * 
-	 * @param task_id
-	 * @return ResponseEntity
-	 */
-	/*
-	 * @RequestMapping(value = { "/{task_id}/periodic/set",
-	 * "/{task_id}/priodic/set/" }, method = RequestMethod.POST, produces =
-	 * "application/json", consumes = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * setTaskPeriodical(@RequestBody String json,
-	 * 
-	 * @PathVariable(value = "task_id") Long task_id) {
-	 * 
-	 * Task toSet = taskDAO.findOne(task_id);
-	 * 
-	 * if (toSet != null) { if (toSet.getSuperTask() != null) { return
-	 * JSonResponseHelper.
-	 * actionNotPossible("child-tasks can't be set periodical"); } else {
-	 * RepetitionDate nrd; ObjectMapper mapper = new ObjectMapper();
-	 * 
-	 * try { nrd = mapper.readValue(json, RepetitionDate.class); } catch
-	 * (JsonMappingException e) { System.out.println(e.toString()); return
-	 * JSonResponseHelper.createGeneralResponse(false, "bad_request",
-	 * ErrorCause.JSON_MAP_ERROR); } catch (IOException e) {
-	 * System.out.println(e.toString()); return
-	 * JSonResponseHelper.createGeneralResponse(false, "bad_request",
-	 * ErrorCause.JSON_READ_ERROR); }
-	 * toSet.setTaskRepetitionState(TaskRepetitionState.PERIODIC);
-	 * RepetitionDate ord = toSet.getRepetitionDate();
-	 * repetitionDateDAO.save(nrd); toSet.setRepetitionDate(nrd);
-	 * taskDAO.save(toSet); repetitionDateDAO.delete(ord); return
-	 * JSonResponseHelper.successFullAction("task set to periodical"); } } else
-	 * { return JSonResponseHelper.createGeneralResponse(false, "bad_request",
-	 * ErrorCause.ID_NOT_FOUND); } }
-	 */
-
-	/**
-	 * Sets the TaskRepetitionState from periodic to once
-	 * 
-	 * @param task_id
-	 * @return ResponseEntity
-	 */
-	/*
-	 * @RequestMapping(value = { "/{task_id}/periodic/undo",
-	 * "/{task_id}/priodic/undo/" }, method = RequestMethod.GET, produces =
-	 * "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * undoTaskPeriodical(@PathVariable(value = "task_id") Long task_id) {
-	 * 
-	 * Task toSet = taskDAO.findOne(task_id);
-	 * 
-	 * if (toSet.getTaskRepetitionState() != TaskRepetitionState.PERIODIC) {
-	 * return JSonResponseHelper.actionNotPossible("task is not periodic"); }
-	 * else { toSet.setTaskRepetitionState(TaskRepetitionState.ONCE);
-	 * RepetitionDate ord = toSet.getRepetitionDate();
-	 * toSet.setRepetitionDate(null); repetitionDateDAO.delete(ord);
-	 * taskDAO.save(toSet); return
-	 * JSonResponseHelper.successFullAction("task set to once"); }
-	 * 
-	 * }
-	 */
 
 	/**
 	 * Sets the relation between the logged in user and target task to done,
@@ -1773,55 +1698,6 @@ public class TaskController {
 		}
 	}
 
-	/*
-	 * @RequestMapping(value = { "/testadd/" }, method = RequestMethod.GET,
-	 * produces = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String> testAddTime() {
-	 * 
-	 * Task task = taskDAO.findOne((long) 1);
-	 * 
-	 * //System.out.println(task.getStartTime().getTimeInMillis());
-	 * 
-	 * adjustTaskTime(task, task.getRepetitionDate());
-	 * 
-	 * taskDAO.save(task);
-	 * 
-	 * //System.out.println(task.getStartTime().getTimeInMillis());
-	 * 
-	 * return JSonResponseHelper.bootSuccess(); }
-	 */
-
-	/*
-	 * private void adjustTaskTime(Task t, RepetitionDate repetitionTime) {
-	 * Calendar start = t.getStartTime(); Calendar end = t.getEndTime();
-	 * 
-	 * while (start.getTimeInMillis() <
-	 * Calendar.getInstance().getTimeInMillis()) { start.set(Calendar.YEAR,
-	 * start.get(Calendar.YEAR) + repetitionTime.getYear());
-	 * start.set(Calendar.MONTH, start.get(Calendar.MONTH) +
-	 * repetitionTime.getMonth()); start.set(Calendar.DAY_OF_MONTH,
-	 * start.get(Calendar.DAY_OF_MONTH) + repetitionTime.getDay());
-	 * start.set(Calendar.HOUR, start.get(Calendar.HOUR) +
-	 * repetitionTime.getHour()); start.set(Calendar.MINUTE,
-	 * start.get(Calendar.MINUTE) + repetitionTime.getMinute());
-	 * 
-	 * end.set(Calendar.YEAR, end.get(Calendar.YEAR) +
-	 * repetitionTime.getYear()); end.set(Calendar.MONTH,
-	 * end.get(Calendar.MONTH) + repetitionTime.getMonth());
-	 * end.set(Calendar.DAY_OF_MONTH, end.get(Calendar.DAY_OF_MONTH) +
-	 * repetitionTime.getDay()); end.set(Calendar.HOUR, end.get(Calendar.HOUR) +
-	 * repetitionTime.getHour()); end.set(Calendar.MINUTE,
-	 * end.get(Calendar.MINUTE) + repetitionTime.getMinute()); }
-	 * 
-	 * taskDAO.save(t);
-	 * 
-	 * for (Task child : t.getChildTasks()) { adjustTaskTime(child,
-	 * repetitionTime); }
-	 * 
-	 * }
-	 */
-
 	/**
 	 * Nominate someone as the leader of a task as creator
 	 * 
@@ -1965,9 +1841,9 @@ public class TaskController {
 	 * @param userId
 	 * @param taskId
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/{task_id}/restrict/group/multiple",
 			"/{task_id}/restrict/group/multiple/" }, method = RequestMethod.PUT, produces = "application/json")
@@ -1986,7 +1862,7 @@ public class TaskController {
 				ObjectMapper mapper = new ObjectMapper();
 
 				PostOptions[] mappings = null;
-					mappings = mapper.readValue(json, PostOptions[].class);
+				mappings = mapper.readValue(json, PostOptions[].class);
 
 				CracGroup group;
 
@@ -2069,19 +1945,20 @@ public class TaskController {
 	 * 
 	 * @param json
 	 * @return ResponseEntity
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 	@RequestMapping(value = { "/elastic/query",
 			"/elastic/query/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> queryES(@RequestBody String json) throws JsonParseException, JsonMappingException, IOException {
+	public ResponseEntity<String> queryES(@RequestBody String json)
+			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		PostOptions query;
-			query = mapper.readValue(json, PostOptions.class);
+		query = mapper.readValue(json, PostOptions.class);
 
 		ArrayList<EvaluatedTask> et = ect.query(query.getText());
 

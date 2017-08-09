@@ -21,6 +21,7 @@ public class RoleController {
 
 	/**
 	 * Returns all possible roles
+	 * 
 	 * @return ResponseEntity
 	 * @throws JsonProcessingException
 	 */

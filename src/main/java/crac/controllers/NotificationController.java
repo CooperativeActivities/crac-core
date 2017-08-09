@@ -27,16 +27,16 @@ import crac.module.utility.JSONResponseHelper;
 @RequestMapping("/notification")
 
 public class NotificationController {
-	
+
 	@Autowired
 	private CracUserDAO userDAO;
-	
+
 	@Autowired
 	private TaskDAO taskDAO;
-	
+
 	@Autowired
 	private UserTaskRelDAO userTaskRelDAO;
-	
+
 	@Autowired
 	private UserRelationshipDAO userRelationshipDAO;
 
@@ -45,18 +45,21 @@ public class NotificationController {
 
 	/**
 	 * Returns all notifications, which target the logged in user
+	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getNotifications() {
-		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		return JSONResponseHelper.createResponse(nf.getUserNotifications(user), true);
 	}
-	
+
 	/**
 	 * Returns all notifications in the system
+	 * 
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
@@ -68,46 +71,49 @@ public class NotificationController {
 
 	/**
 	 * Triggers the accept-method of the notification and deletes it
+	 * 
 	 * @param notificationId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{notification_id}/accept", "/friend/{notification_id}/accept/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{notification_id}/accept",
+			"/friend/{notification_id}/accept/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> acceptFriend(@PathVariable(value = "notification_id") String notificationId) {
 		Notification n = nf.getNotificationById(notificationId);
-		
-		if(n != null){
+
+		if (n != null) {
 			String message = n.accept();
 			HashMap<String, Object> meta = new HashMap<>();
 			meta.put("message", message);
 			return JSONResponseHelper.createResponse(n, true, meta);
-			//return JSonResponseHelper.successfullyAccepted(n, message);
-		}else{
+			// return JSonResponseHelper.successfullyAccepted(n, message);
+		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
-		
 
 	}
-	
+
 	/**
 	 * Triggers the deny-method of the notification and deletes it
+	 * 
 	 * @param notificationId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{notification_id}/deny", "/{notification_id}/deny/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{notification_id}/deny",
+			"/{notification_id}/deny/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> denyFriend(@PathVariable(value = "notification_id") String notificationId) {
 		Notification n = nf.getNotificationById(notificationId);
-		
-		if(n != null){
+
+		if (n != null) {
 			String message = n.deny();
 			HashMap<String, Object> meta = new HashMap<>();
 			meta.put("message", message);
 			return JSONResponseHelper.createResponse(n, true, meta);
-			//return JSonResponseHelper.successfullyDenied(n, message);
-		}else{
+			// return JSonResponseHelper.successfullyDenied(n, message);
+		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
 		}
 	}
-	
+
 }
