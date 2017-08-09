@@ -50,6 +50,7 @@ public class CracUser {
 	private long id;
 
 	@NotNull
+	@Column(unique = true)
 	private String name;
 	
 	@NotNull

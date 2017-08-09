@@ -822,7 +822,26 @@ Existing filters:
     	    		"value": 1499205600000
     	    	}
     	    	]
-	
+    	}
+    	
+    	{
+    	    "name": "FriendFilter",
+    	    "params": [
+    	    	{
+    	    		"name": "UserName",
+    	    		"value": {
+    	    			"firstName": "Max",
+    	    			"lastName": "Mustermann"
+    	    		}
+    	    	},
+    	    	{
+    	    		"name": "Musteradmin",
+    	    		"value": {
+    	    			"firstName": "Martin",
+    	    			"lastName": "Mustermann"
+    	    		}
+    	    	}
+    	    	]
     	}
 
 ##### *Response:*
