@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import crac.exception.WrongParameterException;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
@@ -17,46 +18,55 @@ public class DateFilter extends ConcreteFilter {
 
 	@Override
 	public void apply(FilterParameters fp) {
-
-		Long startDateMin = (Long) super.getPf().getParam("startDateMin");
-		Long startDateMax = (Long) super.getPf().getParam("startDateMax");
-		Long endDateMin = (Long) super.getPf().getParam("endDateMin");
-		Long endDateMax = (Long) super.getPf().getParam("endDateMax");
 		
+		Long startDateMin;
+		Long startDateMax;
+		Long endDateMin;
+		Long endDateMax;
+
+		try {
+			startDateMin = (Long) super.getPf().getParam("startDateMin");
+			startDateMax = (Long) super.getPf().getParam("startDateMax");
+			endDateMin = (Long) super.getPf().getParam("endDateMin");
+			endDateMax = (Long) super.getPf().getParam("endDateMax");
+		} catch (Exception e) {
+			throw new WrongParameterException("Wrong parameters");
+		}
+
 		boolean minSD = startDateMin != null;
 		boolean maxSD = startDateMax != null;
 		boolean minED = endDateMin != null;
 		boolean maxED = endDateMax != null;
-		
+
 		List<Task> result = new ArrayList<>();
-		
-		for(Task t : fp.getTasksPool()){
-			
+
+		for (Task t : fp.getTasksPool()) {
+
 			boolean minSDcheck = true;
 			boolean maxSDcheck = true;
 			boolean minEDcheck = true;
 			boolean maxEDcheck = true;
-			
-			if(minSD){
+
+			if (minSD) {
 				minSDcheck = startDateMin <= t.getStartTime().getTimeInMillis();
 			}
-			
-			if(maxSD){
+
+			if (maxSD) {
 				minSDcheck = startDateMax >= t.getStartTime().getTimeInMillis();
 			}
-			
-			if(minED){
+
+			if (minED) {
 				minSDcheck = endDateMin <= t.getEndTime().getTimeInMillis();
 			}
-			
-			if(maxED){
+
+			if (maxED) {
 				minSDcheck = endDateMax >= t.getEndTime().getTimeInMillis();
 			}
 
-			if(minSDcheck && maxSDcheck && minEDcheck && maxEDcheck){
+			if (minSDcheck && maxSDcheck && minEDcheck && maxEDcheck) {
 				result.add(t);
 			}
-			
+
 		}
 		fp.setTasksPool(result);
 

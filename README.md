@@ -886,6 +886,23 @@ The Creator-Filter requires the same parameters the Friend-Filter does but filte
     	    	}
     	    	]
     	}
+    	
+The Competence-Filter requires arbitrary competence-ids to filter tasks for these competences
+    	
+    	{
+    	    "name": "CompetenceFilter",
+    	    "params": [
+    	    	{
+    	    		"name": "id",
+    	    		"value": 49524
+    	    	},
+    	    	{
+    	    		"name": "id",
+    	    		"value": 49517
+    	    	}
+    	    	]
+	
+    	}
 
 ##### *Response:*
 
