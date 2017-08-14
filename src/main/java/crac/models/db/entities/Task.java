@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,7 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
+import javax.persistence.EnumType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,9 +55,21 @@ public class Task {
 
 	private String location;
 
-	private double lat;
+	private double geoLat;
 
-	private double lng;
+	private double geoLng;
+	
+	private String geoName;
+	
+	private String geoCountry;
+	
+	private String geoCountryA;
+	
+	private String geoMacroRegion;
+	
+	private String geoRegion;
+	
+	private String geoLocality;
 
 	@NotNull
 	@Column(name = "start_time")
@@ -77,6 +90,7 @@ public class Task {
 	private String feedback;
 
 	@Column(name = "task_state")
+	@Enumerated(EnumType.ORDINAL)
 	private TaskState taskState;
 
 	@NotNull
@@ -477,12 +491,12 @@ public class Task {
 	}
 
 	@JsonIgnore
-	private void setTreeState(TaskState state, TaskDAO taskDAO) {
+	public void setGlobalTreeState(TaskState state, TaskDAO taskDAO) {
 		this.setTaskState(state);
 		if (childTasks != null) {
 			if (!childTasks.isEmpty()) {
 				for (Task t : childTasks) {
-					t.setTreeState(state, taskDAO);
+					t.setGlobalTreeState(state, taskDAO);
 					taskDAO.save(t);
 				}
 			}
@@ -496,7 +510,7 @@ public class Task {
 
 		if (this.isSuperTask() && this.getTaskState() == TaskState.NOT_PUBLISHED && fieldsFilled()) {
 			if (childTasksReady()) {
-				setTreeState(TaskState.PUBLISHED, taskDAO);
+				setGlobalTreeState(TaskState.PUBLISHED, taskDAO);
 				return 3;
 			} else {
 				return 2;
@@ -519,13 +533,18 @@ public class Task {
 			}
 		}
 
-		setTreeState(TaskState.NOT_PUBLISHED, taskDAO);
+		setGlobalTreeState(TaskState.NOT_PUBLISHED, taskDAO);
 		return 3;
 	}
 
 	@JsonIgnore
 	public boolean checkStartAllowance() {
 		return this.getStartTime().getTimeInMillis() < Calendar.getInstance().getTimeInMillis();
+	}
+	
+	@JsonIgnore
+	public void nextTaskState(Task t, TaskDAO taskDAO){
+		this.getTaskState().nextTaskState(t, taskDAO);
 	}
 
 	@JsonIgnore
@@ -807,12 +826,12 @@ public class Task {
 			this.setAddress(t.getAddress());
 		}
 
-		if (t.getLat() != 0) {
-			this.setLat(t.getLat());
+		if (t.getGeoLat() != 0) {
+			this.setGeoLat(t.getGeoLat());
 		}
 
-		if (t.getLng() != 0) {
-			this.setLng(t.getLng());
+		if (t.getGeoLng() != 0) {
+			this.setGeoLng(t.getGeoLng());
 		}
 		/*
 		 * if (t.getTaskType() != null) { this.setTaskType(t.getTaskType()); }
@@ -825,22 +844,6 @@ public class Task {
 
 	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	public double getLat() {
-		return lat;
-	}
-
-	public void setLat(double lat) {
-		this.lat = lat;
-	}
-
-	public double getLng() {
-		return lng;
-	}
-
-	public void setLng(double lng) {
-		this.lng = lng;
 	}
 
 	public Set<CracGroup> getRestrictingGroups() {
@@ -857,6 +860,70 @@ public class Task {
 
 	public void setInvitedGroups(Set<CracGroup> invitedGroups) {
 		this.invitedGroups = invitedGroups;
+	}
+
+	public double getGeoLat() {
+		return geoLat;
+	}
+
+	public void setGeoLat(double geoLat) {
+		this.geoLat = geoLat;
+	}
+
+	public double getGeoLng() {
+		return geoLng;
+	}
+
+	public void setGeoLng(double geoLng) {
+		this.geoLng = geoLng;
+	}
+
+	public String getGeoName() {
+		return geoName;
+	}
+
+	public void setGeoName(String geoName) {
+		this.geoName = geoName;
+	}
+
+	public String getGeoCountry() {
+		return geoCountry;
+	}
+
+	public void setGeoCountry(String geoCountry) {
+		this.geoCountry = geoCountry;
+	}
+
+	public String getGeoCountryA() {
+		return geoCountryA;
+	}
+
+	public void setGeoCountryA(String geoCountryA) {
+		this.geoCountryA = geoCountryA;
+	}
+
+	public String getGeoMacroRegion() {
+		return geoMacroRegion;
+	}
+
+	public void setGeoMacroRegion(String geoMacroRegion) {
+		this.geoMacroRegion = geoMacroRegion;
+	}
+
+	public String getGeoRegion() {
+		return geoRegion;
+	}
+
+	public void setGeoRegion(String geoRegion) {
+		this.geoRegion = geoRegion;
+	}
+
+	public String getGeoLocality() {
+		return geoLocality;
+	}
+
+	public void setGeoLocality(String geoLocality) {
+		this.geoLocality = geoLocality;
 	}
 
 }

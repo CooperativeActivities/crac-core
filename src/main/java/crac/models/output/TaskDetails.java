@@ -19,67 +19,151 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.storage.CompetenceStorage;
+import lombok.Getter;
+import lombok.Setter;
 
 public class TaskDetails {
 
+	@Getter
+	@Setter
 	private long id;
 
+	@Getter
+	@Setter
 	private String name;
 
+	@Getter
+	@Setter
 	private String description;
 
+	@Getter
+	@Setter
 	private String address;
 
+	@Getter
+	@Setter
 	private String location;
 
-	private double lat;
+	@Getter
+	@Setter
+	private double geoLat;
 
-	private double lng;
+	@Getter
+	@Setter
+	private double geoLng;
 
+	@Getter
+	@Setter
+	private String geoName;
+	
+	@Getter
+	@Setter
+	private String geoCountry;
+	
+	@Getter
+	@Setter
+	private String geoCountryA;
+	
+	@Getter
+	@Setter
+	private String geoMacroRegion;
+	
+	@Getter
+	@Setter
+	private String geoRegion;
+	
+	@Getter
+	@Setter
+	private String geoLocality;
+
+	@Getter
+	@Setter
 	private Calendar startTime;
 
+	@Getter
+	@Setter
 	private Calendar endTime;
 
+	@Getter
+	@Setter
 	private int minAmountOfVolunteers;
 
+	@Getter
+	@Setter
 	private int maxAmountOfVolunteers;
 
+	@Getter
+	@Setter
 	private int signedUsers;
 
+	@Getter
+	@Setter
 	private TaskState taskState;
 
+	@Getter
+	@Setter
 	private boolean readyToPublish;
 
+	@Getter
 	private Calendar creationDate;
 
+	@Getter
+	@Setter
 	private TaskShort superTask;
 
+	@Getter
+	@Setter
 	private Set<TaskShort> childTasks;
 
+	@Getter
 	private CracUser creator;
 
+	@Getter
+	@Setter
 	private Set<Attachment> attachments;
 
+	@Getter
+	@Setter
 	private Set<Comment> comments;
 
+	@Getter
+	@Setter
 	private Set<Evaluation> mappedEvaluations;
 
+	@Getter
+	@Setter
 	private Set<UserFriendDetails> userRelationships;
 
+	@Getter
+	@Setter
 	private Set<CompetenceRelationDetails> taskCompetences;
 
+	@Getter
+	@Setter
 	private Set<MaterialDetails> materials;
 
+	@Getter
+	@Setter
 	private TaskType taskType;
 
+	@Getter
+	@Setter
 	private Set<UserTaskRel> participationDetails;
 	
+	@Getter
+	@Setter
 	private Set<CracGroup> restrictingGroups;
 	
+	@Getter
+	@Setter
 	private Set<CracGroup> invitedGroups;
 
+	@Getter
+	@Setter
 	private boolean assigned;
 
+	@Getter
+	@Setter
 	private boolean permissions;
 
 	public TaskDetails(Task t, CracUser u, UserTaskRelDAO userTaskRelDAO, CompetenceStorage cs) {
@@ -89,8 +173,14 @@ public class TaskDetails {
 		this.description = t.getDescription();
 		this.address = t.getAddress();
 		this.location = t.getLocation();
-		this.lat = t.getLat();
-		this.lng = t.getLng();
+		this.geoLat = t.getGeoLat();
+		this.geoLng = t.getGeoLng();
+		this.geoName = t.getGeoName();
+		this.geoCountry = t.getGeoCountry();
+		this.geoCountryA = t.getGeoCountryA();
+		this.geoMacroRegion = t.getGeoMacroRegion();
+		this.geoRegion = t.getGeoRegion();
+		this.geoLocality = t.getGeoLocality();
 		this.startTime = t.getStartTime();
 		this.endTime = t.getEndTime();
 		this.maxAmountOfVolunteers = t.getMaxAmountOfVolunteers();
@@ -237,246 +327,6 @@ public class TaskDetails {
 
 		return list;
 
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public Calendar getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Calendar startTime) {
-		this.startTime = startTime;
-	}
-
-	public Calendar getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Calendar endTime) {
-		this.endTime = endTime;
-	}
-
-	public int getMinAmountOfVolunteers() {
-		return minAmountOfVolunteers;
-	}
-
-	public void setMinAmountOfVolunteers(int minAmountOfVolunteers) {
-		this.minAmountOfVolunteers = minAmountOfVolunteers;
-	}
-
-	public int getMaxAmountOfVolunteers() {
-		return maxAmountOfVolunteers;
-	}
-
-	public void setMaxAmountOfVolunteers(int maxAmountOfVolunteers) {
-		this.maxAmountOfVolunteers = maxAmountOfVolunteers;
-	}
-
-	public int getSignedUsers() {
-		return signedUsers;
-	}
-
-	public void setSignedUsers(int signedUsers) {
-		this.signedUsers = signedUsers;
-	}
-
-	public TaskState getTaskState() {
-		return taskState;
-	}
-
-	public void setTaskState(TaskState taskState) {
-		this.taskState = taskState;
-	}
-
-	public boolean isReadyToPublish() {
-		return readyToPublish;
-	}
-
-	public void setReadyToPublish(boolean readyToPublish) {
-		this.readyToPublish = readyToPublish;
-	}
-
-	public Calendar getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Calendar creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public TaskShort getSuperTask() {
-		return superTask;
-	}
-
-	public void setSuperTask(TaskShort superTask) {
-		this.superTask = superTask;
-	}
-
-	public Set<TaskShort> getChildTasks() {
-		return childTasks;
-	}
-
-	public void setChildTasks(Set<TaskShort> childTasks) {
-		this.childTasks = childTasks;
-	}
-
-	public CracUser getCreator() {
-		return creator;
-	}
-
-	public void setCreator(CracUser creator) {
-		this.creator = creator;
-	}
-
-	public Set<Attachment> getAttachments() {
-		return attachments;
-	}
-
-	public void setAttachments(Set<Attachment> attachments) {
-		this.attachments = attachments;
-	}
-
-	public Set<Comment> getComments() {
-		return comments;
-	}
-
-	public void setComments(Set<Comment> comments) {
-		this.comments = comments;
-	}
-
-	public Set<Evaluation> getMappedEvaluations() {
-		return mappedEvaluations;
-	}
-
-	public void setMappedEvaluations(Set<Evaluation> mappedEvaluations) {
-		this.mappedEvaluations = mappedEvaluations;
-	}
-
-	public Set<UserFriendDetails> getUserRelationships() {
-		return userRelationships;
-	}
-
-	public void setUserRelationships(Set<UserFriendDetails> userRelationships) {
-		this.userRelationships = userRelationships;
-	}
-
-	public Set<CompetenceRelationDetails> getTaskCompetences() {
-		return taskCompetences;
-	}
-
-	public void setTaskCompetences(Set<CompetenceRelationDetails> taskCompetences) {
-		this.taskCompetences = taskCompetences;
-	}
-
-	public Set<MaterialDetails> getMaterials() {
-		return materials;
-	}
-
-	public void setMaterials(Set<MaterialDetails> materials) {
-		this.materials = materials;
-	}
-
-	public TaskType getTaskType() {
-		return taskType;
-	}
-
-	public void setTaskType(TaskType taskType) {
-		this.taskType = taskType;
-	}
-
-	public boolean isAssigned() {
-		return assigned;
-	}
-
-	public void setAssigned(boolean assigned) {
-		this.assigned = assigned;
-	}
-
-	public Set<UserTaskRel> getParticipationDetails() {
-		return participationDetails;
-	}
-
-	public void setParticipationDetails(Set<UserTaskRel> participationDetails) {
-		this.participationDetails = participationDetails;
-	}
-
-	public boolean isPermissions() {
-		return permissions;
-	}
-
-	public void setPermissions(boolean permissions) {
-		this.permissions = permissions;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public double getLat() {
-		return lat;
-	}
-
-	public void setLat(double lat) {
-		this.lat = lat;
-	}
-
-	public double getLng() {
-		return lng;
-	}
-
-	public void setLng(double lng) {
-		this.lng = lng;
-	}
-
-	public Set<CracGroup> getRestrictingGroups() {
-		return restrictingGroups;
-	}
-
-	public void setRestrictingGroups(Set<CracGroup> restrictingGroups) {
-		this.restrictingGroups = restrictingGroups;
-	}
-
-	public Set<CracGroup> getInvitedGroups() {
-		return invitedGroups;
-	}
-
-	public void setInvitedGroups(Set<CracGroup> invitedGroups) {
-		this.invitedGroups = invitedGroups;
 	}
 
 }
