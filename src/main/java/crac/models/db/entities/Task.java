@@ -542,10 +542,12 @@ public class Task {
 		return this.getStartTime().getTimeInMillis() < Calendar.getInstance().getTimeInMillis();
 	}
 	
+	/*
 	@JsonIgnore
 	public void nextTaskState(Task t, TaskDAO taskDAO){
 		this.getTaskState().nextTaskState(t, taskDAO);
 	}
+	*/
 
 	@JsonIgnore
 	public int start(TaskDAO taskDAO) {
