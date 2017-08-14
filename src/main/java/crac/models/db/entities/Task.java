@@ -835,9 +835,31 @@ public class Task {
 		if (t.getGeoLng() != 0) {
 			this.setGeoLng(t.getGeoLng());
 		}
-		/*
-		 * if (t.getTaskType() != null) { this.setTaskType(t.getTaskType()); }
-		 */
+		
+		if(t.getGeoName() != null){
+			this.setGeoName(t.getGeoName());
+		}
+		
+		if(t.getGeoCountry() != null){
+			this.setGeoCountry(t.getGeoCountry());
+		}
+
+		if(t.getGeoCountryA() != null){
+			this.setGeoCountryA(t.getGeoCountryA());
+		}
+
+		if(t.getGeoMacroRegion() != null){
+			this.setGeoMacroRegion(t.getGeoMacroRegion());
+		}
+
+		if(t.getGeoRegion() != null){
+			this.setGeoRegion(t.getGeoRegion());
+		}
+
+		if(t.getGeoLocality() != null){
+			this.setGeoLocality(t.getGeoLocality());
+		}	
+				
 	}
 
 	public String getAddress() {
