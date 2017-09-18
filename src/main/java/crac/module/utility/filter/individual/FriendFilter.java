@@ -9,6 +9,7 @@ import crac.exception.WrongParameterException;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
+import crac.models.db.relation.UserTaskRel;
 import crac.models.utility.ParamterDummy;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
@@ -44,7 +45,6 @@ public class FriendFilter extends ConcreteFilter {
 
 			List<CracUser> c = userDAO.queryByNameOrFullname(name, firstName, lastName);
 			System.out.println("Name: " + name + " FirstName: " + firstName + " LastName: " + lastName);
-
 			l.addAll(c);
 		}
 
@@ -53,10 +53,13 @@ public class FriendFilter extends ConcreteFilter {
 		for (Task t : fp.getTasksPool()) {
 			boolean fin = false;
 			for (CracUser u : l) {
-				if (t.getUserRelationships().contains(u)) {
-					fin = true;
-					break;
+				for(UserTaskRel utr : t.getUserRelationships()){
+					if (utr.getUser().getId() == u.getId()) {
+						fin = true;
+						break;
+					}
 				}
+				
 			}
 			if (fin) {
 				result.add(t);

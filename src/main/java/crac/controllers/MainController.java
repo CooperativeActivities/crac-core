@@ -132,7 +132,7 @@ public class MainController {
 	@RequestMapping("/include")
 	@ResponseBody
 	public ResponseEntity<String> include() {
-
+		
 		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 
 		CracUser BradenADMIN = new CracUser();
