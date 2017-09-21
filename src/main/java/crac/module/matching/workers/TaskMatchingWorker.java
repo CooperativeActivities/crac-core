@@ -2,6 +2,7 @@ package crac.module.matching.workers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import crac.enums.TaskState;
@@ -75,7 +76,9 @@ public class TaskMatchingWorker extends Worker {
 		//------------------------
 
 		if (tasks != null) {
-			Collections.sort(tasks);
+			//tasks.sort((task1, task2) -> Double.compare(task1.getAssessment(), task2.getAssessment()));
+			tasks.sort(Comparator.comparing(EvaluatedTask::getAssessment));
+			//Collections.sort(tasks);
 		}
 
 		return tasks;

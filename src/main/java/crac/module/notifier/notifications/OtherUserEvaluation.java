@@ -1,52 +1,38 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
-import crac.models.db.daos.TaskDAO;
-import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.NotificationTask;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * An reminder to target user to evaluation another target user
+ * @author David Hondl
+ *
+ */
 public class OtherUserEvaluation extends Notification {
 
-	private Long taskId;
+	@Getter
+	@Setter
+	private NotificationTask task;
+
+	@Getter
+	@Setter
 	private Long evaluationId;
+
+	@Getter
+	@Setter
 	private Long toEvaluateId;
 
 	public OtherUserEvaluation() {
 		super("Other User-Evaluation", NotificationType.MESSAGE);
 	}
 
-	public Long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(Long taskId) {
-		this.taskId = taskId;
-	}
-
-	public Long getEvaluationId() {
-		return evaluationId;
-	}
-
-	public void setEvaluationId(Long evaluationId) {
-		this.evaluationId = evaluationId;
-	}
-
-	public Long getToEvaluateId() {
-		return toEvaluateId;
-	}
-
-	public void setToEvaluateId(Long toEvaluateId) {
-		this.toEvaluateId = toEvaluateId;
-	}
-
 	@Override
 	public String accept() {
 		
-		TaskDAO taskDAO = super.getNf().getTaskDAO();
-		Task task = taskDAO.findOne(taskId);
-
 		String message = "Self-Evaluation accepted for: "+task.getName()+". Please fill out form.";
 		super.destroy();
 		System.out.println(message);
@@ -63,10 +49,10 @@ public class OtherUserEvaluation extends Notification {
 	}
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
-		this.taskId = ids.get("task");
-		this.evaluationId = ids.get("evaluation");
-		this.toEvaluateId = ids.get("toEvaluate");
+	public void configure(NotificationConfiguration conf) {
+		this.task = conf.get("task", NotificationTask.class);
+		this.evaluationId = conf.get("evaluation", Long.class);
+		this.toEvaluateId = conf.get("toEvaluate", Long.class);
 	}
 
 }

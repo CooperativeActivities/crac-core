@@ -1956,12 +1956,34 @@ GET /notification
 	[
 	  {
 	    "notificationId": "22517116313100323167",
-	    "targetId": 3,
-	    ...
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
+        "target": {
+            "id": 3,
+            "name": "ProellADMIN",
+            "lastName": "user_last2",
+            "firstName": "user_first2"
+        },
+        "task": {
+            "id": 2,
+            "name": "testTask",
+            "description": "this is a test",
+            ...
+        },
+        ...
 	  },
 	  {
 	    "notificationId": "528924t6523027823167",
-	    "targetId": 3,
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
 	    ...
 	  }
 	]
@@ -1981,17 +2003,34 @@ GET /notification/admin
 	[
 	  {
 	    "notificationId": "22517116313100323167",
-	    "targetId": 3,
-	    ...
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
+        "target": {
+            "id": 3,
+            "name": "ProellADMIN",
+            "lastName": "user_last2",
+            "firstName": "user_first2"
+        },
+        "task": {
+            "id": 2,
+            "name": "testTask",
+            "description": "this is a test",
+            ...
+        },
+        ...
 	  },
 	  {
 	    "notificationId": "528924t6523027823167",
-	    "targetId": 1,
-	    ...
-	  },
-	  {
-	    "notificationId": "528924o2347235287821",
-	    "targetId": 2,
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
 	    ...
 	  }
 	]
@@ -2408,3 +2447,7 @@ Major change for the "get all tasks"-Endpoints --> see the "Task-Endpoints" (fir
 #### 8.8.2017
 
 New endpoints for adding and removing users to and from groups --> see "Group-Endpoints"  
+
+#### 21.9.2017
+
+Information in notifications now consists of object and not just their ID! -> see "Notification-Endpoints"  

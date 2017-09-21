@@ -282,7 +282,7 @@ public class CracUserController {
 		CracUser sender = userDAO.findByName(userDetails.getName());
 		CracUser target = userDAO.findOne(id);
 
-		Notification n = nf.createNotification(FriendRequest.class, target.getId(), sender.getId(), null);
+		Notification n = nf.createNotification(FriendRequest.class, target, sender, null);
 
 		return JSONResponseHelper.successfullyCreated(n);
 	}

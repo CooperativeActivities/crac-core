@@ -1,22 +1,23 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
+import crac.models.db.entities.Task.NotificationTask;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * Notifies the leader(s) of target task about all participants having finished same task
+ * @author David Hondl
+ *
+ */
 public class TaskDoneNotification extends Notification{
 	
-	private Long taskId;
+	@Getter
+	@Setter
+	private NotificationTask task;
 	
-	public Long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(Long taskId) {
-		this.taskId = taskId;
-	}
-
 	public TaskDoneNotification(){
 		super("Task is done", NotificationType.SUGGESTION);
 	}
@@ -37,8 +38,8 @@ public class TaskDoneNotification extends Notification{
 	}
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
-		this.taskId = ids.get("task");
+	public void configure(NotificationConfiguration conf) {
+		this.task = conf.get("task", NotificationTask.class);
 	}
 	
 }

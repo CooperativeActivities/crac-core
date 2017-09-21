@@ -55,6 +55,7 @@ import crac.models.input.PostOptions;
 import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
 import crac.models.output.TaskShort;
+import crac.models.utility.NotificationConfiguration;
 import crac.models.utility.PersonalizedFilters;
 import crac.models.utility.TaskLookup;
 import crac.module.matching.Decider;
@@ -1550,14 +1551,9 @@ public class TaskController {
 						}
 
 						if (alldone) {
-							HashMap<String, Long> ids = new HashMap<>();
-							ids.put("task", task_id);
 							for (CracUser l : task.getAllLeaders()) {
-								nf.createNotification(TaskDoneNotification.class, l.getId(), -1l, ids);
+								nf.createSystemNotification(TaskDoneNotification.class, l, NotificationConfiguration.create().put("task", task.generateNTask()));
 							}
-							// TaskDoneNotification(task_id, user.getId());
-							// NotificationHelper.createTaskDone(task_id,
-							// user.getId());
 						}
 
 						return JSONResponseHelper.successfullyUpdated(task);
@@ -1721,12 +1717,7 @@ public class TaskController {
 		if (targetU != null && task != null) {
 
 			if (loggedU.hasTaskPermissions(task)) {
-
-				HashMap<String, Long> ids = new HashMap<>();
-				ids.put("task", task.getId());
-				Notification n = nf.createNotification(LeadNomination.class, targetU.getId(), loggedU.getId(), ids);
-				// NotificationHelper.createLeadNomination(loggedU.getId(),
-				// targetU.getId(), task.getId());
+				Notification n = nf.createNotification(LeadNomination.class, targetU, loggedU, NotificationConfiguration.create().put("task", task.generateNTask()));
 				return JSONResponseHelper.successfullyCreated(n);
 			} else {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.RESOURCE_UNCHANGEABLE);
@@ -1781,9 +1772,7 @@ public class TaskController {
 					}
 				}
 				for (CracUser u : users) {
-					HashMap<String, Long> ids = new HashMap<>();
-					ids.put("task", taskId);
-					nf.createNotification(TaskInvitation.class, u.getId(), user.getId(), ids);
+					nf.createNotification(TaskInvitation.class, u, user, NotificationConfiguration.create().put("task", task.generateNTask()));
 				}
 				return JSONResponseHelper.successfullyCreated(users);
 			} else {

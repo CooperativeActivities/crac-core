@@ -1,31 +1,32 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
 import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.NotificationTask;
 import crac.models.db.relation.UserTaskRel;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * A notification that informs target user about his/her nomination to beeing a leader to target task; which the user becomes after accepting
+ * @author David Hondl
+ *
+ */
 public class LeadNomination extends Notification {
 
-	private long taskId;
+	@Getter
+	@Setter
+	private NotificationTask task;
 
 	public LeadNomination() {
 		super("Lead Nomination", NotificationType.REQUEST);
-	}
-
-	public long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
 	}
 
 	@Override
@@ -34,10 +35,10 @@ public class LeadNomination extends Notification {
 		UserTaskRelDAO userTaskRelDAO = super.getNf().getUserTaskRelDAO();
 		CracUserDAO userDAO = super.getNf().getUserDAO();
 
-		Task task = taskDAO.findOne(taskId);
-		CracUser user = userDAO.findOne(super.getTargetId());
+		Task rtask = taskDAO.findOne(task.getId());
+		CracUser user = userDAO.findOne(super.getTarget().getId());
 
-		UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
+		UserTaskRel utr = userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, rtask,
 				TaskParticipationType.LEADING);
 		
 		String message = "";
@@ -54,7 +55,7 @@ public class LeadNomination extends Notification {
 		} else {
 			UserTaskRel newRel = new UserTaskRel();
 			newRel.setParticipationType(TaskParticipationType.LEADING);
-			newRel.setTask(task);
+			newRel.setTask(rtask);
 			newRel.setUser(user);
 			userTaskRelDAO.save(newRel);
 			message = "New Relationship Created";
@@ -75,8 +76,8 @@ public class LeadNomination extends Notification {
 	}
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
-		this.taskId = ids.get("task");
+	public void configure(NotificationConfiguration conf) {
+		this.task = conf.get("task", NotificationTask.class);
 	}
 
 }

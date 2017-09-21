@@ -1,43 +1,34 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
-import crac.models.db.daos.TaskDAO;
-import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.NotificationTask;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * Notification which messages target user, that there is an evaluation available
+ * @author David Hondl
+ *
+ */
 public class EvaluationNotification extends Notification {
 
-	private long taskId;
-	private long evaluationId;
+	@Getter
+	@Setter
+	private NotificationTask task;
+
+	@Getter
+	@Setter
+	private Long evaluationid;
 
 	public EvaluationNotification() {
 		super("Evaluation", NotificationType.MESSAGE);
 	}
 
-	public long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
-	}
-	
-	public long getEvaluationId() {
-		return evaluationId;
-	}
-
-	public void setEvaluationId(long evaluationId) {
-		this.evaluationId = evaluationId;
-	}
-
 	@Override
 	public String accept() {
 		
-		TaskDAO taskDAO = super.getNf().getTaskDAO();
-		Task task = taskDAO.findOne(taskId);
-
 		String message = "Evaluation accepted for: "+task.getName()+". Please fill out form.";
 		super.destroy();
 
@@ -55,9 +46,9 @@ public class EvaluationNotification extends Notification {
 	}
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
-		this.taskId = ids.get("task");
-		this.evaluationId = ids.get("evaluation");	
+	public void configure(NotificationConfiguration conf) {
+		this.task = conf.get("task", NotificationTask.class);
+		this.evaluationid = conf.get("evaluationid", Long.class);	
 	}
 
 }

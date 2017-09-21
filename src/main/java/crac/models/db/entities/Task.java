@@ -32,6 +32,8 @@ import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.RepetitionDate;
 import crac.models.db.relation.UserTaskRel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The task-entity.
@@ -176,29 +178,12 @@ public class Task {
 		this.taskState = TaskState.NOT_PUBLISHED;
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
-		/*
-		 * Calendar time = new GregorianCalendar(); time.set(2030, 9, 10, 14,
-		 * 30, 00); this.startTime = time; Calendar time2 = new
-		 * GregorianCalendar(); time2.set(2031, 9, 10, 14, 30, 00); this.endTime
-		 * = time2;
-		 */
 		this.mappedCompetences = new HashSet<>();
 		this.materials = new HashSet<Material>();
 		this.minAmountOfVolunteers = 1;
 	}
 
 	public Task copy(Task superTask) {
-		// t.setUserRelationships(userRelationships);
-		// t.setAttachments(attachments);
-		// t.setComments(comments);
-		// t.setEndTime(endTime);
-		// t.setFeedback(feedback);
-		// t.setNextTask(t);
-		// t.setPreviousTask(t);
-		// t.setRepetitionTime(repetitionTime);
-		// t.setStartTime(startTime);
-		// t.setTaskRepetitionState(taskRepetitionState);
-		// t.setTaskState(taskState);
 		Task t = new Task();
 		t.setMaxAmountOfVolunteers(maxAmountOfVolunteers);
 		t.setCreator(creator);
@@ -422,26 +407,9 @@ public class Task {
 		}
 	}
 
-	/*
-	 * @JsonIgnore public void readyToPublishTree(HashMap<String, String>
-	 * errors, TaskDAO taskDAO) { if (this.fieldsFilled()) { this.readyToPublish
-	 * = true; taskDAO.save(this); if (this.hasChildTasks()) { for (Task t :
-	 * childTasks) { t.readyToPublishTree(errors, taskDAO); }
-	 * 
-	 * } } else { errors.put(this.id + "", "TASK_NOT_READY"); } }
-	 */
-
 	public boolean isSuperTask() {
 		return this.getSuperTask() == null;
 	}
-	/*
-	 * @JsonIgnore public boolean isLeaf() { if (childTasks == null) { return
-	 * true; }
-	 * 
-	 * if (childTasks.isEmpty()) { return true; }
-	 * 
-	 * return false; }
-	 */
 
 	@JsonIgnore
 	public boolean isExtendable() {
@@ -542,12 +510,10 @@ public class Task {
 		return this.getStartTime().getTimeInMillis() < Calendar.getInstance().getTimeInMillis();
 	}
 	
-	/*
 	@JsonIgnore
 	public void nextTaskState(Task t, TaskDAO taskDAO){
 		this.getTaskState().nextTaskState(t, taskDAO);
 	}
-	*/
 
 	@JsonIgnore
 	public int start(TaskDAO taskDAO) {
@@ -949,5 +915,46 @@ public class Task {
 	public void setGeoLocality(String geoLocality) {
 		this.geoLocality = geoLocality;
 	}
+	
+	public NotificationTask generateNTask(){
+		NotificationTask t = new NotificationTask();
+		t.setId(this.id);
+		t.setName(this.name);
+		t.setDescription(this.description);
+		t.setAddress(this.address);
+		t.setStartTime(this.startTime);
+		t.setEndTime(this.endTime);
+		return t;
+	}
+	
+	public class NotificationTask {
 
+		@Getter
+		@Setter
+		long id;
+
+		@Getter
+		@Setter
+		String name;
+
+		@Getter
+		@Setter
+		private String description;
+
+		@Getter
+		@Setter
+		private String address;
+		
+		@Getter
+		@Setter
+		private Calendar startTime;
+
+		@Getter
+		@Setter
+		private Calendar endTime;
+
+
+		public NotificationTask(){
+		}
+	}
 }

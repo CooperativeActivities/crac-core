@@ -34,6 +34,8 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The cracUser-entity.
@@ -52,44 +54,44 @@ public class CracUser {
 	@NotNull
 	@Column(unique = true)
 	private String name;
-	
+
 	@NotNull
 	private String email;
-	
+
 	@NotNull
 	private String password;
-	
+
 	@NotNull
-	@Column(name="last_name")
+	@Column(name = "last_name")
 	private String lastName;
-	
+
 	@NotNull
-	@Column(name="first_name")
+	@Column(name = "first_name")
 	private String firstName;
-	
-	@Column(name="birth_date")
+
+	@Column(name = "birth_date")
 	private Date birthDate;
 
 	private String status;
-	
+
 	@NotNull
 	private String phone;
-	
+
 	private String address;
-		
+
 	/**
 	 * defines a one to many relation with the task-entity
 	 */
 
-	@JsonIdentityReference(alwaysAsId=true)
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Task> createdTasks;
-	
+
 	/**
 	 * defines a one to many relation with the competence-entity
 	 */
 
-	@JsonIdentityReference(alwaysAsId=true)
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<Competence> createdCompetences;
 
@@ -97,27 +99,27 @@ public class CracUser {
 	 * defines a one to many relation with the group-entity
 	 */
 
-	@JsonIdentityReference(alwaysAsId=true)
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	private Set<CracGroup> createdGroups;
 
 	/**
 	 * defines a many to many relation with the UserCompetenceRel-entity
 	 */
-	
-	@JsonIdentityReference(alwaysAsId=true)
+
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserCompetenceRel> competenceRelationships;
-	
+
 	/**
 	 * defines two one-to-many relationships with the UserRelationship-entity
 	 */
 
-	@JsonIdentityReference(alwaysAsId=true)
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "c1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserRelationship> userRelationshipsAs1;
-	
-	@JsonIdentityReference(alwaysAsId=true)
+
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "c2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserRelationship> userRelationshipsAs2;
 
@@ -125,51 +127,52 @@ public class CracUser {
 	 * defines a one to many relation with the UserTaskRel-entity
 	 */
 
-	@JsonIdentityReference(alwaysAsId=true)
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserTaskRel> taskRelationships;
-	
+
 	/**
 	 * defines a many to many relation with the group-entity
 	 */
-	
+
 	@ManyToMany(mappedBy = "enroledUsers", fetch = FetchType.LAZY)
-	@JsonIdentityReference(alwaysAsId=true)
+	@JsonIdentityReference(alwaysAsId = true)
 	private Set<CracGroup> groups;
-	
+
 	/**
 	 * defines a one to one relation with the attachment-entity
 	 */
-	
+
 	@OneToOne
-    @JoinColumn(name = "user_image")
+	@JoinColumn(name = "user_image")
 	private Attachment userImage;
-	
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "mapping_role_user", joinColumns={@JoinColumn(name="user_id")}, inverseJoinColumns={@JoinColumn(name="role_id")})
+	@JoinTable(name = "mapping_role_user", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "role_id") })
 	Set<Role> roles;
-	
-	@JsonIdentityReference(alwaysAsId=true)
+
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserMaterialSubscription> subscribedMaterials;
-	
+
 	/**
 	 * constructors
 	 */
-	
+
 	public CracUser() {
 		this.competenceRelationships = new HashSet<UserCompetenceRel>();
-		this.roles = new HashSet<Role>(); 
+		this.roles = new HashSet<Role>();
 	}
-	
+
 	@JsonIgnore
-	public void update(CracUser u){
+	public void update(CracUser u) {
 		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 
 		if (u.getPassword() != null) {
 			this.setPassword(bcryptEncoder.encode(u.getPassword()));
 		}
-		
+
 		if (u.getName() != null) {
 			this.setName(u.getName());
 		}
@@ -195,33 +198,47 @@ public class CracUser {
 			this.setStatus(u.getStatus());
 		}
 	}
-	
-	//UTILITY----------------
-	
+
+	// UTILITY----------------
+
 	@JsonIgnore
-	public boolean hasTaskPermissions(Task t){
-		System.out.println("ADMIN: "+confirmRole("ADMIN"));
-		System.out.println("LEADER: "+t.getAllLeaders().contains(this));
+	public boolean hasTaskPermissions(Task t) {
+		System.out.println("ADMIN: " + confirmRole("ADMIN"));
+		System.out.println("LEADER: " + t.getAllLeaders().contains(this));
 		return confirmRole("ADMIN") || t.getAllLeaders().contains(this);
 	}
-	
+
 	@JsonIgnore
-	public boolean confirmRole(String name){
-		for(Role role : roles){
-			if(role.getName().equals(name)){
+	public boolean confirmRole(String name) {
+		for (Role role : roles) {
+			if (role.getName().equals(name)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	@JsonIgnore
-	public boolean confirmRole(Role role){
+	public boolean confirmRole(Role role) {
 		return roles.contains(role);
 	}
+
+	// ------------------------
 	
-	//------------------------
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CracUser other = (CracUser) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
 	/**
 	 * getters and setters
 	 */
@@ -329,7 +346,7 @@ public class CracUser {
 	public void setCreatedGroups(Set<CracGroup> createdGroups) {
 		this.createdGroups = createdGroups;
 	}
-	
+
 	public Set<CracGroup> getGroups() {
 		return groups;
 	}
@@ -385,8 +402,8 @@ public class CracUser {
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
-	
-	public void addRole(Role role){
+
+	public void addRole(Role role) {
 		this.roles.add(role);
 	}
 
@@ -397,5 +414,71 @@ public class CracUser {
 	public void setSubscribedMaterials(Set<UserMaterialSubscription> subscribedMaterials) {
 		this.subscribedMaterials = subscribedMaterials;
 	}
+
+	public NotificationUser generateNUser() {
+		NotificationUser u = new NotificationUser();
+		u.setId(this.id);
+		u.setName(this.name);
+		u.setLastName(this.lastName);
+		u.setFirstName(this.firstName);
+		return u;
+	}
 	
+	public static NotificationUser sys(){
+		NotificationUser u = new CracUser(). new NotificationUser();
+		u.setId(-1l);
+		u.setName("CrAc-Bot");
+		u.setLastName("CrAc-Bot");
+		u.setFirstName("CrAc-Bot");
+		return u;
+	}
+
+	public class NotificationUser {
+
+		@Getter
+		@Setter
+		long id;
+
+		@Getter
+		@Setter
+		String name;
+
+		@Getter
+		@Setter
+		private String lastName;
+
+		@Getter
+		@Setter
+		private String firstName;
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			NotificationUser other = (NotificationUser) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (id != other.id)
+				return false;
+			return true;
+		}
+
+
+
+		public NotificationUser() {
+		}
+
+
+
+		private CracUser getOuterType() {
+			return CracUser.this;
+		}
+		
+
+	}
+
 }

@@ -1,13 +1,17 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.relation.UserRelationship;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
 
+/**
+ * A friend request that creates new friendships upon accepting
+ * @author David Hondl
+ *
+ */
 public class FriendRequest extends Notification{
 		
 	public FriendRequest(){
@@ -23,8 +27,8 @@ public class FriendRequest extends Notification{
 		
 		UserRelationship ur = new UserRelationship();
 		
-		ur.setC1(userDAO.findOne(super.getSenderId()));
-		ur.setC2(userDAO.findOne(getTargetId()));
+		ur.setC1(userDAO.findOne(super.getSender().getId()));
+		ur.setC2(userDAO.findOne(getTarget().getId()));
 		ur.setFriends(true);
 		ur.setLikeValue(1.2);
 		
@@ -45,7 +49,7 @@ public class FriendRequest extends Notification{
 
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
+	public void configure(NotificationConfiguration conf) {
 	}
 	
 }
