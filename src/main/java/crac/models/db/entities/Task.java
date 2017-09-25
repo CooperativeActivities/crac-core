@@ -869,7 +869,7 @@ public class Task {
 	}
 
 	public String getGeoName() {
-		return geoName;
+		return (geoName != null) ? geoName : "";
 	}
 
 	public void setGeoName(String geoName) {
@@ -877,7 +877,7 @@ public class Task {
 	}
 
 	public String getGeoCountry() {
-		return geoCountry;
+		return (geoCountry != null) ? geoCountry : "";
 	}
 
 	public void setGeoCountry(String geoCountry) {
@@ -885,7 +885,7 @@ public class Task {
 	}
 
 	public String getGeoCountryA() {
-		return geoCountryA;
+		return (geoCountryA != null) ? geoCountryA : "";
 	}
 
 	public void setGeoCountryA(String geoCountryA) {
@@ -893,7 +893,7 @@ public class Task {
 	}
 
 	public String getGeoMacroRegion() {
-		return geoMacroRegion;
+		return (geoMacroRegion != null) ? geoMacroRegion : "";
 	}
 
 	public void setGeoMacroRegion(String geoMacroRegion) {
@@ -901,7 +901,8 @@ public class Task {
 	}
 
 	public String getGeoRegion() {
-		return geoRegion;
+				
+		return (geoRegion != null) ? geoRegion : "";
 	}
 
 	public void setGeoRegion(String geoRegion) {
@@ -909,7 +910,7 @@ public class Task {
 	}
 
 	public String getGeoLocality() {
-		return geoLocality;
+		return (geoLocality != null) ? geoLocality : "";
 	}
 
 	public void setGeoLocality(String geoLocality) {

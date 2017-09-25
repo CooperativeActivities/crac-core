@@ -903,6 +903,48 @@ The Competence-Filter requires arbitrary competence-ids to filter tasks for thes
     	    	]
 	
     	}
+    	
+The Geo-Filter requires the fields geoLat, geoLng as double and geoName, geoCountry, geoCountryA, geoMacroRegion, geoRegion, geoLocality as String.
+All tasks are filtered for matching fields, as long as they are not -1 (if it is a double) or "" (if it is a string)
+
+	{
+		    "name": "GeoFilter",
+		    "params": [
+		    	{
+		    		"name": "geoLat",
+		    		"value": -1.0
+		    	},
+		    	{
+		    		"name": "geoLng",
+		    		"value": 10.0
+		    	},
+		    	{
+		    		"name": "geoName",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoCountry",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoCountryA",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoMacroRegion",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoRegion",
+		    		"value": "Linz"
+		    	},
+		    	{
+		    		"name": "geoLocality",
+		    		"value": ""
+		    	}
+		    	]
+	
+		}
 
 ##### *Response:*
 

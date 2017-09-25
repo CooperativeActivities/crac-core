@@ -14,7 +14,7 @@ import crac.models.db.daos.TokenDAO;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
-class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class CracSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	CracUserDAO userDAO;
