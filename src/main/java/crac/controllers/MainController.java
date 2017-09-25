@@ -111,11 +111,6 @@ public class MainController {
 	@Autowired
 	private TaskLookup tl;
 
-	@Autowired
-	public void configureES(ElasticConnector<Task> ect, @Value("task") String type) {
-		ect.setType(type);
-	}
-
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/test",
 			"/test/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")

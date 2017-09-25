@@ -3,11 +3,6 @@ package crac.module.utility;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -30,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,23 +33,28 @@ import crac.enums.TaskState;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
+import lombok.Getter;
 
 @Component
-@Scope("prototype")
+@Scope("singleton")
 public class ElasticConnector<T> {
 
 	@Autowired
 	private TaskDAO taskDAO;
 
+	@Getter
 	@Value("${crac.elastic.url}")
 	private String address;
 
+	@Getter
 	@Value("${crac.elastic.port}")
 	private int port;
 
+	@Getter
 	@Value("${crac.elastic.index}")
 	private String index;
 
+	@Getter
 	@Value("${crac.elastic.threshold}")
 	private double threshold;
 
@@ -63,6 +62,8 @@ public class ElasticConnector<T> {
 	private ObjectMapper mapper;
 
 	private TransportClient client;
+	
+	@Getter
 	private String type;
 
 	public ElasticConnector() {
@@ -151,30 +152,6 @@ public class ElasticConnector<T> {
 	public DeleteIndexResponse deleteIndex() {
 		DeleteIndexResponse response = client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
 		return response;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public double getThreshold() {
-		return threshold;
-	}
-
-	public String getIndex() {
-		return index;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 }

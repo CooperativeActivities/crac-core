@@ -1253,7 +1253,7 @@ public class SynchronizationController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/elastic/reset",
-			"/refreshESTasks/" }, method = RequestMethod.DELETE, produces = "application/json")
+			"/elastic/reset/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> refreshESTasks() {
 
