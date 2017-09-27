@@ -1,14 +1,9 @@
 package crac.module.utility.filter.individual;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import crac.exception.WrongParameterException;
-import crac.models.db.daos.CompetenceDAO;
-import crac.models.db.entities.Competence;
 import crac.models.db.entities.Task;
-import crac.models.db.relation.CompetenceTaskRel;
-import crac.models.utility.ParamterDummy;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
@@ -35,12 +30,12 @@ public class GeoFilter extends ConcreteFilter {
 			List<Task> l = fp.getTasksPool();
 
 			l.removeIf(x -> (geoLat != -1) && (x.getGeoLat() != geoLat) || (geoLng != -1) && (x.getGeoLng() != geoLng)
-					|| (!geoName.equals("")) && (!x.getGeoName().equals(geoName))
-					|| (!geoCountry.equals("")) && (!x.getGeoCountry().equals(geoCountry))
-					|| (!geoCountryA.equals("")) && (!x.getGeoCountryA().equals(geoCountryA))
-					|| (!geoMacroRegion.equals("")) && (!x.getGeoMacroRegion().equals(geoMacroRegion))
-					|| (!geoRegion.equals("")) && (!x.getGeoRegion().equals(geoRegion))
-					|| (!geoLocality.equals("")) && (!x.getGeoLocality().equals(geoLocality)));
+					|| (!geoName.equals("")) && (!x.getGeoName().equalsIgnoreCase(geoName))
+					|| (!geoCountry.equals("")) && (!x.getGeoCountry().equalsIgnoreCase(geoCountry))
+					|| (!geoCountryA.equals("")) && (!x.getGeoCountryA().equalsIgnoreCase(geoCountryA))
+					|| (!geoMacroRegion.equals("")) && (!x.getGeoMacroRegion().equalsIgnoreCase(geoMacroRegion))
+					|| (!geoRegion.equals("")) && (!x.getGeoRegion().equalsIgnoreCase(geoRegion))
+					|| (!geoLocality.equals("")) && (!x.getGeoLocality().equalsIgnoreCase(geoLocality)));
 		} catch (ClassCastException e) {
 			System.out.println(e.getMessage());
 			throw new WrongParameterException();
