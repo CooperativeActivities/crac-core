@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -1623,7 +1625,8 @@ public class TaskController {
 	}
 
 	/**
-	 * Force state-changes on task-trees that are not following the normal state-change rules
+	 * Force state-changes on task-trees that are not following the normal
+	 * state-change rules
 	 * 
 	 * @param task_id
 	 * @param stateName
@@ -2033,26 +2036,36 @@ public class TaskController {
 	 * @throws InvalidActionException
 	 */
 
-	@RequestMapping(value = { "/{task_id}/attachment/add/{file_name}",
-			"/{task_id}/attachment/add/{file_name}/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/attachment",
+			"/{task_id}/attachment/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
 
 	@ResponseBody
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file,
-			@PathVariable(value = "task_id") Long task_id, @PathVariable(value = "file_name") String fileName)
-			throws IOException, InvalidActionException {
+			@PathVariable(value = "task_id") Long task_id) throws IOException, InvalidActionException {
 		Task t = taskDAO.findOne(task_id);
 
 		Attachment a = new Attachment();
 
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
 		if (t != null) {
-			String path = CracUtility.processUpload(file, "image/jpeg", "image/jpg", "image/png", "application/pdf");
-			a.setPath(path);
-			a.setName(fileName);
-			a.setTask(t);
-			t.getAttachments().add(a);
-			a.setTask(t);
-			taskDAO.save(t);
-			return JSONResponseHelper.successfullyUpdated(t);
+			if (user.hasTaskPermissions(t)) {
+
+				String name = file.getOriginalFilename();
+				String path = CracUtility.processUpload(file, "image/jpeg", "image/jpg", "image/png",
+						"application/pdf");
+				a.setPath(path);
+				a.setName(name);
+				a.setTask(t);
+				t.getAttachments().add(a);
+				a.setTask(t);
+				taskDAO.save(t);
+				return JSONResponseHelper.successfullyUpdated(t);
+			}
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+
 		}
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 
@@ -2068,26 +2081,76 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = { "/{task_id}/attachment/{attachment_id}/remove",
-			"/{task_id}/attachment/{attachment_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/attachment/{attachment_id}",
+			"/{task_id}/attachment/{attachment_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 
 	@ResponseBody
 	public ResponseEntity<String> removeAttachment(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "attachment_id") Long attachment_id) throws InvalidActionException {
 
-		Task t = taskDAO.findOne(task_id);
-		Attachment a = attachmentDAO.findOne(attachment_id);
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
 
-		if (t != null && a != null) {
-			CracUtility.removeFile(a.getPath());
-			t.getAttachments().remove(a);
-			attachmentDAO.delete(a);
-			taskDAO.save(t);
-			return JSONResponseHelper.successfullyUpdated(t);
+		Task t = taskDAO.findOne(task_id);
+
+		if (t != null) {
+			if (user.hasTaskPermissions(t)) {
+				Attachment a = attachmentDAO.findByIdAndTask(attachment_id, t);
+				if (a != null) {
+					CracUtility.removeFile(a.getPath());
+					t.getAttachments().remove(a);
+					attachmentDAO.delete(a);
+					taskDAO.save(t);
+					return JSONResponseHelper.successfullyUpdated(t);
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+
+				}
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+			}
 
 		}
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 
+	}
+
+	/**
+	 * Get target attachment of target task
+	 * 
+	 * @param attachment_id
+	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws InvalidActionException
+	 */
+	@RequestMapping(value = { "/{task_id}/attachment/{attachment_id}",
+			"/{task_id}/attachment/{attachment_id}/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@ResponseBody
+	public ResponseEntity<byte[]> getUserImage(@PathVariable(value = "task_id") Long task_id,
+			@PathVariable(value = "attachment_id") Long attachment_id) throws IOException, InvalidActionException {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser u = userDAO.findByName(userDetails.getName());
+
+		Task t = taskDAO.findOne(task_id);
+
+		if (t != null) {
+			if (u.hasTaskPermissions(t)) {
+				Attachment a = attachmentDAO.findByIdAndTask(attachment_id, t);
+				if (a != null) {
+
+					byte[] img = CracUtility.getFile(a.getPath());
+
+					HttpHeaders headers = new HttpHeaders();
+					headers.setContentType(MediaType.IMAGE_JPEG);
+
+					return ResponseEntity.ok().headers(headers).body(img);
+				}
+			}
+		}
+		throw new InvalidActionException(ErrorCode.NOT_FOUND);
 	}
 
 	/**
@@ -2131,7 +2194,7 @@ public class TaskController {
 			@PathVariable(value = "comment_id") Long comment_id) {
 		Task myTask = taskDAO.findOne(task_id);
 		Comment myComment = commentDAO.findOne(comment_id);
-		myTask.getAttachments().remove(myComment);
+		myTask.getComments().remove(myComment);
 		commentDAO.delete(myComment);
 		taskDAO.save(myTask);
 		return JSONResponseHelper.successfullyUpdated(myTask);

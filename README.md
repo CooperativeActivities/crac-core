@@ -1014,6 +1014,44 @@ The information about the task and its relationships is in the meta-object
 	
 -----------------------------------------------------------------
 
+**Add an attachment to target task**
+
+##### *Request:*
+
+POST /task/{task_id}/attachment
+
+The file must be posted as Multipart file! The file needs to have the key "file".
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
+**Remove an attachment from target task**
+
+##### *Request:*
+
+DELETE /task/{task_id}/attachment/{attachment_id}
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
+**Get target attachment of target task**
+
+##### *Request:*
+
+GET /task/{task_id}/attachment/{attachment_id}
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
 **Updates the task with given id**
 	
 ##### *Request:*
@@ -2559,4 +2597,6 @@ Information in notifications now consists of object and not just their ID! -> se
 #### 2.10.2017
 
 API for changing task-states has changed -> see "Task-Section"  
-Endpoints for the uploading of files added -> see "User-Section"
+Endpoints for the uploading of picture for users added -> see "User-Section"  
+Endpoint for uploading of attachments for tasks added -> see "Task-Section"
+  

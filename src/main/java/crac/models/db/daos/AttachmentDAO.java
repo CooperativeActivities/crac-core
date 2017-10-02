@@ -4,6 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import crac.models.db.entities.Attachment;
+import crac.models.db.entities.Task;
 
 
 /**
@@ -12,4 +13,5 @@ import crac.models.db.entities.Attachment;
 @Transactional
 public interface AttachmentDAO extends CrudRepository<Attachment, Long> {
 	public Attachment findByName(String name);
+	public Attachment findByIdAndTask(long id, Task task);
 }
