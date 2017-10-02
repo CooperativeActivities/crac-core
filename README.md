@@ -672,6 +672,45 @@ DELETE admin/user/{user_id}/role/{role_id}/add
 
 Json-data, a success
 
+-----------------------------------------------------------------
+
+**Adds an image to logged in user**
+
+##### *Request:*
+
+POST user/image/add
+
+The file must be posted as Multipart file! The file needs to have the key "file".
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
+**Get the image of a user**
+
+##### *Request:*
+
+GET user/image/get
+
+##### *Response:*
+
+The picture, or an error as json:
+
+	{
+	    "type": "NO_OBJECT",
+	    "rest_action": "GET",
+	    "success": false,
+	    "errors": [
+	        {
+	            "name": "NOT_FOUND",
+	            "cause": "bad_request"
+	        }
+	    ],
+	    "object": null,
+	    "meta": {}
+	}
 
 -----------------------------------------------------------------
 
@@ -1541,7 +1580,7 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Change the state of target task; Choose either 'publish', 'start', or 'complete'**
+**Change the state of target task; Choose either 'PUBLISHED', 'STARTED', or 'COMPLETED'**
 *For each state different prerequisite have to be fullfilled:*
 *NOT_PUBLISHED: Default state*
 *PUBLISHED: Only allowed when the task-fields are all filled*
@@ -1550,13 +1589,25 @@ Json-data, either a success or a failure message
 
 ##### *Request:*
 
-PUT /task/{task_id}/state/{state_name}
+PUT /task/{task_id}/state/changeTo/{state_name}
 
 ##### *Response:*
 
 Json-data, either a success or a failure message
 
 Possible failures:
+
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "REQUIREMENTS_NOT_FULLFILLED"
+	}	
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "SUB_ITEMS_NOT_READY"
+	}
 
 	{
 	  "success": false,
@@ -1595,6 +1646,17 @@ Possible failures:
 	}
 
 
+-----------------------------------------------------------------
+
+**Force state-changes on task-trees that are not following the normal state-change rules; choose from 'unpublish' or 'complete'**
+
+##### *Request:*
+
+PUT /task/{task_id}/state/force/{state_name}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
@@ -2493,3 +2555,8 @@ New endpoints for adding and removing users to and from groups --> see "Group-En
 #### 21.9.2017
 
 Information in notifications now consists of object and not just their ID! -> see "Notification-Endpoints"  
+
+#### 2.10.2017
+
+API for changing task-states has changed -> see "Task-Section"  
+Endpoints for the uploading of files added -> see "User-Section"

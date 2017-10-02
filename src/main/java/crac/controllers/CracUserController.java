@@ -1,7 +1,9 @@
 package crac.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 import crac.exception.InvalidActionException;
+import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
@@ -93,6 +98,9 @@ public class CracUserController {
 
 	@Autowired
 	private TokenDAO tokenDAO;
+
+	@Autowired
+	private AttachmentDAO attachmentDAO;
 
 	@Autowired
 	private Decider decider;
@@ -507,16 +515,12 @@ public class CracUserController {
 	}
 
 	/**
-	 * Add an image to target user
-	 * 
-	 * @param json
-	 * @param task_id
-	 * @return ResponseEntity
-	 * @throws JsonMappingException
+	 * Adds an image to logged in user
+	 * @param file
+	 * @return
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-
 	@RequestMapping(value = { "/image/add",
 			"/image/add/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
 
@@ -524,8 +528,9 @@ public class CracUserController {
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file)
 			throws IOException, InvalidActionException {
 
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CracUser u = userDAO.findByName(userDetails.getUsername());
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser u = userDAO.findByName(userDetails.getName());
 
 		Attachment a = u.getUserImage();
 
@@ -535,18 +540,53 @@ public class CracUserController {
 			} catch (InvalidActionException ex) {
 				ex.printStackTrace();
 			}
+		} else {
+			a = new Attachment();
 		}
 
-		a = new Attachment();
+		String name = file.getOriginalFilename();
 
 		String path = CracUtility.processUpload(file, "image/jpeg", "image/jpg", "image/png");
 		a.setPath(path);
-		a.setName("profileImage");
+		a.setName(name);
 		a.setUser(u);
+		attachmentDAO.save(a);
 		u.setUserImage(a);
 		userDAO.save(u);
 		return JSONResponseHelper.successfullyUpdated(u);
 
+	}
+
+	/**
+	 * Get the image of a user
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws InvalidActionException
+	 */
+	@RequestMapping(value = { "/image/get",
+			"/image/get/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@ResponseBody
+	public ResponseEntity<byte[]> getUserImage() throws IOException, InvalidActionException {
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser u = userDAO.findByName(userDetails.getName());
+
+		Attachment a = u.getUserImage();
+
+		if (a != null) {
+
+			byte[] img = CracUtility.getFile(a.getPath());
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_JPEG);
+
+			return ResponseEntity.ok().headers(headers).body(img);
+		} else {
+			throw new InvalidActionException(ErrorCode.NOT_FOUND);
+
+		}
 	}
 
 }

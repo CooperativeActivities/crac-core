@@ -1623,103 +1623,92 @@ public class TaskController {
 	}
 
 	/**
-	 * Change the state of target task, for each state different prerequisites
-	 * have to be fullfilled:
-	 * 
-	 * What exactly they are can be read in the notes from 28.11.
+	 * Force state-changes on task-trees that are not following the normal state-change rules
 	 * 
 	 * @param task_id
 	 * @param stateName
 	 * @return ResponseEntity
 	 */
-	/*
-	 * @RequestMapping(value = { "/{task_id}/state/{state_name}",
-	 * "/{task_id}/state/{state_name}/" }, method = RequestMethod.PUT, produces
-	 * = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * changeTaskState(@PathVariable(value = "task_id") Long task_id,
-	 * 
-	 * @PathVariable(value = "state_name") String stateName) {
-	 * 
-	 * Task task = taskDAO.findOne(task_id);
-	 * 
-	 * UsernamePasswordAuthenticationToken userDetails =
-	 * (UsernamePasswordAuthenticationToken) SecurityContextHolder
-	 * .getContext().getAuthentication(); CracUser user =
-	 * userDAO.findByName(userDetails.getName());
-	 * 
-	 * if (user.hasTaskPermissions(task)) {
-	 * 
-	 * if (task != null) {
-	 * 
-	 * TaskState oldState = task.getTaskState();
-	 * 
-	 * TaskState state = TaskState.NOT_PUBLISHED; int s = 0;
-	 * 
-	 * if (stateName.equals("publish")) { s = task.publish(taskDAO); switch (s)
-	 * { case 1: return JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_NOT_READY); case 2: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.CHILDREN_NOT_READY); case 3: state = TaskState.PUBLISHED;
-	 * break; default: return JSONResponseHelper.createResponse(false,
-	 * "bad_request", ErrorCode.UNDEFINED_ERROR); }
-	 * 
-	 * } else if (stateName.equals("start")) {
-	 * 
-	 * s = task.start(taskDAO); switch (s) { case 1: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_NOT_READY); case 2: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.START_NOT_ALLOWED); case 3: state = TaskState.STARTED; break;
-	 * default: return JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.UNDEFINED_ERROR); }
-	 * 
-	 * } else if (stateName.equals("complete")) {
-	 * 
-	 * s = task.complete(); switch (s) { case 1: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_NOT_READY); case 2: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.NOT_COMPLETED_BY_USERS); case 3: state = TaskState.COMPLETED;
-	 * break; default: return JSONResponseHelper.createResponse(false,
-	 * "bad_request", ErrorCode.UNDEFINED_ERROR); }
-	 * 
-	 * } else if (stateName.equals("unpublish")) {
-	 * 
-	 * s = task.unpublish(userTaskRelDAO, taskDAO); switch (s) { case 3: state =
-	 * TaskState.NOT_PUBLISHED; break; default: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.UNDEFINED_ERROR); }
-	 * 
-	 * } else if (stateName.equals("forceComplete")) {
-	 * 
-	 * s = task.forceComplete(taskDAO); switch (s) { case 1: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_NOT_READY); case 2: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.PERMISSIONS_NOT_SUFFICIENT); case 3: state =
-	 * TaskState.COMPLETED; break; default: return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.UNDEFINED_ERROR); }
-	 * 
-	 * } else { HashMap<String, Object> meta = new HashMap<>();
-	 * meta.put("state", stateName); return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.STATE_NOT_AVAILABLE, meta); }
-	 * 
-	 * task.setTaskState(state); taskDAO.save(task); HashMap<String, Object>
-	 * meta = new HashMap<>(); meta.put("old_state", oldState.toString());
-	 * meta.put("new_state", state.toString()); return
-	 * JSONResponseHelper.createResponse(true, meta); } else { return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.ID_NOT_FOUND); } } else { return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.PERMISSIONS_NOT_SUFFICIENT); } }
-	 */
+	@RequestMapping(value = { "/{task_id}/state/force/{state_name}",
+			"/{task_id}/state/force/{state_name}/" }, method = RequestMethod.PUT, produces = "application/json")
 
-	@RequestMapping(value = { "/{task_id}/state/{state}",
-			"/{task_id}/state/{state}/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> changeTaskState(@PathVariable(value = "task_id") Long task_id,
+
+			@PathVariable(value = "state_name") String stateName) {
+
+		Task task = taskDAO.findOne(task_id);
+
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
+		if (user.hasTaskPermissions(task)) {
+
+			if (task != null) {
+
+				ConcreteTaskState oldState = task.getTaskState();
+
+				ConcreteTaskState state = ConcreteTaskState.NOT_PUBLISHED;
+				int s = 0;
+
+				if (stateName.equals("unpublish")) {
+
+					s = task.unpublish(userTaskRelDAO, taskDAO);
+					switch (s) {
+					case 3:
+						state = ConcreteTaskState.NOT_PUBLISHED;
+						break;
+					default:
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.UNDEFINED_ERROR);
+					}
+
+				} else if (stateName.equals("complete")) {
+
+					s = task.forceComplete(taskDAO);
+					switch (s) {
+					case 1:
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.TASK_NOT_READY);
+					case 2:
+						return JSONResponseHelper.createResponse(false, "bad_request",
+								ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+					case 3:
+						state = ConcreteTaskState.COMPLETED;
+						break;
+					default:
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.UNDEFINED_ERROR);
+					}
+
+				} else {
+					HashMap<String, Object> meta = new HashMap<>();
+					meta.put("state", stateName);
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.STATE_NOT_AVAILABLE, meta);
+				}
+
+				task.setTaskState(state);
+				taskDAO.save(task);
+				HashMap<String, Object> meta = new HashMap<>();
+				meta.put("old_state", oldState.toString());
+				meta.put("new_state", state.toString());
+				return JSONResponseHelper.createResponse(true, meta);
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+			}
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+		}
+	}
+
+	/**
+	 * Change the state of target task, for each state different prerequisites
+	 * have to be fullfilled
+	 * 
+	 * @param task_id
+	 * @param stateName
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/{task_id}/state/changeTo/{state}",
+			"/{task_id}/state/changeTo/{state}/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> changeTaskState(@PathVariable(value = "task_id") Long task_id,
 			@PathVariable(value = "state") ConcreteTaskState stateName) {
