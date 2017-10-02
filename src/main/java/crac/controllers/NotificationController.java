@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
@@ -88,7 +88,7 @@ public class NotificationController {
 			return JSONResponseHelper.createResponse(n, true, meta);
 			// return JSonResponseHelper.successfullyAccepted(n, message);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -112,7 +112,7 @@ public class NotificationController {
 			return JSONResponseHelper.createResponse(n, true, meta);
 			// return JSonResponseHelper.successfullyDenied(n, message);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
@@ -98,11 +98,11 @@ public class TaskMatchingWorker extends Worker {
 
 		ArrayList<Task> result = new ArrayList<>();
 
-		List<Task> found = super.getWf().getTaskDAO().findByTaskStateNot(TaskState.NOT_PUBLISHED);
+		List<Task> found = super.getWf().getTaskDAO().findByTaskStateNot(ConcreteTaskState.NOT_PUBLISHED);
 		System.out.println("found: " + found.size());
 		
 		for (Task task : found) {
-			if (task.isJoinable()) {
+			if (task.getTaskState().isJoinable()) {
 				
 				boolean isConnected = false;
 				for (UserTaskRel utr : task.getUserRelationships()) {
@@ -125,7 +125,7 @@ public class TaskMatchingWorker extends Worker {
 		for (EvaluatedTask task : tasks) {
 			Task t = task.getTask();
 
-			if (t.getTaskState() == TaskState.STARTED) {
+			if (t.getTaskState() == ConcreteTaskState.STARTED) {
 
 				double mval = 0.6;
 				double newval = 0;

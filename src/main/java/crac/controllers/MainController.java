@@ -11,15 +11,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
+import crac.exception.InvalidActionException;
 import crac.exception.WrongParameterException;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetencePermissionTypeDAO;
@@ -32,6 +36,7 @@ import crac.models.db.daos.RoleDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
+import crac.models.db.entities.Attachment;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.input.PostOptions;
@@ -50,6 +55,7 @@ import crac.module.notifier.notifications.TaskInvitation;
 import crac.module.storage.CompetenceStorage;
 import crac.module.utility.ElasticConnector;
 import crac.module.utility.JSONResponseHelper;
+import crac.module.utility.CracUtility;
 
 /**
  * The main-controller used for hello world and testing
@@ -113,21 +119,25 @@ public class MainController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/test",
-			"/test/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+			"/test/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> test(@RequestBody String json) throws WrongParameterException {
+	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file) {
+		System.out.println("write1");
+		try {
+			System.out.println("write2");
+			CracUtility.processTest(file);
 
-		throw new WrongParameterException();
-
-		// return JSONResponseHelper.createResponse("done", true);
-
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return JSONResponseHelper.createResponse("a", true);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("/include")
 	@ResponseBody
 	public ResponseEntity<String> include() {
-		
+
 		BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
 
 		CracUser BradenADMIN = new CracUser();

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetenceRelationshipDAO;
@@ -108,7 +108,7 @@ public class CompetenceController {
 			return JSONResponseHelper.createResponse(competenceRels, true);
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
 		}
 	}
 
@@ -205,7 +205,7 @@ public class CompetenceController {
 		if (competence != null) {
 			UserCompetenceRel ucr = userCompetenceRelDAO.findByUserAndCompetence(user, competence);
 			if (ucr != null) {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.DATASETS_ALREADY_EXISTS);
 			} else {
 				rel.setUser(user);
 				rel.setCompetence(competence);
@@ -217,7 +217,7 @@ public class CompetenceController {
 				return v;
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -261,10 +261,10 @@ public class CompetenceController {
 				userCompetenceRelDAO.save(ucr);
 				return v;
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -296,10 +296,10 @@ public class CompetenceController {
 				userCompetenceRelDAO.delete(rel);
 				return v;
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -335,7 +335,7 @@ public class CompetenceController {
 		if (found.size() != 0) {
 			return JSONResponseHelper.createResponse(found, true);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
 		}
 
 	}

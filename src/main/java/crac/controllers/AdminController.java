@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.enums.TaskParticipationType;
 import crac.enums.TaskType;
 import crac.models.db.daos.CompetenceDAO;
@@ -115,14 +115,14 @@ public class AdminController {
 
 		if (role != null) {
 			if (user.getRoles().contains(role)) {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ALREADY_ASSIGNED);
 			} else {
 				user.getRoles().add(role);
 				userDAO.save(user);
 				return JSONResponseHelper.successfullyAssigned(role);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -147,7 +147,7 @@ public class AdminController {
 			userDAO.save(user);
 			return JSONResponseHelper.successfullyDeleted(role);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 
@@ -176,7 +176,7 @@ public class AdminController {
 			userDAO.save(u);
 			return JSONResponseHelper.successfullyCreated(u);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.DATASETS_ALREADY_EXISTS);
 		}
 
 	}
@@ -200,7 +200,7 @@ public class AdminController {
 			userDAO.delete(u);
 			return v;
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -232,7 +232,7 @@ public class AdminController {
 			userDAO.save(oldUser);
 			return JSONResponseHelper.successfullyUpdated(oldUser);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -261,11 +261,11 @@ public class AdminController {
 				taskDAO.delete(deleteTask);
 				return v;
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -291,7 +291,7 @@ public class AdminController {
 		task = mapper.readValue(json, Task.class);
 
 		if (task.getTaskType() == TaskType.SHIFT) {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.CANNOT_CREATE);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.CANNOT_CREATE);
 		}
 
 		task.setCreator(user);
@@ -361,7 +361,7 @@ public class AdminController {
 			return JSONResponseHelper.successfullyDeleted(deleteCompetence);
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -395,7 +395,7 @@ public class AdminController {
 			competenceDAO.save(oldCompetence);
 			return JSONResponseHelper.successfullyUpdated(oldCompetence);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -444,7 +444,7 @@ public class AdminController {
 			return v;
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -477,7 +477,7 @@ public class AdminController {
 			typeDAO.save(oldupdatedCrt);
 			return JSONResponseHelper.successfullyUpdated(oldupdatedCrt);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -504,7 +504,7 @@ public class AdminController {
 			roleDAO.save(r);
 			return JSONResponseHelper.successfullyCreated(r);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.DATASETS_ALREADY_EXISTS);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.DATASETS_ALREADY_EXISTS);
 		}
 
 	}
@@ -527,7 +527,7 @@ public class AdminController {
 			roleDAO.delete(r);
 			return v;
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -559,7 +559,7 @@ public class AdminController {
 			roleDAO.save(oldRole);
 			return JSONResponseHelper.successfullyUpdated(oldRole);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}

@@ -52,6 +52,14 @@ public class Material {
 	public Material() {
 		this.subscribedUsers = new HashSet<UserMaterialSubscription>();
 	}
+	
+	public Material copy(){
+		Material m = new Material();
+		m.setDescription(description);
+		m.setName(name);
+		m.setQuantity(quantity);
+		return m;
+	}
 
 	public String subscribable(Long additionalq) {
 

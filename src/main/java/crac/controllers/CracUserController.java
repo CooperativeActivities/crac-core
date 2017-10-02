@@ -19,16 +19,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
+import crac.exception.InvalidActionException;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
@@ -38,10 +41,12 @@ import crac.models.db.daos.TokenDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
+import crac.models.db.entities.Attachment;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
+import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
@@ -51,6 +56,7 @@ import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.notifier.Notification;
 import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.FriendRequest;
+import crac.module.utility.CracUtility;
 import crac.module.utility.JSONResponseHelper;
 
 /**
@@ -125,7 +131,7 @@ public class CracUserController {
 		if (user != null) {
 			return JSONResponseHelper.createResponse(user, true);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -171,7 +177,7 @@ public class CracUserController {
 			userDAO.save(oldUser);
 			return JSONResponseHelper.successfullyUpdated(oldUser);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -248,7 +254,7 @@ public class CracUserController {
 			tokenDAO.delete(t);
 			return v;
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NO_TOKEN, RESTAction.DELETE);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.NO_TOKEN, RESTAction.DELETE);
 		}
 
 	}
@@ -310,10 +316,10 @@ public class CracUserController {
 				return JSONResponseHelper.successfullyDeleted(friend);
 				// return JSonResponseHelper.successfullUnfriend(friend);
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.USERS_NOT_FRIENDS);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.USERS_NOT_FRIENDS);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 
@@ -393,14 +399,14 @@ public class CracUserController {
 
 		if (role != null) {
 			if (user.getRoles().contains(role)) {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_ASSIGNED);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ALREADY_ASSIGNED);
 			} else {
 				user.getRoles().add(role);
 				userDAO.save(user);
 				return JSONResponseHelper.successfullyAssigned(role);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -426,7 +432,7 @@ public class CracUserController {
 			userDAO.save(user);
 			return JSONResponseHelper.successfullyDeleted(role);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 
@@ -487,7 +493,7 @@ public class CracUserController {
 		String lastName = mapping.getLastName();
 
 		if (lastName.equals("") && firstName.equals("")) {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
 		} else if (lastName.equals("") && !firstName.equals("")) {
 			result = userDAO.findByFirstName(firstName);
 		} else if (!lastName.equals("") && mapping.getFirstName().equals("")) {
@@ -497,6 +503,49 @@ public class CracUserController {
 		}
 
 		return JSONResponseHelper.createResponse(result, true);
+
+	}
+
+	/**
+	 * Add an image to target user
+	 * 
+	 * @param json
+	 * @param task_id
+	 * @return ResponseEntity
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws InvalidActionException
+	 */
+
+	@RequestMapping(value = { "/image/add",
+			"/image/add/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
+
+	@ResponseBody
+	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file)
+			throws IOException, InvalidActionException {
+
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		CracUser u = userDAO.findByName(userDetails.getUsername());
+
+		Attachment a = u.getUserImage();
+
+		if (a != null) {
+			try {
+				CracUtility.removeFile(a.getPath());
+			} catch (InvalidActionException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		a = new Attachment();
+
+		String path = CracUtility.processUpload(file, "image/jpeg", "image/jpg", "image/png");
+		a.setPath(path);
+		a.setName("profileImage");
+		a.setUser(u);
+		u.setUserImage(a);
+		userDAO.save(u);
+		return JSONResponseHelper.successfullyUpdated(u);
 
 	}
 

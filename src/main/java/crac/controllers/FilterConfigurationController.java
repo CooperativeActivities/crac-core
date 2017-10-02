@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.matching.configuration.MatrixFilterParameters;
 import crac.module.matching.filter.matching.ImportancyLevelFilter;
@@ -62,7 +62,7 @@ public class FilterConfigurationController {
 			name = filterName;
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.NOT_FOUND);
 		}
 
 		HashMap<String, Object> meta = new HashMap<>();
@@ -97,13 +97,13 @@ public class FilterConfigurationController {
 
 				restoreStandard();
 
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.NOT_FOUND);
 			}
 
 			return JSONResponseHelper.successfullyUpdated(mfp);
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.EMPTY_DATA);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
 		}
 
 	}

@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,15 +19,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.persistence.EnumType;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.enums.TaskParticipationType;
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.enums.TaskType;
+import crac.exception.InvalidActionException;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.relation.CompetenceTaskRel;
@@ -42,7 +44,7 @@ import lombok.Setter;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "tasks")
 public class Task {
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_id")
@@ -93,7 +95,7 @@ public class Task {
 
 	@Column(name = "task_state")
 	@Enumerated(EnumType.ORDINAL)
-	private TaskState taskState;
+	private ConcreteTaskState taskState;
 
 	@NotNull
 	@Column(name = "task_type")
@@ -175,49 +177,61 @@ public class Task {
 	 */
 
 	public Task() {
-		this.taskState = TaskState.NOT_PUBLISHED;
+		this.taskState = ConcreteTaskState.NOT_PUBLISHED;
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
 		this.mappedCompetences = new HashSet<>();
 		this.materials = new HashSet<Material>();
 		this.minAmountOfVolunteers = 1;
+		this.userRelationships = new HashSet<>();
+		this.childTasks = new HashSet<>();
+	}
+	
+	@JsonIgnore
+	public Task copy(Calendar date){
+		Calendar startd = date;
+		Calendar endd = (Calendar) date.clone();
+		endd.add(Calendar.YEAR, 1);
+		return copy(null, startd, endd);
 	}
 
-	public Task copy(Task superTask) {
-		Task t = new Task();
-		t.setMaxAmountOfVolunteers(maxAmountOfVolunteers);
-		t.setCreator(creator);
-		t.setDescription(description);
-		t.setLocation(location);
-		t.setName(name);
-
-		Set<CompetenceTaskRel> competences = new HashSet<CompetenceTaskRel>();
-
-		for (CompetenceTaskRel c : mappedCompetences) {
-			competences.add(new CompetenceTaskRel(c.getCompetence(), c.getTask(), c.getNeededProficiencyLevel(),
-					c.getImportanceLevel(), c.isMandatory()));
-		}
-
-		t.setMappedCompetences(competences);
-		t.setSuperTask(superTask);
-		t.setUrgency(urgency);
-		t.setReadyToPublish(readyToPublish);
-
-		Set<Task> copiedChildren = new HashSet<Task>();
-
-		if (childTasks != null) {
-			for (Task tc : childTasks) {
-				copiedChildren.add(tc.copy(t));
-			}
-		}
-
-		t.setChildTasks(copiedChildren);
-
-		return t;
+	@JsonIgnore
+	private Task copy(Task stask, Calendar startd, Calendar endd) {
+		
+		Task clone = new Task();
+		
+		clone.setSuperTask(stask);
+		clone.update(this);
+		clone.setCreator(creator);
+		
+		attachments.forEach( x -> clone.getAttachments().add(x.copy()) );
+		mappedCompetences.forEach( x -> clone.getMappedCompetences().add(x.copy()) );
+		materials.forEach( x -> clone.getMaterials().add(x.copy()) );
+				
+		clone.setStartTime(startd);
+		clone.setEndTime(endd);
+		clone.setTaskType(taskType);
+		
+		childTasks.forEach( x -> clone.getChildTasks().add(x.copy(this, startd, endd)) );
+		
+		
+		return clone;
+		
 	}
 
 	// UTILITY FUNCTIONS
 
+
+
+	@JsonIgnore
+	public int possibleNumberOfVolunteers() {
+		int total = maxAmountOfVolunteers;
+		for (Task t : childTasks) {
+			total -= t.getMaxAmountOfVolunteers();
+		}
+		return total;
+	}
+/*
 	@JsonIgnore
 	public Set<CracUser> getLeaders() {
 		Set<CracUser> leaders = new HashSet<CracUser>();
@@ -236,16 +250,7 @@ public class Task {
 
 		return leaders;
 	}
-
-	@JsonIgnore
-	public int possibleNumberOfVolunteers() {
-		int total = maxAmountOfVolunteers;
-		for (Task t : childTasks) {
-			total -= t.getMaxAmountOfVolunteers();
-		}
-		return total;
-	}
-
+	
 	@JsonIgnore
 	public Set<CracUser> getAllLeaders() {
 		Set<CracUser> leaders = new HashSet<CracUser>();
@@ -270,6 +275,35 @@ public class Task {
 	}
 	
 	@JsonIgnore
+	public UserTaskRel getIndirectLead(CracUser u){
+		
+		for(UserTaskRel utr : userRelationships){
+			if(utr.getUser().getId() == u.getId()){
+				return utr;
+			}
+		}
+		
+		if(this.superTask != null){
+			return superTask.getIndirectLead(u);
+		}else{
+			return null;
+		}
+		
+	}
+	
+	
+	*/
+	
+	@JsonIgnore
+	public Set<UserTaskRel> getUserInvolvement(CracUser u){
+		Set<UserTaskRel> set = new HashSet<>();
+		getRelationshipsUp(set, TaskParticipationType.LEADING);
+		getRelationshipsUp(set, TaskParticipationType.PARTICIPATING);
+		set.removeIf( x -> x.getUser().getId() != u.getId() );
+		return set;
+	}
+	
+	@JsonIgnore
 	private void getRelationshipsUp(Set<UserTaskRel> users, TaskParticipationType type) {
 
 		if (userRelationships != null) {
@@ -286,20 +320,15 @@ public class Task {
 	}
 	
 	@JsonIgnore
-	public UserTaskRel getIndirectLead(CracUser u){
-		
-		for(UserTaskRel utr : userRelationships){
-			if(utr.getUser().getId() == u.getId()){
-				return utr;
-			}
-		}
-		
-		if(this.superTask != null){
-			return superTask.getIndirectLead(u);
-		}else{
-			return null;
-		}
-		
+	public boolean isLeader(CracUser u){
+		return getAllLeaders().contains(u);
+	}
+
+	@JsonIgnore
+	public Set<UserTaskRel> getAllLeaders() {
+		Set<UserTaskRel> leaders = new HashSet<UserTaskRel>();
+		getRelationshipsUp(leaders, TaskParticipationType.LEADING);
+		return leaders;
 	}
 
 	@JsonIgnore
@@ -347,6 +376,7 @@ public class Task {
 
 	}
 
+	/*
 	@JsonIgnore
 	public void setTreeComplete(TaskDAO taskDAO) {
 		taskState = TaskState.COMPLETED;
@@ -358,13 +388,7 @@ public class Task {
 				}
 			}
 		}
-	}
-	/*
-	 * @JsonIgnore public boolean readyToPublish() { if (!this.fieldsFilled()) {
-	 * return false; } if (childTasks != null) { if (!childTasks.isEmpty()) {
-	 * for (Task c : childTasks) { if (!c.isReadyToPublish()) { return false; }
-	 * } } } return true; }
-	 */
+	}*/
 
 	@JsonIgnore
 	public boolean updateReadyStatus(TaskDAO taskDAO) {
@@ -412,44 +436,8 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public boolean isExtendable() {
-		return this.getTaskState() != TaskState.COMPLETED;
-	}
-
-	@JsonIgnore
-	public boolean inConduction() {
-		return this.getTaskState() == TaskState.STARTED || this.getTaskState() == TaskState.COMPLETED;
-	}
-
-	@JsonIgnore
-	public boolean isJoinable() {
-
-		boolean state = this.getTaskState() == TaskState.PUBLISHED || this.getTaskState() == TaskState.STARTED;
-		boolean type = this.getTaskType() == TaskType.WORKABLE || this.getTaskType() == TaskType.SHIFT;
-
-		if (this.getTaskType() == TaskType.WORKABLE && this.hasChildTasks()) {
-			type = false;
-		}
-
-		return state && type;
-	}
-
-	@JsonIgnore
-	public boolean isFollowable() {
-
-		return this.getTaskState() == TaskState.PUBLISHED || this.getTaskState() == TaskState.STARTED;
-	}
-
-	@JsonIgnore
-	public boolean isFull() {
-		if (userRelationships != null) {
-			if (maxAmountOfVolunteers == 0) {
-				return false;
-			}
-			return maxAmountOfVolunteers == userRelationships.size();
-		} else {
-			return true;
-		}
+	public boolean isFull() {		
+		return userRelationships.size() >= maxAmountOfVolunteers;
 	}
 
 	@JsonIgnore
@@ -459,7 +447,7 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public void setGlobalTreeState(TaskState state, TaskDAO taskDAO) {
+	public void setGlobalTreeState(ConcreteTaskState state, TaskDAO taskDAO) {
 		this.setTaskState(state);
 		if (childTasks != null) {
 			if (!childTasks.isEmpty()) {
@@ -473,6 +461,45 @@ public class Task {
 
 	// FUNCTIONS FOR STATECHANGE
 
+
+	@JsonIgnore
+	public int unpublish(UserTaskRelDAO userTaskRelDAO, TaskDAO taskDAO) {
+
+		if (this.getUserRelationships() != null) {
+
+			for (UserTaskRel utr : this.getUserRelationships()) {
+				if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
+					utr.setParticipationType(TaskParticipationType.FOLLOWING);
+					userTaskRelDAO.save(utr);
+				}
+			}
+		}
+
+		setGlobalTreeState(ConcreteTaskState.NOT_PUBLISHED, taskDAO);
+		return 3;
+	}
+	
+	@JsonIgnore
+	public int forceComplete(TaskDAO taskDAO) {
+		if (this.getTaskState() == ConcreteTaskState.STARTED) {
+			this.setGlobalTreeState(ConcreteTaskState.COMPLETED, taskDAO);
+			return 3;
+		} else {
+			return 1;
+		}
+	}
+
+	@JsonIgnore
+	public boolean checkStartAllowance() {
+		return this.getStartTime().getTimeInMillis() < Calendar.getInstance().getTimeInMillis();
+	}
+
+	@JsonIgnore
+	public void setTaskState(ConcreteTaskState state, TaskDAO taskDAO) throws InvalidActionException{
+		this.getTaskState().setTaskState(this, state, taskDAO);
+	}
+
+	/*
 	@JsonIgnore
 	public int publish(TaskDAO taskDAO) {
 
@@ -488,33 +515,7 @@ public class Task {
 		}
 	}
 
-	@JsonIgnore
-	public int unpublish(UserTaskRelDAO userTaskRelDAO, TaskDAO taskDAO) {
-
-		if (this.getUserRelationships() != null) {
-
-			for (UserTaskRel utr : this.getUserRelationships()) {
-				if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					utr.setParticipationType(TaskParticipationType.FOLLOWING);
-					userTaskRelDAO.save(utr);
-				}
-			}
-		}
-
-		setGlobalTreeState(TaskState.NOT_PUBLISHED, taskDAO);
-		return 3;
-	}
-
-	@JsonIgnore
-	public boolean checkStartAllowance() {
-		return this.getStartTime().getTimeInMillis() < Calendar.getInstance().getTimeInMillis();
-	}
 	
-	@JsonIgnore
-	public void nextTaskState(Task t, TaskDAO taskDAO){
-		this.getTaskState().nextTaskState(t, taskDAO);
-	}
-
 	@JsonIgnore
 	public int start(TaskDAO taskDAO) {
 
@@ -551,17 +552,8 @@ public class Task {
 		} else {
 			return 1;
 		}
-	}
+	}*/
 
-	@JsonIgnore
-	public int forceComplete(TaskDAO taskDAO) {
-		if (this.getTaskState() == TaskState.STARTED) {
-			this.setTreeComplete(taskDAO);
-			return 3;
-		} else {
-			return 1;
-		}
-	}
 
 	// -------------------------------------------------------
 
@@ -689,11 +681,11 @@ public class Task {
 		this.userRelationships = userRelationships;
 	}
 
-	public TaskState getTaskState() {
+	public ConcreteTaskState getTaskState() {
 		return taskState;
 	}
 
-	public void setTaskState(TaskState taskState) {
+	public void setTaskState(ConcreteTaskState taskState) {
 		this.taskState = taskState;
 	}
 
@@ -756,6 +748,7 @@ public class Task {
 	public void setCreationDate(Calendar creationDate) {
 		this.creationDate = creationDate;
 	}
+	
 
 	public void update(Task t) {
 		if (t.getName() != null) {
@@ -917,6 +910,7 @@ public class Task {
 		this.geoLocality = geoLocality;
 	}
 	
+	@JsonIgnore
 	public NotificationTask generateNTask(){
 		NotificationTask t = new NotificationTask();
 		t.setId(this.id);

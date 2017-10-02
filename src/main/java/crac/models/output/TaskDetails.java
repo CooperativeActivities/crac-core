@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
@@ -98,7 +98,7 @@ public class TaskDetails {
 
 	@Getter
 	@Setter
-	private TaskState taskState;
+	private ConcreteTaskState taskState;
 
 	@Getter
 	@Setter
@@ -203,11 +203,7 @@ public class TaskDetails {
 		if (!this.participationDetails.isEmpty()) {
 			this.assigned = true;
 		} else {
-			this.participationDetails = new HashSet<>();
-			UserTaskRel rel = t.getIndirectLead(u);
-			if(rel != null){
-				this.participationDetails.add(rel);
-			}
+			this.participationDetails = t.getUserInvolvement(u);
 			this.assigned = false;
 		}
 		this.materials = addMaterials(t);

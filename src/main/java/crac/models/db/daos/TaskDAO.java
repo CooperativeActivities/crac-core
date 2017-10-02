@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.enums.TaskType;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
@@ -26,15 +26,15 @@ public interface TaskDAO extends CrudRepository<Task, Long> {
 		
 	public List<Task> findBySuperTaskNull();
 	
-	public List<Task> findBySuperTaskNullAndTaskStateNot(TaskState taskState);
+	public List<Task> findBySuperTaskNullAndTaskStateNot(ConcreteTaskState taskState);
 
-	public List<Task> findBySuperTaskNullAndTaskState(TaskState taskState);
+	public List<Task> findBySuperTaskNullAndTaskState(ConcreteTaskState taskState);
 
-	public List<Task> findByTaskStateNot(TaskState taskState);
+	public List<Task> findByTaskStateNot(ConcreteTaskState taskState);
 	
-	public List<Task> findByTaskStateOrTaskStateAndTaskTypeOrTaskType(TaskState taskState1, TaskState taskState2, TaskType type1, TaskType type2);
+	public List<Task> findByTaskStateOrTaskStateAndTaskTypeOrTaskType(ConcreteTaskState taskState1, ConcreteTaskState taskState2, TaskType type1, TaskType type2);
 
-	public List<Task> findByTaskState(TaskState taskState);
+	public List<Task> findByTaskState(ConcreteTaskState taskState);
 	
 	@Query("select t from Task t where (t.taskState = 1 or t.taskState = 2) and (t.name like %:s% or t.description like %:s%)")
 	public List<Task> selectNameContainingTasks(@Param("s") String s);

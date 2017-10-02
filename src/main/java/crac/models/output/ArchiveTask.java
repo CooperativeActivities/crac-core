@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;

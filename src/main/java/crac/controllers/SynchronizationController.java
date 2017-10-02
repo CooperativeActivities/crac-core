@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CommentDAO;
 import crac.models.db.daos.CompetenceAreaDAO;
@@ -1261,7 +1261,7 @@ public class SynchronizationController {
 		if (deleted.isAcknowledged()) {
 			return JSONResponseHelper.successfullyDeleted(url);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 

@@ -72,6 +72,13 @@ public class Attachment {
 		this.path = "";
 	}
 	
+	public Attachment copy(){
+		Attachment a = new Attachment();
+		a.setName(name);
+		a.setPath(path);
+		return a;
+	}
+	
 	/**
 	 * getters and setters
 	 */
