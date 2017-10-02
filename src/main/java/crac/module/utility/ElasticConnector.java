@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
@@ -125,7 +125,7 @@ public class ElasticConnector<T> {
 			double score = hit.getScore();
 			if (score >= threshold) {
 				EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), score);
-				if (evTask.getTask().getTaskState() != TaskState.NOT_PUBLISHED) {
+				if (evTask.getTask().getTaskState() != ConcreteTaskState.NOT_PUBLISHED) {
 					foundTasks.add(evTask);
 				}
 			}

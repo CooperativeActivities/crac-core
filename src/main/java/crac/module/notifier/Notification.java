@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import crac.models.db.entities.CracUser.NotificationUser;
 import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.factory.NotificationFactory;
-import crac.module.utility.RandomUtility;
+import crac.module.utility.CracUtility;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -53,7 +53,7 @@ public abstract class Notification {
 		this.name = name;
 		this.type = type;
 		this.creationTime = Calendar.getInstance();
-		this.notificationId = RandomUtility.randomString(20);
+		this.notificationId = CracUtility.randomString(20);
 	}
 	
 	/**
