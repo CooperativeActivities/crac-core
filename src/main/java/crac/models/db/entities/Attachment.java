@@ -72,10 +72,11 @@ public class Attachment {
 		this.path = "";
 	}
 	
-	public Attachment copy(){
+	public Attachment copy(Task t){
 		Attachment a = new Attachment();
 		a.setName(name);
 		a.setPath(path);
+		a.setTask(t);
 		return a;
 	}
 	

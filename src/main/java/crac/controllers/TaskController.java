@@ -1177,7 +1177,7 @@ public class TaskController {
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{task_id}/copy",
-			"/{task_id}/copy/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{task_id}/copy/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> copyTask(@PathVariable(value = "task_id") Long task_id) {
 
@@ -1187,17 +1187,22 @@ public class TaskController {
 
 		Task t = taskDAO.findOne(task_id);
 
-		if (!t.isSuperTask()) {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.CANNOT_BE_COPIED);
+		if (t != null) {
+
+			if (!t.isSuperTask() || t.getTaskState() != ConcreteTaskState.COMPLETED ) {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.CANNOT_BE_COPIED);
+			}
+
+			Task c = t.copy(Calendar.getInstance());
+			c.setCreator(user);
+
+			taskDAO.save(c);
+
+			return JSONResponseHelper.successfullyCreated(c);
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+
 		}
-
-		Task c = t.copy(Calendar.getInstance());
-		c.setCreator(user);
-
-		taskDAO.save(c);
-
-		return JSONResponseHelper.successfullyCreated(c);
-
 	}
 
 	/**

@@ -181,7 +181,8 @@ public class Task {
 		this.readyToPublish = false;
 		this.creationDate = Calendar.getInstance();
 		this.mappedCompetences = new HashSet<>();
-		this.materials = new HashSet<Material>();
+		this.materials = new HashSet<>();
+		this.attachments = new HashSet<>();
 		this.minAmountOfVolunteers = 1;
 		this.userRelationships = new HashSet<>();
 		this.childTasks = new HashSet<>();
@@ -204,9 +205,9 @@ public class Task {
 		clone.update(this);
 		clone.setCreator(creator);
 		
-		attachments.forEach( x -> clone.getAttachments().add(x.copy()) );
-		mappedCompetences.forEach( x -> clone.getMappedCompetences().add(x.copy()) );
-		materials.forEach( x -> clone.getMaterials().add(x.copy()) );
+		attachments.forEach( x -> clone.getAttachments().add(x.copy(clone)) );
+		mappedCompetences.forEach( x -> clone.getMappedCompetences().add(x.copy(clone)) );
+		materials.forEach( x -> clone.getMaterials().add(x.copy(clone)) );
 				
 		clone.setStartTime(startd);
 		clone.setEndTime(endd);

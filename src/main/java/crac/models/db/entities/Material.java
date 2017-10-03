@@ -53,11 +53,12 @@ public class Material {
 		this.subscribedUsers = new HashSet<UserMaterialSubscription>();
 	}
 	
-	public Material copy(){
+	public Material copy(Task t){
 		Material m = new Material();
 		m.setDescription(description);
 		m.setName(name);
 		m.setQuantity(quantity);
+		m.setTask(t);
 		return m;
 	}
 

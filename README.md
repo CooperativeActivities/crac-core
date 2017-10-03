@@ -1510,7 +1510,7 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Copy target task (work in progress)**
+**Copy target task**
 
 ##### *Request:*
 
@@ -2598,5 +2598,5 @@ Information in notifications now consists of object and not just their ID! -> se
 
 API for changing task-states has changed -> see "Task-Section"  
 Endpoints for the uploading of picture for users added -> see "User-Section"  
-Endpoint for uploading of attachments for tasks added -> see "Task-Section"
+Endpoint for uploading of attachments for tasks and endpoint for copiing an archived task added -> see "Task-Section"
   

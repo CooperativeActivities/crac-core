@@ -62,12 +62,13 @@ public class CompetenceTaskRel {
 	}
 	
 	@JsonIgnore
-	public CompetenceTaskRel copy(){
+	public CompetenceTaskRel copy(Task t){
 		CompetenceTaskRel c = new CompetenceTaskRel();
 		c.setCompetence(competence);
 		c.setNeededProficiencyLevel(neededProficiencyLevel);
 		c.setImportanceLevel(importanceLevel);
 		c.setMandatory(mandatory);
+		c.setTask(t);
 		return c;
 	}
 
