@@ -1175,11 +1175,16 @@ public class TaskController {
 	 * 
 	 * @param task_id
 	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
+	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
 	@RequestMapping(value = { "/{task_id}/copy",
-			"/{task_id}/copy/" }, method = RequestMethod.PUT, produces = "application/json")
+			"/{task_id}/copy/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> copyTask(@PathVariable(value = "task_id") Long task_id) {
+	public ResponseEntity<String> copyTask(@RequestBody String json, @PathVariable(value = "task_id") Long task_id)
+			throws JsonParseException, JsonMappingException, IOException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
@@ -1189,16 +1194,24 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (!t.isSuperTask() || t.getTaskState() != ConcreteTaskState.COMPLETED ) {
+			if (!t.isSuperTask() || t.getTaskState() != ConcreteTaskState.COMPLETED) {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.CANNOT_BE_COPIED);
 			}
 
-			Task c = t.copy(Calendar.getInstance());
-			c.setCreator(user);
+			ObjectMapper mapper = new ObjectMapper();
 
-			taskDAO.save(c);
+			Calendar ca = mapper.readValue(json, PostOptions.class).getDate();
 
-			return JSONResponseHelper.successfullyCreated(c);
+			if (ca != null) {
+
+				Task c = t.copy(ca);
+				c.setCreator(user);
+
+				taskDAO.save(c);
+				return JSONResponseHelper.successfullyCreated(c);
+			} else {
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
+			}
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 

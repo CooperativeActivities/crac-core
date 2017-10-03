@@ -1514,7 +1514,13 @@ Json-data, either a success or a failure message
 
 ##### *Request:*
 
+#### This function requires ADMIN-rights or EDITOR-rights!
+
 GET /task/{task_id}/copy
+
+	{
+		"date": "2500-01-01T00:30:00"
+	}
 
 ##### *Response:*
 

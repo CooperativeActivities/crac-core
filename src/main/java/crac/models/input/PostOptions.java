@@ -1,5 +1,10 @@
 package crac.models.input;
 
+import java.util.Calendar;
+
+import lombok.Getter;
+import lombok.Setter;
+
 public class PostOptions {
 
 	private int id;
@@ -14,6 +19,10 @@ public class PostOptions {
 	private String firstName;
 	private String lastName;
 	private String elasticQuery;
+	
+	@Getter
+	@Setter
+	private Calendar date;
 
 	public PostOptions() {
 		text = "";

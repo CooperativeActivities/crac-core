@@ -213,7 +213,7 @@ public class Task {
 		clone.setEndTime(endd);
 		clone.setTaskType(taskType);
 		
-		childTasks.forEach( x -> clone.getChildTasks().add(x.copy(this, startd, endd)) );
+		childTasks.forEach( x -> clone.getChildTasks().add(x.copy(clone, startd, endd)) );
 		
 		
 		return clone;
