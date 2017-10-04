@@ -48,8 +48,8 @@ public class TaskLookup {
 		if(query.equals("")){
 			pool = taskDAO.selectSearchableTasks();
 		}else{
-			//pool = ect.queryForTasks(query);
-			pool = taskDAO.selectNameContainingTasks(query);
+			pool = ect.queryForTasks(query);
+			//pool = taskDAO.selectNameContainingTasks(query);
 		}
 		
 		FilterParameters fp = new FilterParameters();

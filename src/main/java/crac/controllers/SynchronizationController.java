@@ -1264,5 +1264,16 @@ public class SynchronizationController {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/elastic/sync",
+			"/elastic/sync/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> syncESTasks() {
+
+		taskDAO.sync();
+		
+		return JSONResponseHelper.successfullyUpdated(url);
+	}
 
 }

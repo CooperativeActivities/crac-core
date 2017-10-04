@@ -3,6 +3,7 @@ package crac.module.utility;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -133,20 +134,26 @@ public class ElasticConnector<T> {
 		return foundTasks;
 	}
 
-	public ArrayList<Task> queryForTasks(String searchText) {
+	public List<Task> queryForTasks(String searchText) {
 		System.out.println("index: " + index + ", type: " + type + ", searchText: " + searchText);
 
 		SearchResponse sr = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				.setQuery(QueryBuilders.multiMatchQuery(searchText, "name", "description")).get();
 
-		ArrayList<Task> foundTasks = new ArrayList<>();
-
-		for (SearchHit hit : sr.getHits()) {
+		List<Long> ids = new ArrayList<>(); 
+		
+		sr.getHits().forEach( hit -> {
 			if (hit.getScore() >= threshold) {
-				foundTasks.add(taskDAO.findOne(Long.decode(hit.getId())));
+				ids.add(Long.decode(hit.getId()));
+				//foundTasks.add(taskDAO.findOne(Long.decode(hit.getId())));
 			}
-		}
-		return foundTasks;
+		});
+		
+		List<Task> tasks = new ArrayList<>();
+		
+		taskDAO.findAll(ids).forEach(tasks::add);
+				
+		return tasks;
 	}
 
 	public DeleteIndexResponse deleteIndex() {
