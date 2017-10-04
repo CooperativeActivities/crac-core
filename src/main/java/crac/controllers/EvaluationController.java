@@ -20,9 +20,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.enums.TaskParticipationType;
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.EvaluationDAO;
 import crac.models.db.daos.TaskDAO;
@@ -90,20 +90,20 @@ public class EvaluationController {
 					TaskParticipationType.PARTICIPATING);
 
 			if (utr != null) {
-				if (task.getTaskState() == TaskState.COMPLETED) {
+				if (task.getTaskState() == ConcreteTaskState.COMPLETED) {
 					if (!utr.isEvalTriggered()) {
 						return JSONResponseHelper.successfullyCreated(utr.triggerEval(nf));
 					} else {
 						return JSONResponseHelper.createResponse(false, "bad_request",
-								ErrorCause.DATASETS_ALREADY_EXISTS);
+								ErrorCode.DATASETS_ALREADY_EXISTS);
 					}
 				} else {
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.STATE_NOT_AVAILABLE);
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.STATE_NOT_AVAILABLE);
 				}
 			}
 		}
 
-		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 
 	}
 
@@ -127,7 +127,7 @@ public class EvaluationController {
 
 		if (task != null) {
 			if (user.hasTaskPermissions(task)) {
-				if (task.getTaskState() == TaskState.COMPLETED) {
+				if (task.getTaskState() == ConcreteTaskState.COMPLETED) {
 					boolean allTriggered = true;
 					for (UserTaskRel utr : task.getUserRelationships()) {
 						if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING
@@ -137,17 +137,17 @@ public class EvaluationController {
 						}
 					}
 					if (allTriggered) {
-						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALL_EVALS_TRIGGERED);
+						return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ALL_EVALS_TRIGGERED);
 					}
 					return JSONResponseHelper.successfullyUpdated(task);
 				} else {
-					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.WRONG_TYPE);
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.WRONG_TYPE);
 				}
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 
@@ -201,11 +201,11 @@ public class EvaluationController {
 			CracUser user = userDAO.findByName(userDetails.getName());
 
 			if (eval.getUserTaskRel().getUser() != user && !user.confirmRole("ADMIN")) {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.PERMISSIONS_NOT_SUFFICIENT);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 
 			if (eval.isFilled()) {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ALREADY_FILLED);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ALREADY_FILLED);
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
@@ -226,7 +226,7 @@ public class EvaluationController {
 			return JSONResponseHelper.successfullyCreated(eval);
 
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}

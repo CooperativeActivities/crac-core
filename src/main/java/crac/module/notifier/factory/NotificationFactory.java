@@ -2,7 +2,9 @@ package crac.module.notifier.factory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +16,39 @@ import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracUser.NotificationUser;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * A factory that creates arbitrary objects of the type Notification
+ * @author David Hondl
+ *
+ */
 @Component
 @Scope("singleton")
 public class NotificationFactory {
 
 	@Autowired
+	@Getter
+	@Setter
 	private TaskDAO taskDAO;
 
 	@Autowired
+	@Getter
+	@Setter
 	private CracUserDAO userDAO;
 
 	@Autowired
+	@Getter
+	@Setter
 	private UserRelationshipDAO userRelationshipDAO;
 
 	@Autowired
+	@Getter
+	@Setter
 	private UserTaskRelDAO userTaskRelDAO;
 
 	private HashMap<String, Notification> notifications;
@@ -47,18 +66,60 @@ public class NotificationFactory {
 
 		return list;
 	}
+	
+	/**
+	 * This overrides actual method, accepting different parameters
+	 * @param type
+	 * @param target
+	 * @param sender
+	 * @param conf
+	 * @return
+	 */
+	public <T extends Notification> Notification createNotification(Class<T> type, CracUser target, CracUser sender, NotificationConfiguration conf) {
+		return createNotification(type, target.generateNUser(), sender.generateNUser(), conf);
+	}
 
-	public <T extends Notification> Notification createNotification(Class<T> type, long targetId, long senderId,
-			HashMap<String, Long> ids) {
+	/**
+	 * This overrides actual method, accepting different parameters; instead of the usual sender, the system gets set as sender
+	 * @param type
+	 * @param target
+	 * @param conf
+	 * @return
+	 */
+	public <T extends Notification> Notification createSystemNotification(Class<T> type, CracUser target, NotificationConfiguration conf) {
+		return createNotification(type, target.generateNUser(), CracUser.sys(), conf);
+	}
+
+	/**
+	 * This overrides actual method, accepting different parameters; instead of the usual sender, the system gets set as sender
+	 * @param type
+	 * @param target
+	 * @param conf
+	 * @return
+	 */
+	public <T extends Notification> Notification createSystemNotification(Class<T> type, NotificationUser target, NotificationConfiguration conf) {
+		return createNotification(type, target, CracUser.sys(), conf);
+	}
+	
+	/**
+	 * This method takes in the type of the notification, its target and sender and its configuration and adds it to the global notification-list while returning a reference
+	 * @param type
+	 * @param target
+	 * @param sender
+	 * @param conf
+	 * @return Notification
+	 */
+	public <T extends Notification> Notification createNotification(Class<T> type, NotificationUser target, NotificationUser sender,
+			NotificationConfiguration conf) {
 
 		Notification n = null;
 
 		n = BeanUtils.instantiate(type);
 
 		n.setNf(this);
-		n.setSenderId(senderId);
-		n.setTargetId(targetId);
-		n.inject(ids);
+		n.setSender(sender);
+		n.setTarget(target);
+		n.configure(conf);
 		System.out.println("Notification " + n.getName() + " created!");
 
 		addNotification(n);
@@ -66,66 +127,42 @@ public class NotificationFactory {
 		return n;
 	}
 
+	/**
+	 * Add target notification or update it by its id
+	 * @param notification
+	 */
 	public void addNotification(Notification notification) {
 		this.notifications.put(notification.getNotificationId(), notification);
 	}
 
+	/**
+	 * Delete target notification
+	 * @param notificationId
+	 */
 	public void deleteNotificationById(String notificationId) {
 		this.notifications.remove(notificationId);
 	}
 
+	/**
+	 * Get target notification
+	 * @param notificationId
+	 * @return
+	 */
 	public Notification getNotificationById(String notificationId) {
 		return this.notifications.get(notificationId);
 	}
 
-	public ArrayList<Notification> getUserNotifications(CracUser user) {
-		ArrayList<Notification> list = new ArrayList<Notification>();
-
-		for (Entry<String, Notification> entry : this.notifications.entrySet()) {
-			Notification n = entry.getValue();
-			if (n.getTargetId() == user.getId()) {
-				list.add(n);
-			}
-		}
-
-		return list;
-
-	}
-
-	public TaskDAO getTaskDAO() {
-		return taskDAO;
-	}
-
-	public void setTaskDAO(TaskDAO taskDAO) {
-		this.taskDAO = taskDAO;
-	}
-
-	public CracUserDAO getUserDAO() {
-		return userDAO;
-	}
-
-	public void setUserDAO(CracUserDAO userDAO) {
-		this.userDAO = userDAO;
-	}
-
-	public UserRelationshipDAO getUserRelationshipDAO() {
-		return userRelationshipDAO;
-	}
-
-	public void setUserRelationshipDAO(UserRelationshipDAO userRelationshipDAO) {
-		this.userRelationshipDAO = userRelationshipDAO;
-	}
-
-	public void setNotifications(HashMap<String, Notification> notifications) {
-		this.notifications = notifications;
-	}
-
-	public UserTaskRelDAO getUserTaskRelDAO() {
-		return userTaskRelDAO;
-	}
-
-	public void setUserTaskRelDAO(UserTaskRelDAO userTaskRelDAO) {
-		this.userTaskRelDAO = userTaskRelDAO;
+	/**
+	 * Get all notifications of target user
+	 * @param user
+	 * @return List<Notification>
+	 */
+	public List<Notification> getUserNotifications(CracUser user) {		
+		return this.notifications.entrySet()
+				.stream()
+				.map( x -> x.getValue() )
+				.filter( x -> x.getTarget().equals(user.generateNUser()) )
+				.collect(Collectors.toList());
 	}
 
 }

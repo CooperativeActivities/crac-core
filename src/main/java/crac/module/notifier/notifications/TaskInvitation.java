@@ -1,31 +1,32 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
 import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserTaskRelDAO;
+import crac.models.db.entities.Task.NotificationTask;
 import crac.models.db.relation.UserTaskRel;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * Invites target user to target task; after accepting he/she becomes a participant
+ * @author David Hondl
+ *
+ */
 public class TaskInvitation extends Notification{
 		
-	private long taskId;
+	@Getter
+	@Setter
+	private NotificationTask task;
 	
 	public TaskInvitation(){
 		super("Task Invitation", NotificationType.SUGGESTION);
 	}
 	
-	public long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
-	}
-
 	@Override
 	public String accept() {
 		
@@ -35,8 +36,8 @@ public class TaskInvitation extends Notification{
 
 		UserTaskRel utl = new UserTaskRel();
 		
-		utl.setTask(taskDAO.findOne(taskId));
-		utl.setUser(userDAO.findOne(getTargetId()));
+		utl.setTask(taskDAO.findOne(task.getId()));
+		utl.setUser(userDAO.findOne(getTarget().getId()));
 		utl.setParticipationType(TaskParticipationType.PARTICIPATING);
 		
 		userTaskRelDAO.save(utl);
@@ -55,8 +56,8 @@ public class TaskInvitation extends Notification{
 	}
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
-		this.taskId = ids.get("task");
+	public void configure(NotificationConfiguration conf) {
+		this.task = conf.get("task", NotificationTask.class);
 	}
 	
 }

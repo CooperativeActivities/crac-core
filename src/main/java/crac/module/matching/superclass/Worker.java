@@ -1,7 +1,7 @@
 package crac.module.matching.superclass;
 
 import crac.module.matching.factories.WorkerFactory;
-import crac.module.utility.RandomUtility;
+import crac.module.utility.CracUtility;
 
 public abstract class Worker {
 	
@@ -10,7 +10,7 @@ public abstract class Worker {
 	private WorkerFactory wf;
 	
 	public Worker(){
-		this.workerId = RandomUtility.randomString(20);
+		this.workerId = CracUtility.randomString(20);
 		System.out.println("_______________________");
 		System.out.println("Worker with ID "+this.workerId+" running!");
 		System.out.println("_______________________");

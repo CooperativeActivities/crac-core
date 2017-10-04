@@ -672,6 +672,45 @@ DELETE admin/user/{user_id}/role/{role_id}/add
 
 Json-data, a success
 
+-----------------------------------------------------------------
+
+**Adds an image to logged in user**
+
+##### *Request:*
+
+POST user/image/add
+
+The file must be posted as Multipart file! The file needs to have the key "file".
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
+**Get the image of a user**
+
+##### *Request:*
+
+GET user/image/get
+
+##### *Response:*
+
+The picture, or an error as json:
+
+	{
+	    "type": "NO_OBJECT",
+	    "rest_action": "GET",
+	    "success": false,
+	    "errors": [
+	        {
+	            "name": "NOT_FOUND",
+	            "cause": "bad_request"
+	        }
+	    ],
+	    "object": null,
+	    "meta": {}
+	}
 
 -----------------------------------------------------------------
 
@@ -903,6 +942,48 @@ The Competence-Filter requires arbitrary competence-ids to filter tasks for thes
     	    	]
 	
     	}
+    	
+The Geo-Filter requires the fields geoLat, geoLng as double and geoName, geoCountry, geoCountryA, geoMacroRegion, geoRegion, geoLocality as String.
+All tasks are filtered for matching fields, as long as they are not -1 (if it is a double) or "" (if it is a string)
+
+	{
+		    "name": "GeoFilter",
+		    "params": [
+		    	{
+		    		"name": "geoLat",
+		    		"value": -1.0
+		    	},
+		    	{
+		    		"name": "geoLng",
+		    		"value": 10.0
+		    	},
+		    	{
+		    		"name": "geoName",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoCountry",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoCountryA",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoMacroRegion",
+		    		"value": ""
+		    	},
+		    	{
+		    		"name": "geoRegion",
+		    		"value": "Linz"
+		    	},
+		    	{
+		    		"name": "geoLocality",
+		    		"value": ""
+		    	}
+		    	]
+	
+		}
 
 ##### *Response:*
 
@@ -930,6 +1011,44 @@ GET /task/{task_id}
 ##### *Response:*
 
 The information about the task and its relationships is in the meta-object
+	
+-----------------------------------------------------------------
+
+**Add an attachment to target task**
+
+##### *Request:*
+
+POST /task/{task_id}/attachment
+
+The file must be posted as Multipart file! The file needs to have the key "file".
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
+**Remove an attachment from target task**
+
+##### *Request:*
+
+DELETE /task/{task_id}/attachment/{attachment_id}
+
+##### *Response:*
+
+Json-data, a success or an error
+	
+-----------------------------------------------------------------
+
+**Get target attachment of target task**
+
+##### *Request:*
+
+GET /task/{task_id}/attachment/{attachment_id}
+
+##### *Response:*
+
+Json-data, a success or an error
 	
 -----------------------------------------------------------------
 
@@ -1391,11 +1510,17 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Copy target task (work in progress)**
+**Copy target task**
 
 ##### *Request:*
 
+#### This function requires ADMIN-rights or EDITOR-rights!
+
 GET /task/{task_id}/copy
+
+	{
+		"date": "2500-01-01T00:30:00"
+	}
 
 ##### *Response:*
 
@@ -1499,7 +1624,7 @@ Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
-**Change the state of target task; Choose either 'publish', 'start', or 'complete'**
+**Change the state of target task; Choose either 'PUBLISHED', 'STARTED', or 'COMPLETED'**
 *For each state different prerequisite have to be fullfilled:*
 *NOT_PUBLISHED: Default state*
 *PUBLISHED: Only allowed when the task-fields are all filled*
@@ -1508,13 +1633,25 @@ Json-data, either a success or a failure message
 
 ##### *Request:*
 
-PUT /task/{task_id}/state/{state_name}
+PUT /task/{task_id}/state/changeTo/{state_name}
 
 ##### *Response:*
 
 Json-data, either a success or a failure message
 
 Possible failures:
+
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "REQUIREMENTS_NOT_FULLFILLED"
+	}	
+	
+	{
+	  "success": false,
+	  "error": "bad_request",
+	  "cause": "SUB_ITEMS_NOT_READY"
+	}
 
 	{
 	  "success": false,
@@ -1553,6 +1690,17 @@ Possible failures:
 	}
 
 
+-----------------------------------------------------------------
+
+**Force state-changes on task-trees that are not following the normal state-change rules; choose from 'unpublish' or 'complete'**
+
+##### *Request:*
+
+PUT /task/{task_id}/state/force/{state_name}
+
+##### *Response:*
+
+Json-data, either a success or a failure message
 
 -----------------------------------------------------------------
 
@@ -1956,12 +2104,34 @@ GET /notification
 	[
 	  {
 	    "notificationId": "22517116313100323167",
-	    "targetId": 3,
-	    ...
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
+        "target": {
+            "id": 3,
+            "name": "ProellADMIN",
+            "lastName": "user_last2",
+            "firstName": "user_first2"
+        },
+        "task": {
+            "id": 2,
+            "name": "testTask",
+            "description": "this is a test",
+            ...
+        },
+        ...
 	  },
 	  {
 	    "notificationId": "528924t6523027823167",
-	    "targetId": 3,
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
 	    ...
 	  }
 	]
@@ -1981,17 +2151,34 @@ GET /notification/admin
 	[
 	  {
 	    "notificationId": "22517116313100323167",
-	    "targetId": 3,
-	    ...
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
+        "target": {
+            "id": 3,
+            "name": "ProellADMIN",
+            "lastName": "user_last2",
+            "firstName": "user_first2"
+        },
+        "task": {
+            "id": 2,
+            "name": "testTask",
+            "description": "this is a test",
+            ...
+        },
+        ...
 	  },
 	  {
 	    "notificationId": "528924t6523027823167",
-	    "targetId": 1,
-	    ...
-	  },
-	  {
-	    "notificationId": "528924o2347235287821",
-	    "targetId": 2,
+	    "sender": {
+            "id": 1,
+            "name": "user",
+            "lastName": "user_last1",
+            "firstName": "user_first1"
+        },
 	    ...
 	  }
 	]
@@ -2408,3 +2595,14 @@ Major change for the "get all tasks"-Endpoints --> see the "Task-Endpoints" (fir
 #### 8.8.2017
 
 New endpoints for adding and removing users to and from groups --> see "Group-Endpoints"  
+
+#### 21.9.2017
+
+Information in notifications now consists of object and not just their ID! -> see "Notification-Endpoints"  
+
+#### 2.10.2017
+
+API for changing task-states has changed -> see "Task-Section"  
+Endpoints for the uploading of picture for users added -> see "User-Section"  
+Endpoint for uploading of attachments for tasks and endpoint for copiing an archived task added -> see "Task-Section"
+  

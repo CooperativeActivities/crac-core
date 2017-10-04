@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CommentDAO;
 import crac.models.db.daos.CompetenceAreaDAO;
@@ -1252,7 +1252,7 @@ public class SynchronizationController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/elastic/reset",
-			"/refreshESTasks/" }, method = RequestMethod.DELETE, produces = "application/json")
+			"/elastic/reset/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> refreshESTasks() {
 
@@ -1260,8 +1260,19 @@ public class SynchronizationController {
 		if (deleted.isAcknowledged()) {
 			return JSONResponseHelper.successfullyDeleted(url);
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCause.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = { "/elastic/sync",
+			"/elastic/sync/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> syncESTasks() {
+
+		taskDAO.sync();
+		
+		return JSONResponseHelper.successfullyUpdated(url);
 	}
 
 }

@@ -3,7 +3,7 @@ package crac.models.output;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 
 public class RESTResponse<T> {
@@ -28,7 +28,7 @@ public class RESTResponse<T> {
 		this.meta = new HashMap<>();
 	}
 	
-	public void addError(ErrorCause name, String cause){
+	public void addError(ErrorCode name, String cause){
 		errors.add(new RESTError(name, cause));
 	}
 
@@ -62,15 +62,15 @@ public class RESTResponse<T> {
 	
 	public class RESTError {
 		
-		private ErrorCause name;
+		private ErrorCode name;
 		private String cause;
 
-		public RESTError(ErrorCause name, String cause) {
+		public RESTError(ErrorCode name, String cause) {
 			this.name = name;
 			this.cause = cause;
 		}
 		
-		public ErrorCause getName() {
+		public ErrorCode getName() {
 			return name;
 		}
 		public String getCause() {

@@ -3,11 +3,7 @@ package crac.module.utility;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -30,32 +26,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
+import lombok.Getter;
 
 @Component
-@Scope("prototype")
+@Scope("singleton")
 public class ElasticConnector<T> {
 
 	@Autowired
 	private TaskDAO taskDAO;
 
+	@Getter
 	@Value("${crac.elastic.url}")
 	private String address;
 
+	@Getter
 	@Value("${crac.elastic.port}")
 	private int port;
 
+	@Getter
 	@Value("${crac.elastic.index}")
 	private String index;
 
+	@Getter
 	@Value("${crac.elastic.threshold}")
 	private double threshold;
 
@@ -63,6 +63,8 @@ public class ElasticConnector<T> {
 	private ObjectMapper mapper;
 
 	private TransportClient client;
+	
+	@Getter
 	private String type;
 
 	public ElasticConnector() {
@@ -124,7 +126,7 @@ public class ElasticConnector<T> {
 			double score = hit.getScore();
 			if (score >= threshold) {
 				EvaluatedTask evTask = new EvaluatedTask(taskDAO.findOne(id), score);
-				if (evTask.getTask().getTaskState() != TaskState.NOT_PUBLISHED) {
+				if (evTask.getTask().getTaskState() != ConcreteTaskState.NOT_PUBLISHED) {
 					foundTasks.add(evTask);
 				}
 			}
@@ -132,49 +134,31 @@ public class ElasticConnector<T> {
 		return foundTasks;
 	}
 
-	public ArrayList<Task> queryForTasks(String searchText) {
+	public List<Task> queryForTasks(String searchText) {
 		System.out.println("index: " + index + ", type: " + type + ", searchText: " + searchText);
 
 		SearchResponse sr = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				.setQuery(QueryBuilders.multiMatchQuery(searchText, "name", "description")).get();
 
-		ArrayList<Task> foundTasks = new ArrayList<>();
-
-		for (SearchHit hit : sr.getHits()) {
+		List<Long> ids = new ArrayList<>(); 
+		
+		sr.getHits().forEach( hit -> {
 			if (hit.getScore() >= threshold) {
-				foundTasks.add(taskDAO.findOne(Long.decode(hit.getId())));
+				ids.add(Long.decode(hit.getId()));
+				//foundTasks.add(taskDAO.findOne(Long.decode(hit.getId())));
 			}
-		}
-		return foundTasks;
+		});
+		
+		List<Task> tasks = new ArrayList<>();
+		
+		taskDAO.findAll(ids).forEach(tasks::add);
+				
+		return tasks;
 	}
 
 	public DeleteIndexResponse deleteIndex() {
 		DeleteIndexResponse response = client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
 		return response;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public double getThreshold() {
-		return threshold;
-	}
-
-	public String getIndex() {
-		return index;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 }

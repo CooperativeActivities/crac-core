@@ -2,7 +2,7 @@ package crac.module.matching.filter.postmatching;
 
 import java.util.List;
 
-import crac.enums.TaskState;
+import crac.enums.ConcreteTaskState;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.FilterParameters;
@@ -20,7 +20,7 @@ public class MissingVolunteerFilter extends ConcreteFilter {
 		for (EvaluatedTask task : list) {
 			Task t = task.getTask();
 
-			if (t.getTaskState() == TaskState.STARTED) {
+			if (t.getTaskState() == ConcreteTaskState.STARTED) {
 
 				double modifyVal = 0.6;
 				double valAdjust = 1;

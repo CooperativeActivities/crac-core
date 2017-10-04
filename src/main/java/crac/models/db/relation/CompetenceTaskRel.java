@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.Competence;
@@ -58,6 +59,17 @@ public class CompetenceTaskRel {
 		this.neededProficiencyLevel = neededProficiencyLevel;
 		this.importanceLevel = importanceLevel;
 		this.mandatory = mandatory;
+	}
+	
+	@JsonIgnore
+	public CompetenceTaskRel copy(Task t){
+		CompetenceTaskRel c = new CompetenceTaskRel();
+		c.setCompetence(competence);
+		c.setNeededProficiencyLevel(neededProficiencyLevel);
+		c.setImportanceLevel(importanceLevel);
+		c.setMandatory(mandatory);
+		c.setTask(t);
+		return c;
 	}
 
 	public long getId() {

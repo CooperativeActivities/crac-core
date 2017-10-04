@@ -1,12 +1,15 @@
 package crac.module.notifier.notifications;
 
-import java.util.HashMap;
-
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
 
+/**
+ * An notification that suggests a possible FriendRequest to target user
+ * @author David Hondl
+ *
+ */
 public class FriendSuggestion extends Notification{
-	
 	
 	public FriendSuggestion(){
 		super("Friend Suggestion", NotificationType.SUGGESTION);
@@ -14,8 +17,7 @@ public class FriendSuggestion extends Notification{
 	
 	@Override
 	public String accept() {
-		//NotificationHelper.createFriendRequest(getTargetId(), suggestedId);
-		super.getNf().createNotification(FriendRequest.class, getTargetId(), getSenderId(), null);
+		super.getNf().createNotification(FriendRequest.class, getTarget(), getSender(), null);
 		super.destroy();
 		System.out.println("Friend-suggestion accepted, Friend request sent.");
 		return "accepted";
@@ -30,9 +32,7 @@ public class FriendSuggestion extends Notification{
 	}
 
 	@Override
-	public void inject(HashMap<String, Long> ids) {
-		// TODO Auto-generated method stub
-		
+	public void configure(NotificationConfiguration conf) {
 	}
 	
 }

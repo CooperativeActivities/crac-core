@@ -24,6 +24,7 @@ import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
+import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.EvaluationNotification;
@@ -75,10 +76,8 @@ public class UserTaskRel {
 	public Evaluation triggerEval(NotificationFactory nf){
 		Evaluation e = new Evaluation(this);
 		
-		HashMap<String, Long> ids = new HashMap<>();
-		ids.put("task", task.getId());
-		ids.put("evaluation", e.getId());
-		Notification es = nf.createNotification(EvaluationNotification.class, user.getId(), -1l, ids);
+		NotificationConfiguration nc = NotificationConfiguration.create().put("task", task.generateNTask()).put("evaluation", e.getId());
+		Notification es = nf.createSystemNotification(EvaluationNotification.class, user, nc);
 		
 		e.setNotificationId(es.getNotificationId());
 		
@@ -86,10 +85,9 @@ public class UserTaskRel {
 		this.setEvalTriggered(true);
 		nf.getUserTaskRelDAO().save(this);
 		
-		ids.put("task", task.getId());
-		ids.put("evaluation", e.getId());
+		nc.put("task", task).put("evaluationid", e);
 
-		es.inject(ids);
+		es.configure(nc);
 		
 		return e;
 	}

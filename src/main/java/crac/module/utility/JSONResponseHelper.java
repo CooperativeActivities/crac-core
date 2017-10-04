@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import crac.enums.ErrorCause;
+import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 import crac.models.output.RESTResponse;
 
@@ -19,7 +19,7 @@ public class JSONResponseHelper {
 
 	// Create Responses with different parameters
 
-	public static <T> ResponseEntity<String> createResponse(boolean success, String cause, ErrorCause error) {
+	public static <T> ResponseEntity<String> createResponse(boolean success, String cause, ErrorCode error) {
 		return createResponse(null, success, cause, error, null, RESTAction.GET);
 	}
 
@@ -49,12 +49,12 @@ public class JSONResponseHelper {
 		return createResponse(obj, success, null, null, meta, action);
 	}
 
-	public static <T> ResponseEntity<String> createResponse(boolean success, String cause, ErrorCause error,
+	public static <T> ResponseEntity<String> createResponse(boolean success, String cause, ErrorCode error,
 			HashMap<String, Object> meta) {
 		return createResponse(null, success, cause, error, meta, RESTAction.GET);
 	}
 
-	public static <T> ResponseEntity<String> createResponse(boolean success, String cause, ErrorCause error,
+	public static <T> ResponseEntity<String> createResponse(boolean success, String cause, ErrorCode error,
 			RESTAction action) {
 		return createResponse(null, success, cause, error, null, action);
 	}
@@ -83,7 +83,7 @@ public class JSONResponseHelper {
 
 	// Method that creates the response
 
-	public static <T> ResponseEntity<String> createResponse(T obj, boolean success, String cause, ErrorCause error,
+	public static <T> ResponseEntity<String> createResponse(T obj, boolean success, String cause, ErrorCode error,
 			HashMap<String, Object> meta, RESTAction action) {
 
 		RESTResponse<T> r = new RESTResponse<T>(action, success, obj);
@@ -104,7 +104,7 @@ public class JSONResponseHelper {
 			result = mapper.writeValueAsString(r);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			return createResponse(false, "bad_request", ErrorCause.JSON_WRITE_ERROR);
+			return createResponse(false, "bad_request", ErrorCode.JSON_WRITE_ERROR);
 		}
 
 		return addEntity(result, success);
@@ -126,7 +126,7 @@ public class JSONResponseHelper {
 
 	}
 
-	public static <T> ResponseEntity<Object> createResponseObj(RESTAction action, String cause, ErrorCause error) {
+	public static <T> ResponseEntity<Object> createResponseObj(RESTAction action, String cause, ErrorCode error) {
 		
 		RESTResponse<T> r = new RESTResponse<T>(action, false, null);
 		
