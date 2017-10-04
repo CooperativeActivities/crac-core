@@ -1,0 +1,171 @@
+package crac.module.matching.factories;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+
+import crac.models.db.entities.CompetenceArea;
+import crac.models.db.daos.CompetenceAreaDAO;
+import crac.models.db.entities.Competence;
+import crac.models.db.entities.CracUser;
+import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Task;
+import crac.module.matching.configuration.UserFilterParameters;
+import crac.module.matching.helpers.SimpleCompetence;
+import crac.module.matching.superclass.NLPWorker;
+import crac.module.matching.superclass.Worker;
+import crac.module.matching.workers.TaskCompetenceMatchingWorker;
+import crac.module.matching.workers.TaskMatchingWorker;
+import crac.module.matching.workers.UserCompetenceRelationEvolutionWorker;
+import crac.module.matching.workers.UserMatchingWorker;
+import crac.module.matching.workers.UserRelationEvolutionWorker;
+import crac.module.storage.CompetenceStorage;
+import edu.stanford.nlp.ling.tokensregex.CoreMapExpressionExtractor;
+import edu.stanford.nlp.ling.tokensregex.MatchedExpression;
+import edu.stanford.nlp.ling.tokensregex.TokenSequencePattern;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+
+@Component
+@Scope("prototype")
+public class NLPWorkerFactory{
+	
+	/*@Value("${crac.nlp.taggerBinary}")
+	private String taggerBinary;
+	
+	@Value("${crac.nlp.ner.model}")
+	private String nerModel;
+	
+	@Value("${crac.nlp.parse.model}")
+	private String parseModel;
+	
+	@Value("${crac.nlp.regexnerRules}")
+	private String regexnerRules;
+
+	@Value("${crac.nlp.tokensregexRules}")
+	private String tokensregexRules;
+	*/
+	
+	@Autowired
+	private CompetenceAreaDAO competenceAreaDAO;
+	
+	@Autowired
+	private CompetenceStorage cs;
+	
+	private StanfordCoreNLP pipeline;
+	
+	private CoreMapExpressionExtractor<MatchedExpression> annotationExtractor;
+	
+	private HashMap<CompetenceArea, Set<Competence>> area2Competences;
+	
+	private HashMap<String, Set<CompetenceArea>> ann2CompetenceAreas;
+	
+	public NLPWorkerFactory(){
+		// Set properties for pipeline
+		Properties props = new Properties();
+		props.setProperty("customAnnotatorClass.german.lemma", "crac.module.nlp.TreeTaggerAnnotator");
+		props.setProperty("annotators", "tokenize, ssplit, pos, german.lemma, ner, parse, regexner");
+		props.setProperty("tokenize.language", "de"); // "de
+		
+		props.setProperty("pos.model", "crac/module/nlp/resources/german-hgc.tagger"); // brauche ich ev. nicht
+		props.setProperty("treetagger.home", "C:/TreeTagger");
+		props.setProperty("ner.model", "crac/module/nlp/resources/german.conll.hgc_175m_600.crf.ser.gz");
+		props.setProperty("parse.model", "crac/module/nlp/resources/germanFactored.ser.gz");
+		props.setProperty("regexner.mapping", "crac/module/nlp/resources/gaz_WDS.txt");
+		props.setProperty("ner.useSUTime", "0");
+						
+		pipeline = new StanfordCoreNLP(props);
+		
+		annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/claudia_rules.txt" ); //tokensregexRules);
+			//
+		System.out.println("-------------------------------");
+		System.out.println("||||NLP APPLICATION BUILT||||");
+		System.out.println("-------------------------------");
+		
+		ann2CompetenceAreas = new HashMap<String, Set<CompetenceArea>>();
+		area2Competences = new HashMap<CompetenceArea, Set<Competence>>();
+	}	
+
+	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, HashMap<String, Object> params) {
+		TaskCompetenceMatchingWorker w = new TaskCompetenceMatchingWorker((Task)params.get("task"));
+		w.setWf(this);
+		return w;
+	}
+	
+	public StanfordCoreNLP getPipeline(){
+		return pipeline;
+	}
+	
+	public CoreMapExpressionExtractor<MatchedExpression> getAnnotationExtractor(){
+		return annotationExtractor;
+	}
+
+	private void setupAnn2CompetencesMapping(){
+		ann2CompetenceAreas = new HashMap<String, Set<CompetenceArea>>();
+		area2Competences = new HashMap<CompetenceArea, Set<Competence>>();
+		
+		// set up hashmap annotation to compentence areas
+		Iterable<CompetenceArea> compAreaIt = competenceAreaDAO.findAll();
+		for (CompetenceArea ca: compAreaIt){
+			if (!ann2CompetenceAreas.containsKey(ca.getName()))
+				ann2CompetenceAreas.put(ca.getName(), new HashSet<CompetenceArea>());
+			ann2CompetenceAreas.get(ca.getName()).add(ca);
+		}
+		
+		// set up hashmap competence area to competences
+		Iterable<Competence> compIt = cs.getCompetenceDAO().findAll();
+		for (Competence c: compIt){
+			Set<CompetenceArea> cas = c.getCompetenceAreas();
+			for (CompetenceArea ca: cas){
+				if (!area2Competences.containsKey(ca))
+					area2Competences.put(ca, new HashSet<Competence>());
+				area2Competences.get(ca).add(c);
+			}
+		}
+	}
+	
+	private void printArea2Competences(){
+	    Set<CompetenceArea> ks = area2Competences.keySet();
+	    for (CompetenceArea ca: ks){
+	    	System.out.println(" competenceArea: " + ca.getName());
+	    	Set<Competence> cs = area2Competences.get(ca);
+	    	for (Competence c: cs){
+	    		System.out.println("............. competence: " + c.getName());
+	    	}
+	    }
+	}
+	
+	public ArrayList<Competence> getCompetences4Annotation(String compAnn){
+		if (area2Competences.isEmpty())
+			setupAnn2CompetencesMapping();
+		Set<CompetenceArea> ks = area2Competences.keySet();
+	    for (CompetenceArea ca: ks){
+	    	if (ca.getName().equals(compAnn))
+	    		return new ArrayList<Competence>(area2Competences.get(ca));
+	    }
+	    return new ArrayList<Competence>();
+	}
+	
+	public ArrayList<CompetenceArea> getCompetenceAreas4Annotation(String compAnn){
+		if (ann2CompetenceAreas.isEmpty())
+			setupAnn2CompetencesMapping();
+		return new ArrayList<CompetenceArea>(ann2CompetenceAreas.get(compAnn));
+	}
+	
+}

@@ -819,49 +819,48 @@ public class SynchronizationController {
 		AverageHuman.setEmail("AverageHuman@internet.at");
 		userDAO.save(AverageHuman);
 
-		CracUser SchönböckADMIN = new CracUser();
+		CracUser SchoenboeckADMIN = new CracUser();
 
-		SchönböckADMIN.setName("SchoenboeckADMIN");
-		SchönböckADMIN.setFirstName("Johannes");
-		SchönböckADMIN.setLastName("Schönböck");
-		SchönböckADMIN.setPassword(bcryptEncoder.encode("default"));
-		SchönböckADMIN.addRole(roleDAO.findByName("ADMIN"));
-		SchönböckADMIN.setPhone("35678987654");
-		SchönböckADMIN.setEmail("Mustermail@internet.at");
-		userDAO.save(SchönböckADMIN);
+		SchoenboeckADMIN.setName("SchoenboeckADMIN");
+		SchoenboeckADMIN.setFirstName("Johannes");
+		SchoenboeckADMIN.setPassword(bcryptEncoder.encode("default"));
+		SchoenboeckADMIN.addRole(roleDAO.findByName("ADMIN"));
+		SchoenboeckADMIN.setPhone("35678987654");
+		SchoenboeckADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(SchoenboeckADMIN);
 
-		CracUser SchönböckUSER = new CracUser();
+		CracUser SchoenboeckUSER = new CracUser();
 
-		SchönböckUSER.setName("SchoenboeckUSER");
-		SchönböckUSER.setFirstName("Johannes");
-		SchönböckUSER.setLastName("Schönböck");
-		SchönböckUSER.setPassword(bcryptEncoder.encode("default"));
-		SchönböckUSER.addRole(roleDAO.findByName("USER"));
-		SchönböckUSER.setPhone("35678987654");
-		SchönböckUSER.setEmail("Mustermail@internet.at");
-		userDAO.save(SchönböckUSER);
+		SchoenboeckUSER.setName("SchoenboeckUSER");
+		SchoenboeckUSER.setFirstName("Johannes");
+		SchoenboeckUSER.setLastName("Schuenboeck");
+		SchoenboeckUSER.setPassword(bcryptEncoder.encode("default"));
+		SchoenboeckUSER.addRole(roleDAO.findByName("USER"));
+		SchoenboeckUSER.setPhone("35678987654");
+		SchoenboeckUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(SchoenboeckUSER);
 
-		CracUser PröllADMIN = new CracUser();
+		CracUser ProellADMIN = new CracUser();
 
-		PröllADMIN.setName("ProellADMIN");
-		PröllADMIN.setFirstName("Birigt");
-		PröllADMIN.setLastName("Pröll");
-		PröllADMIN.setPassword(bcryptEncoder.encode("default"));
-		PröllADMIN.addRole(roleDAO.findByName("ADMIN"));
-		PröllADMIN.setPhone("35678987654");
-		PröllADMIN.setEmail("Mustermail@internet.at");
-		userDAO.save(PröllADMIN);
+		ProellADMIN.setName("ProellADMIN");
+		ProellADMIN.setFirstName("Birigt");
+		ProellADMIN.setLastName("Proell");
+		ProellADMIN.setPassword(bcryptEncoder.encode("default"));
+		ProellADMIN.addRole(roleDAO.findByName("ADMIN"));
+		ProellADMIN.setPhone("35678987654");
+		ProellADMIN.setEmail("Mustermail@internet.at");
+		userDAO.save(ProellADMIN);
 
-		CracUser PröllUSER = new CracUser();
+		CracUser ProellUSER = new CracUser();
 
-		PröllUSER.setName("ProellUSER");
-		PröllUSER.setFirstName("Birigt");
-		PröllUSER.setLastName("Pröll");
-		PröllUSER.setPassword(bcryptEncoder.encode("default"));
-		PröllUSER.addRole(roleDAO.findByName("USER"));
-		PröllUSER.setPhone("35678987654");
-		PröllUSER.setEmail("Mustermail@internet.at");
-		userDAO.save(PröllUSER);
+		ProellUSER.setName("ProellUSER");
+		ProellUSER.setFirstName("Birigt");
+		ProellUSER.setLastName("Proell");
+		ProellUSER.setPassword(bcryptEncoder.encode("default"));
+		ProellUSER.addRole(roleDAO.findByName("USER"));
+		ProellUSER.setPhone("35678987654");
+		ProellUSER.setEmail("Mustermail@internet.at");
+		userDAO.save(ProellUSER);
 
 		CracUser EibnerADMIN = new CracUser();
 

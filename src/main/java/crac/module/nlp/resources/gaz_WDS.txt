@@ -1,0 +1,19 @@
+Kuchen	BACKEN
+Torte	BACKEN
+Muffins	BACKEN
+Brot	BACKEN
+Weckerl	BACKEN
+Kekse	BACKEN
+Bananenschnitte	KUCH
+Guglhupf	KUCH
+Schokoladekuchen	KUCH
+Sachertorte	TORTE
+Topfentorte	TORTE
+backen	BACKEN
+kochen	KOCHEN
+zubereiten	KOCHEN	BACKEN
+Eierspeise	WARME_SPEISE
+Spaghetti	WARME_SPEISE
+Parkett	BODEN
+Wand	WAND
+Stiegenhaus	WAND

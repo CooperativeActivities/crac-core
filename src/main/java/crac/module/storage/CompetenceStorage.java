@@ -82,7 +82,7 @@ public class CompetenceStorage {
 		return true;
 	}
 
-	private CompetenceStorage() {
+	public CompetenceStorage() {
 	}
 
 	public HashMap<Long, SimpleCompetence> getCompetences() {

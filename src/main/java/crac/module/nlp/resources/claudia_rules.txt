@@ -1,0 +1,30 @@
+ENV.defaults["stage.limitIters"] = 2
+
+# Map variable names to annotation keys
+ner = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$NamedEntityTagAnnotation" }
+
+compAnn = { type: "CLASS", value: "crac.module.matching.workers.TaskCompetenceMatchingWorker$CompetenceAnnotation" }
+
+$BACKEN = "[ {ner:KUCH} | {ner:TORTE}]"
+
+$KOCHEN = "[ {ner:BACK} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken}]"
+
+{
+  // ruleType is "text", "tokens", "composite", or "filter"
+  ruleType: "tokens",
+  
+  // pattern to be matched  
+  pattern: ($KOCHEN),
+
+  // value associated with the expression for which the pattern was matched
+  // matched expressions are returned with "DATE_OF_BIRTH" as the value
+  // (as part of the MatchedExpression class)
+  action: (Annotate($0, compAnn, "Kochen"))
+}
+
+{
+	ruleType: "tokens",
+	pattern: ($BACKEN),
+	action: (Annotate($0, ner, "BACK2"))
+}
+

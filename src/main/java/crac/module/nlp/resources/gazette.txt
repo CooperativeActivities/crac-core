@@ -1,0 +1,50 @@
+BACK Torte
+BACK Kuchen
+BACK Muffins
+KUCH Bananenschnitte
+KUCH Guglhupf
+PERS Woodhouses
+
+PERS Emma Woodhouse
+
+PERS Mr. Woodhouse
+
+PERS Mr. and Miss Woodhouse
+
+PERS Miss Taylor
+
+PERS Emma
+
+PERS Mr. Weston
+
+PERS Mrs. Weston
+
+PERS Captain Weston
+
+PERS Isabella
+
+PERS James
+
+PERS Hannah
+
+PERS Mr. Knightley
+
+PERS Farmer Mitchell
+
+PERS Mr. Elton
+
+PERS Miss Churchill
+
+PERS Mr. and Mrs. Churchill
+
+PERS Frank
+
+PERS Churchill
+
+PERS Mr. Frank Churchill
+
+PERS Mr. Perry
+
+PERS Mrs. Perry
+
+PERS Mrs. and Miss Bates
