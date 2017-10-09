@@ -83,8 +83,6 @@ public class Task {
 	@Column(name = "end_time")
 	private Calendar endTime;
 
-	private int urgency;
-
 	@Column(name = "max_amount_of_volunteers")
 	private int maxAmountOfVolunteers;
 
@@ -632,14 +630,6 @@ public class Task {
 
 	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
-	}
-
-	public int getUrgency() {
-		return urgency;
-	}
-
-	public void setUrgency(int urgency) {
-		this.urgency = urgency;
 	}
 
 	public int getMaxAmountOfVolunteers() {

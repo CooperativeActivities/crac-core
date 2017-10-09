@@ -162,9 +162,8 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalizedFilters pf;
 		pf = mapper.readValue(json, PersonalizedFilters.class);
-		
-		Set<TaskShort> set = tl.lookUp(user, pf).stream()
-				.map( task -> task.toShortWithCrumbs() )
+
+		Set<TaskShort> set = tl.lookUp(user, pf).stream().map(task -> task.toShortWithCrumbs())
 				.collect(Collectors.toSet());
 
 		return JSONResponseHelper.createResponse(set, true);
@@ -369,14 +368,12 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
-		
+
 		HashMap<String, Object> meta = new HashMap<>();
-		
-		Stream.of(TaskParticipationType.values()).forEach( type -> {
-			meta.put(type.toString(), taskRels.stream()
-					.filter( rel -> type == rel.getParticipationType() )
-					.map( rel -> rel.getTask().toShort() )
-					.collect(Collectors.toSet()));
+
+		Stream.of(TaskParticipationType.values()).forEach(type -> {
+			meta.put(type.toString(), taskRels.stream().filter(rel -> type == rel.getParticipationType())
+					.map(rel -> rel.getTask().toShort()).collect(Collectors.toSet()));
 		});
 
 		return JSONResponseHelper.createResponse(user, true, meta);
@@ -701,10 +698,9 @@ public class TaskController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		
+
 		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
-				.map( evaltask -> evaltask.getTask().toShort() )
-				.collect(Collectors.toSet());
+				.map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toSet());
 
 		return JSONResponseHelper.createResponse(set, true);
 
@@ -1051,6 +1047,30 @@ public class TaskController {
 		}
 
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+	}
+
+	/**
+	 * Set the fullfilled-variable of target subscription
+	 * @param subscriptionId
+	 * @param fullfilled
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/subscription/{subscription_id}/fullfilled/{fullfilled}",
+			"/subscription/{subscription_id}/fullfilled/{fullfilled}/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> fullfillSubscription(@PathVariable(value = "subscription_id") Long subscriptionId,
+			@PathVariable(value = "fullfilled") boolean fullfilled) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		UserMaterialSubscription ums = userMaterialSubscriptionDAO.findOne(subscriptionId);
+		if (ums.getUser().equals(user) || user.hasTaskPermissions(ums.getMaterial().getTask())) {
+			ums.setFullfilled(fullfilled);
+			userMaterialSubscriptionDAO.save(ums);
+			return JSONResponseHelper.successfullyUpdated(ums);
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+		}
 	}
 
 	/**

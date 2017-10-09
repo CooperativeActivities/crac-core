@@ -516,13 +516,14 @@ public class CracUserController {
 
 	/**
 	 * Adds an image to logged in user
+	 * 
 	 * @param file
 	 * @return
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image/add",
-			"/image/add/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
+	@RequestMapping(value = { "/image",
+			"/image/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
 
 	@ResponseBody
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file)
@@ -558,14 +559,14 @@ public class CracUserController {
 	}
 
 	/**
-	 * Get the image of a user
+	 * Get the image of the logged in user
 	 * 
 	 * @return
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image/get",
-			"/image/get/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@RequestMapping(value = { "/image",
+			"/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
 	public ResponseEntity<byte[]> getUserImage() throws IOException, InvalidActionException {
 
@@ -587,6 +588,33 @@ public class CracUserController {
 			throw new InvalidActionException(ErrorCode.NOT_FOUND);
 
 		}
+	}
+
+	@RequestMapping(value = { "/{user_id}/image",
+			"/{user_id}/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@ResponseBody
+	public ResponseEntity<byte[]> getUserImageById(@PathVariable(value = "user_id") Long id)
+			throws IOException, InvalidActionException {
+
+		CracUser u = userDAO.findOne(id);
+
+		if (u != null) {
+
+			Attachment a = u.getUserImage();
+
+			if (a != null) {
+
+				byte[] img = CracUtility.getFile(a.getPath());
+
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.IMAGE_JPEG);
+
+				return ResponseEntity.ok().headers(headers).body(img);
+			}
+		}
+		
+		throw new InvalidActionException(ErrorCode.NOT_FOUND);
+
 	}
 
 }

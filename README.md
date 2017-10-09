@@ -678,7 +678,7 @@ Json-data, a success
 
 ##### *Request:*
 
-POST user/image/add
+POST user/image
 
 The file must be posted as Multipart file! The file needs to have the key "file".
 
@@ -688,11 +688,37 @@ Json-data, a success or an error
 	
 -----------------------------------------------------------------
 
-**Get the image of a user**
+**Get the image of the logged in user**
 
 ##### *Request:*
 
-GET user/image/get
+GET user/image
+
+##### *Response:*
+
+The picture, or an error as json:
+
+	{
+	    "type": "NO_OBJECT",
+	    "rest_action": "GET",
+	    "success": false,
+	    "errors": [
+	        {
+	            "name": "NOT_FOUND",
+	            "cause": "bad_request"
+	        }
+	    ],
+	    "object": null,
+	    "meta": {}
+	}
+	
+-----------------------------------------------------------------
+
+**Get the image of target user**
+
+##### *Request:*
+
+GET {user_id}/user/image
 
 ##### *Response:*
 
@@ -1444,6 +1470,18 @@ QUANTITY_TOO_HIGH
 ##### *Request:*
 
 DELETE /task/{task_id}/material/{material_id}/unsubscribe
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Set the fullfilled-variable of target subscription**
+	
+##### *Request:*
+
+PUT /task/subscription/{subscription_id}/fullfilled/{fullfilled}
 
 ##### *Response:*
 
@@ -2608,9 +2646,13 @@ Major change for the "get all tasks"-Endpoints --> see the "Task-Endpoints" (fir
 
 New endpoints for adding and removing users to and from groups --> see "Group-Endpoints"  
 
+-----------------------------------------------------------------
+
 #### 21.9.2017
 
 Information in notifications now consists of object and not just their ID! -> see "Notification-Endpoints"  
+
+-----------------------------------------------------------------
 
 #### 2.10.2017
 
@@ -2618,8 +2660,17 @@ API for changing task-states has changed -> see "Task-Section"
 Endpoints for the uploading of picture for users added -> see "User-Section"  
 Endpoint for uploading of attachments for tasks and endpoint for copiing an archived task added -> see "Task-Section"
 
-#### 9.19.2017
+-----------------------------------------------------------------
+
+#### 9.10.2017
 
 Change for task-endpoints:  
 GET task/type now returns differently named keys -> see "Task-Section"  
+New endpoint for setting material-subscriptions to fullfilled -> PUT task/subscription/{subscription_id}/fullfilled/{fullfilled}  
+Endpoints for images changed -> GET, ADD, DELETE removed since information is already available in the request-method  
+Endpoint for getting the image of any user added -> Get user/{user_id}/image  
+
+-----------------------------------------------------------------
+
+
   
