@@ -542,7 +542,51 @@ GET task/find/{number_of_tasks}
 	  }
 	]
 
------------------------------------------------------------------
+------------------------------------------------------------------------------------
+
+**Return a list of possible competences for the given task**
+
+##### *Request:*
+
+GET task/{task_id}/competence/suggest
+
+##### *Response:*
+
+ [
+        {
+            "id": 49547,
+            "name": "große Mengen an warmen Speisen zubereiten",
+            "description": "Ich kann große Mengen an warmen Speisen zubereiten.",
+            ...
+            "competenceAreas": [
+                7287
+            ],
+            ...
+        },
+        {
+            "id": 49546,
+            "name": "Backen",
+            "description": "Ich kann einfache Kuchen backen.",
+            ...
+            "competenceAreas": [
+                7287
+            ],
+            ...
+        },
+        {
+            "id": 49544,
+            "name": "Warme Speisen zubereiten",
+            "description": "Ich kann warme Speisen zuzubereiten.",
+            ...
+            "competenceAreas": [
+                7287
+            ],
+            ...
+        },
+        ...
+    ]
+
+------------------------------------------------------------------------------------
 
 **Issues a friend-request-notification to target user**
 

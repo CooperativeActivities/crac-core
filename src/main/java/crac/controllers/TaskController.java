@@ -2240,6 +2240,5 @@ public class TaskController {
 		Task task = taskDAO.findOne(taskId);		
 		return JSONResponseHelper.createResponse(decider.findCompetences(task), true);
 	}
-
 	
 }

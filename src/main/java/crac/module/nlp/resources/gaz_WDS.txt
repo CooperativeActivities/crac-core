@@ -17,3 +17,6 @@ Spaghetti	WARME_SPEISE
 Parkett	BODEN
 Wand	WAND
 Stiegenhaus	WAND
+reinigen	PUTZEN
+aufräumen	PUTZEN
+wischen		PUTZEN

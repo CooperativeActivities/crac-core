@@ -1,8 +1,7 @@
 package crac.module.matching.superclass;
 
 import crac.module.matching.factories.NLPWorkerFactory;
-import crac.module.storage.CompetenceStorage;
-import crac.module.utility.RandomUtility;
+import crac.module.utility.CracUtility;
 
 public abstract class NLPWorker {
 
@@ -12,7 +11,7 @@ public abstract class NLPWorker {
 		private NLPWorkerFactory wf;
 		
 		public NLPWorker(){
-			this.workerId = RandomUtility.randomString(20);
+			this.workerId = CracUtility.randomString(20);
 			System.out.println("_______________________");
 			System.out.println("NLPWorker with ID "+this.workerId+" running!");
 			System.out.println("_______________________");
@@ -25,12 +24,10 @@ public abstract class NLPWorker {
 		}
 
 		public void setWf(NLPWorkerFactory wf) {
-			System.out.println("NLP Worker Factory set in NLPWorker!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			this.wf = wf;
 		}
 
 		public NLPWorkerFactory getWf() {
-			System.out.println("NLP Worker: get WorkerFactory!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			return wf;
 		}
 

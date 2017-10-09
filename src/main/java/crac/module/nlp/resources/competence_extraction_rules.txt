@@ -9,6 +9,8 @@ $BACKEN = "[ {ner:KUCH} | {ner:TORTE}]"
 
 $KOCHEN = "[ {ner:BACK} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken}]"
 
+$PUTZEN = "[ {ner:PUTZEN} | {lemma:putzen}"
+
 {
   // ruleType is "text", "tokens", "composite", or "filter"
   ruleType: "tokens",
@@ -26,5 +28,14 @@ $KOCHEN = "[ {ner:BACK} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken}]
 	ruleType: "tokens",
 	pattern: ($BACKEN),
 	action: (Annotate($0, ner, "BACK2"))
+}
+
+{
+  // ruleType is "text", "tokens", "composite", or "filter"
+  ruleType: "tokens",
+  
+  // pattern to be matched  
+  pattern: ($PUTZEN),
+  action: (Annotate($0, compAnn, "Putzen"))
 }
 

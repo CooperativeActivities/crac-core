@@ -30,7 +30,6 @@ public class TaskCompetenceMatchingWorker extends NLPWorker {
 
 	@Override
 	public ArrayList<Competence> run() {
-		// out.println(".... Task name: " + task.getName() + ", task desc: " + task.getDescription());
 		Annotation text = new Annotation(task.getName() + " " + task.getDescription()); 
 		
 		StanfordCoreNLP pipeline = getWf().getPipeline();
@@ -43,25 +42,11 @@ public class TaskCompetenceMatchingWorker extends NLPWorker {
 		
 		List<CoreMap> sentences = text.get(CoreAnnotations.SentencesAnnotation.class);
 		if (sentences != null && !sentences.isEmpty()){
-			for (CoreMap sentence : sentences){
-				
+			for (CoreMap sentence : sentences){		
 				extractor.extractExpressions(sentence);
-			
 				for (CoreLabel token: sentence.get(TokensAnnotation.class)){
-					String word = token.get(CoreAnnotations.TextAnnotation.class);
-			          String lemma = token.get(CoreAnnotations.LemmaAnnotation.class);
-			          String pos = token.get(CoreAnnotations.PartOfSpeechAnnotation.class);
-			          String ne = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-			          String normalized = token.get(CoreAnnotations.NormalizedNamedEntityTagAnnotation.class);
-			          String cat = token.get(CoreAnnotations.CategoryAnnotation.class);
-			          String parse = token.get(CoreAnnotations.CategoryAnnotation.class);
-			          //String mention = token.get(CoreAnnotations.MentionsAnnotation.class);
-			         // out.println("  Matched token: " + "word="+word + ", lemma="+lemma + ", pos=" + pos + ", ne=" + ne + ", normalized=" + normalized);
-			         //  out.println("      cat="+cat + ", parse="+parse + ", mention=" + parse + ", ne=" + ne + ", normalized=" + normalized);
-					if (token.get(CompetenceAnnotation.class) != null){
-						// out.println("token: " + token.originalText() + ", competence: " + token.get(CompetenceAnnotation.class));
+					if (token.get(CompetenceAnnotation.class) != null)
 						compAnn.add(token.get(CompetenceAnnotation.class));
-					}
 				}
 			}
 		}
@@ -69,7 +54,6 @@ public class TaskCompetenceMatchingWorker extends NLPWorker {
 		for (String cAnn: compAnn){
 			competences.addAll(getWf().getCompetences4Annotation(cAnn));
 		}		
-		out.println("competences found: " + competences.size());
 		return new ArrayList<Competence>(competences);
 	}
 	

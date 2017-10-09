@@ -24,18 +24,6 @@ import edu.stanford.nlp.util.ArraySet;
 public class TreeTaggerAnnotator implements Annotator {
 	
 	private final String treetaggerHome;
-	
-	/*public TreeTaggerAnnotator(){
-		this(false);
-	} */
-	
-	/*public TreeTaggerAnnotator(boolean verbose){
-		this(System.getProperty("pos.model", ))
-	}
-	
-	/*public TreeTaggerAnnotator(String taggerLoc, boolean verbose){
-		taggerBinary = props.getProperty(pos.model)
-	}*/
 
 	public TreeTaggerAnnotator(Properties props){
 		treetaggerHome = props.getProperty("treetagger.home");
@@ -55,6 +43,7 @@ public class TreeTaggerAnnotator implements Annotator {
 			   ind++;
 		   }
 		   try {
+			   System.out.println("..................................... treetaggerhome: " + treetaggerHome);
 			   System.setProperty("treetagger.home", treetaggerHome);
 			   tt.setModel("C:/TreeTagger/lib/german.par");
 			   tt.setHandler(new TokenHandler<String>(){
