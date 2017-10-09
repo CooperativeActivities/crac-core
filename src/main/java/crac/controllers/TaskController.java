@@ -694,9 +694,9 @@ public class TaskController {
 		t.updateReadyStatus(taskDAO);
 
 		return JSONResponseHelper.successfullyCreated(t);
-	
+
 	}
-	
+
 	/**
 	 * Return a sorted list of elements with the best fitting tasks for the
 	 * logged in user
@@ -706,10 +706,12 @@ public class TaskController {
 	@RequestMapping(value = { "/find", "/find/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> findTasks() {
+
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		return JSONResponseHelper.createResponse(decider.findTasks(user, new UserFilterParameters()), true);
+
 	}
 
 	/**

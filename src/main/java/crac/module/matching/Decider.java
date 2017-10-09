@@ -2,16 +2,12 @@ package crac.module.matching;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import crac.models.db.entities.Competence;
-import crac.models.db.entities.CompetenceArea;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
@@ -25,7 +21,6 @@ import crac.module.matching.workers.TaskMatchingWorker;
 import crac.module.matching.workers.UserCompetenceRelationEvolutionWorker;
 import crac.module.matching.workers.UserMatchingWorker;
 import crac.module.matching.workers.UserRelationEvolutionWorker;
-import crac.module.storage.CompetenceStorage;
 
 @Service
 public class Decider {
