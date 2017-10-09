@@ -1,6 +1,7 @@
 package crac.models.komet.entities;
 
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,10 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.springframework.data.repository.CrudRepository;
 
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CompetenceArea;
+import crac.module.matching.interfaces.SyncableCrac;
+import crac.module.matching.interfaces.SyncableKomet;
 
 
 /**
@@ -20,7 +24,7 @@ import crac.models.db.entities.CompetenceArea;
  */
 @Entity
 @Table(name="tx_exabiscompetences_descriptors")
-public class TxExabiscompetencesDescriptor{
+public class TxExabiscompetencesDescriptor implements SyncableKomet{
 
 	@Id
 	private int uid;
@@ -107,6 +111,28 @@ public class TxExabiscompetencesDescriptor{
 	private int tstamp;
 
 	public TxExabiscompetencesDescriptor() {
+	}
+	
+	public SyncableCrac map(Map<Class<?>, CrudRepository<?, ?>> map){
+		
+		CompetenceAreaDAO competenceAreaDAO = (CompetenceAreaDAO) map.get(CompetenceAreaDAO.class);
+		
+		Competence c = new Competence();
+		c.setId(this.uid);
+		c.setName(this.titleshort);
+		c.setDescription(this.title);
+		
+		CompetenceArea ca = competenceAreaDAO.findOne((long)this.topicid);
+		if(ca != null){
+			HashSet<CompetenceArea> areas = new HashSet<>();
+			areas.add(ca);
+			c.setCompetenceAreas(areas);
+		}
+		return c;
+	}
+	
+	public boolean isValid(){
+		return !title.equals("");
 	}
 	
 	public Competence mapToCompetence(CompetenceAreaDAO caDAO){

@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,6 +68,8 @@ import crac.module.matching.filter.postmatching.ClearFilter;
 import crac.module.matching.filter.postmatching.MissingVolunteerFilter;
 import crac.module.matching.filter.prematching.GroupFilter;
 import crac.module.matching.filter.prematching.LoggedUserFilter;
+import crac.module.matching.interfaces.SyncableCrac;
+import crac.module.matching.interfaces.SyncableKomet;
 import crac.module.storage.CompetenceStorage;
 import crac.module.utility.ElasticConnector;
 import crac.module.utility.JSONResponseHelper;
@@ -235,320 +238,95 @@ public class SynchronizationController {
 	 * 
 	 * @return ResponseEntity
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping("/database")
-	@ResponseBody
-	public ResponseEntity<String> dbsync() {
-		HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m = new HashMap<>();
-
-		handleTopics();
-		// handleTopicRelationships();
-		handleCompetences(m);
-		handleRelationships(m);
-
-		System.out.println("-------------------------------");
-		System.out.println("||||DATABASE SYNCED||||");
-		System.out.println("-------------------------------");
-
-		return JSONResponseHelper.createResponse(m, true);
-
-	}
 	/*
-	 * private void handleTopicRelationships() {
-	 * Iterable<TxExabiscompetencesDescriptorsTopicidMm> kometTopicRelList =
-	 * txExabiscompetencesDescriptorsTopicidMmDAO .findAll();
-	 * Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
-	 * HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
+	 * @PreAuthorize("hasRole('ADMIN')")
 	 * 
-	 * ArrayList<CompetenceArea> newc = new ArrayList<>();
-	 * ArrayList<CompetenceArea> updatec = new ArrayList<>();
-	 * ArrayList<CompetenceArea> deletec = new ArrayList<>();
+	 * @RequestMapping("/database")
 	 * 
-	 * for (CompetenceArea c : cracAreaList) { cracAreaMap.put(c.getId(), c); }
+	 * @ResponseBody public ResponseEntity<String> dbsync() { HashMap<String,
+	 * HashMap<String, HashMap<String, HashMap<String, String>>>> m = new
+	 * HashMap<>();
 	 * 
-	 * for (TxExabiscompetencesTopic single : kometTopicList) { if
-	 * (!single.getTitle().equals("")) { if (!cracAreaMap.containsKey((long)
-	 * single.getUid())) { newc.add(single.MapToCompetenceArea()); } else {
-	 * updatec.add(single.MapToCompetenceArea()); cracAreaMap.remove((long)
-	 * single.getUid()); } } }
+	 * handleTopics(); // handleTopicRelationships(); handleCompetences(m);
+	 * handleRelationships(m);
 	 * 
-	 * for (Map.Entry<Long, CompetenceArea> set : cracAreaMap.entrySet()) {
-	 * deletec.add(set.getValue()); }
+	 * System.out.println("-------------------------------");
+	 * System.out.println("||||DATABASE SYNCED||||");
+	 * System.out.println("-------------------------------");
 	 * 
-	 * handleNewCompetenceAreas(newc); handleUpdatedCompetenceAreas(updatec); //
-	 * handleDeletedCompetenceAreas(deletec);
+	 * return JSONResponseHelper.createResponse(m, true);
 	 * 
 	 * }
 	 */
 
-	private void handleTopics() {
-		Iterable<TxExabiscompetencesTopic> kometTopicList = txExabiscompetencesTopicDAO.findAll();
-		Iterable<CompetenceArea> cracAreaList = competenceAreaDAO.findAll();
-		HashMap<Long, CompetenceArea> cracAreaMap = new HashMap<>();
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping("/database")
+	@ResponseBody
+	public ResponseEntity<String> dbsync() {
 
-		ArrayList<CompetenceArea> newc = new ArrayList<>();
-		ArrayList<CompetenceArea> updatec = new ArrayList<>();
-		ArrayList<CompetenceArea> deletec = new ArrayList<>();
+		Map<Class<?>, CrudRepository<?, ?>> map = new HashMap<>();
 
-		for (CompetenceArea c : cracAreaList) {
-			cracAreaMap.put(c.getId(), c);
-		}
+		boolean areamap = sync(txExabiscompetencesTopicDAO, competenceAreaDAO, map);
 
-		for (TxExabiscompetencesTopic single : kometTopicList) {
-			if (!single.getTitle().equals("")) {
-				if (!cracAreaMap.containsKey((long) single.getUid())) {
-					newc.add(single.MapToCompetenceArea());
-				} else {
-					updatec.add(single.MapToCompetenceArea());
-					cracAreaMap.remove((long) single.getUid());
+		map = new HashMap<>();
+		map.put(CompetenceAreaDAO.class, competenceAreaDAO);
+
+		boolean competencemap = sync(txExabiscompetencesDescriptorDAO, competenceDAO, map);
+
+		map = new HashMap<>();
+		map.put(CompetenceDAO.class, competenceDAO);
+		map.put(CompetenceRelationshipTypeDAO.class, competenceRelationshipTypeDAO);
+
+		boolean comprelmap = sync(txExabiscompetencesDescriptorsDescriptorMmDAO, competenceRelationshipDAO, map);
+
+		HashMap<String, Object> meta = new HashMap<>();
+		meta.put("sync", "DATABASE");
+		meta.put("competence_areas", areamap);
+		meta.put("competences", competencemap);
+		meta.put("competence_relationships", comprelmap);
+		return JSONResponseHelper.createResponse(true, meta);
+
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public boolean sync(CrudRepository kometRepository, CrudRepository cracRepository,
+			Map<Class<?>, CrudRepository<?, ?>> map) {
+		try {
+			Iterable<SyncableKomet> kometData = kometRepository.findAll();
+			Iterable<SyncableCrac> cracData = cracRepository.findAll();
+			HashMap<Long, SyncableCrac> cracMap = new HashMap<>();
+
+			cracData.forEach(c -> cracMap.put(c.getId(), c));
+
+			ArrayList<SyncableCrac> newOrUpdate = new ArrayList<>();
+
+			kometData.forEach(c -> {
+				if (c.isValid()) {
+					if (!cracMap.containsKey((long) c.getUid())) {
+						newOrUpdate.add(c.map(map));
+					} else {
+						newOrUpdate.add(c.map(map));
+						cracMap.remove((long) c.getUid());
+					}
 				}
-			}
+			});
+
+			cracMap.entrySet().forEach(entry -> {
+				SyncableCrac c = entry.getValue();
+				c.setDeprecated(true);
+				cracRepository.save(c);
+			});
+
+			newOrUpdate.forEach(c -> {
+				c.setDeprecated(false);
+				cracRepository.save(c);
+			});
+
+			return true;
+		} catch (ClassCastException ex) {
+			ex.printStackTrace();
+			return false;
 		}
-
-		for (Map.Entry<Long, CompetenceArea> set : cracAreaMap.entrySet()) {
-			deletec.add(set.getValue());
-		}
-
-		handleNewCompetenceAreas(newc);
-		handleUpdatedCompetenceAreas(updatec);
-		// handleDeletedCompetenceAreas(deletec);
-
-	}
-
-	private void handleNewCompetenceAreas(ArrayList<CompetenceArea> competences) {
-		for (CompetenceArea c : competences) {
-			competenceAreaDAO.save(c);
-		}
-	}
-
-	private void handleUpdatedCompetenceAreas(ArrayList<CompetenceArea> competences) {
-		for (CompetenceArea c : competences) {
-			competenceAreaDAO.save(c);
-		}
-	}
-
-	private void handleDeletedCompetenceAreas(ArrayList<CompetenceArea> competences) {
-		for (CompetenceArea c : competences) {
-			competenceAreaDAO.delete(c);
-		}
-	}
-
-	private void handleRelationships(HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
-		Iterable<TxExabiscompetencesDescriptorsDescriptorMm> kometRelationshipList = txExabiscompetencesDescriptorsDescriptorMmDAO
-				.findAll();
-		Iterable<CompetenceRelationship> cracRelationshipList = competenceRelationshipDAO.findAll();
-		HashMap<Long, CompetenceRelationship> cracRelationshipMap = new HashMap<>();
-
-		for (CompetenceRelationship c : cracRelationshipList) {
-			cracRelationshipMap.put(c.getId(), c);
-		}
-
-		ArrayList<CompetenceRelationship> newc = new ArrayList<>();
-		ArrayList<CompetenceRelationship> updatec = new ArrayList<>();
-		ArrayList<CompetenceRelationship> deletec = new ArrayList<>();
-
-		for (TxExabiscompetencesDescriptorsDescriptorMm single : kometRelationshipList) {
-
-			if (competenceDAO.findOne((long) single.getUidForeign()) == null
-					|| competenceDAO.findOne((long) single.getUidForeign()) == null) {
-
-				deletec.add(single.mapToCompetence(competenceRelationshipTypeDAO, competenceDAO));
-				cracRelationshipMap.remove((long) single.getUid());
-
-			} else if (!cracRelationshipMap.containsKey((long) single.getUid())) {
-				newc.add(single.mapToCompetence(competenceRelationshipTypeDAO, competenceDAO));
-			} else {
-				updatec.add(single.mapToCompetence(competenceRelationshipTypeDAO, competenceDAO));
-				cracRelationshipMap.remove((long) single.getUid());
-			}
-		}
-
-		for (Map.Entry<Long, CompetenceRelationship> set : cracRelationshipMap.entrySet()) {
-			deletec.add(set.getValue());
-		}
-
-		handleNewCompetenceRelationships(newc, m);
-		handleUpdatedCompetenceRelationships(updatec, m);
-		// handleDeletedCompetenceRelationships(deletec);
-
-	}
-
-	private void handleNewCompetenceRelationships(ArrayList<CompetenceRelationship> competencerels,
-			HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
-		for (CompetenceRelationship c : competencerels) {
-
-			if (c.getCompetence1() != null && c.getCompetence2() != null) {
-
-				competenceRelationshipDAO.save(c);
-
-				String comp1id = c.getCompetence1().getId() + "";
-				String comp2id = c.getCompetence2().getId() + "";
-
-				HashMap<String, String> comp1 = new HashMap<>();
-				HashMap<String, String> comp2 = new HashMap<>();
-
-				if (m.get("created").containsKey(comp1id)) {
-					comp1 = m.get("created").get(comp1id).get("relations");
-				} else if (m.get("updated").containsKey(comp1id)) {
-					comp1 = m.get("updated").get(comp1id).get("relations");
-				}
-
-				if (m.get("created").containsKey(comp2id)) {
-					comp2 = m.get("created").get(comp2id).get("relations");
-				} else if (m.get("updated").containsKey(comp2id)) {
-					comp2 = m.get("updated").get(comp2id).get("relations");
-				}
-
-				if (comp1 != null && comp2 != null) {
-					comp1.put(comp2id + "", "CREATE");
-					comp2.put(comp1id + "", "CREATE");
-				}
-			}
-		}
-
-	}
-
-	private void handleUpdatedCompetenceRelationships(ArrayList<CompetenceRelationship> competencerels,
-			HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
-		for (CompetenceRelationship c : competencerels) {
-			competenceRelationshipDAO.save(c);
-			String comp1id = c.getCompetence1().getId() + "";
-			String comp2id = c.getCompetence2().getId() + "";
-
-			HashMap<String, String> comp1 = new HashMap<>();
-			HashMap<String, String> comp2 = new HashMap<>();
-
-			if (m.get("created").containsKey(comp1id)) {
-				comp1 = m.get("created").get(comp1id).get("relations");
-			} else if (m.get("updated").containsKey(comp1id)) {
-				comp1 = m.get("updated").get(comp1id).get("relations");
-			}
-
-			if (m.get("created").containsKey(comp2id)) {
-				comp2 = m.get("created").get(comp2id).get("relations");
-			} else if (m.get("updated").containsKey(comp2id)) {
-				comp2 = m.get("updated").get(comp2id).get("relations");
-			}
-
-			if (comp1 != null && comp2 != null) {
-				comp1.put(comp2id + "", "UPDATE");
-				comp2.put(comp1id + "", "UPDATE");
-			}
-		}
-	}
-
-	private void handleDeletedCompetenceRelationships(ArrayList<CompetenceRelationship> competencerels) {
-		for (CompetenceRelationship c : competencerels) {
-			competenceRelationshipDAO.delete(c);
-		}
-	}
-
-	private void handleCompetences(HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> m) {
-
-		Iterable<TxExabiscompetencesDescriptor> kometCompetenceList = txExabiscompetencesDescriptorDAO.findAll();
-		Iterable<Competence> cracCompetenceList = competenceDAO.findAll();
-		HashMap<Long, Competence> cracCompetenceMap = new HashMap<>();
-
-		for (Competence c : cracCompetenceList) {
-			cracCompetenceMap.put(c.getId(), c);
-		}
-
-		ArrayList<Competence> newc = new ArrayList<>();
-		ArrayList<Competence> updatec = new ArrayList<>();
-		ArrayList<Competence> deletec = new ArrayList<>();
-
-		for (TxExabiscompetencesDescriptor single : kometCompetenceList) {
-			if (!single.getTitleshort().equals("")) {
-				if (!cracCompetenceMap.containsKey((long) single.getUid())) {
-					newc.add(single.mapToCompetence(competenceAreaDAO));
-				} else {
-					updatec.add(single.mapToCompetence(competenceAreaDAO));
-					cracCompetenceMap.remove((long) single.getUid());
-				}
-			}
-		}
-
-		for (Map.Entry<Long, Competence> set : cracCompetenceMap.entrySet()) {
-			deletec.add(set.getValue());
-		}
-
-		HashMap<String, HashMap<String, HashMap<String, String>>> meta = new HashMap<String, HashMap<String, HashMap<String, String>>>();
-
-		HashMap<String, HashMap<String, String>> details = new HashMap<String, HashMap<String, String>>();
-		HashMap<String, String> numbercreate = new HashMap<String, String>();
-		numbercreate.put("number", newc.size() + "");
-		HashMap<String, String> numberupdate = new HashMap<String, String>();
-		numberupdate.put("number", updatec.size() + "");
-		HashMap<String, String> numberdelete = new HashMap<String, String>();
-		numberdelete.put("number", deletec.size() + "");
-
-		details.put("CREATE", numbercreate);
-		details.put("UPDATE", numberupdate);
-		details.put("DELETE", numberdelete);
-		meta.put("details", details);
-		m.put("meta", meta);
-
-		m.put("created", handleNewCompetences(newc));
-		m.put("updated", handleUpdatedCompetences(updatec));
-		// m.put("deleted", handleDeletedCompetences(deletec));
-
-	}
-
-	private HashMap<String, HashMap<String, HashMap<String, String>>> handleNewCompetences(
-			ArrayList<Competence> competences) {
-		HashMap<String, HashMap<String, HashMap<String, String>>> m = new HashMap<>();
-		for (Competence c : competences) {
-			HashMap<String, HashMap<String, String>> compid = new HashMap<String, HashMap<String, String>>();
-			HashMap<String, String> action = new HashMap<String, String>();
-			action.put("name", "CREATE");
-			compid.put("action", action);
-			compid.put("relations", new HashMap<String, String>());
-
-			for (TxExabiscompetencesDescriptorsTopicidMm conn : txExabiscompetencesDescriptorsTopicidMmDAO
-					.findByUidLocal((int) c.getId())) {
-				c.addCompetenceArea(competenceAreaDAO.findOne((long) conn.getUidForeign()));
-			}
-
-			competenceDAO.save(c);
-			m.put(c.getId() + "", compid);
-		}
-		return m;
-	}
-
-	private HashMap<String, HashMap<String, HashMap<String, String>>> handleUpdatedCompetences(
-			ArrayList<Competence> competences) {
-		HashMap<String, HashMap<String, HashMap<String, String>>> m = new HashMap<>();
-		for (Competence c : competences) {
-			HashMap<String, HashMap<String, String>> compid = new HashMap<String, HashMap<String, String>>();
-			HashMap<String, String> action = new HashMap<String, String>();
-			action.put("name", "UPDATE");
-			compid.put("action", action);
-			compid.put("relations", new HashMap<String, String>());
-
-			for (TxExabiscompetencesDescriptorsTopicidMm conn : txExabiscompetencesDescriptorsTopicidMmDAO
-					.findByUidLocal((int) c.getId())) {
-				c.addCompetenceArea(competenceAreaDAO.findOne((long) conn.getUidForeign()));
-			}
-
-			competenceDAO.save(c);
-			m.put(c.getId() + "", compid);
-		}
-		return m;
-	}
-
-	private HashMap<String, HashMap<String, HashMap<String, String>>> handleDeletedCompetences(
-			ArrayList<Competence> competences) {
-		HashMap<String, HashMap<String, HashMap<String, String>>> m = new HashMap<>();
-		for (Competence c : competences) {
-			HashMap<String, HashMap<String, String>> compid = new HashMap<String, HashMap<String, String>>();
-			HashMap<String, String> action = new HashMap<String, String>();
-			action.put("name", "DELETE");
-			compid.put("action", action);
-			compid.put("relations", new HashMap<String, String>());
-			competenceDAO.delete(c);
-			m.put(c.getId() + "", compid);
-		}
-		return m;
 	}
 
 	/**
@@ -564,17 +342,10 @@ public class SynchronizationController {
 		System.out.println("||||FILTERS SYNCED||||");
 		System.out.println("-------------------------------");
 
-		preMatchingConfiguration.addFilter(new LoggedUserFilter());
-		preMatchingConfiguration.addFilter(new GroupFilter());
-
-		matchingConfig.addFilter(new ProficiencyLevelFilter());
-		matchingConfig.addFilter(new LikeLevelFilter());
-		matchingConfig.addFilter(new ImportancyLevelFilter());
-		matchingConfig.addFilter(new UserRelationFilter());
-
-		postMatchingConfiguration.addFilter(new ClearFilter());
-		postMatchingConfiguration.addFilter(new MissingVolunteerFilter());
-
+		preMatchingConfiguration.restore();
+		matchingConfig.restore();
+		postMatchingConfiguration.restore();
+		
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
 		return JSONResponseHelper.createResponse(true, meta);
@@ -1264,7 +1035,7 @@ public class SynchronizationController {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = { "/elastic/sync",
 			"/elastic/sync/" }, method = RequestMethod.PUT, produces = "application/json")
@@ -1272,7 +1043,7 @@ public class SynchronizationController {
 	public ResponseEntity<String> syncESTasks() {
 
 		taskDAO.sync();
-		
+
 		return JSONResponseHelper.successfullyUpdated(url);
 	}
 

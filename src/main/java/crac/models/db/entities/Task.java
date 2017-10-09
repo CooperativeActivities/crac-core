@@ -912,18 +912,39 @@ public class Task {
 	}
 	
 	@JsonIgnore
-	public NotificationTask generateNTask(){
-		NotificationTask t = new NotificationTask();
+	public TaskShort toShort(){
+		TaskShort t = new TaskShort();
 		t.setId(this.id);
 		t.setName(this.name);
 		t.setDescription(this.description);
 		t.setAddress(this.address);
 		t.setStartTime(this.startTime);
 		t.setEndTime(this.endTime);
+		t.setTaskState(this.taskState);
+		t.setReadyToPublish(this.readyToPublish);
+		t.setSuperTask(null);
 		return t;
 	}
 	
-	public class NotificationTask {
+	@JsonIgnore
+	public TaskCrumb toCrumb(){
+		TaskCrumb t = new TaskCrumb();
+		t.setId(this.id);
+		t.setName(this.name);
+		TaskCrumb st = (superTask != null) ? superTask.toCrumb() : null;
+		t.setSuperTask(st);
+		return t;
+	}
+	
+	public TaskShort toShortWithCrumbs(){
+		TaskShort t = toShort();
+		TaskCrumb st = (superTask != null) ? superTask.toCrumb() : null;
+		t.setSuperTask(st);
+		return t;
+	}
+
+	
+	public class TaskShort {
 
 		@Getter
 		@Setter
@@ -948,9 +969,42 @@ public class Task {
 		@Getter
 		@Setter
 		private Calendar endTime;
+		
+		@Getter
+		@Setter
+		private ConcreteTaskState taskState;
+		
+		@Getter
+		@Setter
+		private boolean readyToPublish;
+		
+		@Getter
+		@Setter
+		private TaskCrumb superTask;
 
-
-		public NotificationTask(){
+		public TaskShort(){
 		}
+		
 	}
+	
+	public class TaskCrumb {
+
+		@Getter
+		@Setter
+		long id;
+
+		@Getter
+		@Setter
+		String name;
+		
+		@Getter
+		@Setter
+		private TaskCrumb superTask;
+
+		public TaskCrumb(){
+		}
+		
+	}
+
+	
 }

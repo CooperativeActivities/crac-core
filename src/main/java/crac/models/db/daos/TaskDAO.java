@@ -20,23 +20,26 @@ public class TaskDAO {
 	@Getter
 	@Setter
 	TaskService taskService;
-	
+
 	@Autowired
 	@Getter
 	@Setter
 	private ElasticConnector<Task> ect;
 
-	public void sync(){
-		System.out.println("called");
-		ect.deleteIndex();
-		taskService.findAll().forEach( entity -> ect.indexOrUpdate(entity.getId()+"", entity) );
+	public void sync() {
+		try {
+			ect.deleteIndex();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		taskService.findAll().forEach(entity -> ect.indexOrUpdate(entity.getId() + "", entity));
 	}
-	
+
 	public <S extends Task> Iterable<S> save(Iterable<S> entities) {
-		entities.forEach( entity -> {
+		entities.forEach(entity -> {
 			taskService.save(entity);
-			ect.indexOrUpdate(entity.getId()+"", entity);
-		});	
+			ect.indexOrUpdate(entity.getId() + "", entity);
+		});
 		return entities;
 	}
 
@@ -57,13 +60,13 @@ public class TaskDAO {
 	}
 
 	public void delete(Long id) {
-		ect.delete(id+"");
+		ect.delete(id + "");
 		taskService.delete(id);
 	}
 
 	public void delete(Iterable<? extends Task> entities) {
-		entities.forEach( entity -> {
-			ect.delete(entity.getId()+"");
+		entities.forEach(entity -> {
+			ect.delete(entity.getId() + "");
 			taskService.delete(entity);
 		});
 	}
@@ -72,8 +75,8 @@ public class TaskDAO {
 		taskService.deleteAll();
 	}
 
-	public <S extends Task> S save(S entity) {	
-		ect.indexOrUpdate(entity.getId()+"", entity);
+	public <S extends Task> S save(S entity) {
+		ect.indexOrUpdate(entity.getId() + "", entity);
 		return taskService.save(entity);
 	}
 
@@ -82,7 +85,7 @@ public class TaskDAO {
 	}
 
 	public void delete(Task entity) {
-		ect.delete(entity.getId()+"");	
+		ect.delete(entity.getId() + "");
 		taskService.delete(entity);
 	}
 
@@ -117,5 +120,5 @@ public class TaskDAO {
 	public List<Task> selectSearchableTasks() {
 		return taskService.selectSearchableTasks();
 	}
-		
+
 }

@@ -4,20 +4,25 @@ import java.util.List;
 
 import crac.module.matching.factories.CracFilterFactory;
 import crac.module.matching.interfaces.CracFilter;
+import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
+import lombok.Getter;
+import lombok.Setter;
+import crac.module.matching.filter.*;
 
 public class MatrixFilterParameters {
 
-	private List<Class<ConcreteFilter>> parameters;
-	private CracFilterFactory mff;
-
+	@Getter
+	@Setter
+	private List<String> parameters;
+	
 	public MatrixFilterParameters() {
 	}
 
-	public boolean apply(MatchingConfiguration matchingConfig) {
+	public boolean apply(CracFilterFactory mf, FilterConfiguration matchingConfig, String path) {
 		int count = 0;
-		for (Class<ConcreteFilter> p : parameters) {
-			ConcreteFilter f = mff.createMatchingFilter(p);
+		for (String p : parameters) {
+			ConcreteFilter f = mf.createMatchingFilterFromString(p, path);
 			if (f != null) {
 				matchingConfig.addFilter(f);
 			}
@@ -29,21 +34,4 @@ public class MatrixFilterParameters {
 			return true;
 		}
 	}
-
-	public List<Class<ConcreteFilter>> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(List<Class<ConcreteFilter>> parameters) {
-		this.parameters = parameters;
-	}
-
-	public CracFilterFactory getMff() {
-		return mff;
-	}
-
-	public void setMff(CracFilterFactory mff) {
-		this.mff = mff;
-	}
-
 }

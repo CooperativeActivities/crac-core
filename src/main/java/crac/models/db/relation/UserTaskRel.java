@@ -76,7 +76,7 @@ public class UserTaskRel {
 	public Evaluation triggerEval(NotificationFactory nf){
 		Evaluation e = new Evaluation(this);
 		
-		NotificationConfiguration nc = NotificationConfiguration.create().put("task", task.generateNTask()).put("evaluation", e.getId());
+		NotificationConfiguration nc = NotificationConfiguration.create().put("task", task.toShort()).put("evaluation", e.getId());
 		Notification es = nf.createSystemNotification(EvaluationNotification.class, user, nc);
 		
 		e.setNotificationId(es.getNotificationId());

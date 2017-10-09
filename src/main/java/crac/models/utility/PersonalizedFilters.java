@@ -1,5 +1,9 @@
 package crac.models.utility;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import crac.module.matching.factories.CracFilterFactory;
 import crac.module.matching.superclass.ConcreteFilter;
 import lombok.Getter;
@@ -13,28 +17,21 @@ public class PersonalizedFilters {
 
 	@Getter
 	@Setter
-	private PersonalizedFilter[] filters;
+	private List<PersonalizedFilter> filters;
 
 	public PersonalizedFilters() {
 		query = "";
-		filters = new PersonalizedFilter[0];
+		filters = new ArrayList<>();
 	}
 
-	public void convert(CracFilterFactory mf) {
+	public void convert(CracFilterFactory mf, String path) {
+		
+		filters.forEach( filter -> {
+			ConcreteFilter cf = mf.createMatchingFilterFromString(filter.getName(), path);
+			cf.setPf(filter);
+			filter.setCf(cf);
+		});
 
-		for (PersonalizedFilter f : filters) {
-			Class<?> c = null;
-			try {
-				c = Class.forName("crac.module.utility.filter.individual." + f.getName());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			if (c != null) {
-				ConcreteFilter cf = mf.createMatchingFilter((Class<ConcreteFilter>) c);
-				cf.setPf(f);
-				f.setCf(cf);
-			}
-		}
 	}
 
 }

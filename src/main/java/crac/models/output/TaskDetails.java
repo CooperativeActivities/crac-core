@@ -14,6 +14,7 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserRelationship;
@@ -188,7 +189,7 @@ public class TaskDetails {
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();
 		if (t.getSuperTask() != null) {
-			this.superTask = new TaskShort(t.getSuperTask());
+			this.superTask = t.getSuperTask().toShort();
 		} else {
 			this.superTask = null;
 		}
@@ -228,7 +229,7 @@ public class TaskDetails {
 		if (t.getChildTasks() != null) {
 
 			for (Task tc : t.getChildTasks()) {
-				list.add(new TaskShort(tc));
+				list.add(tc.toShort());
 			}
 		}
 		return list;

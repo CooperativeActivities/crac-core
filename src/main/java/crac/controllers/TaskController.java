@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -54,6 +56,7 @@ import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
@@ -62,7 +65,6 @@ import crac.models.input.MaterialMapping;
 import crac.models.input.PostOptions;
 import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
-import crac.models.output.TaskShort;
 import crac.models.utility.NotificationConfiguration;
 import crac.models.utility.PersonalizedFilters;
 import crac.models.utility.TaskLookup;
@@ -160,8 +162,12 @@ public class TaskController {
 		ObjectMapper mapper = new ObjectMapper();
 		PersonalizedFilters pf;
 		pf = mapper.readValue(json, PersonalizedFilters.class);
+		
+		Set<TaskShort> set = tl.lookUp(user, pf).stream()
+				.map( task -> task.toShortWithCrumbs() )
+				.collect(Collectors.toSet());
 
-		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
+		return JSONResponseHelper.createResponse(set, true);
 	}
 
 	/**
@@ -363,30 +369,15 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
-
-		Set<TaskShort> taskListFollow = new HashSet<>();
-		Set<TaskShort> taskListPart = new HashSet<>();
-		Set<TaskShort> taskListLead = new HashSet<>();
-
+		
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("leading", taskListLead);
-		meta.put("following", taskListFollow);
-		meta.put("participating", taskListPart);
-
-		if (taskRels.size() != 0) {
-
-			for (UserTaskRel utr : taskRels) {
-				if (!utr.isCompleted()) {
-					if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
-						taskListFollow.add(new TaskShort(utr.getTask()));
-					} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-						taskListPart.add(new TaskShort(utr.getTask()));
-					} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
-						taskListLead.add(new TaskShort(utr.getTask()));
-					}
-				}
-			}
-		}
+		
+		Stream.of(TaskParticipationType.values()).forEach( type -> {
+			meta.put(type.toString(), taskRels.stream()
+					.filter( rel -> type == rel.getParticipationType() )
+					.map( rel -> rel.getTask().toShort() )
+					.collect(Collectors.toSet()));
+		});
 
 		return JSONResponseHelper.createResponse(user, true, meta);
 
@@ -710,8 +701,12 @@ public class TaskController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
+		
+		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
+				.map( evaltask -> evaltask.getTask().toShort() )
+				.collect(Collectors.toSet());
 
-		return JSONResponseHelper.createResponse(decider.findTasks(user, new UserFilterParameters()), true);
+		return JSONResponseHelper.createResponse(set, true);
 
 	}
 
@@ -1624,7 +1619,7 @@ public class TaskController {
 						if (alldone) {
 							for (UserTaskRel l : task.getAllLeaders()) {
 								nf.createSystemNotification(TaskDoneNotification.class, l.getUser(),
-										NotificationConfiguration.create().put("task", task.generateNTask()));
+										NotificationConfiguration.create().put("task", task.toShort()));
 							}
 						}
 
@@ -1791,7 +1786,7 @@ public class TaskController {
 
 			if (loggedU.hasTaskPermissions(task)) {
 				Notification n = nf.createNotification(LeadNomination.class, targetU, loggedU,
-						NotificationConfiguration.create().put("task", task.generateNTask()));
+						NotificationConfiguration.create().put("task", task.toShort()));
 				return JSONResponseHelper.successfullyCreated(n);
 			} else {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.RESOURCE_UNCHANGEABLE);
@@ -1847,7 +1842,7 @@ public class TaskController {
 				}
 				for (CracUser u : users) {
 					nf.createNotification(TaskInvitation.class, u, user,
-							NotificationConfiguration.create().put("task", task.generateNTask()));
+							NotificationConfiguration.create().put("task", task.toShort()));
 				}
 				return JSONResponseHelper.successfullyCreated(users);
 			} else {

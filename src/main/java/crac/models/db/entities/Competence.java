@@ -30,6 +30,9 @@ import crac.models.db.relation.CompetencePermissionType;
 import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
+import crac.module.matching.interfaces.SyncableCrac;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The competence-entity.
@@ -38,7 +41,7 @@ import crac.models.db.relation.UserCompetenceRel;
 @Entity
 @Table(name = "competences")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Competence {
+public class Competence implements SyncableCrac {
 
 	@Id
 	@Column(name = "competence_id")
@@ -58,6 +61,10 @@ public class Competence {
 	//Defines the ID of the competence in the KOMET DB
 	@Column(name = "source_id")
 	private int sourceId;
+	
+	@Getter
+	@Setter
+	private boolean deprecated;
 	
 	/**
 	 * defines a many to many relation with the cracUser-entity
@@ -112,12 +119,14 @@ public class Competence {
 		this.competenceAreas = new HashSet<>();
 		this.name = name;
 		this.description = description;
+		deprecated = false;
 	}
 
 	public Competence() {
 		this.competenceAreas = new HashSet<>();
 		this.name = "default";
 		this.description = "default";
+		deprecated = false;
 	}
 	
 	public void update(Competence c){

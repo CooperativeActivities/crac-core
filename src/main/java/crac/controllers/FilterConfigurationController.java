@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,56 +20,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.enums.ErrorCode;
 import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.matching.configuration.MatrixFilterParameters;
+import crac.module.matching.configuration.PostMatchingConfiguration;
+import crac.module.matching.configuration.PreMatchingConfiguration;
+import crac.module.matching.factories.CracFilterFactory;
 import crac.module.matching.filter.matching.ImportancyLevelFilter;
 import crac.module.matching.filter.matching.LikeLevelFilter;
 import crac.module.matching.filter.matching.ProficiencyLevelFilter;
 import crac.module.matching.filter.matching.UserRelationFilter;
+import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.utility.JSONResponseHelper;
+import lombok.Getter;
 
 @RestController
-@RequestMapping("/configuration")
+@RequestMapping("/filter")
 public class FilterConfigurationController {
+
+	@Getter
+	@Value("${crac.filters.prematching}")
+	private String preMatchingPath;
+
+	@Getter
+	@Value("${crac.filters.matching}")
+	private String matchingPath;
+
+	@Getter
+	@Value("${crac.filters.postmatching}")
+	private String postMatchingPath;
 
 	@Autowired
 	private MatchingConfiguration matchingConfig;
 
-	/**
-	 * Adds a filter to the filter-configuration, based on it's name
-	 * 
-	 * @param filterName
-	 * @return ResponseEntity
-	 */
-	@RequestMapping(value = { "/filter/add/{filter_name}",
-			"/filter/add/likeLevelFilter/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<String> addlikeLevelFilter(@PathVariable(value = "filter_name") String filterName) {
+	@Autowired
+	private PreMatchingConfiguration preMatchingConfig;
 
-		String name = "";
+	@Autowired
+	private PostMatchingConfiguration postMatchingConfig;
 
-		if (filterName.equals("LikeLevelFilter")) {
-			matchingConfig.addFilter(new LikeLevelFilter());
-			name = filterName;
-
-		} else if (filterName.equals("ImportancyLevelFilter")) {
-			matchingConfig.addFilter(new ImportancyLevelFilter());
-			name = filterName;
-
-		} else if (filterName.equals("ProficiencyLevelFilter")) {
-			matchingConfig.addFilter(new ProficiencyLevelFilter());
-			name = filterName;
-
-		} else if (filterName.equals("UserRelationFilter")) {
-			matchingConfig.addFilter(new UserRelationFilter());
-			name = filterName;
-
-		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.NOT_FOUND);
-		}
-
-		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("filter", name);
-		return JSONResponseHelper.createResponse(true, meta);
-	}
+	@Autowired
+	private CracFilterFactory cf;
 
 	/**
 	 * Adds multiple filters to the filter-configuration, based on the list of
@@ -80,22 +69,37 @@ public class FilterConfigurationController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	@RequestMapping(value = { "/filter/add",
-			"/filter/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{matching_type}/add",
+			"/{matching_type}/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> addFiltersByJson(@RequestBody String json)
+	public ResponseEntity<String> addFiltersByJson(@RequestBody String json,
+			@PathVariable(value = "matching_type") String matchingType)
 			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		MatrixFilterParameters mfp = null;
 		mfp = mapper.readValue(json, MatrixFilterParameters.class);
 
+		FilterConfiguration conf = null;
+		String path = "";
+
 		if (mfp != null) {
+
+			if (matchingType.equals("prematching")) {
+				conf = preMatchingConfig;
+				path = preMatchingPath;
+			} else if (matchingType.equals("matching")) {
+				conf = matchingConfig;
+				path = matchingPath;
+			} else if (matchingType.equals("postmatching")) {
+				conf = postMatchingConfig;
+				path = postMatchingPath;
+			}
 
 			matchingConfig.clearFilters();
 
-			if (!mfp.apply(matchingConfig)) {
+			if (!mfp.apply(cf, conf, path)) {
 
-				restoreStandard();
+				conf.restore();
 
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.NOT_FOUND);
 			}
@@ -113,11 +117,22 @@ public class FilterConfigurationController {
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/filter/print",
-			"/filter/print/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{matching_type}/print",
+			"/{matching_type}/print/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> printFilter() {
-		return JSONResponseHelper.createResponse(matchingConfig.filtersToString(), true);
+	public ResponseEntity<String> printFilter(@PathVariable(value = "matching_type") String matchingType) {
+
+		FilterConfiguration conf = null;
+
+		if (matchingType.equals("prematching")) {
+			conf = preMatchingConfig;
+		} else if (matchingType.equals("matching")) {
+			conf = matchingConfig;
+		} else if (matchingType.equals("postmatching")) {
+			conf = postMatchingConfig;
+		}
+
+		return JSONResponseHelper.createResponse(conf.filtersToString(), true);
 	}
 
 	/**
@@ -125,13 +140,24 @@ public class FilterConfigurationController {
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/filter/clear",
-			"/filter/clear/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{matching_type}/clear",
+			"/{matching_type}/clear/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> clearFilter() {
-		matchingConfig.clearFilters();
+	public ResponseEntity<String> clearFilter(@PathVariable(value = "matching_type") String matchingType) {
+		
+		FilterConfiguration conf = null;
+
+		if (matchingType.equals("prematching")) {
+			conf = preMatchingConfig;
+		} else if (matchingType.equals("matching")) {
+			conf = matchingConfig;
+		} else if (matchingType.equals("postmatching")) {
+			conf = postMatchingConfig;
+		}
+		
+		conf.clearFilters();
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("filters", "CLEARED");
+		meta.put(matchingType+ "-filters", "CLEARED");
 		return JSONResponseHelper.createResponse(true, meta);
 	}
 
@@ -140,23 +166,26 @@ public class FilterConfigurationController {
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/filter/restore",
-			"/filter/restore/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{matching_type}/restore",
+			"/{matching_type}/restore/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<String> restoreFilter() {
-		restoreStandard();
+	public ResponseEntity<String> restoreFilter(@PathVariable(value = "matching_type") String matchingType) {
+		
+		FilterConfiguration conf = null;
+
+		if (matchingType.equals("prematching")) {
+			conf = preMatchingConfig;
+		} else if (matchingType.equals("matching")) {
+			conf = matchingConfig;
+		} else if (matchingType.equals("postmatching")) {
+			conf = postMatchingConfig;
+		}
+		
+		conf.restore();
 
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("filters", "RESTORED");
+		meta.put(matchingType+ "-filters", "RESTORED");
 		return JSONResponseHelper.createResponse(true, meta);
-	}
-
-	public void restoreStandard() {
-		matchingConfig.clearFilters();
-		matchingConfig.addFilter(new ProficiencyLevelFilter());
-		matchingConfig.addFilter(new LikeLevelFilter());
-		matchingConfig.addFilter(new ImportancyLevelFilter());
-		matchingConfig.addFilter(new UserRelationFilter());
 	}
 
 }

@@ -1158,18 +1158,30 @@ GET task/type
 
 ##### *Response:*
 
-	{
-	  "following": [],
-	  "participating": [
-	    {
-	      "id": 1,
-	      "name": "Water the flowers",
-	      "description": "All about watering the different flowers in the garden.",
-			...
+	"meta": {
+	        "PARTICIPATING": [],
+	        "LEADING": [
+	            {
+	                "id": 1,
+	                "name": "test1",
+	                 ...
+	            }
+	        ],
+	        "FOLLOWING": [
+	            {
+	                "id": 2,
+	                "name": "test2",
+	                 ...
+	            }
+	        ],
+	        "MATERIAL": [
+	            {
+	                "id": 3,
+	                "name": "test3",
+	                ...
+	            }
+	        ]
 	    }
-	  ],
-	  "leading": []
-	}
 	
 -----------------------------------------------------------------
 
@@ -2605,4 +2617,9 @@ Information in notifications now consists of object and not just their ID! -> se
 API for changing task-states has changed -> see "Task-Section"  
 Endpoints for the uploading of picture for users added -> see "User-Section"  
 Endpoint for uploading of attachments for tasks and endpoint for copiing an archived task added -> see "Task-Section"
+
+#### 9.19.2017
+
+Change for task-endpoints:  
+GET task/type now returns differently named keys -> see "Task-Section"  
   

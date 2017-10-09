@@ -1,10 +1,16 @@
 package crac.models.komet.entities;
 
+import java.util.Map;
+
 import javax.persistence.*;
+
+import org.springframework.data.repository.CrudRepository;
 
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CompetenceRelationshipTypeDAO;
 import crac.models.db.relation.CompetenceRelationship;
+import crac.module.matching.interfaces.SyncableCrac;
+import crac.module.matching.interfaces.SyncableKomet;
 
 
 /**
@@ -13,7 +19,7 @@ import crac.models.db.relation.CompetenceRelationship;
  */
 @Entity
 @Table(name="tx_exabiscompetences_descriptors_descriptor_mm")
-public class TxExabiscompetencesDescriptorsDescriptorMm {
+public class TxExabiscompetencesDescriptorsDescriptorMm implements SyncableKomet {
 
 	@Id
 	private int uid;
@@ -48,7 +54,24 @@ public class TxExabiscompetencesDescriptorsDescriptorMm {
 		c.setUniDirection(false);
 		return c;
 	}
+	
+	public SyncableCrac map(Map<Class<?>, CrudRepository<?, ?>> map){
+		CompetenceDAO competenceDAO = (CompetenceDAO) map.get(CompetenceDAO.class);
+		CompetenceRelationshipTypeDAO competenceRelationshipTypeDAO = (CompetenceRelationshipTypeDAO) map.get(CompetenceRelationshipTypeDAO.class);
+		CompetenceRelationship c = new CompetenceRelationship();
+		c.setId(this.uid);
+		c.setType(competenceRelationshipTypeDAO.findOne((long) this.typeId));
+		c.setCompetence1(competenceDAO.findOne((long) this.uidForeign));
+		c.setCompetence2(competenceDAO.findOne((long) this.uidLocal));
+		c.setUniDirection(false);
+		return c;
+	}
 
+	public boolean isValid(){
+		return true;
+	}
+
+	
 	public int getUid() {
 		return this.uid;
 	}
