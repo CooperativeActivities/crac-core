@@ -4,7 +4,7 @@ import crac.enums.TaskParticipationType;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserTaskRelDAO;
-import crac.models.db.entities.Task.NotificationTask;
+import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
@@ -21,7 +21,7 @@ public class TaskInvitation extends Notification{
 		
 	@Getter
 	@Setter
-	private NotificationTask task;
+	private TaskShort task;
 	
 	public TaskInvitation(){
 		super("Task Invitation", NotificationType.SUGGESTION);
@@ -57,7 +57,7 @@ public class TaskInvitation extends Notification{
 
 	@Override
 	public void configure(NotificationConfiguration conf) {
-		this.task = conf.get("task", NotificationTask.class);
+		this.task = conf.get("task", TaskShort.class);
 	}
 	
 }
