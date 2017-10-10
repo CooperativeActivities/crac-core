@@ -73,7 +73,7 @@ public class CompetenceController {
 	@RequestMapping(value = { "/all", "/all/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-		return JSONResponseHelper.createResponse(competenceDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(competenceDAO.findByDeprecatedNot(true), true);
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class CompetenceController {
 	@RequestMapping(value = { "/area", "/area/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> getArea() {
-		return JSONResponseHelper.createResponse(competenceAreaDAO.findAll(), true);
+		return JSONResponseHelper.createResponse(competenceAreaDAO.findByDeprecatedNot(true), true);
 	}
 
 	@RequestMapping(value = { "/userrels", "/userrels/" }, method = RequestMethod.GET, produces = "application/json")
@@ -312,7 +312,7 @@ public class CompetenceController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Iterable<Competence> competenceList = competenceDAO.findAll();
+		Iterable<Competence> competenceList = competenceDAO.findByDeprecatedNot(true);
 
 		Set<UserCompetenceRel> competenceRels = user.getCompetenceRelationships();
 

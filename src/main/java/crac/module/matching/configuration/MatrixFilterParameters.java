@@ -1,5 +1,6 @@
 package crac.module.matching.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import crac.module.matching.factories.CracFilterFactory;
@@ -17,6 +18,7 @@ public class MatrixFilterParameters {
 	private List<String> parameters;
 	
 	public MatrixFilterParameters() {
+		parameters = new ArrayList<>();
 	}
 
 	public boolean apply(CracFilterFactory mf, FilterConfiguration matchingConfig, String path) {

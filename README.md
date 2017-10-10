@@ -718,7 +718,7 @@ The picture, or an error as json:
 
 ##### *Request:*
 
-GET {user_id}/user/image
+GET user/{user_id}/image
 
 ##### *Response:*
 
@@ -2064,29 +2064,24 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 
 ### Filter-Configuration-Endpoints
-These endpoints handle the filter-configuration of the User-Task-Allocation (the matrix-part)
+These endpoints handle the filter-configuration of the User-Task-Allocation (the matrix-part). It consists of 3 different configurations, which can be handled sperately:
+PreMatchingFilters, MatchingFilters and PostMatchingFilters.  
+For each endpoint the value {matching_type} can be set to "prematching", "matching" or "postmatching"!  
+
+Available filters for the categories:  
+
+prematching: GroupFilter, LoggedUserFilter  
+matching: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter  
+postmatching: ClearFilter, MissingVolunteerFilter  
+
+####The standard configuration contains all filters once (they can be added multiple times if that is wanted)  
 
 -----------------------------------------------------------------
-**Adds a filter to the filter-configuration, based on it's name**
+**Sets target configuration, based on the list of filters in the posted JSon-file**
 
 ##### *Request:*
 
-GET /configuration/filter/add/{filter_name}
-
-The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
-
-##### *Response:*
-
-Json-data, either a success or a failure message when an invalid filter-name has been used.
-
------------------------------------------------------------------
-**Adds multiple filters to the filter-configuration, based on the list of filters in the posted JSon-file**
-
-##### *Request:*
-
-POST /configuration/filter/add
-
-The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+POST /filter/{matching_type}
 
 	{
 		"parameters": ["ImportancyLevelFilter", "LikeLevelFilter", "ProficiencyLevelFilter", "LikeLevelFilter"]
@@ -2094,16 +2089,15 @@ The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, 
 
 ##### *Response:*
 
-Json-data, either a success or a failure message when only invalid filter-names have been used.
-If that is the case, the configuration resets itself to the standard configuration.
-This configuration consists of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
+Json-data, either a success or a failure message when an invalid filter-name has been used.
 
 -----------------------------------------------------------------
-**Returns a list of all active filters**
+
+**Returns a list of all active filters of target configuration**
 
 ##### *Request:*
 
-GET /configuration/filter/print
+GET /filter/{matching_type}/print
 
 ##### *Response:*
 
@@ -2113,24 +2107,23 @@ GET /configuration/filter/print
 	}
 
 -----------------------------------------------------------------
-**Clears (empties) the list of active filters**
+
+**Clears (empties) the list of active filters of target configuration**
 
 ##### *Request:*
 
-GET /configuration/filter/clear
+DELETE /filter/{matching_type}
 
 ##### *Response:*
 
 Json-data, a success
 
 -----------------------------------------------------------------
-**Restores the standard state of the filter-configuration**
+**Restores the standard state of target filter-configuration**
 
 ##### *Request:*
 
-This endpoint restores the standard state of the configuration, consisting of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
-
-GET /configuration/filter/restore
+PUT /filter/{matching_type}/restore
 
 ##### *Response:*
 
@@ -2672,5 +2665,8 @@ Endpoint for getting the image of any user added -> Get user/{user_id}/image
 
 -----------------------------------------------------------------
 
+#### 10.10.2017
 
+Rework of the filter-section!  
+New (and changed) endpoints for accessing the filter-configuration for the matching-process -> see "Filter-Section"  
   

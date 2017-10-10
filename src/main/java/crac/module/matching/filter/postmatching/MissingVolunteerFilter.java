@@ -3,6 +3,7 @@ package crac.module.matching.filter.postmatching;
 import java.util.List;
 
 import crac.enums.ConcreteTaskState;
+import crac.enums.TaskParticipationType;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.FilterParameters;
@@ -26,7 +27,7 @@ public class MissingVolunteerFilter extends ConcreteFilter {
 				double valAdjust = 1;
 
 				if ((double) t.getMinAmountOfVolunteers() != 0) {
-					valAdjust = ((double) t.getAllParticipants().size() / (double) t.getMinAmountOfVolunteers());
+					valAdjust = ((double) t.getRelationships(0, TaskParticipationType.PARTICIPATING).size() / (double) t.getMinAmountOfVolunteers());
 				}
 
 				double newval = task.getAssessment() * (1 + (1 - valAdjust) * modifyVal);

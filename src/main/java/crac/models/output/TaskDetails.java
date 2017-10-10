@@ -3,8 +3,10 @@ package crac.models.output;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import crac.enums.ConcreteTaskState;
+import crac.enums.TaskParticipationType;
 import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
@@ -198,15 +200,18 @@ public class TaskDetails {
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
 		//TODO one call!
-		this.participationDetails = userTaskRelDAO.findByUserAndTask(u, t);
 		this.taskCompetences = new HashSet<>();
 		this.taskCompetences = calcComps(t, u, cs);
+		
+		this.participationDetails = userTaskRelDAO.findByUserAndTask(u, t);
 		if (!this.participationDetails.isEmpty()) {
 			this.assigned = true;
 		} else {
-			this.participationDetails = t.getUserInvolvement(u);
+			this.participationDetails = t.getRelationships(1, TaskParticipationType.LEADING, TaskParticipationType.PARTICIPATING, TaskParticipationType.MATERIAL);
+			this.participationDetails.removeIf(rel -> rel.getUser().getId() != u.getId());
 			this.assigned = false;
 		}
+		
 		this.materials = addMaterials(t);
 		this.taskType = t.getTaskType();
 		this.permissions = u.hasTaskPermissions(t);
@@ -242,6 +247,22 @@ public class TaskDetails {
 
 		Set<CompetenceTaskRel> mctr = t.getMappedCompetences();
 		
+		mctr.forEach( ctr -> {
+			double bestVal = u.getCompetenceRelationships().stream()
+					.map( ucr -> cs.getCompetenceSimilarity(ucr.getCompetence(), ctr.getCompetence()) )
+					.max(Double::compare)
+					.get();
+			CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
+			cd.setMandatory(ctr.isMandatory());
+			cd.setRelationValue(bestVal);
+			cd.setImportanceLevel(ctr.getImportanceLevel());
+			cd.setNeededProficiencyLevel(ctr.getNeededProficiencyLevel());
+
+			list.add(cd);
+		});
+		
+		return list;
+		/*
 		if (mctr != null) {
 			if (mctr.size() != 0) {
 				for (CompetenceTaskRel ctr : mctr) {
@@ -268,18 +289,27 @@ public class TaskDetails {
 		}
 
 		return list;
-
+*/
 	}
 
 	private Set<UserFriendDetails> calcFriends(Task t, CracUser u) {
+
+		Set<UserTaskRel> participantRels = t.getRelationships(0, TaskParticipationType.PARTICIPATING, TaskParticipationType.MATERIAL);
+		
+		this.signedUsers = participantRels.size();
+
+		participantRels.addAll(t.getRelationships(1, TaskParticipationType.LEADING));
+
+		return participantRels.stream()
+				.map( rel -> new UserFriendDetails(u, u.isFriend(rel.getUser()), rel) )
+				.collect(Collectors.toSet());
+		
+		/*
 
 		Set<UserFriendDetails> list = new HashSet<>();
 		UserRelationship found = null;
 		boolean friend = false;
 		CracUser otherU = null;
-		Set<UserTaskRel> participantRels = t.getAllLeaderAndParticipantRels();
-		//TODO better optimized way
-		this.signedUsers = t.getAllParticipants().size();
 
 		if (participantRels.size() != 0) {
 			for (UserTaskRel utr : participantRels) {
@@ -323,7 +353,7 @@ public class TaskDetails {
 		}
 
 		return list;
-
+*/
 	}
 
 }

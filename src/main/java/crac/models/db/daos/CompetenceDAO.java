@@ -18,4 +18,5 @@ public interface CompetenceDAO extends CrudRepository<Competence, Long> {
 	public Competence findByName(String name);
 	public List<Competence> findByCompetenceAreas(CompetenceArea competenceAreas);
 	public Competence findByIdAndName(long id, String name);
+	public List<Competence> findByDeprecatedNot(boolean deprecated);
 }

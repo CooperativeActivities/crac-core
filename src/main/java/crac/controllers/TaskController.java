@@ -1637,7 +1637,7 @@ public class TaskController {
 						}
 
 						if (alldone) {
-							for (UserTaskRel l : task.getAllLeaders()) {
+							for (UserTaskRel l : task.getRelationships(1, TaskParticipationType.LEADING)) {
 								nf.createSystemNotification(TaskDoneNotification.class, l.getUser(),
 										NotificationConfiguration.create().put("task", task.toShort()));
 							}

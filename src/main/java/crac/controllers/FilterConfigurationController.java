@@ -60,8 +60,7 @@ public class FilterConfigurationController {
 	private CracFilterFactory cf;
 
 	/**
-	 * Adds multiple filters to the filter-configuration, based on the list of
-	 * filters in the posted JSon-file
+	 * Sets target configuration, based on the list of filters in the posted JSon-file
 	 * 
 	 * @param json
 	 * @return ResponseEntity
@@ -69,8 +68,8 @@ public class FilterConfigurationController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	@RequestMapping(value = { "/{matching_type}/add",
-			"/{matching_type}/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{matching_type}",
+			"/{matching_type}/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addFiltersByJson(@RequestBody String json,
 			@PathVariable(value = "matching_type") String matchingType)
@@ -95,7 +94,7 @@ public class FilterConfigurationController {
 				path = postMatchingPath;
 			}
 
-			matchingConfig.clearFilters();
+			conf.clearFilters();
 
 			if (!mfp.apply(cf, conf, path)) {
 
@@ -113,7 +112,7 @@ public class FilterConfigurationController {
 	}
 
 	/**
-	 * Returns a list of all active filters
+	 * Returns a list of all active filters of target configuration
 	 * 
 	 * @return ResponseEntity
 	 */
@@ -136,12 +135,12 @@ public class FilterConfigurationController {
 	}
 
 	/**
-	 * Clears the list of active filters
+	 * Clears the list of active filters of target configuration
 	 * 
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{matching_type}/clear",
-			"/{matching_type}/clear/" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{matching_type}",
+			"/{matching_type}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> clearFilter(@PathVariable(value = "matching_type") String matchingType) {
 		
@@ -162,12 +161,12 @@ public class FilterConfigurationController {
 	}
 
 	/**
-	 * Restores the standard state of the filter-configuration
+	 * Restores the standard state of target filter-configuration
 	 * 
 	 * @return ResponseEntity
 	 */
 	@RequestMapping(value = { "/{matching_type}/restore",
-			"/{matching_type}/restore/" }, method = RequestMethod.GET, produces = "application/json")
+			"/{matching_type}/restore/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> restoreFilter(@PathVariable(value = "matching_type") String matchingType) {
 		

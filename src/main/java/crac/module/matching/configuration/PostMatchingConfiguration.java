@@ -1,6 +1,7 @@
 package crac.module.matching.configuration;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class PostMatchingConfiguration implements FilterConfiguration {
 
 	public PostMatchingConfiguration() {
 		filters = new ArrayList<>();
-}
+	}
 
 	@Override
 	public void clearFilters() {
@@ -35,27 +36,30 @@ public class PostMatchingConfiguration implements FilterConfiguration {
 
 	@Override
 	public void addFilter(ConcreteFilter filter) {
-		filters.add(filter);		
+		filters.add(filter);
 	}
-	
+
 	@Override
-	public FilterConfiguration clone(){
+	public FilterConfiguration clone() {
 		return this;
 	}
-	
+
 	@Override
-	public void printFilters(){
+	public void printFilters() {
 		filters.forEach(ConcreteFilter::speak);
 	}
-	
+
 	@Override
-	public String filtersToString(){	
-		return filters.stream()
-				.map( filter -> filter.speakString() )
-				.reduce( (f1, f2) -> f1 + f2 + " " )
-				.get();
+	public String filtersToString() {
+		String s = "";
+		try {
+			s = filters.stream().map(filter -> filter.speakString()).reduce((f1, f2) -> f1 + f2 + " ").get();
+		} catch (NoSuchElementException ex) {
+			s = "No filter available!";
+		}
+		return s;
 	}
-	
+
 	@Override
 	public void restore() {
 		this.clearFilters();

@@ -590,6 +590,13 @@ public class CracUserController {
 		}
 	}
 
+	/**
+	 * Get the image of target user
+	 * @param id
+	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws InvalidActionException
+	 */
 	@RequestMapping(value = { "/{user_id}/image",
 			"/{user_id}/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
