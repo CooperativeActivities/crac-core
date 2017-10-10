@@ -997,6 +997,7 @@ public class TaskController {
 					String status = m.subscribable(quantity, um);
 
 					if (status.equals("OK")) {
+						
 						HashMap<String, Object> meta = new HashMap<>();
 						meta.put("task_id", st.getId() + "");
 						meta.put("material_id", m.getId() + "");

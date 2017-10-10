@@ -57,7 +57,7 @@ public enum TaskParticipationType implements ParticipationType{
 			return false;
 		}
 
-	},
+	}/*,
 	MATERIAL{
 
 		@Override
@@ -74,7 +74,7 @@ public enum TaskParticipationType implements ParticipationType{
 			return false;
 		}
 		
-	}
+	}*/
 
 }
 

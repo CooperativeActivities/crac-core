@@ -21,31 +21,45 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.relation.UserMaterialSubscription;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "material")
 public class Material {
 
+	@Getter
+	@Setter
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "material_id")
 	private long id;
 
+	@Getter
+	@Setter
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId = true)
 	@JoinColumn(name = "task")
 	private Task task;
 
+	@Getter
+	@Setter
 	@NotNull
 	private long quantity;
 
+	@Getter
+	@Setter
 	@NotNull
 	private String name;
 
+	@Getter
+	@Setter
 	@NotNull
 	private String description;
 
+	@Getter
+	@Setter
 	@OneToMany(mappedBy = "material", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<UserMaterialSubscription> subscribedUsers;
 
@@ -101,18 +115,6 @@ public class Material {
 		
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public long getQuantity() {
-		return quantity;
-	}
-
 	public Long getsubscribedQuantity() {
 		Long currentq = 0l;
 		for (UserMaterialSubscription subscription : subscribedUsers) {
@@ -121,44 +123,36 @@ public class Material {
 		return currentq;
 	}
 
-	public void setQuantity(long quantity) {
-		this.quantity = quantity;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-
-	public void setTask(Task task) {
-		this.task = task;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Set<UserMaterialSubscription> getSubscribedUsers() {
-		return subscribedUsers;
-	}
 
 	public void addUserSubscription(UserMaterialSubscription subscription) {
 		this.subscribedUsers.add(subscription);
 	}
-
-	public void setSubscribedUsers(Set<UserMaterialSubscription> subscribedUsers) {
-		this.subscribedUsers = subscribedUsers;
+	
+	public MaterialShort toShort(){
+		MaterialShort m = new MaterialShort();
+		m.setDescription(this.description);
+		m.setName(this.name);
+		m.setQuantity(this.quantity);
+		return m;
 	}
 
+	public class MaterialShort{
+		
+		@Getter
+		@Setter
+		private long quantity;
+
+		@Getter
+		@Setter
+		private String name;
+
+		@Getter
+		@Setter
+		private String description;
+		
+		public MaterialShort(){
+			
+		}
+	}
+	
 }

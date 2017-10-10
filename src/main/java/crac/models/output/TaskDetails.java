@@ -19,6 +19,8 @@ import crac.models.db.entities.Task;
 import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
+import crac.models.db.relation.UserMaterialSubscription;
+import crac.models.db.relation.UserMaterialSubscription.SubscriptionShort;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.storage.CompetenceStorage;
@@ -128,6 +130,10 @@ public class TaskDetails {
 	@Getter
 	@Setter
 	private Set<Comment> comments;
+	
+	@Getter
+	@Setter
+	private Set<SubscriptionShort> materialSubscription;
 
 	@Getter
 	@Setter
@@ -207,7 +213,7 @@ public class TaskDetails {
 		if (!this.participationDetails.isEmpty()) {
 			this.assigned = true;
 		} else {
-			this.participationDetails = t.getRelationships(1, TaskParticipationType.LEADING, TaskParticipationType.PARTICIPATING, TaskParticipationType.MATERIAL);
+			this.participationDetails = t.getRelationships(1, TaskParticipationType.LEADING, TaskParticipationType.PARTICIPATING);
 			this.participationDetails.removeIf(rel -> rel.getUser().getId() != u.getId());
 			this.assigned = false;
 		}
@@ -217,6 +223,12 @@ public class TaskDetails {
 		this.permissions = u.hasTaskPermissions(t);
 		this.invitedGroups = t.getInvitedGroups();
 		this.restrictingGroups = t.getRestrictingGroups();
+		this.materialSubscription = t.getMaterials().stream()
+				.map( m -> m.getSubscribedUsers() )
+				.flatMap( l -> l.stream())
+				.map( m -> m.toShort() )
+				.collect(Collectors.toSet() );			
+		
 	}
 	
 	public Set<MaterialDetails> addMaterials(Task t){
@@ -294,7 +306,7 @@ public class TaskDetails {
 
 	private Set<UserFriendDetails> calcFriends(Task t, CracUser u) {
 
-		Set<UserTaskRel> participantRels = t.getRelationships(0, TaskParticipationType.PARTICIPATING, TaskParticipationType.MATERIAL);
+		Set<UserTaskRel> participantRels = t.getRelationships(0, TaskParticipationType.PARTICIPATING);
 		
 		this.signedUsers = participantRels.size();
 
