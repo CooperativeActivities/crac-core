@@ -209,7 +209,7 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		Task task = taskDAO.findOne(id);
-
+		
 		if (task != null) {
 			try {
 				task.setTaskState(ConcreteTaskState.STARTED, taskDAO);
