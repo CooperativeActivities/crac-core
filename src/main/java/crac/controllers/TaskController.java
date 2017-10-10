@@ -31,10 +31,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ConcreteTaskState;
 import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 import crac.enums.TaskParticipationType;
-import crac.enums.ConcreteTaskState;
 import crac.enums.TaskType;
 import crac.exception.InvalidActionException;
 import crac.models.db.daos.AttachmentDAO;
@@ -56,6 +56,7 @@ import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.ArchiveTask;
 import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserMaterialSubscription;
@@ -63,7 +64,6 @@ import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
 import crac.models.input.MaterialMapping;
 import crac.models.input.PostOptions;
-import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
 import crac.models.utility.NotificationConfiguration;
 import crac.models.utility.PersonalizedFilters;
@@ -78,9 +78,9 @@ import crac.module.notifier.notifications.LeadNomination;
 import crac.module.notifier.notifications.TaskDoneNotification;
 import crac.module.notifier.notifications.TaskInvitation;
 import crac.module.storage.CompetenceStorage;
+import crac.module.utility.CracUtility;
 import crac.module.utility.ElasticConnector;
 import crac.module.utility.JSONResponseHelper;
-import crac.module.utility.CracUtility;
 
 /**
  * REST controller for managing tasks.
@@ -397,7 +397,7 @@ public class TaskController {
 		Set<ArchiveTask> tcomp = new HashSet<>();
 		for (UserTaskRel tr : trels) {
 			if (tr.getTask().getTaskState() == ConcreteTaskState.COMPLETED) {
-				tcomp.add(new ArchiveTask(tr));
+				tcomp.add(tr.getTask().toArchived(tr));
 			}
 		}
 		return JSONResponseHelper.createResponse(tcomp, true);

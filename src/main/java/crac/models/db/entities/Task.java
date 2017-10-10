@@ -753,6 +753,11 @@ public class Task {
 		t.setSuperTask(null);
 		return t;
 	}
+	
+	@JsonIgnore
+	public ArchiveTask toArchived(UserTaskRel rel) {
+		return new ArchiveTask(rel);
+	}
 
 	@JsonIgnore
 	public TaskCrumb toCrumb() {
@@ -831,6 +836,58 @@ public class Task {
 		public TaskCrumb() {
 		}
 
+	}
+	
+	public class ArchiveTask {
+
+		@Getter
+		@Setter
+		private long id;
+
+		@Getter
+		@Setter
+		private String name;
+
+		@Getter
+		@Setter
+		private String description;
+
+		@Getter
+		@Setter
+		private Calendar startTime;
+
+		@Getter
+		@Setter
+		private Calendar endTime;
+
+		@Getter
+		@Setter
+		private boolean evalComplete;
+
+		@Getter
+		@Setter
+		private boolean evalTriggered;
+		
+		@JsonIdentityReference(alwaysAsId = true)
+		@Getter
+		@Setter
+		private Evaluation evaluation;
+
+		public ArchiveTask(UserTaskRel rel) {
+			Task t = rel.getTask();
+			this.id = t.getId();
+			this.name = t.getName();
+			this.description = t.getDescription();
+			this.startTime = t.getStartTime();
+			this.endTime = t.getEndTime();
+			if (rel.getEvaluation() != null) {
+				this.evalComplete = rel.getEvaluation().isFilled();
+			} else {
+				this.evalComplete = false;
+			}
+			this.evalTriggered = rel.isEvalTriggered();
+			this.evaluation = rel.getEvaluation();
+		}
 	}
 
 }

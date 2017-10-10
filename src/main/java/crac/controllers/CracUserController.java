@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -50,12 +52,12 @@ import crac.models.db.entities.Attachment;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Role;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
 import crac.models.output.SimpleUserRelationship;
-import crac.models.output.UserShort;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.notifier.Notification;
@@ -116,13 +118,9 @@ public class CracUserController {
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-
-		List<UserShort> list = new ArrayList<>();
-
-		for (CracUser u : userDAO.findAll()) {
-			list.add(new UserShort(u));
-		}
-
+		List<UserShort> list = StreamSupport.stream(userDAO.findAll().spliterator(), false)
+				.map(CracUser::toShort)
+				.collect(Collectors.toList());
 		return JSONResponseHelper.createResponse(list, true);
 	}
 

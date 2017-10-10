@@ -14,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Material.MaterialShort;
-import crac.models.output.UserShort;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -61,7 +61,7 @@ public class UserMaterialSubscription {
 	public SubscriptionShort toShort(){
 		SubscriptionShort s = new SubscriptionShort();
 		s.setFullfilled(this.fullfilled);
-		s.setUser(new UserShort(this.user));
+		s.setUser(this.user.toShort());
 		s.setMaterial(this.material.toShort());
 		s.setQuantity(this.quantity);
 		return s;

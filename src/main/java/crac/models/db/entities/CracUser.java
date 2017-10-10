@@ -34,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.enums.TaskParticipationType;
+import crac.models.db.entities.Role.RoleShort;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserRelationship;
@@ -495,5 +496,55 @@ public class CracUser {
 		}
 
 	}
+	
+	public UserShort toShort(){
+		UserShort u = new UserShort();
+		u.setId(this.id);
+		u.setName(this.name);
+		u.setEmail(this.email);
+		u.setLastName(this.lastName);
+		u.setFirstName(this.firstName);
+		u.setPhone(this.phone);
+		
+		Set<RoleShort> r = new HashSet<>();
+		
+		this.roles.forEach( role -> r.add(role.toShort()) );
+		u.setRoles(r);
+		return u;
+	}
+	
+	public class UserShort {
+		
+		@Getter
+		@Setter
+		private long id;
 
+		@Getter
+		@Setter
+		private String name;
+		
+		@Getter
+		@Setter
+		private String email;
+			
+		@Getter
+		@Setter
+		private String lastName;
+		
+		@Getter
+		@Setter
+		private String firstName;
+		
+		@Getter
+		@Setter
+		private String phone;
+		
+		@Getter
+		@Setter
+		private Set<RoleShort> roles;
+
+		public UserShort(){
+		}
+
+	}
 }
