@@ -18,7 +18,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import crac.enums.ErrorCode;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.entities.CracGroup;
@@ -148,7 +147,7 @@ public class GroupController {
 				g.addUser(u);
 			}
 		}
-
+				
 		groupDAO.save(g);
 
 		return JSONResponseHelper.successfullyUpdated(g);
