@@ -3,7 +3,7 @@ ENV.defaults["stage.limitIters"] = 2
 # Map variable names to annotation keys
 ner = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$NamedEntityTagAnnotation" }
 
-compAnn = { type: "CLASS", value: "crac.module.matching.workers.TaskCompetenceMatchingWorker$CompetenceAnnotation" }
+compAnn = { type: "CLASS", value: "crac.module.matching.superclass.NLPWorker$CompetenceAnnotation" }
 
 $BACKEN = "[ {ner:KUCH} | {ner:TORTE}]"
 

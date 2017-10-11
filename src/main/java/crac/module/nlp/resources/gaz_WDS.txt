@@ -20,3 +20,4 @@ Stiegenhaus	WAND
 reinigen	PUTZEN
 aufräumen	PUTZEN
 wischen		PUTZEN
+saugen		PUTZEN

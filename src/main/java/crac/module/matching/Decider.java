@@ -3,11 +3,11 @@ package crac.module.matching;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crac.models.db.entities.Competence;
+import crac.models.db.entities.CompetenceArea;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
@@ -16,6 +16,7 @@ import crac.module.matching.factories.NLPWorkerFactory;
 import crac.module.matching.factories.WorkerFactory;
 import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.EvaluatedUser;
+import crac.module.matching.workers.TaskCompetenceAreaMatchingWorker;
 import crac.module.matching.workers.TaskCompetenceMatchingWorker;
 import crac.module.matching.workers.TaskMatchingWorker;
 import crac.module.matching.workers.UserCompetenceRelationEvolutionWorker;
@@ -66,5 +67,13 @@ public class Decider {
 		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) nlpWf.createWorker(TaskCompetenceMatchingWorker.class, params);
 		ArrayList<Competence> list = w.run(); 
 		return list; 
+	}
+	
+	public ArrayList<CompetenceArea> findCompetenceAreas(Task task){
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("task", task);
+		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, params);
+		ArrayList<CompetenceArea> list = w.run(); 
+		return list;
 	}
 }

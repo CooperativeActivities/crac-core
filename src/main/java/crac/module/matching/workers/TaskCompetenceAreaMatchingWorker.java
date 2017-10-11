@@ -5,28 +5,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 import crac.module.matching.superclass.NLPWorker;
-import crac.models.db.entities.Competence;
+import crac.models.db.entities.CompetenceArea;
 import crac.models.db.entities.Task;
 import edu.stanford.nlp.pipeline.Annotation;
 
-public class TaskCompetenceMatchingWorker extends NLPWorker {
+public class TaskCompetenceAreaMatchingWorker extends NLPWorker {
 	
 	private Task task;
 	
-	public TaskCompetenceMatchingWorker(Task task){
+	public TaskCompetenceAreaMatchingWorker(Task task){
 		super();
 		this.task = task;
 	}
 
 	@Override
-	public ArrayList<Competence> run() {
+	public ArrayList<CompetenceArea> run() {
 	    
 		Set<String> compAnn = extractCompetenceAnnotations(new Annotation(task.getName() + " " + task.getDescription()));
 		
-		Set<Competence> competences = new HashSet<Competence>();
+		Set<CompetenceArea> compAreas = new HashSet<CompetenceArea>();
 		for (String cAnn: compAnn){
-			competences.addAll(getWf().getCompetences(cAnn));
+			compAreas.addAll(getWf().getCompetenceAreas(cAnn));
 		}		
-		return new ArrayList<Competence>(competences);
+		return new ArrayList<CompetenceArea>(compAreas);
 	}
 }

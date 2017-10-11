@@ -2243,4 +2243,12 @@ public class TaskController {
 		return JSONResponseHelper.createResponse(decider.findCompetences(task), true);
 	}
 	
+	@RequestMapping(value = { "/{task_id}/competenceArea/suggest",
+	"/{task_id}/competenceArea/suggest/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody 
+	public ResponseEntity<String> suggestCompetenceAreas(@PathVariable(value = "task_id") Long taskId) {
+		Task task = taskDAO.findOne(taskId);	
+		return JSONResponseHelper.createResponse(decider.findCompetenceAreas(task), true);
+	}
+	
 }
