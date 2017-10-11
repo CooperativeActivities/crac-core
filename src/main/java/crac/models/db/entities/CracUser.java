@@ -38,7 +38,10 @@ import crac.models.db.entities.Role.RoleShort;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserRelationship;
+import crac.models.db.relation.UserRelationship.UserRelShort;
 import crac.models.db.relation.UserTaskRel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -215,8 +218,28 @@ public class CracUser {
 	}
 	
 	@JsonIgnore
-	public List<CracUser> getUserRelations() {	
+	public List<CracUser> getRelatedUsers() {	
 		return Stream.concat(userRelationshipsAs1.stream().map( rel -> rel.getC2() ), userRelationshipsAs2.stream().map( rel -> rel.getC1() ))
+				.distinct()
+				.collect(Collectors.toList());
+	}
+	
+	@JsonIgnore
+	public List<CracUser> getFriends() {	
+		return Stream.concat(userRelationshipsAs1.stream()
+				.filter( UserRelationship::isFriends )
+				.map( rel -> rel.getC2() ), userRelationshipsAs2.stream()
+				.filter( UserRelationship::isFriends )
+				.map( rel -> rel.getC1() ))
+				.distinct()
+				.collect(Collectors.toList());
+	}
+	
+	@JsonIgnore
+	public List<UserRelShort> getSimpleUserRelations() {	
+		return Stream.concat(userRelationshipsAs1.stream()
+				.map(rel -> rel.toShort(true)), userRelationshipsAs2.stream()
+				.map(rel -> rel.toShort(false)))
 				.distinct()
 				.collect(Collectors.toList());
 	}
@@ -505,38 +528,26 @@ public class CracUser {
 		return u;
 	}
 	
+	@Data
+	@EqualsAndHashCode(exclude={"roles"})
 	public class UserShort {
 		
-		@Getter
-		@Setter
 		private long id;
 
-		@Getter
-		@Setter
 		private String name;
 		
-		@Getter
-		@Setter
 		private String email;
 			
-		@Getter
-		@Setter
 		private String lastName;
 		
-		@Getter
-		@Setter
 		private String firstName;
 		
-		@Getter
-		@Setter
 		private String phone;
 		
-		@Getter
-		@Setter
 		private Set<RoleShort> roles;
 
 		public UserShort(){
 		}
-
+		
 	}
 }

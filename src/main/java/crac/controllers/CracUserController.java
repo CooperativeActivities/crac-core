@@ -1,15 +1,11 @@
 package crac.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -31,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,25 +34,20 @@ import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 import crac.exception.InvalidActionException;
 import crac.models.db.daos.AttachmentDAO;
-import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.daos.RoleDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.TokenDAO;
-import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
-import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Role;
-import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
-import crac.models.output.SimpleUserRelationship;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.notifier.Notification;
@@ -78,19 +68,10 @@ public class CracUserController {
 	private CracUserDAO userDAO;
 
 	@Autowired
-	private CompetenceDAO competenceDAO;
-
-	@Autowired
 	private TaskDAO taskDAO;
 
 	@Autowired
 	private GroupDAO groupDAO;
-
-	@Autowired
-	private UserCompetenceRelDAO userCompetenceRelDAO;
-
-	@Autowired
-	private UserTaskRelDAO userTaskRelDAO;
 
 	@Autowired
 	private UserRelationshipDAO userRelationshipDAO;
@@ -341,21 +322,7 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Set<CracUser> friends = new HashSet<CracUser>();
-
-		for (UserRelationship ur : user.getUserRelationshipsAs1()) {
-			if (ur.isFriends()) {
-				friends.add(ur.getC2());
-			}
-		}
-
-		for (UserRelationship ur : user.getUserRelationshipsAs2()) {
-			if (ur.isFriends()) {
-				friends.add(ur.getC1());
-			}
-		}
-
-		return JSONResponseHelper.createResponse(friends, true);
+		return JSONResponseHelper.createResponse(user.getFriends().stream().map(CracUser::toShort).collect(Collectors.toSet()), true);
 
 	}
 
@@ -372,17 +339,7 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Set<SimpleUserRelationship> rels = new HashSet<SimpleUserRelationship>();
-
-		for (UserRelationship ur : user.getUserRelationshipsAs1()) {
-			rels.add(new SimpleUserRelationship(ur.getC2(), ur.getLikeValue(), ur.isFriends()));
-		}
-
-		for (UserRelationship ur : user.getUserRelationshipsAs2()) {
-			rels.add(new SimpleUserRelationship(ur.getC1(), ur.getLikeValue(), ur.isFriends()));
-		}
-
-		return JSONResponseHelper.createResponse(rels, true);
+		return JSONResponseHelper.createResponse(user.getSimpleUserRelations(), true);
 
 	}
 
