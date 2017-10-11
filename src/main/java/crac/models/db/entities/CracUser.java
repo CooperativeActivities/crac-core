@@ -222,14 +222,6 @@ public class CracUser {
 	}
 
 	@JsonIgnore
-	public boolean hasTaskPermissions(Task t) {
-		System.out.println("ADMIN: " + confirmRole("ADMIN"));
-		boolean leader = t.isLeader(this);
-		System.out.println("LEADER: " + leader);
-		return confirmRole("ADMIN") || leader;
-	}
-
-	@JsonIgnore
 	public boolean confirmRole(String name) {
 		for (Role role : roles) {
 			if (role.getName().equals(name)) {

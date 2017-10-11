@@ -1,0 +1,7 @@
+2017-10-11 11:37:07 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-11 11:37:07 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-11 11:37:07 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-11 11:37:07 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-11 11:37:07 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-11 11:37:07 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-11 11:37:07 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]

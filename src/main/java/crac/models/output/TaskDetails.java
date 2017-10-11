@@ -220,7 +220,7 @@ public class TaskDetails {
 		
 		this.materials = addMaterials(t);
 		this.taskType = t.getTaskType();
-		this.permissions = u.hasTaskPermissions(t);
+		this.permissions = t.isLeader(u);
 		this.invitedGroups = t.getInvitedGroups();
 		this.restrictingGroups = t.getRestrictingGroups();
 		this.materialSubscription = t.getMaterials().stream()

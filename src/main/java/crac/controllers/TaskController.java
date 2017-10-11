@@ -476,7 +476,7 @@ public class TaskController {
 						.getContext().getAuthentication();
 				CracUser user = userDAO.findByName(userDetails.getName());
 
-				if (user.hasTaskPermissions(oldTask)) {
+				if (oldTask.isLeader(user)) {
 					ObjectMapper mapper = new ObjectMapper();
 					Task updatedTask;
 					updatedTask = mapper.readValue(json, Task.class);
@@ -556,7 +556,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(supertask_id);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 
 				if (st.getTaskState().isExtendable()) {
 					return persistTask(st, user, json);
@@ -592,7 +592,7 @@ public class TaskController {
 		Task t = taskDAO.findOne(taskId);
 
 		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				System.out.println("sfd " + t.getMaxAmountOfVolunteers());
 				if (t.getMaxAmountOfVolunteers() == 0) {
@@ -768,7 +768,7 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				if (action.equals("overwrite")) {
 
@@ -840,7 +840,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(taskId);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 				ObjectMapper mapper = new ObjectMapper();
 				Material m;
 
@@ -889,7 +889,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(taskId);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 
 				Material old = materialDAO.findOne(materialId);
 
@@ -937,7 +937,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(taskId);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 
 				Material delm = null;
 
@@ -1065,7 +1065,7 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 		UserMaterialSubscription ums = userMaterialSubscriptionDAO.findOne(subscriptionId);
-		if (ums.getUser().equals(user) || user.hasTaskPermissions(ums.getMaterial().getTask())) {
+		if (ums.getUser().equals(user) || ums.getMaterial().getTask().isLeader(user)) {
 			ums.setFullfilled(fullfilled);
 			userMaterialSubscriptionDAO.save(ums);
 			return JSONResponseHelper.successfullyUpdated(ums);
@@ -1301,7 +1301,7 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
@@ -1403,7 +1403,7 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				Set<CompetenceTaskRel> toremove = new HashSet<>();
 
@@ -1680,7 +1680,7 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		if (user.hasTaskPermissions(task)) {
+		if (task.isLeader(user)) {
 
 			if (task != null) {
 
@@ -1756,7 +1756,7 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		if (user.hasTaskPermissions(task)) {
+		if (task.isLeader(user)) {
 
 			if (task != null) {
 
@@ -1805,7 +1805,7 @@ public class TaskController {
 
 		if (targetU != null && task != null) {
 
-			if (loggedU.hasTaskPermissions(task)) {
+			if (task.isLeader(loggedU)) {
 				Notification n = nf.createNotification(LeadNomination.class, targetU, loggedU,
 						NotificationConfiguration.create().put("task", task.toShort()));
 				return JSONResponseHelper.successfullyCreated(n);
@@ -1837,7 +1837,7 @@ public class TaskController {
 		Task task = taskDAO.findOne(taskId);
 		List<CracUser> users = new ArrayList<>();
 
-		if (user.hasTaskPermissions(task)) {
+		if (task.isLeader(user)) {
 			if (task != null) {
 				if (invType.equals("user")) {
 					CracUser inv = userDAO.findOne(invId);
@@ -1893,7 +1893,7 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		Task task = taskDAO.findOne(taskId);
 
-		if (user.hasTaskPermissions(task)) {
+		if (task.isLeader(user)) {
 			if (task != null) {
 				CracGroup group = groupDAO.findOne(groupId);
 				if (group != null) {
@@ -1936,7 +1936,7 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		Task task = taskDAO.findOne(taskId);
 
-		if (user.hasTaskPermissions(task)) {
+		if (task.isLeader(user)) {
 			if (task != null) {
 
 				ObjectMapper mapper = new ObjectMapper();
@@ -2085,7 +2085,7 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				String name = file.getOriginalFilename();
 				String path = CracUtility.processUpload(file, "image/jpeg", "image/jpg", "image/png",
@@ -2129,7 +2129,7 @@ public class TaskController {
 		Task t = taskDAO.findOne(task_id);
 
 		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 				Attachment a = attachmentDAO.findByIdAndTask(attachment_id, t);
 				if (a != null) {
 					CracUtility.removeFile(a.getPath());
@@ -2171,7 +2171,7 @@ public class TaskController {
 		Task t = taskDAO.findOne(task_id);
 
 		if (t != null) {
-			if (u.hasTaskPermissions(t)) {
+			if (t.isLeader(u)) {
 				Attachment a = attachmentDAO.findByIdAndTask(attachment_id, t);
 				if (a != null) {
 

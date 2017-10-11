@@ -231,8 +231,12 @@ public class Task {
 
 	@JsonIgnore
 	public boolean isLeader(CracUser u) {
-		return getRelationships(1, TaskParticipationType.LEADING).stream()
+		boolean admin = u.confirmRole("ADMIN");
+		boolean leader = getRelationships(1, TaskParticipationType.LEADING).stream()
 				.anyMatch( rel -> rel.getUser().equals(u) );
+		System.out.println("ADMIN: " + admin);
+		System.out.println("LEADER: " + leader);
+		return admin || leader ;
 	}
 	
 	@JsonIgnore
