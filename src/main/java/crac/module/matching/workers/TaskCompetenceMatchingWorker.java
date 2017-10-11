@@ -50,10 +50,12 @@ public class TaskCompetenceMatchingWorker extends NLPWorker {
 				}
 			}
 		}
+		System.out.println("....... token annotations extracted: " + compAnn.size());
 		Set<Competence> competences = new HashSet<Competence>();
 		for (String cAnn: compAnn){
 			competences.addAll(getWf().getCompetences4Annotation(cAnn));
 		}		
+		System.out.println("competence suggestions: " + competences.size());
 		return new ArrayList<Competence>(competences);
 	}
 	

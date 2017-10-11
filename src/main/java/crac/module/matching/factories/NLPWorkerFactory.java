@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -30,14 +32,12 @@ import lombok.Setter;
 @Scope("prototype")
 public class NLPWorkerFactory{
 	
+    @Value("${crac.nlp.taggerDirectory}") String taggerDirectory;
+	
 	@Autowired
-	@Getter
-	@Setter
 	private CompetenceAreaDAO competenceAreaDAO;
 	
 	@Autowired
-	@Getter
-	@Setter
 	private CompetenceStorage cs;
 	
 	private StanfordCoreNLP pipeline;
@@ -48,19 +48,13 @@ public class NLPWorkerFactory{
 	
 	private HashMap<String, Set<CompetenceArea>> ann2CompetenceAreas;
 	
-	@Autowired
-	public NLPWorkerFactory(@Value("${crac.nlp.taggerDirectory}") String taggerDirectory){
-		
-		buildNLPPipeline(taggerDirectory);
-			
-		ann2CompetenceAreas = new HashMap<String, Set<CompetenceArea>>();
-		area2Competences = new HashMap<CompetenceArea, Set<Competence>>();
-	}	
+	private boolean annotationsMapped;
+
 	
 	private void buildNLPPipeline(String taggerDir){
 		Properties props = new Properties();
 		props.setProperty("customAnnotatorClass.german.lemma", "crac.module.nlp.TreeTaggerAnnotator");
-		props.setProperty("annotators", "tokenize, ssplit, pos, german.lemma, ner, parse, regexner");
+		props.setProperty("annotators", "tokenize, ssplit, pos, german.lemma, ner, regexner"); // XXX parse out vor regexner
 		props.setProperty("tokenize.language", "de"); 
 		
 		props.setProperty("pos.model", "crac/module/nlp/resources/german-hgc.tagger");
@@ -75,8 +69,24 @@ public class NLPWorkerFactory{
 		System.out.println(" ||||NLP APPLICATION BUILT||||");
 		System.out.println("-------------------------------");
 	}
+	
+	@PostConstruct
+	private void init(){
+		
+		buildNLPPipeline(taggerDirectory);
+		
+		annotationsMapped = false;
+			
+		// ann2CompetenceAreas = new HashMap<String, Set<CompetenceArea>>();
+		// area2Competences = new HashMap<CompetenceArea, Set<Competence>>();
+		// setupAnn2CompetencesMapping();
+		if (!annotationsMapped)
+			setupAnn2CompetencesMapping();
+	}
 
 	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, HashMap<String, Object> params) {
+		if (!annotationsMapped)
+			setupAnn2CompetencesMapping();
 		annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/competence_extraction_rules.txt" ); 
 		TaskCompetenceMatchingWorker w = new TaskCompetenceMatchingWorker((Task)params.get("task"));
 		w.setWf(this);
@@ -113,6 +123,7 @@ public class NLPWorkerFactory{
 				area2Competences.get(ca).add(c);
 			}
 		}
+		annotationsMapped = true;
 		printArea2Competences();
 	}
 	
@@ -130,9 +141,8 @@ public class NLPWorkerFactory{
 		System.out.println("******************* Compeptence Areas 2 Competences ***********************");
 	    Set<CompetenceArea> ks = area2Competences.keySet();
 	    for (CompetenceArea ca: ks){
-	    	System.out.println(" competenceArea: " + ca.getName());
+	    	System.out.println(" competence area: " + ca.getName());
 	    	ArrayList<Competence> cs = getCompetences4Annotation(ca.getName());
-	    	// Set<Competence> cs = area2Competences.get(ca);
 	    	for (Competence c: cs){
 	    		System.out.println("............. competence: " + c.getName() + " ... " + c.getDescription());
 	    	}

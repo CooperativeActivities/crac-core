@@ -9,7 +9,7 @@ $BACKEN = "[ {ner:KUCH} | {ner:TORTE}]"
 
 $KOCHEN = "[ {ner:BACK} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken}]"
 
-$PUTZEN = "[ {ner:PUTZEN} | {lemma:putzen}"
+$PUTZEN = "[ {ner:PUTZEN} | {lemma:putzen}]"
 
 {
   // ruleType is "text", "tokens", "composite", or "filter"

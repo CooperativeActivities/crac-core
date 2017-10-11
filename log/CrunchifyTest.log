@@ -6561,3 +6561,760 @@
 2017-10-06 09:58:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
 2017-10-06 09:58:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
 2017-10-06 09:58:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 11:27:58 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 11:27:58 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 11:27:58 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 11:27:58 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 11:27:58 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 11:27:58 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 11:27:58 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 11:29:00 [elasticsearch[_client_][transport_client_boss][T#5]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:29:08 [elasticsearch[_client_][transport_client_boss][T#5]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x3ff061a4, L:/127.0.0.1:53727 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 11:29:30 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:29:30 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x4131dc58, L:/127.0.0.1:53753 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 11:29:38 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:29:38 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x4131dc58, L:/127.0.0.1:53753 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 11:29:45 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:29:45 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x4131dc58, L:/127.0.0.1:53753 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 11:38:45 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 11:38:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 11:38:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 11:38:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 11:38:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 11:38:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 11:38:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 11:39:49 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:40:00 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x91b34ce8, L:/127.0.0.1:54296 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 11:44:27 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 11:44:27 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 11:44:27 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 11:44:27 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 11:44:27 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 11:44:27 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 11:44:27 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 11:45:44 [elasticsearch[_client_][transport_client_boss][T#5]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:48:57 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 11:48:57 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 11:48:57 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 11:48:57 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 11:48:57 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 11:48:57 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 11:48:57 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 11:51:52 [elasticsearch[_client_][transport_client_boss][T#4]] WARN  TransportService:830 - Received response for a request that has timed out, sent [36683ms] ago, timed out [23468ms] ago, action [cluster:monitor/nodes/liveness], node [{#transport#-1}{r3EkNGzJS8ajCRjmGFTY5Q}{localhost}{127.0.0.1:9300}], id [16]
+2017-10-10 11:52:16 [elasticsearch[_client_][transport_client_boss][T#5]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:52:16 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 11:52:38 [elasticsearch[_client_][generic][T#3]] INFO  TransportClientNodesService:436 - failed to get node info for {#transport#-1}{r3EkNGzJS8ajCRjmGFTY5Q}{localhost}{127.0.0.1:9300}, disconnecting...
+org.elasticsearch.transport.ReceiveTimeoutTransportException: [][127.0.0.1:9300][cluster:monitor/nodes/liveness] request_id [16] timed out after [13215ms]
+	at org.elasticsearch.transport.TransportService$TimeoutHandler.run(TransportService.java:951) ~[elasticsearch-5.5.1.jar:5.5.1]
+	at org.elasticsearch.common.util.concurrent.ThreadContext$ContextPreservingRunnable.run(ThreadContext.java:569) [elasticsearch-5.5.1.jar:5.5.1]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_112]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_112]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+2017-10-10 11:52:38 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0xe9b4b899, L:/127.0.0.1:54854 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 11:52:38 [elasticsearch[_client_][transport_client_boss][T#5]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x71f1c060, L:/127.0.0.1:54853 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 12:53:08 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 12:53:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 12:53:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 12:53:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 12:53:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 12:53:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 12:53:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 12:54:06 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 12:54:21 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0x8c000798, L:/127.0.0.1:56612 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 13:08:02 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:08:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:08:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:08:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:08:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:08:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:08:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:09:05 [elasticsearch[_client_][transport_client_boss][T#6]] ERROR Netty4Utils:181 - fatal error on the network layer
+	at org.elasticsearch.transport.netty4.Netty4Utils.maybeDie(Netty4Utils.java:179)
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:83)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+2017-10-10 13:09:27 [elasticsearch[_client_][transport_client_boss][T#6]] WARN  Netty4Transport:1028 - exception caught on transport layer [[id: 0xa551b598, L:/127.0.0.1:57416 - R:localhost/127.0.0.1:9300]], closing connection
+org.elasticsearch.ElasticsearchException: java.lang.OutOfMemoryError: Java heap space
+	at org.elasticsearch.transport.netty4.Netty4Transport.exceptionCaught(Netty4Transport.java:322) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at org.elasticsearch.transport.netty4.Netty4MessageChannelHandler.exceptionCaught(Netty4MessageChannelHandler.java:84) [transport-netty4-client-5.5.1.jar:5.5.1]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.exceptionCaught(DefaultChannelPipeline.java:1301) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireExceptionCaught(DefaultChannelPipeline.java:914) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.handleReadException(AbstractNioByteChannel.java:104) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:145) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:544) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at io.netty.util.internal.PlatformDependent.allocateUninitializedArray(PlatformDependent.java:192) ~[netty-common-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newByteArray(PoolArena.java:676) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena$HeapArena.newChunk(PoolArena.java:686) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocateNormal(PoolArena.java:244) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:226) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PoolArena.allocate(PoolArena.java:146) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.PooledByteBufAllocator.newHeapBuffer(PooledByteBufAllocator.java:307) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:162) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.heapBuffer(AbstractByteBufAllocator.java:153) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.buffer.AbstractByteBufAllocator.ioBuffer(AbstractByteBufAllocator.java:135) ~[netty-buffer-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator$MaxMessageHandle.allocate(DefaultMaxMessagesRecvByteBufAllocator.java:80) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:122) ~[netty-transport-4.1.11.Final.jar:4.1.11.Final]
+	... 6 more
+2017-10-10 13:11:53 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:11:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:11:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:11:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:11:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:11:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:11:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:26:05 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:26:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:26:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:26:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:26:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:26:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:26:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:38:02 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:38:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:38:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:38:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:38:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:38:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:38:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:43:12 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:43:12 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:43:12 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:43:12 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:43:12 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:43:12 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:43:12 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:47:04 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:47:04 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:47:04 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:47:04 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:47:04 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:47:04 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:47:04 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:50:03 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:50:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:50:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:50:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:50:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:50:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:50:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 13:54:29 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 13:54:29 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 13:54:29 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 13:54:29 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 13:54:29 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 13:54:29 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 13:54:29 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:05:24 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:05:24 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:05:24 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:05:24 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:05:24 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:05:24 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:05:24 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:19:00 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:19:00 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:19:00 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:19:00 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:19:00 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:19:00 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:19:00 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:24:15 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:24:15 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:24:15 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:24:15 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:24:15 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:24:15 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:24:15 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:26:52 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:26:52 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:26:52 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:26:52 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:26:52 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:26:52 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:26:52 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:32:26 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:32:26 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:32:26 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:32:26 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:32:26 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:32:26 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:32:26 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:44:42 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:44:42 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:44:42 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:44:42 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:44:42 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:44:42 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:44:42 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:49:19 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:49:19 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:49:19 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:49:19 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:49:19 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:49:19 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:49:19 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:52:45 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:52:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:52:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:52:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:52:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:52:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:52:45 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 14:57:33 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 14:57:33 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 14:57:33 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 14:57:33 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 14:57:33 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 14:57:33 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 14:57:33 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 15:06:02 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 15:06:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 15:06:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 15:06:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 15:06:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 15:06:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 15:06:02 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 15:08:53 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 15:08:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 15:08:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 15:08:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 15:08:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 15:08:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 15:08:53 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 15:11:06 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 15:11:06 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 15:11:06 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 15:11:06 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 15:11:06 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 15:11:06 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 15:11:06 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 15:14:08 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 15:14:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 15:14:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 15:14:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 15:14:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 15:14:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 15:14:08 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 15:21:05 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 15:21:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 15:21:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 15:21:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 15:21:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 15:21:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 15:21:05 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-10 15:23:40 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-10 15:23:40 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-10 15:23:40 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-10 15:23:40 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-10 15:23:40 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-10 15:23:40 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-10 15:23:40 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]

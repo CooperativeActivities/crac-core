@@ -45,17 +45,18 @@ public class TreeTaggerAnnotator implements Annotator {
 		   try {
 			   System.out.println("..................................... treetaggerhome: " + treetaggerHome);
 			   System.setProperty("treetagger.home", treetaggerHome);
-			   tt.setModel("C:/TreeTagger/lib/german.par");
+			   tt.setModel(treetaggerHome+"/lib/german.par");
 			   tt.setHandler(new TokenHandler<String>(){
 				   int i = 0;
 				   public void token(String token, String pos, String lemma ){
 					   CoreLabel t = tokenList.get(i);
 					   t.set(CoreAnnotations.LemmaAnnotation.class, lemma);
-					   System.out.println("handler" + i + ".token + " + "\t" + pos + "\t" + lemma);
+					   System.out.println("handler " + i + ".token + " + "\t" + pos + "\t" + lemma);
 					   i++;
 				   }
 			   });
 			   tt.process(tokens);
+			   System.out.println("------------------------ tagger is done --------------------");
 		   } catch (TreeTaggerException e) {
 			// TODO Auto-generated catch block
 			  e.printStackTrace();

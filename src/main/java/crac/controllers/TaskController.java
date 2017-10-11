@@ -2239,7 +2239,7 @@ public class TaskController {
 	"/{task_id}/competence/suggest/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody 
 	public ResponseEntity<String> suggestCompetences(@PathVariable(value = "task_id") Long taskId) {
-		Task task = taskDAO.findOne(taskId);		
+		Task task = taskDAO.findOne(taskId);	
 		return JSONResponseHelper.createResponse(decider.findCompetences(task), true);
 	}
 	
