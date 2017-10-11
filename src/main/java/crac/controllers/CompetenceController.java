@@ -1,8 +1,6 @@
 package crac.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -27,8 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import crac.enums.ErrorCode;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.daos.CompetenceDAO;
-import crac.models.db.daos.CompetenceRelationshipDAO;
-import crac.models.db.daos.CompetenceRelationshipTypeDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.entities.Competence;
@@ -37,7 +33,6 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.input.PostOptions;
 import crac.models.output.CompetenceGraphDetails;
-import crac.module.matching.helpers.AugmentedSimpleCompetence;
 import crac.module.storage.CompetenceStorage;
 import crac.module.utility.JSONResponseHelper;
 
@@ -52,12 +47,6 @@ public class CompetenceController {
 
 	@Autowired
 	private CracUserDAO userDAO;
-
-	@Autowired
-	private CompetenceRelationshipTypeDAO typeDAO;
-
-	@Autowired
-	private CompetenceRelationshipDAO relationDAO;
 
 	@Autowired
 	private UserCompetenceRelDAO userCompetenceRelDAO;

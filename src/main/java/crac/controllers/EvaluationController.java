@@ -167,9 +167,7 @@ public class EvaluationController {
 		HashSet<OpenEvaluation> evals = new HashSet<>();
 
 		if (rels != null) {
-			for (UserTaskRel rel : rels) {
-				evals.add(new OpenEvaluation(rel));
-			}
+			rels.forEach( rel -> evals.add(new OpenEvaluation(rel)));
 		}
 
 		return JSONResponseHelper.createResponse(evals, true);
