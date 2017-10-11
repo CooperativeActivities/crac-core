@@ -1404,7 +1404,7 @@ ALREADY_EXISTS_VALUES_ADJUSTED, ID_NOT_VALID, CREATED, NOT_CREATED, NOT_ASSIGNED
 	
 ##### *Request:*
 
-POST /task/{task_id}/material/add
+POST /task/{task_id}/material
 
 	{
 		"name": "cake",
@@ -1422,7 +1422,7 @@ Json-data, either a success or a failure message
 	
 ##### *Request:*
 
-PUT /task/{task_id}/material/{material_id}/update
+PUT /task/{task_id}/material/{material_id}
 
 	{
 		"name": "cake",
@@ -1440,7 +1440,7 @@ Json-data, either a success or a failure message
 	
 ##### *Request:*
 
-DELETE /task/{task_id}/material/{material_id}/remove
+DELETE /task/{task_id}/material/{material_id}
 
 ##### *Response:*
 
@@ -2668,5 +2668,10 @@ Endpoint for getting the image of any user added -> Get user/{user_id}/image
 #### 10.10.2017
 
 Rework of the filter-section!  
-New (and changed) endpoints for accessing the filter-configuration for the matching-process -> see "Filter-Section"  
+New (and changed) endpoints for accessing the filter-configuration for the matching-process -> see "Filter-Section" 
+
+Changed endpoints for accessing materials on tasks -> ADD, UPDATE, REMOVE removed since information is already available in the request-method  
   
+POST /task/{task_id}/material/add -> POST /task/{task_id}/material  
+PUT /task/{task_id}/material/{material_id}/update -> PUT /task/{task_id}/material/{material_id}  
+DELETE /task/{task_id}/material/{material_id}/remove -> DELETE /task/{task_id}/material/{material_id}  

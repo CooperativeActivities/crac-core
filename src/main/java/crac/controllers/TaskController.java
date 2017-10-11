@@ -746,8 +746,8 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	@RequestMapping(value = { "/{task_id}/material/add",
-			"/{task_id}/material/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{task_id}/material",
+			"/{task_id}/material/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
 			throws JsonParseException, JsonMappingException, IOException {
@@ -794,8 +794,8 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	@RequestMapping(value = { "/{task_id}/material/{material_id}/update",
-			"/{task_id}/material/{material_id}/update/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{task_id}/material/{material_id}",
+			"/{task_id}/material/{material_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId)
@@ -843,8 +843,8 @@ public class TaskController {
 	 * @param materialId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/material/{material_id}/remove",
-			"/{task_id}/material/{material_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/material/{material_id}",
+			"/{task_id}/material/{material_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeMaterial(@PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId) {
