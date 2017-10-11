@@ -31,6 +31,7 @@ import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.module.matching.interfaces.SyncableCrac;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -140,7 +141,7 @@ public class Competence implements SyncableCrac {
 			this.setPermissionType(c.getPermissionType());
 		}
 	}
-
+	
 	/**
 	 * getters and setters
 	 */
@@ -251,6 +252,20 @@ public class Competence implements SyncableCrac {
 
 	public void setMappedQuestions(Set<Question> mappedQuestions) {
 		this.mappedQuestions = mappedQuestions;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Competence other = (Competence) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 	
 }

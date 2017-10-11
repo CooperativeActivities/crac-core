@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -124,13 +127,11 @@ public class CompetenceController {
 	@ResponseBody
 	public ResponseEntity<String> showRelated(@PathVariable(value = "competence_id") Long id) {
 		Competence c = competenceDAO.findOne(id);
-		ArrayList<CompetenceGraphDetails> crd = new ArrayList<CompetenceGraphDetails>();
-		for (AugmentedSimpleCompetence ac : cs.getCollection(c).getAugmented()) {
-			if (ac.getConcreteComp().getId() != c.getId()) {
-				crd.add(new CompetenceGraphDetails(ac));
-			}
-		}
-		Collections.sort(crd);
+		List<CompetenceGraphDetails> crd = cs.getCollection(c).getAugmented().stream()
+				.filter(ac -> !ac.getConcreteComp().equals(c))
+				.map(ac -> new CompetenceGraphDetails(ac))
+				.sorted()
+				.collect(Collectors.toList());
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("competences", crd);
 		return JSONResponseHelper.createResponse(c, true, meta);
@@ -312,28 +313,14 @@ public class CompetenceController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Iterable<Competence> competenceList = competenceDAO.findByDeprecatedNot(true);
+		List<Competence> comps = StreamSupport.stream(competenceDAO.findByDeprecatedNot(true).spliterator(), false)
+		.filter(c -> user.getCompetenceRelationships().stream()
+				.map(UserCompetenceRel::getCompetence)
+				.noneMatch(uc -> uc.equals(c)) )
+		.collect(Collectors.toList());
 
-		Set<UserCompetenceRel> competenceRels = user.getCompetenceRelationships();
-
-		ArrayList<Competence> found = new ArrayList<Competence>();
-
-		if (competenceList != null) {
-			for (Competence c : competenceList) {
-				boolean in = false;
-				for (UserCompetenceRel ucr : competenceRels) {
-					if (c.getId() == ucr.getCompetence().getId()) {
-						in = true;
-					}
-				}
-				if (!in) {
-					found.add(c);
-				}
-			}
-		}
-
-		if (found.size() != 0) {
-			return JSONResponseHelper.createResponse(found, true);
+		if (comps.size() != 0) {
+			return JSONResponseHelper.createResponse(comps, true);
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
 		}
