@@ -14,6 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracUser.UserShort;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user_relationship")
@@ -85,6 +90,29 @@ public class UserRelationship {
 		this.friends = friends;
 	}
 	
+	public UserRelShort toShort(boolean as1){
+		UserRelShort r = new UserRelShort();
+		r.setFriends(this.friends);
+		r.setLikeValue(this.likeValue);
+		r.setRelatedUser(as1 ? this.c2.toShort() : this.c1.toShort());
+		return r;
+	}
 	
+	@Data
+	@EqualsAndHashCode(exclude={"likeValue", "friends"})
+	public class UserRelShort {
+		
+		private UserShort relatedUser;
+		
+		private double likeValue;
+		
+		private boolean friends;
+		
+		public UserRelShort() {
+		}
+
+	}
+	
+
 	
 }

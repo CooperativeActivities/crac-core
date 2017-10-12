@@ -14,7 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Material;
+import crac.models.db.entities.Material.MaterialShort;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user_material_subscription")
@@ -24,22 +28,43 @@ public class UserMaterialSubscription {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
+	@Getter
+	@Setter
 	private long id;
 	
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "user_id")
+	@Getter
+	@Setter
 	private CracUser user;
 	
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "material_id")
+	@Getter
+	@Setter
 	private Material material;
 	
+	@Getter
+	@Setter
 	private Long quantity;
+	
+	@Getter
+	@Setter
+	private boolean fullfilled;
 	
 	public UserMaterialSubscription(){
 		
+	}
+	
+	public SubscriptionShort toShort(){
+		SubscriptionShort s = new SubscriptionShort();
+		s.setFullfilled(this.fullfilled);
+		s.setUser(this.user.toShort());
+		s.setMaterial(this.material.toShort());
+		s.setQuantity(this.quantity);
+		return s;
 	}
 	
 	public UserMaterialSubscription(CracUser user, Material material, Long quantity) {
@@ -47,37 +72,31 @@ public class UserMaterialSubscription {
 		this.material = material;
 		this.quantity = quantity;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public CracUser getUser() {
-		return user;
-	}
-
-	public void setUser(CracUser user) {
-		this.user = user;
-	}
-
-	public Material getMaterial() {
-		return material;
-	}
-
-	public void setMaterial(Material material) {
-		this.material = material;
-	}
-
-	public Long getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
+	
+	public class SubscriptionShort{
+		
+		@Getter
+		@Setter
+		private UserShort user;
+		
+		@Getter
+		@Setter
+		private MaterialShort material;
+		
+		@Getter
+		@Setter
+		private Long quantity;
+		
+		@Getter
+		@Setter
+		private boolean fullfilled;
+		
+		public SubscriptionShort(){
+			
+		}
+		
 	}
 	
 }
+
+

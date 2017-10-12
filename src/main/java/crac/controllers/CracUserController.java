@@ -1,15 +1,13 @@
 package crac.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,25 +34,20 @@ import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 import crac.exception.InvalidActionException;
 import crac.models.db.daos.AttachmentDAO;
-import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.models.db.daos.RoleDAO;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.TokenDAO;
-import crac.models.db.daos.UserCompetenceRelDAO;
 import crac.models.db.daos.UserRelationshipDAO;
-import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
+import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Role;
-import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
-import crac.models.output.SimpleUserRelationship;
-import crac.models.output.UserShort;
 import crac.module.matching.Decider;
 import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.notifier.Notification;
@@ -76,19 +68,10 @@ public class CracUserController {
 	private CracUserDAO userDAO;
 
 	@Autowired
-	private CompetenceDAO competenceDAO;
-
-	@Autowired
 	private TaskDAO taskDAO;
 
 	@Autowired
 	private GroupDAO groupDAO;
-
-	@Autowired
-	private UserCompetenceRelDAO userCompetenceRelDAO;
-
-	@Autowired
-	private UserTaskRelDAO userTaskRelDAO;
 
 	@Autowired
 	private UserRelationshipDAO userRelationshipDAO;
@@ -116,13 +99,9 @@ public class CracUserController {
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-
-		List<UserShort> list = new ArrayList<>();
-
-		for (CracUser u : userDAO.findAll()) {
-			list.add(new UserShort(u));
-		}
-
+		List<UserShort> list = StreamSupport.stream(userDAO.findAll().spliterator(), false)
+				.map(CracUser::toShort)
+				.collect(Collectors.toList());
 		return JSONResponseHelper.createResponse(list, true);
 	}
 
@@ -343,21 +322,7 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Set<CracUser> friends = new HashSet<CracUser>();
-
-		for (UserRelationship ur : user.getUserRelationshipsAs1()) {
-			if (ur.isFriends()) {
-				friends.add(ur.getC2());
-			}
-		}
-
-		for (UserRelationship ur : user.getUserRelationshipsAs2()) {
-			if (ur.isFriends()) {
-				friends.add(ur.getC1());
-			}
-		}
-
-		return JSONResponseHelper.createResponse(friends, true);
+		return JSONResponseHelper.createResponse(user.getFriends().stream().map(CracUser::toShort).collect(Collectors.toSet()), true);
 
 	}
 
@@ -374,17 +339,7 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		Set<SimpleUserRelationship> rels = new HashSet<SimpleUserRelationship>();
-
-		for (UserRelationship ur : user.getUserRelationshipsAs1()) {
-			rels.add(new SimpleUserRelationship(ur.getC2(), ur.getLikeValue(), ur.isFriends()));
-		}
-
-		for (UserRelationship ur : user.getUserRelationshipsAs2()) {
-			rels.add(new SimpleUserRelationship(ur.getC1(), ur.getLikeValue(), ur.isFriends()));
-		}
-
-		return JSONResponseHelper.createResponse(rels, true);
+		return JSONResponseHelper.createResponse(user.getSimpleUserRelations(), true);
 
 	}
 
@@ -516,13 +471,14 @@ public class CracUserController {
 
 	/**
 	 * Adds an image to logged in user
+	 * 
 	 * @param file
 	 * @return
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image/add",
-			"/image/add/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
+	@RequestMapping(value = { "/image",
+			"/image/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
 
 	@ResponseBody
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file)
@@ -558,14 +514,14 @@ public class CracUserController {
 	}
 
 	/**
-	 * Get the image of a user
+	 * Get the image of the logged in user
 	 * 
 	 * @return
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image/get",
-			"/image/get/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@RequestMapping(value = { "/image",
+			"/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
 	public ResponseEntity<byte[]> getUserImage() throws IOException, InvalidActionException {
 
@@ -587,6 +543,40 @@ public class CracUserController {
 			throw new InvalidActionException(ErrorCode.NOT_FOUND);
 
 		}
+	}
+
+	/**
+	 * Get the image of target user
+	 * @param id
+	 * @return ResponseEntity
+	 * @throws IOException
+	 * @throws InvalidActionException
+	 */
+	@RequestMapping(value = { "/{user_id}/image",
+			"/{user_id}/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@ResponseBody
+	public ResponseEntity<byte[]> getUserImageById(@PathVariable(value = "user_id") Long id)
+			throws IOException, InvalidActionException {
+
+		CracUser u = userDAO.findOne(id);
+
+		if (u != null) {
+
+			Attachment a = u.getUserImage();
+
+			if (a != null) {
+
+				byte[] img = CracUtility.getFile(a.getPath());
+
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.IMAGE_JPEG);
+
+				return ResponseEntity.ok().headers(headers).body(img);
+			}
+		}
+		
+		throw new InvalidActionException(ErrorCode.NOT_FOUND);
+
 	}
 
 }

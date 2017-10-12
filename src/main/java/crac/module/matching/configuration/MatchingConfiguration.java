@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import crac.module.matching.filter.matching.ImportancyLevelFilter;
+import crac.module.matching.filter.matching.LikeLevelFilter;
+import crac.module.matching.filter.matching.ProficiencyLevelFilter;
+import crac.module.matching.filter.matching.UserRelationFilter;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
@@ -35,27 +39,33 @@ public class MatchingConfiguration implements FilterConfiguration {
 		filters.clear();
 	}
 	
+	@Override
 	public void printFilters(){
-		for(ConcreteFilter filter : filters){
-			filter.speak();
-		}
+		filters.forEach(ConcreteFilter::speak);
 	}
 	
-	public String filtersToString(){
-		String s = "";
-		for(ConcreteFilter filter : filters){
-			s += filter.speakString() + " ";
-		}
-		return s;
+	@Override
+	public String filtersToString(){	
+		return filters.stream()
+				.map( filter -> filter.speakString() )
+				.reduce( (f1, f2) -> f1 + f2 + " " )
+				.get();
 	}
 	
 	@Override
 	public FilterConfiguration clone(){
 		MatchingConfiguration m = new MatchingConfiguration();
-		for(ConcreteFilter filter : filters){
-			m.addFilter(filter);
-		}
+		filters.forEach(m::addFilter);
 		return m;
+	}
+
+	@Override
+	public void restore() {
+		this.clearFilters();
+		filters.add(new ProficiencyLevelFilter());
+		filters.add(new LikeLevelFilter());
+		filters.add(new ImportancyLevelFilter());
+		filters.add(new UserRelationFilter());
 	}
 
 

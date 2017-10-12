@@ -10,4 +10,10 @@ public interface FilterConfiguration {
 	
 	public FilterConfiguration clone();
 	
+	public void printFilters();
+	
+	public String filtersToString();
+	
+	public void restore();
+	
 }

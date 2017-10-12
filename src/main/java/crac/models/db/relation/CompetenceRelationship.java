@@ -14,11 +14,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.Competence;
+import crac.module.matching.interfaces.SyncableCrac;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "competence_relationship")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class CompetenceRelationship {
+public class CompetenceRelationship implements SyncableCrac {
 
 	@Id
 	@Column(name = "competence_relationship_id")
@@ -41,6 +44,10 @@ public class CompetenceRelationship {
 	
 	@Column(name = "uni_direction")
 	private boolean uniDirection;
+	
+	@Getter
+	@Setter
+	private boolean deprecated;
 	
 	public CompetenceRelationship() {
 		this.uniDirection = false;

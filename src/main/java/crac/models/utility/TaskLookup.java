@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 import crac.module.matching.superclass.IndividualFilter;
 import crac.module.utility.ElasticConnector;
+import lombok.Getter;
 
 @Component
 @Scope("prototype")
@@ -32,6 +34,10 @@ public class TaskLookup {
 	
 	@Autowired
 	private TaskDAO taskDAO;
+	
+	@Getter
+	@Value("${crac.filters.individual}")
+	private String path;
 
 	public TaskLookup(){
 		
@@ -39,7 +45,7 @@ public class TaskLookup {
 	
 	public List<Task> lookUp(CracUser u, PersonalizedFilters pf){
 		
-		pf.convert(mf);
+		pf.convert(mf, path);
 		
 		String query = pf.getQuery();
 		

@@ -20,25 +20,35 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.relation.CompetencePermissionType;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "role")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Role {
 	
+	@Getter
+	@Setter
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "role_id")
 	private long id;
 
+	@Getter
+	@Setter
 	@NotNull
 	private String name;
 		
+	@Getter
+	@Setter
 	@JsonIdentityReference(alwaysAsId=true)
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "mapping_role_permissiontype", joinColumns={@JoinColumn(name="role_id")}, inverseJoinColumns={@JoinColumn(name="permissiontype_id")})
 	Set<CompetencePermissionType> mappedPermissionTypes;
 	
+	@Getter
+	@Setter
 	@JsonIdentityReference(alwaysAsId=true)
 	@ManyToMany(mappedBy = "roles")
 	Set<CracUser> mappedUser;
@@ -46,37 +56,26 @@ public class Role {
 	public Role() {
 	}
 
-	public long getId() {
-		return id;
+	public RoleShort toShort(){
+		RoleShort r = new RoleShort();
+		r.setId(this.id);
+		r.setName(this.name);
+		return r;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
+	public class RoleShort {
+		
+		@Getter
+		@Setter
+		private long id;
 
-	public String getName() {
-		return name;
-	}
+		@Getter
+		@Setter
+		private String name;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+		public RoleShort(){
+		}
 
-	public Set<CompetencePermissionType> getMappedPermissionTypes() {
-		return mappedPermissionTypes;
 	}
-
-	public void setMappedPermissionTypes(Set<CompetencePermissionType> mappedPermissionTypes) {
-		this.mappedPermissionTypes = mappedPermissionTypes;
-	}
-
-	public Set<CracUser> getMappedUser() {
-		return mappedUser;
-	}
-
-	public void setMappedUser(Set<CracUser> mappedUser) {
-		this.mappedUser = mappedUser;
-	}
-
 
 }

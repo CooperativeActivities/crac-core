@@ -21,10 +21,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.module.matching.interfaces.SyncableCrac;
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table(name = "competence_area")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class CompetenceArea {
+public class CompetenceArea implements SyncableCrac {
 
 	@Id
 	@Column(name = "competence_area_id")
@@ -42,8 +46,12 @@ public class CompetenceArea {
 	@ManyToMany(mappedBy = "competenceAreas")
 	Set<Competence> mappedCompetences;
 
+	@Getter
+	@Setter
+	private boolean deprecated;
 
 	public CompetenceArea() {
+		deprecated = false;
 	}
 
 	public long getId() {

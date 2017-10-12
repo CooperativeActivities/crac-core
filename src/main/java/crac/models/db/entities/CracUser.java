@@ -2,7 +2,10 @@ package crac.models.db.entities;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,10 +33,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import crac.enums.TaskParticipationType;
+import crac.models.db.entities.Role.RoleShort;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserRelationship;
+import crac.models.db.relation.UserRelationship.UserRelShort;
 import crac.models.db.relation.UserTaskRel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -161,8 +169,10 @@ public class CracUser {
 	 */
 
 	public CracUser() {
-		this.competenceRelationships = new HashSet<UserCompetenceRel>();
-		this.roles = new HashSet<Role>();
+		this.competenceRelationships = new HashSet<>();
+		this.roles = new HashSet<>();
+		this.userRelationshipsAs1 = new HashSet<>();
+		this.userRelationshipsAs2 = new HashSet<>();
 	}
 
 	@JsonIgnore
@@ -202,10 +212,36 @@ public class CracUser {
 	// UTILITY----------------
 
 	@JsonIgnore
-	public boolean hasTaskPermissions(Task t) {
-		System.out.println("ADMIN: " + confirmRole("ADMIN"));
-		System.out.println("LEADER: " + t.getAllLeaders().contains(this));
-		return confirmRole("ADMIN") || t.getAllLeaders().contains(this);
+	public boolean isFriend(CracUser u) {
+		return userRelationshipsAs1.stream().anyMatch(rel -> rel.getC2().equals(u))
+				|| userRelationshipsAs2.stream().anyMatch(rel -> rel.getC1().equals(u));
+	}
+	
+	@JsonIgnore
+	public List<CracUser> getRelatedUsers() {	
+		return Stream.concat(userRelationshipsAs1.stream().map( rel -> rel.getC2() ), userRelationshipsAs2.stream().map( rel -> rel.getC1() ))
+				.distinct()
+				.collect(Collectors.toList());
+	}
+	
+	@JsonIgnore
+	public List<CracUser> getFriends() {	
+		return Stream.concat(userRelationshipsAs1.stream()
+				.filter( UserRelationship::isFriends )
+				.map( rel -> rel.getC2() ), userRelationshipsAs2.stream()
+				.filter( UserRelationship::isFriends )
+				.map( rel -> rel.getC1() ))
+				.distinct()
+				.collect(Collectors.toList());
+	}
+	
+	@JsonIgnore
+	public List<UserRelShort> getSimpleUserRelations() {	
+		return Stream.concat(userRelationshipsAs1.stream()
+				.map(rel -> rel.toShort(true)), userRelationshipsAs2.stream()
+				.map(rel -> rel.toShort(false)))
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	@JsonIgnore
@@ -224,7 +260,7 @@ public class CracUser {
 	}
 
 	// ------------------------
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -423,9 +459,9 @@ public class CracUser {
 		u.setFirstName(this.firstName);
 		return u;
 	}
-	
-	public static NotificationUser sys(){
-		NotificationUser u = new CracUser(). new NotificationUser();
+
+	public static NotificationUser sys() {
+		NotificationUser u = new CracUser().new NotificationUser();
 		u.setId(-1l);
 		u.setName("CrAc-Bot");
 		u.setLastName("CrAc-Bot");
@@ -467,18 +503,51 @@ public class CracUser {
 			return true;
 		}
 
-
-
 		public NotificationUser() {
 		}
-
-
 
 		private CracUser getOuterType() {
 			return CracUser.this;
 		}
-		
 
 	}
+	
+	public UserShort toShort(){
+		UserShort u = new UserShort();
+		u.setId(this.id);
+		u.setName(this.name);
+		u.setEmail(this.email);
+		u.setLastName(this.lastName);
+		u.setFirstName(this.firstName);
+		u.setPhone(this.phone);
+		
+		Set<RoleShort> r = new HashSet<>();
+		
+		this.roles.forEach( role -> r.add(role.toShort()) );
+		u.setRoles(r);
+		return u;
+	}
+	
+	@Data
+	@EqualsAndHashCode(exclude={"roles"})
+	public class UserShort {
+		
+		private long id;
 
+		private String name;
+		
+		private String email;
+			
+		private String lastName;
+		
+		private String firstName;
+		
+		private String phone;
+		
+		private Set<RoleShort> roles;
+
+		public UserShort(){
+		}
+		
+	}
 }

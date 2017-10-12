@@ -1,8 +1,10 @@
 package crac.models.db.entities;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -44,7 +46,7 @@ import lombok.Setter;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "tasks")
 public class Task {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_id")
@@ -62,17 +64,17 @@ public class Task {
 	private double geoLat;
 
 	private double geoLng;
-	
+
 	private String geoName;
-	
+
 	private String geoCountry;
-	
+
 	private String geoCountryA;
-	
+
 	private String geoMacroRegion;
-	
+
 	private String geoRegion;
-	
+
 	private String geoLocality;
 
 	@NotNull
@@ -82,8 +84,6 @@ public class Task {
 	@NotNull
 	@Column(name = "end_time")
 	private Calendar endTime;
-
-	private int urgency;
 
 	@Column(name = "max_amount_of_volunteers")
 	private int maxAmountOfVolunteers;
@@ -157,20 +157,19 @@ public class Task {
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Comment> comments;
-	
-	@JsonIdentityReference(alwaysAsId=true)
+
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CompetenceTaskRel> mappedCompetences;
 
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Material> materials;
-	
+
 	@ManyToMany(mappedBy = "restrictedTasks", fetch = FetchType.LAZY)
 	private Set<CracGroup> restrictingGroups;
-	
+
 	@ManyToMany(mappedBy = "invitedToTasks", fetch = FetchType.LAZY)
 	private Set<CracGroup> invitedGroups;
-
 
 	/**
 	 * constructors
@@ -187,9 +186,9 @@ public class Task {
 		this.userRelationships = new HashSet<>();
 		this.childTasks = new HashSet<>();
 	}
-	
+
 	@JsonIgnore
-	public Task copy(Calendar date){
+	public Task copy(Calendar date) {
 		Calendar startd = date;
 		Calendar endd = (Calendar) date.clone();
 		endd.add(Calendar.YEAR, 1);
@@ -198,31 +197,28 @@ public class Task {
 
 	@JsonIgnore
 	private Task copy(Task stask, Calendar startd, Calendar endd) {
-		
+
 		Task clone = new Task();
-		
+
 		clone.setSuperTask(stask);
 		clone.update(this);
 		clone.setCreator(creator);
-		
-		attachments.forEach( x -> clone.getAttachments().add(x.copy(clone)) );
-		mappedCompetences.forEach( x -> clone.getMappedCompetences().add(x.copy(clone)) );
-		materials.forEach( x -> clone.getMaterials().add(x.copy(clone)) );
-				
+
+		attachments.forEach(x -> clone.getAttachments().add(x.copy(clone)));
+		mappedCompetences.forEach(x -> clone.getMappedCompetences().add(x.copy(clone)));
+		materials.forEach(x -> clone.getMaterials().add(x.copy(clone)));
+
 		clone.setStartTime(startd);
 		clone.setEndTime(endd);
 		clone.setTaskType(taskType);
-		
-		childTasks.forEach( x -> clone.getChildTasks().add(x.copy(clone, startd, endd)) );
-		
-		
+
+		childTasks.forEach(x -> clone.getChildTasks().add(x.copy(clone, startd, endd)));
+
 		return clone;
-		
+
 	}
 
 	// UTILITY FUNCTIONS
-
-
 
 	@JsonIgnore
 	public int possibleNumberOfVolunteers() {
@@ -232,165 +228,67 @@ public class Task {
 		}
 		return total;
 	}
-/*
+
 	@JsonIgnore
-	public Set<CracUser> getLeaders() {
-		Set<CracUser> leaders = new HashSet<CracUser>();
-		if (userRelationships != null) {
-			for (UserTaskRel u : userRelationships) {
-				if (u.getParticipationType() == TaskParticipationType.LEADING) {
-					leaders.add(u.getUser());
-				}
-			}
+	public boolean isLeader(CracUser u) {
+		boolean admin = u.confirmRole("ADMIN");
+		boolean leader = getRelationships(1, TaskParticipationType.LEADING).stream()
+				.anyMatch( rel -> rel.getUser().equals(u) );
+		System.out.println("ADMIN: " + admin);
+		System.out.println("LEADER: " + leader);
+		return admin || leader ;
+	}
+	
+	@JsonIgnore
+	public Set<UserTaskRel> getRelationships(int mode, TaskParticipationType... type) {
+		Set<UserTaskRel> rels = new HashSet<>();
+		switch(mode){
+		case 0:
+			//down
+			rels.addAll(getRelationshipsDown());
+			break;
+		case 1:
+			//up
+			rels.addAll(getRelationshipsUp());
+			break;
+		case 2:
+			//both
+			rels.addAll(getRelationshipsDown());
+			rels.addAll(getRelationshipsUp());
+			break;
 		}
-		if (leaders.isEmpty()) {
+		return rels.stream()
+				.distinct()
+				.filter( rel ->  Arrays.asList(type).contains(rel.getParticipationType()) )
+				.collect(Collectors.toSet());
+	}
+
+	
+	@JsonIgnore
+	private Set<UserTaskRel> getRelationshipsDown() {
+		Set<UserTaskRel> rels = new HashSet<>();
+		rels.addAll(userRelationships.stream()
+				.collect(Collectors.toSet()));
+		if (!childTasks.isEmpty()) {
+			childTasks.forEach(child -> rels.addAll(child.getRelationshipsDown()) );
+		}
+		return rels;
+	}
+	
+	@JsonIgnore
+	private Set<UserTaskRel> getRelationshipsUp() {
+		Set<UserTaskRel> rels = new HashSet<>();
+
+		if (userRelationships != null) {
+			rels.addAll(userRelationships.stream()
+					.collect(Collectors.toSet()));
 			if (superTask != null) {
-				leaders = superTask.getLeaders();
+				rels.addAll(superTask.getRelationshipsUp());
 			}
 		}
-
-		return leaders;
+		return rels;
 	}
 	
-	@JsonIgnore
-	public Set<CracUser> getAllLeaders() {
-		Set<CracUser> leaders = new HashSet<CracUser>();
-		getAllLeadersIntern(leaders);
-		return leaders;
-	}
-
-	@JsonIgnore
-	private void getAllLeadersIntern(Set<CracUser> leaders) {
-
-		if (userRelationships != null) {
-			for (UserTaskRel u : userRelationships) {
-				if (u.getParticipationType() == TaskParticipationType.LEADING) {
-					leaders.add(u.getUser());
-				}
-			}
-			if (superTask != null) {
-				superTask.getAllLeadersIntern(leaders);
-			}
-		}
-
-	}
-	
-	@JsonIgnore
-	public UserTaskRel getIndirectLead(CracUser u){
-		
-		for(UserTaskRel utr : userRelationships){
-			if(utr.getUser().getId() == u.getId()){
-				return utr;
-			}
-		}
-		
-		if(this.superTask != null){
-			return superTask.getIndirectLead(u);
-		}else{
-			return null;
-		}
-		
-	}
-	
-	
-	*/
-	
-	@JsonIgnore
-	public Set<UserTaskRel> getUserInvolvement(CracUser u){
-		Set<UserTaskRel> set = new HashSet<>();
-		getRelationshipsUp(set, TaskParticipationType.LEADING);
-		getRelationshipsUp(set, TaskParticipationType.PARTICIPATING);
-		set.removeIf( x -> x.getUser().getId() != u.getId() );
-		return set;
-	}
-	
-	@JsonIgnore
-	private void getRelationshipsUp(Set<UserTaskRel> users, TaskParticipationType type) {
-
-		if (userRelationships != null) {
-			for (UserTaskRel u : userRelationships) {
-				if (u.getParticipationType() == type) {
-					users.add(u);
-				}
-			}
-			if (superTask != null) {
-				superTask.getRelationshipsUp(users, type);
-			}
-		}
-
-	}
-	
-	@JsonIgnore
-	public boolean isLeader(CracUser u){
-		return getAllLeaders().contains(u);
-	}
-
-	@JsonIgnore
-	public Set<UserTaskRel> getAllLeaders() {
-		Set<UserTaskRel> leaders = new HashSet<UserTaskRel>();
-		getRelationshipsUp(leaders, TaskParticipationType.LEADING);
-		return leaders;
-	}
-
-	@JsonIgnore
-	public Set<UserTaskRel> getAllParticipants() {
-		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
-		getRelationshipsDown(participants, TaskParticipationType.PARTICIPATING);
-		return participants;
-	}
-		
-	@JsonIgnore
-	public Set<UserTaskRel> getAllLeaderAndParticipantRels() {
-		Set<UserTaskRel> participants = new HashSet<UserTaskRel>();
-		getRelationshipsDown(participants, TaskParticipationType.PARTICIPATING);
-		getRelationshipsUp(participants, TaskParticipationType.LEADING);
-		return participants;
-	}
-
-
-	@JsonIgnore
-	private void getRelationshipsDown(Set<UserTaskRel> users, TaskParticipationType type) {
-
-		if (userRelationships != null) {
-			for (UserTaskRel u : userRelationships) {
-				if (u.getParticipationType() == type) {
-					boolean notPartOf = true;
-					for (UserTaskRel srel : users) {
-						if (srel.getUser().getId() == u.getUser().getId() && srel.getParticipationType() == type) {
-							notPartOf = false;
-						}
-					}
-					if (notPartOf) {
-						users.add(u);
-					}
-
-				}
-			}
-			if (childTasks != null) {
-				if (!childTasks.isEmpty()) {
-					for (Task t : childTasks) {
-						t.getRelationshipsDown(users, type);
-					}
-				}
-			}
-		}
-
-	}
-
-	/*
-	@JsonIgnore
-	public void setTreeComplete(TaskDAO taskDAO) {
-		taskState = TaskState.COMPLETED;
-		taskDAO.save(this);
-		if (childTasks != null) {
-			if (!childTasks.isEmpty()) {
-				for (Task t : childTasks) {
-					t.setTreeComplete(taskDAO);
-				}
-			}
-		}
-	}*/
-
 	@JsonIgnore
 	public boolean updateReadyStatus(TaskDAO taskDAO) {
 		boolean ready = this.fieldsFilled() && this.childTasksReady();
@@ -437,7 +335,7 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public boolean isFull() {		
+	public boolean isFull() {
 		return userRelationships.size() >= maxAmountOfVolunteers;
 	}
 
@@ -462,7 +360,6 @@ public class Task {
 
 	// FUNCTIONS FOR STATECHANGE
 
-
 	@JsonIgnore
 	public int unpublish(UserTaskRelDAO userTaskRelDAO, TaskDAO taskDAO) {
 
@@ -479,7 +376,7 @@ public class Task {
 		setGlobalTreeState(ConcreteTaskState.NOT_PUBLISHED, taskDAO);
 		return 3;
 	}
-	
+
 	@JsonIgnore
 	public int forceComplete(TaskDAO taskDAO) {
 		if (this.getTaskState() == ConcreteTaskState.STARTED) {
@@ -496,65 +393,9 @@ public class Task {
 	}
 
 	@JsonIgnore
-	public void setTaskState(ConcreteTaskState state, TaskDAO taskDAO) throws InvalidActionException{
+	public void setTaskState(ConcreteTaskState state, TaskDAO taskDAO) throws InvalidActionException {
 		this.getTaskState().setTaskState(this, state, taskDAO);
 	}
-
-	/*
-	@JsonIgnore
-	public int publish(TaskDAO taskDAO) {
-
-		if (this.isSuperTask() && this.getTaskState() == TaskState.NOT_PUBLISHED && fieldsFilled()) {
-			if (childTasksReady()) {
-				setGlobalTreeState(TaskState.PUBLISHED, taskDAO);
-				return 3;
-			} else {
-				return 2;
-			}
-		} else {
-			return 1;
-		}
-	}
-
-	
-	@JsonIgnore
-	public int start(TaskDAO taskDAO) {
-
-		if (this.getTaskState() == TaskState.PUBLISHED) {
-			if (checkStartAllowance()) {
-				this.setTaskState(TaskState.STARTED);
-				taskDAO.save(this);
-				return 3;
-			} else {
-				return 2;
-			}
-		} else {
-			return 1;
-		}
-
-	}
-
-	@JsonIgnore
-	public int complete() {
-		if (this.getTaskState() == TaskState.STARTED) {
-			Set<UserTaskRel> ur = this.getUserRelationships();
-			boolean usersDone = true;
-			for (UserTaskRel u : ur) {
-				if (!u.isCompleted() && u.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-					usersDone = false;
-				}
-			}
-			if (usersDone) {
-				this.setTaskState(TaskState.COMPLETED);
-				return 3;
-			} else {
-				return 2;
-			}
-		} else {
-			return 1;
-		}
-	}*/
-
 
 	// -------------------------------------------------------
 
@@ -632,14 +473,6 @@ public class Task {
 
 	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
-	}
-
-	public int getUrgency() {
-		return urgency;
-	}
-
-	public void setUrgency(int urgency) {
-		this.urgency = urgency;
 	}
 
 	public int getMaxAmountOfVolunteers() {
@@ -749,7 +582,6 @@ public class Task {
 	public void setCreationDate(Calendar creationDate) {
 		this.creationDate = creationDate;
 	}
-	
 
 	public void update(Task t) {
 		if (t.getName() != null) {
@@ -795,31 +627,31 @@ public class Task {
 		if (t.getGeoLng() != 0) {
 			this.setGeoLng(t.getGeoLng());
 		}
-		
-		if(t.getGeoName() != null){
+
+		if (t.getGeoName() != null) {
 			this.setGeoName(t.getGeoName());
 		}
-		
-		if(t.getGeoCountry() != null){
+
+		if (t.getGeoCountry() != null) {
 			this.setGeoCountry(t.getGeoCountry());
 		}
 
-		if(t.getGeoCountryA() != null){
+		if (t.getGeoCountryA() != null) {
 			this.setGeoCountryA(t.getGeoCountryA());
 		}
 
-		if(t.getGeoMacroRegion() != null){
+		if (t.getGeoMacroRegion() != null) {
 			this.setGeoMacroRegion(t.getGeoMacroRegion());
 		}
 
-		if(t.getGeoRegion() != null){
+		if (t.getGeoRegion() != null) {
 			this.setGeoRegion(t.getGeoRegion());
 		}
 
-		if(t.getGeoLocality() != null){
+		if (t.getGeoLocality() != null) {
 			this.setGeoLocality(t.getGeoLocality());
-		}	
-				
+		}
+
 	}
 
 	public String getAddress() {
@@ -895,7 +727,7 @@ public class Task {
 	}
 
 	public String getGeoRegion() {
-				
+
 		return (geoRegion != null) ? geoRegion : "";
 	}
 
@@ -910,20 +742,45 @@ public class Task {
 	public void setGeoLocality(String geoLocality) {
 		this.geoLocality = geoLocality;
 	}
-	
+
 	@JsonIgnore
-	public NotificationTask generateNTask(){
-		NotificationTask t = new NotificationTask();
+	public TaskShort toShort() {
+		TaskShort t = new TaskShort();
 		t.setId(this.id);
 		t.setName(this.name);
 		t.setDescription(this.description);
 		t.setAddress(this.address);
 		t.setStartTime(this.startTime);
 		t.setEndTime(this.endTime);
+		t.setTaskState(this.taskState);
+		t.setReadyToPublish(this.readyToPublish);
+		t.setSuperTask(null);
 		return t;
 	}
 	
-	public class NotificationTask {
+	@JsonIgnore
+	public ArchiveTask toArchived(UserTaskRel rel) {
+		return new ArchiveTask(rel);
+	}
+
+	@JsonIgnore
+	public TaskCrumb toCrumb() {
+		TaskCrumb t = new TaskCrumb();
+		t.setId(this.id);
+		t.setName(this.name);
+		TaskCrumb st = (superTask != null) ? superTask.toCrumb() : null;
+		t.setSuperTask(st);
+		return t;
+	}
+
+	public TaskShort toShortWithCrumbs() {
+		TaskShort t = toShort();
+		TaskCrumb st = (superTask != null) ? superTask.toCrumb() : null;
+		t.setSuperTask(st);
+		return t;
+	}
+
+	public class TaskShort {
 
 		@Getter
 		@Setter
@@ -940,7 +797,7 @@ public class Task {
 		@Getter
 		@Setter
 		private String address;
-		
+
 		@Getter
 		@Setter
 		private Calendar startTime;
@@ -949,8 +806,92 @@ public class Task {
 		@Setter
 		private Calendar endTime;
 
+		@Getter
+		@Setter
+		private ConcreteTaskState taskState;
 
-		public NotificationTask(){
+		@Getter
+		@Setter
+		private boolean readyToPublish;
+
+		@Getter
+		@Setter
+		private TaskCrumb superTask;
+
+		public TaskShort() {
+		}
+
+	}
+
+	public class TaskCrumb {
+
+		@Getter
+		@Setter
+		long id;
+
+		@Getter
+		@Setter
+		String name;
+
+		@Getter
+		@Setter
+		private TaskCrumb superTask;
+
+		public TaskCrumb() {
+		}
+
+	}
+	
+	public class ArchiveTask {
+
+		@Getter
+		@Setter
+		private long id;
+
+		@Getter
+		@Setter
+		private String name;
+
+		@Getter
+		@Setter
+		private String description;
+
+		@Getter
+		@Setter
+		private Calendar startTime;
+
+		@Getter
+		@Setter
+		private Calendar endTime;
+
+		@Getter
+		@Setter
+		private boolean evalComplete;
+
+		@Getter
+		@Setter
+		private boolean evalTriggered;
+		
+		@JsonIdentityReference(alwaysAsId = true)
+		@Getter
+		@Setter
+		private Evaluation evaluation;
+
+		public ArchiveTask(UserTaskRel rel) {
+			Task t = rel.getTask();
+			this.id = t.getId();
+			this.name = t.getName();
+			this.description = t.getDescription();
+			this.startTime = t.getStartTime();
+			this.endTime = t.getEndTime();
+			if (rel.getEvaluation() != null) {
+				this.evalComplete = rel.getEvaluation().isFilled();
+			} else {
+				this.evalComplete = false;
+			}
+			this.evalTriggered = rel.isEvalTriggered();
+			this.evaluation = rel.getEvaluation();
 		}
 	}
+
 }

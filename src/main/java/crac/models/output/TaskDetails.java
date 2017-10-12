@@ -3,8 +3,10 @@ package crac.models.output;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import crac.enums.ConcreteTaskState;
+import crac.enums.TaskParticipationType;
 import crac.enums.TaskType;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.Attachment;
@@ -14,8 +16,11 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
+import crac.models.db.relation.UserMaterialSubscription;
+import crac.models.db.relation.UserMaterialSubscription.SubscriptionShort;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.storage.CompetenceStorage;
@@ -125,6 +130,10 @@ public class TaskDetails {
 	@Getter
 	@Setter
 	private Set<Comment> comments;
+	
+	@Getter
+	@Setter
+	private Set<SubscriptionShort> materialSubscription;
 
 	@Getter
 	@Setter
@@ -188,7 +197,7 @@ public class TaskDetails {
 		this.taskState = t.getTaskState();
 		this.readyToPublish = t.isReadyToPublish();
 		if (t.getSuperTask() != null) {
-			this.superTask = new TaskShort(t.getSuperTask());
+			this.superTask = t.getSuperTask().toShort();
 		} else {
 			this.superTask = null;
 		}
@@ -197,20 +206,29 @@ public class TaskDetails {
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
 		//TODO one call!
-		this.participationDetails = userTaskRelDAO.findByUserAndTask(u, t);
 		this.taskCompetences = new HashSet<>();
 		this.taskCompetences = calcComps(t, u, cs);
+		
+		this.participationDetails = userTaskRelDAO.findByUserAndTask(u, t);
 		if (!this.participationDetails.isEmpty()) {
 			this.assigned = true;
 		} else {
-			this.participationDetails = t.getUserInvolvement(u);
+			this.participationDetails = t.getRelationships(1, TaskParticipationType.LEADING, TaskParticipationType.PARTICIPATING);
+			this.participationDetails.removeIf(rel -> rel.getUser().getId() != u.getId());
 			this.assigned = false;
 		}
+		
 		this.materials = addMaterials(t);
 		this.taskType = t.getTaskType();
-		this.permissions = u.hasTaskPermissions(t);
+		this.permissions = t.isLeader(u);
 		this.invitedGroups = t.getInvitedGroups();
 		this.restrictingGroups = t.getRestrictingGroups();
+		this.materialSubscription = t.getMaterials().stream()
+				.map( m -> m.getSubscribedUsers() )
+				.flatMap( l -> l.stream())
+				.map( m -> m.toShort() )
+				.collect(Collectors.toSet() );			
+		
 	}
 	
 	public Set<MaterialDetails> addMaterials(Task t){
@@ -228,7 +246,7 @@ public class TaskDetails {
 		if (t.getChildTasks() != null) {
 
 			for (Task tc : t.getChildTasks()) {
-				list.add(new TaskShort(tc));
+				list.add(tc.toShort());
 			}
 		}
 		return list;
@@ -241,6 +259,22 @@ public class TaskDetails {
 
 		Set<CompetenceTaskRel> mctr = t.getMappedCompetences();
 		
+		mctr.forEach( ctr -> {
+			double bestVal = u.getCompetenceRelationships().stream()
+					.map( ucr -> cs.getCompetenceSimilarity(ucr.getCompetence(), ctr.getCompetence()) )
+					.max(Double::compare)
+					.get();
+			CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
+			cd.setMandatory(ctr.isMandatory());
+			cd.setRelationValue(bestVal);
+			cd.setImportanceLevel(ctr.getImportanceLevel());
+			cd.setNeededProficiencyLevel(ctr.getNeededProficiencyLevel());
+
+			list.add(cd);
+		});
+		
+		return list;
+		/*
 		if (mctr != null) {
 			if (mctr.size() != 0) {
 				for (CompetenceTaskRel ctr : mctr) {
@@ -267,18 +301,27 @@ public class TaskDetails {
 		}
 
 		return list;
-
+*/
 	}
 
 	private Set<UserFriendDetails> calcFriends(Task t, CracUser u) {
+
+		Set<UserTaskRel> participantRels = t.getRelationships(0, TaskParticipationType.PARTICIPATING);
+		
+		this.signedUsers = participantRels.size();
+
+		participantRels.addAll(t.getRelationships(1, TaskParticipationType.LEADING));
+
+		return participantRels.stream()
+				.map( rel -> new UserFriendDetails(u, u.isFriend(rel.getUser()), rel) )
+				.collect(Collectors.toSet());
+		
+		/*
 
 		Set<UserFriendDetails> list = new HashSet<>();
 		UserRelationship found = null;
 		boolean friend = false;
 		CracUser otherU = null;
-		Set<UserTaskRel> participantRels = t.getAllLeaderAndParticipantRels();
-		//TODO better optimized way
-		this.signedUsers = t.getAllParticipants().size();
 
 		if (participantRels.size() != 0) {
 			for (UserTaskRel utr : participantRels) {
@@ -322,7 +365,7 @@ public class TaskDetails {
 		}
 
 		return list;
-
+*/
 	}
 
 }

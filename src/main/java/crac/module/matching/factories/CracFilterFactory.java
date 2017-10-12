@@ -39,5 +39,21 @@ public class CracFilterFactory {
 		return f;
 
 	}
+	
+	public <T extends ConcreteFilter> ConcreteFilter createMatchingFilterFromString(String filtername, String path){
+		
+		Class<ConcreteFilter> c = null;
+		try {
+			c = (Class<ConcreteFilter>) Class.forName(path + "." + filtername);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		ConcreteFilter f = BeanUtils.instantiate(c);
+		f.setCff(this);
+		
+		return f;
+
+	}
 
 }

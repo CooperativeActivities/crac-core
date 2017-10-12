@@ -76,7 +76,7 @@ public class UserTaskRel {
 	public Evaluation triggerEval(NotificationFactory nf){
 		Evaluation e = new Evaluation(this);
 		
-		NotificationConfiguration nc = NotificationConfiguration.create().put("task", task.generateNTask()).put("evaluation", e.getId());
+		NotificationConfiguration nc = NotificationConfiguration.create().put("task", task.toShort()).put("evaluation", e.getId());
 		Notification es = nf.createSystemNotification(EvaluationNotification.class, user, nc);
 		
 		e.setNotificationId(es.getNotificationId());
@@ -151,5 +151,21 @@ public class UserTaskRel {
 	public void setEvalTriggered(boolean evalTriggered) {
 		this.evalTriggered = evalTriggered;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserTaskRel other = (UserTaskRel) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	
+	
 	
 }

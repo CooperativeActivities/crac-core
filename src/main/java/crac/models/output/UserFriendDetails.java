@@ -22,7 +22,7 @@ public class UserFriendDetails {
 		this.id = u.getId();
 		this.name = u.getName();
 		this.friend = friend;
-		this.self = false;
+		this.self = rel.getUser().equals(u);
 		this.participationType = rel.getParticipationType();
 		this.completed = rel.isCompleted();
 	}

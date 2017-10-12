@@ -255,7 +255,7 @@ public class AdminController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		if (deleteTask != null) {
 
-			if (user.hasTaskPermissions(deleteTask)) {
+			if (deleteTask.isLeader(user)) {
 				ect.delete("" + deleteTask.getId());
 				ResponseEntity<String> v = JSONResponseHelper.successfullyDeleted(deleteTask);
 				taskDAO.delete(deleteTask);

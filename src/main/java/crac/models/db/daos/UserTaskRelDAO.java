@@ -8,7 +8,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import crac.enums.ConcreteTaskState;
 import crac.enums.TaskParticipationType;
+import crac.enums.TaskRepetitionState;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
@@ -28,4 +30,7 @@ public interface UserTaskRelDAO extends CrudRepository<UserTaskRel, Long> {
 	
 	@Query("select r from UserTaskRel r where r.user = :u and r.evaluation.filled = false")
 	public Set<UserTaskRel> selectRelByNotFilled(@Param("u") CracUser c);
+	
+	@Query("select r from UserTaskRel r where r.user = :u and r.participationType = :pt and r.task.taskState = :ts")
+	public Set<UserTaskRel> selectRelByUserAndParticipationTypeAndTaskState(@Param("u") CracUser c, @Param("pt") TaskParticipationType pt, @Param("ts") ConcreteTaskState ts);
 }

@@ -126,7 +126,7 @@ public class EvaluationController {
 		Task task = taskDAO.findOne(taskId);
 
 		if (task != null) {
-			if (user.hasTaskPermissions(task)) {
+			if (task.isLeader(user)) {
 				if (task.getTaskState() == ConcreteTaskState.COMPLETED) {
 					boolean allTriggered = true;
 					for (UserTaskRel utr : task.getUserRelationships()) {
@@ -167,9 +167,7 @@ public class EvaluationController {
 		HashSet<OpenEvaluation> evals = new HashSet<>();
 
 		if (rels != null) {
-			for (UserTaskRel rel : rels) {
-				evals.add(new OpenEvaluation(rel));
-			}
+			rels.forEach( rel -> evals.add(new OpenEvaluation(rel)));
 		}
 
 		return JSONResponseHelper.createResponse(evals, true);

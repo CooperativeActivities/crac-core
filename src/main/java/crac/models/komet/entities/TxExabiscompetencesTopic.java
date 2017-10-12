@@ -1,10 +1,18 @@
 package crac.models.komet.entities;
 
-import javax.persistence.*;
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.springframework.data.repository.CrudRepository;
 
 import crac.models.db.entities.CompetenceArea;
+import crac.module.matching.interfaces.SyncableCrac;
+import crac.module.matching.interfaces.SyncableKomet;
 
 /**
  * The persistent class for the tx_exabiscompetences_topics database table.
@@ -12,7 +20,7 @@ import crac.models.db.entities.CompetenceArea;
  */
 @Entity
 @Table(name = "tx_exabiscompetences_topics")
-public class TxExabiscompetencesTopic {
+public class TxExabiscompetencesTopic implements SyncableKomet {
 
 	@Id
 	private int uid;
@@ -101,6 +109,21 @@ public class TxExabiscompetencesTopic {
 		area.setDescription("");
 		area.setName(this.getTitle().replaceAll("<"+".*"+">", ""));
 		return area;
+	}
+	
+
+	@Override
+	public SyncableCrac map(Map<Class<?>, CrudRepository<?, ?>> map) {
+		CompetenceArea area = new CompetenceArea();
+		area.setId(this.getUid());
+		//area.setDescription(this.getDescription().replaceAll("<"+".*"+">", ""));
+		area.setDescription("");
+		area.setName(this.getTitle().replaceAll("<"+".*"+">", ""));
+		return area;
+	}
+	
+	public boolean isValid(){
+		return !title.equals("");
 	}
 
 	public int getUid() {
@@ -334,5 +357,6 @@ public class TxExabiscompetencesTopic {
 	public void setTstamp(int tstamp) {
 		this.tstamp = tstamp;
 	}
+
 
 }

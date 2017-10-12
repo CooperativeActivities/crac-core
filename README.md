@@ -543,87 +543,7 @@ GET task/find/{number_of_tasks}
 	]
 ------------------------------------------------------------------------------------
 
-**Return a list of possible competence areas for the given task**
-
-##### *Request:*
-
-GET task/{task_id}/competenceArea/suggest
-
-##### *Response:*
-
- [
-        {
-            "id": 7364,
-            "name": "Kochen",
-            "description": "",
-            "mappedCompetences": []
-        },
-        {
-            "id": 7287,
-            "name": "Kochen",
-            "description": "",
-            "mappedCompetences": [
-                49545,
-                49548,
-                49547,
-                49544,
-                49546,
-                49553,
-                49555,
-                49550,
-                49551,
-                49554,
-                49552,
-                49549
-            ]
-        }
-    ]
-
-------------------------------------------------------------------------------------
-
-**Return a list of possible competences for the given task**
-
-##### *Request:*
-
-GET task/{task_id}/competence/suggest
-
-##### *Response:*
-
- [
-        {
-            "id": 49547,
-            "name": "große Mengen an warmen Speisen zubereiten",
-            "description": "Ich kann große Mengen an warmen Speisen zubereiten.",
-            ...
-            "competenceAreas": [
-                7287
-            ],
-            ...
-        },
-        {
-            "id": 49546,
-            "name": "Backen",
-            "description": "Ich kann einfache Kuchen backen.",
-            ...
-            "competenceAreas": [
-                7287
-            ],
-            ...
-        },
-        {
-            "id": 49544,
-            "name": "Warme Speisen zubereiten",
-            "description": "Ich kann warme Speisen zuzubereiten.",
-            ...
-            "competenceAreas": [
-                7287
-            ],
-            ...
-        },
-        ...
-    ]
-
-------------------------------------------------------------------------------------
+-----------------------------------------------------------------
 
 **Issues a friend-request-notification to target user**
 
@@ -759,7 +679,7 @@ Json-data, a success
 
 ##### *Request:*
 
-POST user/image/add
+POST user/image
 
 The file must be posted as Multipart file! The file needs to have the key "file".
 
@@ -769,11 +689,37 @@ Json-data, a success or an error
 	
 -----------------------------------------------------------------
 
-**Get the image of a user**
+**Get the image of the logged in user**
 
 ##### *Request:*
 
-GET user/image/get
+GET user/image
+
+##### *Response:*
+
+The picture, or an error as json:
+
+	{
+	    "type": "NO_OBJECT",
+	    "rest_action": "GET",
+	    "success": false,
+	    "errors": [
+	        {
+	            "name": "NOT_FOUND",
+	            "cause": "bad_request"
+	        }
+	    ],
+	    "object": null,
+	    "meta": {}
+	}
+	
+-----------------------------------------------------------------
+
+**Get the image of target user**
+
+##### *Request:*
+
+GET user/{user_id}/image
 
 ##### *Response:*
 
@@ -1239,26 +1185,38 @@ GET task/type
 
 ##### *Response:*
 
-	{
-	  "following": [],
-	  "participating": [
-	    {
-	      "id": 1,
-	      "name": "Water the flowers",
-	      "description": "All about watering the different flowers in the garden.",
-			...
+	"meta": {
+	        "PARTICIPATING": [],
+	        "LEADING": [
+	            {
+	                "id": 1,
+	                "name": "test1",
+	                 ...
+	            }
+	        ],
+	        "FOLLOWING": [
+	            {
+	                "id": 2,
+	                "name": "test2",
+	                 ...
+	            }
+	        ],
+	        "MATERIAL": [
+	            {
+	                "id": 3,
+	                "name": "test3",
+	                ...
+	            }
+	        ]
 	    }
-	  ],
-	  "leading": []
-	}
 	
 -----------------------------------------------------------------
 
-**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'participate' or 'follow'**
+**Adds target task to the open-tasks of the logged-in user or changes it's state; Choose either 'PARTICIPATING' or 'FOLLOWING'**
 
 ##### *Request:*
 
-PUT task/{task_id}/add/{state_name}
+PUT task/{task_id}/add/{state}
 
 ##### *Response:*
 
@@ -1447,7 +1405,7 @@ ALREADY_EXISTS_VALUES_ADJUSTED, ID_NOT_VALID, CREATED, NOT_CREATED, NOT_ASSIGNED
 	
 ##### *Request:*
 
-POST /task/{task_id}/material/add
+POST /task/{task_id}/material
 
 	{
 		"name": "cake",
@@ -1465,7 +1423,7 @@ Json-data, either a success or a failure message
 	
 ##### *Request:*
 
-PUT /task/{task_id}/material/{material_id}/update
+PUT /task/{task_id}/material/{material_id}
 
 	{
 		"name": "cake",
@@ -1483,7 +1441,7 @@ Json-data, either a success or a failure message
 	
 ##### *Request:*
 
-DELETE /task/{task_id}/material/{material_id}/remove
+DELETE /task/{task_id}/material/{material_id}
 
 ##### *Response:*
 
@@ -1513,6 +1471,18 @@ QUANTITY_TOO_HIGH
 ##### *Request:*
 
 DELETE /task/{task_id}/material/{material_id}/unsubscribe
+
+##### *Response:*
+
+Json-data, either a success or a failure message
+
+-----------------------------------------------------------------
+	
+**Set the fullfilled-variable of target subscription**
+	
+##### *Request:*
+
+PUT /task/subscription/{subscription_id}/fullfilled/{fullfilled}
 
 ##### *Response:*
 
@@ -1907,6 +1877,87 @@ POST /task/elastic/query
 		"assessment" : 0.7 },
 	]
 	
+------------------------------------------------------------------------------------
+
+**Return a list of possible competence areas for the given task**
+
+##### *Request:*
+
+GET task/{task_id}/competenceArea/suggest
+
+##### *Response:*
+
+ [
+        {
+            "id": 7364,
+            "name": "Kochen",
+            "description": "",
+            "mappedCompetences": []
+        },
+        {
+            "id": 7287,
+            "name": "Kochen",
+            "description": "",
+            "mappedCompetences": [
+                49545,
+                49548,
+                49547,
+                49544,
+                49546,
+                49553,
+                49555,
+                49550,
+                49551,
+                49554,
+                49552,
+                49549
+            ]
+        }
+    ]
+
+------------------------------------------------------------------------------------
+
+**Return a list of possible competences for the given task**
+
+##### *Request:*
+
+GET task/{task_id}/competence/suggest
+
+##### *Response:*
+
+ [
+        {
+            "id": 49547,
+            "name": "groÃŸe Mengen an warmen Speisen zubereiten",
+            "description": "Ich kann groÃŸe Mengen an warmen Speisen zubereiten.",
+            ...
+            "competenceAreas": [
+                7287
+            ],
+            ...
+        },
+        {
+            "id": 49546,
+            "name": "Backen",
+            "description": "Ich kann einfache Kuchen backen.",
+            ...
+            "competenceAreas": [
+                7287
+            ],
+            ...
+        },
+        {
+            "id": 49544,
+            "name": "Warme Speisen zubereiten",
+            "description": "Ich kann warme Speisen zuzubereiten.",
+            ...
+            "competenceAreas": [
+                7287
+            ],
+            ...
+        },
+        ...
+    ]
 
 -----------------------------------------------------------------
 
@@ -2095,29 +2146,24 @@ Json-data, either a success or a failure message
 -----------------------------------------------------------------
 
 ### Filter-Configuration-Endpoints
-These endpoints handle the filter-configuration of the User-Task-Allocation (the matrix-part)
+These endpoints handle the filter-configuration of the User-Task-Allocation (the matrix-part). It consists of 3 different configurations, which can be handled sperately:
+PreMatchingFilters, MatchingFilters and PostMatchingFilters.  
+For each endpoint the value {matching_type} can be set to "prematching", "matching" or "postmatching"!  
+
+Available filters for the categories:  
+
+prematching: GroupFilter, LoggedUserFilter  
+matching: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter  
+postmatching: ClearFilter, MissingVolunteerFilter  
+
+####The standard configuration contains all filters once (they can be added multiple times if that is wanted)  
 
 -----------------------------------------------------------------
-**Adds a filter to the filter-configuration, based on it's name**
+**Sets target configuration, based on the list of filters in the posted JSon-file**
 
 ##### *Request:*
 
-GET /configuration/filter/add/{filter_name}
-
-The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
-
-##### *Response:*
-
-Json-data, either a success or a failure message when an invalid filter-name has been used.
-
------------------------------------------------------------------
-**Adds multiple filters to the filter-configuration, based on the list of filters in the posted JSon-file**
-
-##### *Request:*
-
-POST /configuration/filter/add
-
-The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter, UserRelationFilter.
+POST /filter/{matching_type}
 
 	{
 		"parameters": ["ImportancyLevelFilter", "LikeLevelFilter", "ProficiencyLevelFilter", "LikeLevelFilter"]
@@ -2125,16 +2171,15 @@ The possible names for the filters are: LikeLevelFilter, ImportancyLevelFilter, 
 
 ##### *Response:*
 
-Json-data, either a success or a failure message when only invalid filter-names have been used.
-If that is the case, the configuration resets itself to the standard configuration.
-This configuration consists of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
+Json-data, either a success or a failure message when an invalid filter-name has been used.
 
 -----------------------------------------------------------------
-**Returns a list of all active filters**
+
+**Returns a list of all active filters of target configuration**
 
 ##### *Request:*
 
-GET /configuration/filter/print
+GET /filter/{matching_type}/print
 
 ##### *Response:*
 
@@ -2144,24 +2189,23 @@ GET /configuration/filter/print
 	}
 
 -----------------------------------------------------------------
-**Clears (empties) the list of active filters**
+
+**Clears (empties) the list of active filters of target configuration**
 
 ##### *Request:*
 
-GET /configuration/filter/clear
+DELETE /filter/{matching_type}
 
 ##### *Response:*
 
 Json-data, a success
 
 -----------------------------------------------------------------
-**Restores the standard state of the filter-configuration**
+**Restores the standard state of target filter-configuration**
 
 ##### *Request:*
 
-This endpoint restores the standard state of the configuration, consisting of: LikeLevelFilter, ImportancyLevelFilter, ProficiencyLevelFilter.
-
-GET /configuration/filter/restore
+PUT /filter/{matching_type}/restore
 
 ##### *Response:*
 
@@ -2677,13 +2721,39 @@ Major change for the "get all tasks"-Endpoints --> see the "Task-Endpoints" (fir
 
 New endpoints for adding and removing users to and from groups --> see "Group-Endpoints"  
 
+-----------------------------------------------------------------
+
 #### 21.9.2017
 
 Information in notifications now consists of object and not just their ID! -> see "Notification-Endpoints"  
+
+-----------------------------------------------------------------
 
 #### 2.10.2017
 
 API for changing task-states has changed -> see "Task-Section"  
 Endpoints for the uploading of picture for users added -> see "User-Section"  
 Endpoint for uploading of attachments for tasks and endpoint for copiing an archived task added -> see "Task-Section"
+
+-----------------------------------------------------------------
+
+#### 9.10.2017
+
+Change for task-endpoints:  
+GET task/type now returns differently named keys -> see "Task-Section"  
+New endpoint for setting material-subscriptions to fullfilled -> PUT task/subscription/{subscription_id}/fullfilled/{fullfilled}  
+Endpoints for images changed -> GET, ADD, DELETE removed since information is already available in the request-method  
+Endpoint for getting the image of any user added -> Get user/{user_id}/image  
+
+-----------------------------------------------------------------
+
+#### 10.10.2017
+
+Rework of the filter-section!  
+New (and changed) endpoints for accessing the filter-configuration for the matching-process -> see "Filter-Section" 
+
+Changed endpoints for accessing materials on tasks -> ADD, UPDATE, REMOVE removed since information is already available in the request-method  
   
+POST /task/{task_id}/material/add -> POST /task/{task_id}/material  
+PUT /task/{task_id}/material/{material_id}/update -> PUT /task/{task_id}/material/{material_id}  
+DELETE /task/{task_id}/material/{material_id}/remove -> DELETE /task/{task_id}/material/{material_id}  

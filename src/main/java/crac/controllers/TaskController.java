@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,10 +32,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ConcreteTaskState;
 import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
 import crac.enums.TaskParticipationType;
-import crac.enums.ConcreteTaskState;
 import crac.enums.TaskType;
 import crac.exception.InvalidActionException;
 import crac.models.db.daos.AttachmentDAO;
@@ -54,15 +57,16 @@ import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.ArchiveTask;
+import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
 import crac.models.input.MaterialMapping;
 import crac.models.input.PostOptions;
-import crac.models.output.ArchiveTask;
 import crac.models.output.TaskDetails;
-import crac.models.output.TaskShort;
 import crac.models.utility.NotificationConfiguration;
 import crac.models.utility.PersonalizedFilters;
 import crac.models.utility.TaskLookup;
@@ -76,9 +80,9 @@ import crac.module.notifier.notifications.LeadNomination;
 import crac.module.notifier.notifications.TaskDoneNotification;
 import crac.module.notifier.notifications.TaskInvitation;
 import crac.module.storage.CompetenceStorage;
+import crac.module.utility.CracUtility;
 import crac.module.utility.ElasticConnector;
 import crac.module.utility.JSONResponseHelper;
-import crac.module.utility.CracUtility;
 
 /**
  * REST controller for managing tasks.
@@ -161,7 +165,10 @@ public class TaskController {
 		PersonalizedFilters pf;
 		pf = mapper.readValue(json, PersonalizedFilters.class);
 
-		return JSONResponseHelper.createResponse(tl.lookUp(user, pf), true);
+		Set<TaskShort> set = tl.lookUp(user, pf).stream().map(task -> task.toShortWithCrumbs())
+				.collect(Collectors.toSet());
+
+		return JSONResponseHelper.createResponse(set, true);
 	}
 
 	/**
@@ -217,62 +224,6 @@ public class TaskController {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 
 	}
-
-	/**
-	 * Adds target task to the open-tasks of the logged-in user or changes it's
-	 * state
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	/*
-	 * @RequestMapping(value = { "/{task_id}/add/{state_name}",
-	 * "/task/{task_id}/{state_name}/" }, method = RequestMethod.PUT, produces =
-	 * "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String> addToUser(@PathVariable(value
-	 * = "state_name") String stateName,
-	 * 
-	 * @PathVariable(value = "task_id") Long taskId) {
-	 * 
-	 * UsernamePasswordAuthenticationToken userDetails =
-	 * (UsernamePasswordAuthenticationToken) SecurityContextHolder
-	 * .getContext().getAuthentication(); CracUser user =
-	 * userDAO.findByName(userDetails.getName());
-	 * 
-	 * Task task = taskDAO.findOne(taskId);
-	 * 
-	 * if (task != null) { TaskParticipationType state =
-	 * TaskParticipationType.PARTICIPATING; if (stateName.equals("participate"))
-	 * { if (task.isJoinable()) { if (!task.isFull()) { state =
-	 * TaskParticipationType.PARTICIPATING; } else { return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_IS_FULL); } } else { return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_NOT_JOINABLE); } } else if (stateName.equals("follow")) {
-	 * if (task.isFollowable()) { state = TaskParticipationType.FOLLOWING; }
-	 * else { return JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.TASK_NOT_JOINABLE); } } else { HashMap<String, Object> meta =
-	 * new HashMap<>(); meta.put("state", stateName); return
-	 * JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.STATE_NOT_AVAILABLE, meta); }
-	 * 
-	 * UserTaskRel rel =
-	 * userTaskRelDAO.findByUserAndTaskAndParticipationTypeNot(user, task,
-	 * TaskParticipationType.LEADING);
-	 * 
-	 * if (rel == null) { rel = new UserTaskRel(); rel.setUser(user);
-	 * rel.setTask(task); rel.setParticipationType(state);
-	 * user.getTaskRelationships().add(rel); userDAO.save(user); } else {
-	 * rel.setParticipationType(state); userTaskRelDAO.save(rel); }
-	 * 
-	 * return JSONResponseHelper.successfullyAssigned(task);
-	 * 
-	 * } else { return JSONResponseHelper.createResponse(false, "bad_request",
-	 * ErrorCode.ID_NOT_FOUND); }
-	 * 
-	 * }
-	 */
 
 	@RequestMapping(value = { "/{task_id}/add/{state}",
 			"/task/{task_id}/{state}/" }, method = RequestMethod.PUT, produces = "application/json")
@@ -364,29 +315,12 @@ public class TaskController {
 
 		Set<UserTaskRel> taskRels = userTaskRelDAO.findByUser(user);
 
-		Set<TaskShort> taskListFollow = new HashSet<>();
-		Set<TaskShort> taskListPart = new HashSet<>();
-		Set<TaskShort> taskListLead = new HashSet<>();
-
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put("leading", taskListLead);
-		meta.put("following", taskListFollow);
-		meta.put("participating", taskListPart);
 
-		if (taskRels.size() != 0) {
-
-			for (UserTaskRel utr : taskRels) {
-				if (!utr.isCompleted()) {
-					if (utr.getParticipationType() == TaskParticipationType.FOLLOWING) {
-						taskListFollow.add(new TaskShort(utr.getTask()));
-					} else if (utr.getParticipationType() == TaskParticipationType.PARTICIPATING) {
-						taskListPart.add(new TaskShort(utr.getTask()));
-					} else if (utr.getParticipationType() == TaskParticipationType.LEADING) {
-						taskListLead.add(new TaskShort(utr.getTask()));
-					}
-				}
-			}
-		}
+		Stream.of(TaskParticipationType.values()).forEach(type -> {
+			meta.put(type.toString(), taskRels.stream().filter(rel -> type == rel.getParticipationType())
+					.map(rel -> rel.getTask().toShort()).collect(Collectors.toSet()));
+		});
 
 		return JSONResponseHelper.createResponse(user, true, meta);
 
@@ -405,14 +339,10 @@ public class TaskController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-		Set<UserTaskRel> trels = userTaskRelDAO.findByUserAndParticipationType(user, partType);
-		Set<ArchiveTask> tcomp = new HashSet<>();
-		for (UserTaskRel tr : trels) {
-			if (tr.getTask().getTaskState() == ConcreteTaskState.COMPLETED) {
-				tcomp.add(new ArchiveTask(tr));
-			}
-		}
-		return JSONResponseHelper.createResponse(tcomp, true);
+		Set<UserTaskRel> trels = userTaskRelDAO.selectRelByUserAndParticipationTypeAndTaskState(user, partType,
+				ConcreteTaskState.COMPLETED);
+		return JSONResponseHelper.createResponse(
+				trels.stream().map(tr -> tr.getTask().toArchived(tr)).collect(Collectors.toList()), true);
 
 	}
 
@@ -435,30 +365,20 @@ public class TaskController {
 	@ResponseBody
 	public ResponseEntity<String> availableCompetences(@PathVariable(value = "task_id") Long taskId) {
 
-		Task task = taskDAO.findOne(taskId);
+		Iterable<Competence> competenceList = competenceDAO.findByDeprecatedNot(true);
 
-		Iterable<Competence> competenceList = competenceDAO.findAll();
-
-		Set<CompetenceTaskRel> competenceRels = task.getMappedCompetences();
-
-		ArrayList<Competence> found = new ArrayList<Competence>();
+		List<Competence> comps = new ArrayList<Competence>();
 
 		if (competenceList != null) {
-			for (Competence c : competenceList) {
-				boolean in = false;
-				for (CompetenceTaskRel ctr : competenceRels) {
-					if (c.getId() == ctr.getCompetence().getId()) {
-						in = true;
-					}
-				}
-				if (!in) {
-					found.add(c);
-				}
-			}
+
+			comps = StreamSupport.stream(competenceList.spliterator(), false)
+					.filter(c -> taskDAO.findOne(taskId).getMappedCompetences().stream()
+							.map(CompetenceTaskRel::getCompetence).noneMatch(uc -> uc.equals(c)))
+					.collect(Collectors.toList());
 		}
 
-		if (found.size() != 0) {
-			return JSONResponseHelper.createResponse(found, true);
+		if (comps.size() != 0) {
+			return JSONResponseHelper.createResponse(comps, true);
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
 		}
@@ -488,7 +408,7 @@ public class TaskController {
 						.getContext().getAuthentication();
 				CracUser user = userDAO.findByName(userDetails.getName());
 
-				if (user.hasTaskPermissions(oldTask)) {
+				if (oldTask.isLeader(user)) {
 					ObjectMapper mapper = new ObjectMapper();
 					Task updatedTask;
 					updatedTask = mapper.readValue(json, Task.class);
@@ -568,7 +488,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(supertask_id);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 
 				if (st.getTaskState().isExtendable()) {
 					return persistTask(st, user, json);
@@ -604,7 +524,7 @@ public class TaskController {
 		Task t = taskDAO.findOne(taskId);
 
 		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				System.out.println("sfd " + t.getMaxAmountOfVolunteers());
 				if (t.getMaxAmountOfVolunteers() == 0) {
@@ -710,7 +630,15 @@ public class TaskController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
+<<<<<<< HEAD
 		return JSONResponseHelper.createResponse(decider.findTasks(user, new UserFilterParameters()), true);
+=======
+
+		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
+				.map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toSet());
+
+		return JSONResponseHelper.createResponse(set, true);
+>>>>>>> master
 
 	}
 
@@ -729,21 +657,10 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		ArrayList<EvaluatedTask> tasks = new ArrayList<>();
+		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
+				.map(evaltask -> evaltask.getTask().toShort()).limit(numberOfTasks).collect(Collectors.toSet());
 
-		int count = 0;
-
-		for (EvaluatedTask task : decider.findTasks(user, new UserFilterParameters())) {
-
-			if (count == numberOfTasks) {
-				break;
-			}
-
-			tasks.add(task);
-			count++;
-		}
-
-		return JSONResponseHelper.createResponse(tasks, true);
+		return JSONResponseHelper.createResponse(set, true);
 
 	}
 
@@ -776,15 +693,12 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				if (action.equals("overwrite")) {
 
 					Set<Material> del = new HashSet<>();
-
-					for (Material m : t.getMaterials()) {
-						del.add(m);
-					}
+					t.getMaterials().forEach(del::add);
 
 					for (Material m : del) {
 						m.getTask().getMaterials().remove(m);
@@ -836,8 +750,8 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	@RequestMapping(value = { "/{task_id}/material/add",
-			"/{task_id}/material/add/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{task_id}/material",
+			"/{task_id}/material/" }, method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> addMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId)
 			throws JsonParseException, JsonMappingException, IOException {
@@ -848,7 +762,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(taskId);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 				ObjectMapper mapper = new ObjectMapper();
 				Material m;
 
@@ -884,8 +798,8 @@ public class TaskController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	@RequestMapping(value = { "/{task_id}/material/{material_id}/update",
-			"/{task_id}/material/{material_id}/update/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = { "/{task_id}/material/{material_id}",
+			"/{task_id}/material/{material_id}/" }, method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateMaterial(@RequestBody String json, @PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId)
@@ -897,7 +811,7 @@ public class TaskController {
 		Task st = taskDAO.findOne(taskId);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 
 				Material old = materialDAO.findOne(materialId);
 
@@ -933,8 +847,8 @@ public class TaskController {
 	 * @param materialId
 	 * @return ResponseEntity
 	 */
-	@RequestMapping(value = { "/{task_id}/material/{material_id}/remove",
-			"/{task_id}/material/{material_id}/remove/" }, method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = { "/{task_id}/material/{material_id}",
+			"/{task_id}/material/{material_id}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> removeMaterial(@PathVariable(value = "task_id") Long taskId,
 			@PathVariable(value = "material_id") Long materialId) {
@@ -945,22 +859,21 @@ public class TaskController {
 		Task st = taskDAO.findOne(taskId);
 
 		if (st != null) {
-			if (user.hasTaskPermissions(st)) {
+			if (st.isLeader(user)) {
 
-				Material delm = null;
+				Material delm = materialDAO.findOne(materialId);
 
-				for (Material m : st.getMaterials()) {
-					if (m.getId() == materialId) {
-						delm = m;
-					}
+				if (delm != null) {
+					st.getMaterials().remove(delm);
+
+					materialDAO.delete(delm);
+
+					taskDAO.save(st);
+					return JSONResponseHelper.successfullyUpdated(st);
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+
 				}
-
-				st.getMaterials().remove(delm);
-
-				materialDAO.delete(delm);
-
-				taskDAO.save(st);
-				return JSONResponseHelper.successfullyUpdated(st);
 
 			} else {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
@@ -1005,6 +918,7 @@ public class TaskController {
 					String status = m.subscribable(quantity, um);
 
 					if (status.equals("OK")) {
+
 						HashMap<String, Object> meta = new HashMap<>();
 						meta.put("task_id", st.getId() + "");
 						meta.put("material_id", m.getId() + "");
@@ -1058,6 +972,31 @@ public class TaskController {
 	}
 
 	/**
+	 * Set the fullfilled-variable of target subscription
+	 * 
+	 * @param subscriptionId
+	 * @param fullfilled
+	 * @return ResponseEntity
+	 */
+	@RequestMapping(value = { "/subscription/{subscription_id}/fullfilled/{fullfilled}",
+			"/subscription/{subscription_id}/fullfilled/{fullfilled}/" }, method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<String> fullfillSubscription(@PathVariable(value = "subscription_id") Long subscriptionId,
+			@PathVariable(value = "fullfilled") boolean fullfilled) {
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+		UserMaterialSubscription ums = userMaterialSubscriptionDAO.findOne(subscriptionId);
+		if (ums.getUser().equals(user) || ums.getMaterial().getTask().isLeader(user)) {
+			ums.setFullfilled(fullfilled);
+			userMaterialSubscriptionDAO.save(ums);
+			return JSONResponseHelper.successfullyUpdated(ums);
+		} else {
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+		}
+	}
+
+	/**
 	 * Unsubscribe to a subscribed material
 	 * 
 	 * @param taskId
@@ -1105,69 +1044,6 @@ public class TaskController {
 
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 	}
-
-	/**
-	 * Sets a single task ready to be published, only works if it's children are
-	 * ready
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	/*
-	 * @RequestMapping(value = { "/{task_id}/publish/ready/single",
-	 * "/{task_id}/publish/ready/single/" }, method = RequestMethod.GET,
-	 * produces = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * readyforPublish(@PathVariable(value = "task_id") Long taskId) { Task t =
-	 * taskDAO.findOne(taskId); UsernamePasswordAuthenticationToken userDetails
-	 * = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-	 * .getContext().getAuthentication(); CracUser user =
-	 * userDAO.findByName(userDetails.getName());
-	 * 
-	 * if (t != null) { if (user.hasTaskPermissions(t)) {
-	 * 
-	 * if (t.fieldsFilled()) { if (t.childTasksReady()) {
-	 * t.setReadyToPublish(true); taskDAO.save(t); return
-	 * JSonResponseHelper.successFullyUpdated(t); } else { return
-	 * JSonResponseHelper.createResponse(false, "bad_request",
-	 * "CHILDREN_NOT_READY"); } } else { return
-	 * JSonResponseHelper.createResponse(false, "bad_request",
-	 * "TASK_NOT_READY"); }
-	 * 
-	 * } else { return JSonResponseHelper.createResponse(false, "bad_request",
-	 * "PERMISSIONS_NOT_SUFFICIENT"); } } else { return
-	 * JSonResponseHelper.idNotFound(); } }
-	 */
-
-	/**
-	 * Sets target task and all children ready to be published
-	 * 
-	 * @param taskId
-	 * @return ResponseEntity
-	 */
-	/*
-	 * @RequestMapping(value = { "/{task_id}/publish/ready/tree",
-	 * "/{task_id}/publish/ready/tree/" }, method = RequestMethod.GET, produces
-	 * = "application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * forcePublish(@PathVariable(value = "task_id") Long taskId) { Task t =
-	 * taskDAO.findOne(taskId); UsernamePasswordAuthenticationToken userDetails
-	 * = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-	 * .getContext().getAuthentication(); CracUser user =
-	 * userDAO.findByName(userDetails.getName());
-	 * 
-	 * if (t != null) { if (user.hasTaskPermissions(t)) { HashMap<String,
-	 * String> results = new HashMap<>(); t.readyToPublishTree(results,
-	 * taskDAO); if (results.size() == 0) { return
-	 * JSonResponseHelper.successFullyUpdated(t); } else { return
-	 * JSonResponseHelper.messageArray(results); }
-	 * 
-	 * } else { return JSonResponseHelper.createResponse(false, "bad_request",
-	 * "PERMISSIONS_NOT_SUFFICIENT"); } } else { return
-	 * JSonResponseHelper.idNotFound(); } }
-	 */
 
 	/**
 	 * Copy target task
@@ -1247,11 +1123,12 @@ public class TaskController {
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
+
 		if (task != null && competence != null) {
-			if (user.getCreatedTasks().contains(task) && task.getTaskState() == ConcreteTaskState.NOT_PUBLISHED
-					|| user.confirmRole("ADMIN") && task.getTaskState() == ConcreteTaskState.NOT_PUBLISHED) {
+			if (task.isLeader(user)) {
 				competenceTaskRelDAO.save(new CompetenceTaskRel(competence, task, po.getProficiencyValue(),
 						po.getImportanceValue(), po.isMandatory()));
+
 				return JSONResponseHelper.successfullyAssigned(competence);
 			} else {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.RESOURCE_UNCHANGEABLE);
@@ -1284,7 +1161,7 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				ObjectMapper mapper = new ObjectMapper();
 				CompetenceTaskMapping[] m = null;
@@ -1386,7 +1263,7 @@ public class TaskController {
 
 		if (t != null) {
 
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				Set<CompetenceTaskRel> toremove = new HashSet<>();
 
@@ -1491,20 +1368,24 @@ public class TaskController {
 
 		Task task = taskDAO.findOne(task_id);
 		Competence competence = competenceDAO.findOne(competence_id);
-		CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
-		if (task != null && competence != null && ctr != null) {
-			if (user.getCreatedTasks().contains(task) && task.getTaskState() == ConcreteTaskState.NOT_PUBLISHED
-					|| user.confirmRole("ADMIN") && task.getTaskState() == ConcreteTaskState.NOT_PUBLISHED) {
-				task.getMappedCompetences().remove(ctr);
-				competence.getCompetenceTaskRels().remove(ctr);
-				competenceTaskRelDAO.delete(ctr);
-				return JSONResponseHelper.successfullyDeleted(competence);
-			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.RESOURCE_UNCHANGEABLE);
+
+		if (task != null && competence != null) {
+			CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
+
+			if (ctr != null) {
+				if (task.isLeader(user)) {
+					task.getMappedCompetences().remove(ctr);
+					competence.getCompetenceTaskRels().remove(ctr);
+					competenceTaskRelDAO.delete(ctr);
+					return JSONResponseHelper.successfullyDeleted(competence);
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request",
+							ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+				}
 			}
-		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+
 	}
 
 	/**
@@ -1529,6 +1410,10 @@ public class TaskController {
 
 		PostOptions po;
 
+		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+				.getContext().getAuthentication();
+		CracUser user = userDAO.findByName(userDetails.getName());
+
 		po = mapper.readValue(json, PostOptions.class);
 
 		Task task = taskDAO.findOne(taskId);
@@ -1538,18 +1423,21 @@ public class TaskController {
 			CompetenceTaskRel ctr = competenceTaskRelDAO.findByTaskAndCompetence(task, competence);
 
 			if (ctr != null) {
-				ctr.setImportanceLevel(po.getImportanceLevel());
-				ctr.setMandatory(po.isMandatory());
-				ctr.setNeededProficiencyLevel(po.getNeededProficiencyLevel());
-				ResponseEntity<String> v = JSONResponseHelper.successfullyUpdated(ctr);
-				competenceTaskRelDAO.save(ctr);
-				return v;
-			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+				if (task.isLeader(user)) {
+					ctr.setImportanceLevel(po.getImportanceLevel());
+					ctr.setMandatory(po.isMandatory());
+					ctr.setNeededProficiencyLevel(po.getNeededProficiencyLevel());
+					ResponseEntity<String> v = JSONResponseHelper.successfullyUpdated(ctr);
+					competenceTaskRelDAO.save(ctr);
+					return v;
+				} else {
+					return JSONResponseHelper.createResponse(false, "bad_request",
+							ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+				}
 			}
-		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
+
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 
 	}
 
@@ -1621,9 +1509,9 @@ public class TaskController {
 						}
 
 						if (alldone) {
-							for (UserTaskRel l : task.getAllLeaders()) {
+							for (UserTaskRel l : task.getRelationships(1, TaskParticipationType.LEADING)) {
 								nf.createSystemNotification(TaskDoneNotification.class, l.getUser(),
-										NotificationConfiguration.create().put("task", task.generateNTask()));
+										NotificationConfiguration.create().put("task", task.toShort()));
 							}
 						}
 
@@ -1663,9 +1551,9 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		if (user.hasTaskPermissions(task)) {
+		if (task != null) {
 
-			if (task != null) {
+			if (task.isLeader(user)) {
 
 				ConcreteTaskState oldState = task.getTaskState();
 
@@ -1712,10 +1600,10 @@ public class TaskController {
 				meta.put("new_state", state.toString());
 				return JSONResponseHelper.createResponse(true, meta);
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 
@@ -1739,9 +1627,9 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		if (user.hasTaskPermissions(task)) {
+		if (task != null) {
 
-			if (task != null) {
+			if (task.isLeader(user)) {
 
 				ConcreteTaskState oldState = task.getTaskState();
 
@@ -1759,10 +1647,10 @@ public class TaskController {
 
 				return JSONResponseHelper.createResponse(true, meta);
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 	}
 
@@ -1788,9 +1676,9 @@ public class TaskController {
 
 		if (targetU != null && task != null) {
 
-			if (loggedU.hasTaskPermissions(task)) {
+			if (task.isLeader(loggedU)) {
 				Notification n = nf.createNotification(LeadNomination.class, targetU, loggedU,
-						NotificationConfiguration.create().put("task", task.generateNTask()));
+						NotificationConfiguration.create().put("task", task.toShort()));
 				return JSONResponseHelper.successfullyCreated(n);
 			} else {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.RESOURCE_UNCHANGEABLE);
@@ -1820,8 +1708,8 @@ public class TaskController {
 		Task task = taskDAO.findOne(taskId);
 		List<CracUser> users = new ArrayList<>();
 
-		if (user.hasTaskPermissions(task)) {
-			if (task != null) {
+		if (task != null) {
+			if (task.isLeader(user)) {
 				if (invType.equals("user")) {
 					CracUser inv = userDAO.findOne(invId);
 					if (inv != null) {
@@ -1846,14 +1734,14 @@ public class TaskController {
 				}
 				for (CracUser u : users) {
 					nf.createNotification(TaskInvitation.class, u, user,
-							NotificationConfiguration.create().put("task", task.generateNTask()));
+							NotificationConfiguration.create().put("task", task.toShort()));
 				}
 				return JSONResponseHelper.successfullyCreated(users);
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -1876,8 +1764,8 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		Task task = taskDAO.findOne(taskId);
 
-		if (user.hasTaskPermissions(task)) {
-			if (task != null) {
+		if (task != null) {
+			if (task.isLeader(user)) {
 				CracGroup group = groupDAO.findOne(groupId);
 				if (group != null) {
 					if (!group.getRestrictedTasks().contains(task)) {
@@ -1890,10 +1778,10 @@ public class TaskController {
 				}
 				return JSONResponseHelper.successfullyUpdated(task);
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -1919,8 +1807,8 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 		Task task = taskDAO.findOne(taskId);
 
-		if (user.hasTaskPermissions(task)) {
-			if (task != null) {
+		if (task != null) {
+			if (task.isLeader(user)) {
 
 				ObjectMapper mapper = new ObjectMapper();
 
@@ -1949,10 +1837,10 @@ public class TaskController {
 					return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 				}
 			} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -2068,7 +1956,7 @@ public class TaskController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 
 				String name = file.getOriginalFilename();
 				String path = CracUtility.processUpload(file, "image/jpeg", "image/jpg", "image/png",
@@ -2112,7 +2000,7 @@ public class TaskController {
 		Task t = taskDAO.findOne(task_id);
 
 		if (t != null) {
-			if (user.hasTaskPermissions(t)) {
+			if (t.isLeader(user)) {
 				Attachment a = attachmentDAO.findByIdAndTask(attachment_id, t);
 				if (a != null) {
 					CracUtility.removeFile(a.getPath());
@@ -2154,7 +2042,7 @@ public class TaskController {
 		Task t = taskDAO.findOne(task_id);
 
 		if (t != null) {
-			if (u.hasTaskPermissions(t)) {
+			if (t.isLeader(u)) {
 				Attachment a = attachmentDAO.findByIdAndTask(attachment_id, t);
 				if (a != null) {
 

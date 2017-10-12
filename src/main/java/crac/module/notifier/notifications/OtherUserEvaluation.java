@@ -1,6 +1,6 @@
 package crac.module.notifier.notifications;
 
-import crac.models.db.entities.Task.NotificationTask;
+import crac.models.db.entities.Task.TaskShort;
 import crac.models.utility.NotificationConfiguration;
 import crac.module.notifier.Notification;
 import crac.module.notifier.NotificationType;
@@ -16,7 +16,7 @@ public class OtherUserEvaluation extends Notification {
 
 	@Getter
 	@Setter
-	private NotificationTask task;
+	private TaskShort task;
 
 	@Getter
 	@Setter
@@ -50,7 +50,7 @@ public class OtherUserEvaluation extends Notification {
 
 	@Override
 	public void configure(NotificationConfiguration conf) {
-		this.task = conf.get("task", NotificationTask.class);
+		this.task = conf.get("task", TaskShort.class);
 		this.evaluationId = conf.get("evaluation", Long.class);
 		this.toEvaluateId = conf.get("toEvaluate", Long.class);
 	}

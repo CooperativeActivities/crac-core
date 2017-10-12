@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import crac.enums.ConcreteTaskState;
+import crac.enums.TaskParticipationType;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
@@ -130,7 +131,7 @@ public class TaskMatchingWorker extends Worker {
 				double mval = 0.6;
 				double newval = 0;
 
-				double valAdjust = ((double) t.getAllParticipants().size() / (double) t.getMinAmountOfVolunteers());
+				double valAdjust = ((double) t.getRelationships(0, TaskParticipationType.PARTICIPATING).size() / (double) t.getMinAmountOfVolunteers());
 
 				newval = task.getAssessment() * (1 + (1 - valAdjust) * mval);
 
