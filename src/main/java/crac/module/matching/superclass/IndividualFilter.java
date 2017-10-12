@@ -1,6 +1,6 @@
 package crac.module.matching.superclass;
 
-import crac.module.matching.factories.CracFilterFactory;
+import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 
 public abstract class IndividualFilter extends ConcreteFilter {

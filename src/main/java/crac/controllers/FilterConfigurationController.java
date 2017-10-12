@@ -18,15 +18,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.ErrorCode;
+import crac.models.utility.PersonalizedFilters;
+import crac.module.factories.CracFilterFactory;
 import crac.module.matching.configuration.MatchingConfiguration;
-import crac.module.matching.configuration.MatrixFilterParameters;
 import crac.module.matching.configuration.PostMatchingConfiguration;
 import crac.module.matching.configuration.PreMatchingConfiguration;
-import crac.module.matching.factories.CracFilterFactory;
-import crac.module.matching.filter.matching.ImportancyLevelFilter;
-import crac.module.matching.filter.matching.LikeLevelFilter;
-import crac.module.matching.filter.matching.ProficiencyLevelFilter;
-import crac.module.matching.filter.matching.UserRelationFilter;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.utility.JSONResponseHelper;
 import lombok.Getter;
@@ -60,7 +56,8 @@ public class FilterConfigurationController {
 	private CracFilterFactory cf;
 
 	/**
-	 * Sets target configuration, based on the list of filters in the posted JSon-file
+	 * Sets target configuration, based on the list of filters in the posted
+	 * JSon-file
 	 * 
 	 * @param json
 	 * @return ResponseEntity
@@ -75,13 +72,13 @@ public class FilterConfigurationController {
 			@PathVariable(value = "matching_type") String matchingType)
 			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		MatrixFilterParameters mfp = null;
-		mfp = mapper.readValue(json, MatrixFilterParameters.class);
+		PersonalizedFilters f = null;
+		f = mapper.readValue(json, PersonalizedFilters.class);
 
 		FilterConfiguration conf = null;
 		String path = "";
 
-		if (mfp != null) {
+		if (f != null) {
 
 			if (matchingType.equals("prematching")) {
 				conf = preMatchingConfig;
@@ -96,14 +93,16 @@ public class FilterConfigurationController {
 
 			conf.clearFilters();
 
-			if (!mfp.apply(cf, conf, path)) {
+			f.convertAndAdd(cf, conf, path);
+
+			if (conf.amount() < 1) {
 
 				conf.restore();
 
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.NOT_FOUND);
 			}
 
-			return JSONResponseHelper.successfullyUpdated(mfp);
+			return JSONResponseHelper.successfullyUpdated(conf.getClass().getSimpleName());
 
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.EMPTY_DATA);
@@ -143,7 +142,7 @@ public class FilterConfigurationController {
 			"/{matching_type}/" }, method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> clearFilter(@PathVariable(value = "matching_type") String matchingType) {
-		
+
 		FilterConfiguration conf = null;
 
 		if (matchingType.equals("prematching")) {
@@ -153,10 +152,10 @@ public class FilterConfigurationController {
 		} else if (matchingType.equals("postmatching")) {
 			conf = postMatchingConfig;
 		}
-		
+
 		conf.clearFilters();
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put(matchingType+ "-filters", "CLEARED");
+		meta.put(matchingType + "-filters", "CLEARED");
 		return JSONResponseHelper.createResponse(true, meta);
 	}
 
@@ -169,7 +168,7 @@ public class FilterConfigurationController {
 			"/{matching_type}/restore/" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> restoreFilter(@PathVariable(value = "matching_type") String matchingType) {
-		
+
 		FilterConfiguration conf = null;
 
 		if (matchingType.equals("prematching")) {
@@ -179,11 +178,11 @@ public class FilterConfigurationController {
 		} else if (matchingType.equals("postmatching")) {
 			conf = postMatchingConfig;
 		}
-		
+
 		conf.restore();
 
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put(matchingType+ "-filters", "RESTORED");
+		meta.put(matchingType + "-filters", "RESTORED");
 		return JSONResponseHelper.createResponse(true, meta);
 	}
 

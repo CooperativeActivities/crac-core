@@ -48,10 +48,9 @@ import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Role;
 import crac.models.db.relation.UserRelationship;
 import crac.models.input.PostOptions;
+import crac.module.factories.NotificationFactory;
 import crac.module.matching.Decider;
-import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.notifier.Notification;
-import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.FriendRequest;
 import crac.module.utility.CracUtility;
 import crac.module.utility.JSONResponseHelper;
@@ -256,7 +255,7 @@ public class CracUserController {
 			"/find/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
-		return JSONResponseHelper.createResponse(decider.findUsers(taskDAO.findOne(taskId), new UserFilterParameters()),
+		return JSONResponseHelper.createResponse(decider.findUsers(taskDAO.findOne(taskId)),
 				true);
 	}
 
