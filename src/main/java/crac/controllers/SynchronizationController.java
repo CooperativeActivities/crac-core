@@ -592,7 +592,7 @@ public class SynchronizationController {
 
 		CracUser SchönböckADMIN = new CracUser();
 
-		SchönböckADMIN.setName("SchönböckADMIN");
+		SchönböckADMIN.setName("SchoenboeckADMIN");
 		SchönböckADMIN.setFirstName("Johannes");
 		SchönböckADMIN.setPassword(bcryptEncoder.encode("default"));
 		SchönböckADMIN.addRole(roleDAO.findByName("ADMIN"));
@@ -602,7 +602,7 @@ public class SynchronizationController {
 
 		CracUser SchönböckUSER = new CracUser();
 
-		SchönböckUSER.setName("SchönböckUSER");
+		SchönböckUSER.setName("SchoenboeckUSER");
 		SchönböckUSER.setFirstName("Johannes");
 		SchönböckUSER.setLastName("Schönböck");
 		SchönböckUSER.setPassword(bcryptEncoder.encode("default"));
@@ -613,7 +613,7 @@ public class SynchronizationController {
 
 		CracUser PröllADMIN = new CracUser();
 
-		PröllADMIN.setName("PröllADMIN");
+		PröllADMIN.setName("ProellADMIN");
 		PröllADMIN.setFirstName("Birigt");
 		PröllADMIN.setLastName("Pröll");
 		PröllADMIN.setPassword(bcryptEncoder.encode("default"));
@@ -624,7 +624,7 @@ public class SynchronizationController {
 
 		CracUser PröllUSER = new CracUser();
 
-		PröllUSER.setName("PröllUSER");
+		PröllUSER.setName("ProellUSER");
 		PröllUSER.setFirstName("Birigt");
 		PröllUSER.setLastName("Pröll");
 		PröllUSER.setPassword(bcryptEncoder.encode("default"));
