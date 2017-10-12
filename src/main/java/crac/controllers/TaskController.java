@@ -630,16 +630,11 @@ public class TaskController {
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
-<<<<<<< HEAD
-		return JSONResponseHelper.createResponse(decider.findTasks(user, new UserFilterParameters()), true);
-=======
 
 		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
 				.map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toSet());
 
 		return JSONResponseHelper.createResponse(set, true);
->>>>>>> master
-
 	}
 
 	/**
