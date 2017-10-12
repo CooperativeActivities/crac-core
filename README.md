@@ -541,6 +541,43 @@ GET task/find/{number_of_tasks}
 	    "assessment": 0.54
 	  }
 	]
+------------------------------------------------------------------------------------
+
+**Return a list of possible competence areas for the given task**
+
+##### *Request:*
+
+GET task/{task_id}/competenceArea/suggest
+
+##### *Response:*
+
+ [
+        {
+            "id": 7364,
+            "name": "Kochen",
+            "description": "",
+            "mappedCompetences": []
+        },
+        {
+            "id": 7287,
+            "name": "Kochen",
+            "description": "",
+            "mappedCompetences": [
+                49545,
+                49548,
+                49547,
+                49544,
+                49546,
+                49553,
+                49555,
+                49550,
+                49551,
+                49554,
+                49552,
+                49549
+            ]
+        }
+    ]
 
 ------------------------------------------------------------------------------------
 
