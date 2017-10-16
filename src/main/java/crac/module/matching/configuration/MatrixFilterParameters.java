@@ -3,7 +3,7 @@ package crac.module.matching.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-import crac.module.matching.factories.CracFilterFactory;
+import crac.module.factories.CracFilterFactory;
 import crac.module.matching.interfaces.CracFilter;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;

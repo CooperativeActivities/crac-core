@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
-import crac.module.matching.factories.CracFilterFactory;
+import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 import crac.module.matching.superclass.IndividualFilter;
