@@ -45,7 +45,6 @@ public class TreeTaggerAnnotator implements Annotator {
 				   public void token(String token, String pos, String lemma ){
 					   CoreLabel t = tokenList.get(i);
 					   t.set(CoreAnnotations.LemmaAnnotation.class, lemma);
-					   t.set(CoreAnnotations.PartOfSpeechAnnotation.class, pos);
 					   i++;
 				   }
 			   });
