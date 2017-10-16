@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import crac.module.matching.factories.NLPWorkerFactory;
+import crac.module.factories.NLPWorkerFactory;
 import crac.module.utility.CracUtility;
 import edu.stanford.nlp.ling.CoreAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -13,7 +13,6 @@ import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.tokensregex.CoreMapExpressionExtractor;
 import edu.stanford.nlp.ling.tokensregex.MatchedExpression;
 import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 
 public abstract class NLPWorker {

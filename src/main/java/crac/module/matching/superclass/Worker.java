@@ -1,6 +1,6 @@
 package crac.module.matching.superclass;
 
-import crac.module.matching.factories.WorkerFactory;
+import crac.module.factories.WorkerFactory;
 import crac.module.utility.CracUtility;
 
 public abstract class Worker {
