@@ -57,8 +57,10 @@ import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Task;
+import crac.models.db.entities.Task.ArchiveTask;
 import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.CompetenceTaskRel;
+import crac.models.db.relation.UserCompetenceRel;
 import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
@@ -68,11 +70,12 @@ import crac.models.output.TaskDetails;
 import crac.models.utility.NotificationConfiguration;
 import crac.models.utility.PersonalizedFilters;
 import crac.models.utility.TaskLookup;
-import crac.module.factories.NotificationFactory;
 import crac.module.matching.Decider;
+import crac.module.matching.configuration.UserFilterParameters;
 import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.interfaces.ErrorStatus;
 import crac.module.notifier.Notification;
+import crac.module.notifier.factory.NotificationFactory;
 import crac.module.notifier.notifications.LeadNomination;
 import crac.module.notifier.notifications.TaskDoneNotification;
 import crac.module.notifier.notifications.TaskInvitation;
@@ -628,8 +631,8 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		List<TaskShort> set = decider.findTasks(user).stream()
-				.map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toList());
+		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
+				.map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toSet());
 
 		return JSONResponseHelper.createResponse(set, true);
 
@@ -650,8 +653,8 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		List<TaskShort> set = decider.findTasks(user).stream()
-				.map(evaltask -> evaltask.getTask().toShort()).limit(numberOfTasks).collect(Collectors.toList());
+		Set<TaskShort> set = decider.findTasks(user, new UserFilterParameters()).stream()
+				.map(evaltask -> evaltask.getTask().toShort()).limit(numberOfTasks).collect(Collectors.toSet());
 
 		return JSONResponseHelper.createResponse(set, true);
 
@@ -1910,7 +1913,7 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		ArrayList<EvaluatedTask> doables = decider.findTasks(user);
+		ArrayList<EvaluatedTask> doables = decider.findTasks(user, new UserFilterParameters());
 
 		for (EvaluatedTask ets : et) {
 			ets.setDoable(false);

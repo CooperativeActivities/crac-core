@@ -63,8 +63,4 @@ public class PreMatchingConfiguration implements FilterConfiguration {
 		filters.add(new GroupFilter());
 	}
 
-	@Override
-	public int amount() {
-		return filters.size();
-	}
 }

@@ -13,14 +13,11 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
 	private Task task;
 	private Evaluation evaluation;
 
-	public UserCompetenceRelationEvolutionWorker() {
-	}
-	
-	@Override
-	public void injectParam(Object param) {
-		this.evaluation = (Evaluation) evaluation;
+	public UserCompetenceRelationEvolutionWorker(Evaluation evaluation) {
+		super();
 		this.user = evaluation.getUserTaskRel().getUser();
 		this.task = evaluation.getUserTaskRel().getTask();
+		this.evaluation = evaluation;
 	}
 
 	@Override

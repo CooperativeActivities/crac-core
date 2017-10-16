@@ -19,8 +19,8 @@ import crac.models.db.daos.TaskDAO;
 import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.daos.UserTaskRelDAO;
 import crac.models.db.entities.CracUser;
-import crac.module.factories.NotificationFactory;
 import crac.module.notifier.Notification;
+import crac.module.notifier.factory.NotificationFactory;
 import crac.module.utility.JSONResponseHelper;
 
 @RestController

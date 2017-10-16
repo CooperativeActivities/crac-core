@@ -2164,22 +2164,8 @@ postmatching: ClearFilter, MissingVolunteerFilter
 
 POST /filter/{matching_type}
 
-
 	{
-		"filters": [
-			{
-				"name":"ImportancyLevelFilter"
-			},
-			{
-				"name":"LikeLevelFilter"
-			},
-			{
-				"name":"ProficiencyLevelFilter"
-			},
-			{
-				"name":"LikeLevelFilter"
-			}
-			]
+		"parameters": ["ImportancyLevelFilter", "LikeLevelFilter", "ProficiencyLevelFilter", "LikeLevelFilter"]
 	}
 
 ##### *Response:*
@@ -2770,5 +2756,3 @@ Changed endpoints for accessing materials on tasks -> ADD, UPDATE, REMOVE remove
 POST /task/{task_id}/material/add -> POST /task/{task_id}/material  
 PUT /task/{task_id}/material/{material_id}/update -> PUT /task/{task_id}/material/{material_id}  
 DELETE /task/{task_id}/material/{material_id}/remove -> DELETE /task/{task_id}/material/{material_id}  
-
-Format for sending json to change matching-filters has changed! -> see "Filter-Section"  
