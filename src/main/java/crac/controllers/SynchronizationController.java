@@ -594,6 +594,7 @@ public class SynchronizationController {
 
 		SchönböckADMIN.setName("SchoenboeckADMIN");
 		SchönböckADMIN.setFirstName("Johannes");
+		SchönböckADMIN.setLastName("Schönböck");
 		SchönböckADMIN.setPassword(bcryptEncoder.encode("default"));
 		SchönböckADMIN.addRole(roleDAO.findByName("ADMIN"));
 		SchönböckADMIN.setPhone("35678987654");

@@ -635,6 +635,7 @@ public class TaskController {
 				.map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toSet());
 
 		return JSONResponseHelper.createResponse(set, true);
+
 	}
 
 	/**
