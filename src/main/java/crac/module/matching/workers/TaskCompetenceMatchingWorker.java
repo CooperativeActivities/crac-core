@@ -13,9 +13,9 @@ public class TaskCompetenceMatchingWorker extends NLPWorker {
 	
 	private Task task;
 	
-	public TaskCompetenceMatchingWorker(Task task){
-		super();
-		this.task = task;
+	@Override
+	public void injectParam(Object param) {
+		this.task = (Task) param;
 	}
 
 	@Override

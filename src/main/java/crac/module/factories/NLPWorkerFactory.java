@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -13,13 +14,9 @@ import org.springframework.stereotype.Component;
 import crac.models.db.entities.CompetenceArea;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.entities.Competence;
-import crac.models.db.entities.Task;
 import crac.module.matching.superclass.NLPWorker;
-import crac.module.matching.workers.TaskCompetenceAreaMatchingWorker;
-import crac.module.matching.workers.TaskCompetenceMatchingWorker;
 import edu.stanford.nlp.ling.tokensregex.CoreMapExpressionExtractor;
 import edu.stanford.nlp.ling.tokensregex.MatchedExpression;
-import edu.stanford.nlp.ling.tokensregex.TokenSequencePattern;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,18 +60,9 @@ public class NLPWorkerFactory{
 		buildNLPPipeline(taggerDirectory);
 	}
 
-	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, Task t) {
-		NLPWorker w;
-		if (type == TaskCompetenceAreaMatchingWorker.class) {
-			w = new TaskCompetenceAreaMatchingWorker(t);
-			annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/competence_extraction_rules.txt" );
-
-		}else if(type == TaskCompetenceMatchingWorker.class){
-			w = new TaskCompetenceMatchingWorker(t);
-			annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/competence_extraction_rules.txt" );
-		}else{
-			return null;
-		}
+	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, Object param) {
+		NLPWorker w = BeanUtils.instantiate(type);    
+        w.injectParam(param);
 		w.setWf(this);
 		return w;
 	}

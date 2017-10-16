@@ -6,6 +6,7 @@ import java.util.Set;
 
 import crac.module.matching.superclass.NLPWorker;
 import crac.models.db.entities.CompetenceArea;
+import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
 import edu.stanford.nlp.pipeline.Annotation;
 
@@ -13,9 +14,9 @@ public class TaskCompetenceAreaMatchingWorker extends NLPWorker {
 	
 	private Task task;
 	
-	public TaskCompetenceAreaMatchingWorker(Task task){
-		super();
-		this.task = task;
+	@Override
+	public void injectParam(Object param) {
+		this.task = (Task) param;
 	}
 
 	@Override
