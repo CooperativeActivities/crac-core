@@ -1,10 +1,7 @@
 package crac.module.factories;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -20,7 +17,6 @@ import crac.models.db.entities.Task;
 import crac.module.matching.superclass.NLPWorker;
 import crac.module.matching.workers.TaskCompetenceAreaMatchingWorker;
 import crac.module.matching.workers.TaskCompetenceMatchingWorker;
-import crac.module.storage.CompetenceStorage;
 import edu.stanford.nlp.ling.tokensregex.CoreMapExpressionExtractor;
 import edu.stanford.nlp.ling.tokensregex.MatchedExpression;
 import edu.stanford.nlp.ling.tokensregex.TokenSequencePattern;
@@ -70,7 +66,7 @@ public class NLPWorkerFactory{
 	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, Task t) {
 		NLPWorker w;
 		if (type == TaskCompetenceAreaMatchingWorker.class) {
-			w = new TaskCompetenceAreaMatchingWorker(t));
+			w = new TaskCompetenceAreaMatchingWorker(t);
 			annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/competence_extraction_rules.txt" );
 
 		}else if(type == TaskCompetenceMatchingWorker.class){

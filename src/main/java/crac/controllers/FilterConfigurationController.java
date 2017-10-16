@@ -22,7 +22,7 @@ import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.matching.configuration.MatrixFilterParameters;
 import crac.module.matching.configuration.PostMatchingConfiguration;
 import crac.module.matching.configuration.PreMatchingConfiguration;
-import crac.module.matching.factories.CracFilterFactory;
+import crac.module.factories.CracFilterFactory;
 import crac.module.matching.filter.matching.ImportancyLevelFilter;
 import crac.module.matching.filter.matching.LikeLevelFilter;
 import crac.module.matching.filter.matching.ProficiencyLevelFilter;

@@ -7437,3 +7437,10 @@ Caused by: java.lang.OutOfMemoryError: Java heap space
 2017-10-16 10:15:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
 2017-10-16 10:15:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
 2017-10-16 10:15:03 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
+2017-10-16 10:19:54 [main] INFO  PluginsService:175 - no modules loaded
+2017-10-16 10:19:54 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.index.reindex.ReindexPlugin]
+2017-10-16 10:19:54 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.join.ParentJoinPlugin]
+2017-10-16 10:19:54 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.percolator.PercolatorPlugin]
+2017-10-16 10:19:54 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.script.mustache.MustachePlugin]
+2017-10-16 10:19:54 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty3Plugin]
+2017-10-16 10:19:54 [main] INFO  PluginsService:178 - loaded plugin [org.elasticsearch.transport.Netty4Plugin]
