@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import crac.module.factories.CracFilterFactory;
+import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,5 +34,14 @@ public class PersonalizedFilters {
 		});
 
 	}
+
+    public boolean convertAndAdd(CracFilterFactory mf, FilterConfiguration matchingConfig, String path){
+        filters.forEach( filter -> {
+            ConcreteFilter cf = mf.createMatchingFilterFromString(filter.getName(), path);
+            cf.setPf(filter);
+            matchingConfig.addFilter(cf);
+        });
+        return true;
+    }
 
 }

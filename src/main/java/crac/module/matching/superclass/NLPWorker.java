@@ -32,9 +32,7 @@ public abstract class NLPWorker {
 		
 		public abstract Object run();
 		
-		public String getWorkerId(){
-			return this.workerId;
-		}
+		public abstract void injectParam(Object param);
 
 		public void setWf(NLPWorkerFactory wf) {
 			this.wf = wf;

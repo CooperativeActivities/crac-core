@@ -1,4 +1,4 @@
-package crac.module.notifier.factory;
+package crac.module.factories;
 
 import java.util.ArrayList;
 import java.util.HashMap;

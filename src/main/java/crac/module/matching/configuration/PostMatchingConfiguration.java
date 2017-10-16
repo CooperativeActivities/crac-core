@@ -67,4 +67,9 @@ public class PostMatchingConfiguration implements FilterConfiguration {
 		filters.add(new MissingVolunteerFilter());
 	}
 
+    @Override
+    public int amount() {
+        return filters.size();
+    }
+
 }

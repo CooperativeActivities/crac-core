@@ -2,7 +2,9 @@ package crac.module.matching.superclass;
 
 import crac.module.factories.WorkerFactory;
 import crac.module.utility.CracUtility;
+import lombok.Data;
 
+@Data
 public abstract class Worker {
 	
 	private String workerId;
@@ -18,16 +20,6 @@ public abstract class Worker {
 	
 	public abstract Object run();
 	
-	public String getWorkerId(){
-		return this.workerId;
-	}
-
-	public void setWf(WorkerFactory wf) {
-		this.wf = wf;
-	}
-
-	public WorkerFactory getWf() {
-		return wf;
-	}
+    public abstract void injectParam(Object param);
 
 }

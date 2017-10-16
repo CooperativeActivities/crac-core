@@ -2,6 +2,7 @@ package crac.module.matching.workers;
 
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
+import crac.models.db.entities.Task;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.matching.superclass.Worker;
@@ -11,10 +12,14 @@ public class UserRelationEvolutionWorker extends Worker {
 	private CracUser user;
 	private Evaluation evaluation;
 
-	public UserRelationEvolutionWorker(Evaluation evaluation) {
-		super();
-		this.user = evaluation.getUserTaskRel().getUser();
-		this.evaluation = evaluation;
+    public UserRelationEvolutionWorker() {
+
+    }
+    
+    @Override
+    public void injectParam(Object param) {
+        this.evaluation = (Evaluation) param;
+        this.user = evaluation.getUserTaskRel().getUser();
 	}
 
 	@Override

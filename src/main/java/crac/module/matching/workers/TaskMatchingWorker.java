@@ -1,7 +1,6 @@
 package crac.module.matching.workers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -11,8 +10,6 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.matching.configuration.MatchingConfiguration;
-import crac.module.matching.configuration.UserFilterParameters;
-import crac.module.matching.filter.matching.UserRelationFilter;
 import crac.module.matching.helpers.CompetenceCollectionMatrix;
 import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.FilterParameters;
@@ -23,13 +20,11 @@ import crac.module.matching.superclass.Worker;
 public class TaskMatchingWorker extends Worker {
 
 	private CracUser user;
-	private UserFilterParameters up;
 
-	public TaskMatchingWorker(CracUser u, UserFilterParameters up) {
-		this.up = up;
-		this.user = u;
-		System.out.println("worker created");
-	}
+    @Override
+    public void injectParam(Object param) {
+        this.user = (CracUser) param;
+    }
 
 	@Override
 	public ArrayList<EvaluatedTask> run() {
@@ -55,7 +50,6 @@ public class TaskMatchingWorker extends Worker {
 
 		// load the filters for matrix matching and add user-filters
 		FilterConfiguration filters = super.getWf().getMc().clone();
-		addUserFilters(filters);
 
 		for (Task t : taskSet) {
 			ccm = new CompetenceCollectionMatrix(user, t, (MatchingConfiguration) filters, super.getWf().getCs());
@@ -76,23 +70,10 @@ public class TaskMatchingWorker extends Worker {
 		
 		//------------------------
 
-		if (tasks != null) {
-			//tasks.sort((task1, task2) -> Double.compare(task1.getAssessment(), task2.getAssessment()));
-			tasks.sort(Comparator.comparing(EvaluatedTask::getAssessment));
-			//Collections.sort(tasks);
-		}
+        //sort and return the tasks
+        tasks.sort(Comparator.comparing(EvaluatedTask::getAssessment).reversed());
 
 		return tasks;
-	}
-
-	public void addUserFilters(FilterConfiguration m) {
-		if (up.getFriends() == 1) {
-			m.addFilter(new UserRelationFilter());
-		}
-	}
-
-	public String getWorkerId() {
-		return super.getWorkerId();
 	}
 
 	public ArrayList<Task> loadFilteredTasks() {

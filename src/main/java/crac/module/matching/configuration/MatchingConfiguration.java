@@ -68,5 +68,9 @@ public class MatchingConfiguration implements FilterConfiguration {
 		filters.add(new UserRelationFilter());
 	}
 
+    @Override
+    public int amount() {
+        return filters.size();
+    }
 
 }

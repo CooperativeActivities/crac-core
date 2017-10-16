@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import crac.models.db.entities.CracUser.NotificationUser;
 import crac.models.utility.NotificationConfiguration;
-import crac.module.notifier.factory.NotificationFactory;
+import crac.module.factories.NotificationFactory;
 import crac.module.utility.CracUtility;
 import lombok.Getter;
 import lombok.Setter;
