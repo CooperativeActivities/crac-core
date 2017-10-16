@@ -16,4 +16,6 @@ public interface FilterConfiguration {
 	
 	public void restore();
 	
+	public int amount();
+	
 }

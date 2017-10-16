@@ -1,4 +1,4 @@
-package crac.module.matching.factories;
+package crac.module.factories;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

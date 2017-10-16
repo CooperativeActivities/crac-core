@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import crac.models.utility.PersonalizedFilter;
-import crac.module.matching.factories.CracFilterFactory;
+import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.CracFilter;
 import lombok.Getter;
