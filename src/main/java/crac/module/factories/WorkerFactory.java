@@ -1,4 +1,4 @@
-package crac.module.matching.factories;
+package crac.module.factories;
 
 import java.util.HashMap;
 
