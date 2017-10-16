@@ -67,14 +67,14 @@ public class NLPWorkerFactory{
 		buildNLPPipeline(taggerDirectory);
 	}
 
-	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, HashMap<String, Object> params) {
+	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, Task t) {
 		NLPWorker w;
 		if (type == TaskCompetenceAreaMatchingWorker.class) {
-			w = new TaskCompetenceAreaMatchingWorker((Task) params.get("task"));
+			w = new TaskCompetenceAreaMatchingWorker(t));
 			annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/competence_extraction_rules.txt" );
 
 		}else if(type == TaskCompetenceMatchingWorker.class){
-			w = new TaskCompetenceMatchingWorker((Task)params.get("task"));
+			w = new TaskCompetenceMatchingWorker(t);
 			annotationExtractor = CoreMapExpressionExtractor.createExtractorFromFile(TokenSequencePattern.getNewEnv(), "crac/module/nlp/resources/competence_extraction_rules.txt" );
 		}else{
 			return null;

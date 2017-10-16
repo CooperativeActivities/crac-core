@@ -64,15 +64,14 @@ public class Decider {
 	public ArrayList<Competence> findCompetences(Task task){
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("task", task);
-		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) nlpWf.createWorker(TaskCompetenceMatchingWorker.class, params);
+		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) nlpWf.createWorker(TaskCompetenceMatchingWorker.class, task);
 		ArrayList<Competence> list = w.run(); 
 		return list; 
 	}
 	
 	public ArrayList<CompetenceArea> findCompetenceAreas(Task task){
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("task", task);
-		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, params);
+		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, task);
 		ArrayList<CompetenceArea> list = w.run(); 
 		return list;
 	}
