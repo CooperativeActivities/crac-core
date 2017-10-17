@@ -9,10 +9,10 @@ import crac.module.matching.helpers.SimpleCompetence;
 import crac.module.matching.helpers.SimpleCompetenceRelation;
 
 public class AugmenterUnit {
-	
+
 	private CompetenceStorage storage;
-	
-	public AugmenterUnit(CompetenceStorage storage){
+
+	public AugmenterUnit(CompetenceStorage storage) {
 		this.storage = storage;
 	}
 
@@ -21,20 +21,21 @@ public class AugmenterUnit {
 		AugmentedSimpleCompetenceCollection competences = new AugmentedSimpleCompetenceCollection(c);
 
 		augmentIntern(competences, competences.getMain());
-		
+
 		competences.loadCompetences(storage.getCompetenceDAO());
 
-		competences.print();
-		
+		if (storage.isPrint()) {
+			competences.print();
+		}
 		return competences;
 
 	}
 
-	private void augmentIntern(AugmentedSimpleCompetenceCollection collection,
-			AugmentedSimpleCompetence target) {
+	private void augmentIntern(AugmentedSimpleCompetenceCollection collection, AugmentedSimpleCompetence target) {
 
-		if (target.getStepsDone() <= 5 && target.getSimilarity() >= 0.2) {
-			System.out.println("Target with ID "+target.getComp().getId()+" and distance "+target.getSimilarity()+" added!");
+		if (target.getStepsDone() <= storage.getMaxSteps() && target.getSimilarity() >= storage.getMinSimilarity()) {
+			/*System.out.println("Target with ID " + target.getComp().getId() + " and distance " + target.getSimilarity()
+					+ " added!");*/
 			collection.addCompetence(target);
 			callChildren(collection, target);
 		}
@@ -46,29 +47,29 @@ public class AugmenterUnit {
 		if (rels != null) {
 			for (SimpleCompetenceRelation sc : rels) {
 				AugmentedSimpleCompetence target = collection.loadOrCreate(sc.getRelated());
-				
+
 				target.setPaths(target.getPaths() + 1);
-				
-				if(target.getSimilarity() > 0){
-					if(parent.getSimilarity() * sc.getDistance() > target.getSimilarity() ){
-						System.out.println("found and updated: new "+parent.getSimilarity() * sc.getDistance()+" old: "+target.getSimilarity());
+
+				if (target.getSimilarity() > 0) {
+					if (parent.getSimilarity() * sc.getDistance() > target.getSimilarity()) {
+						/*System.out.println("found and updated: new " + parent.getSimilarity() * sc.getDistance()
+								+ " old: " + target.getSimilarity());*/
 						updateValues(target, parent, sc.getDistance());
 						augmentIntern(collection, target);
-					}else{
-						System.out.println("found and worse or equal");
+					} else {
+						/*System.out.println("found and worse or equal");*/
 					}
-				}else{
-					System.out.println("new competence found");
+				} else {
+					/*System.out.println("new competence found");*/
 					updateValues(target, parent, sc.getDistance());
 					augmentIntern(collection, target);
 				}
-				
+
 			}
 		}
 	}
 
-	private void updateValues(AugmentedSimpleCompetence target, AugmentedSimpleCompetence parent,
-			double distance) {
+	private void updateValues(AugmentedSimpleCompetence target, AugmentedSimpleCompetence parent, double distance) {
 
 		target.setStepsDone(parent.getStepsDone() + 1);
 		target.setSimilarity((double) Math.round((parent.getSimilarity() * distance) * 100) / 100);

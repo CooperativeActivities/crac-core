@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +19,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import crac.enums.ConcreteTaskState;
 import crac.enums.ErrorCode;
 import crac.enums.TaskParticipationType;
-import crac.enums.ConcreteTaskState;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.EvaluationDAO;
 import crac.models.db.daos.TaskDAO;
@@ -65,9 +64,6 @@ public class EvaluationController {
 
 	@Autowired
 	private NotificationFactory nf;
-
-	@Value("${crac.eval.decreaseValues}")
-	private int decreaseValuesFactor;
 
 	/**
 	 * Creates an evaluation (notification + entity) for the logged in user for

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +19,30 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.module.matching.helpers.AugmentedSimpleCompetenceCollection;
 import crac.module.matching.helpers.SimpleCompetence;
 import crac.module.matching.helpers.SimpleCompetenceRelation;
+import lombok.Getter;
 
 @Component
 @Scope("singleton")
 public class CompetenceStorage {
 	
+	@Getter
 	@Autowired
 	private CompetenceDAO competenceDAO;
 	
 	@Autowired
 	private CompetenceRelationshipDAO compRelDAO;
+	
+	@Getter
+	@Value("${crac.print.synchronization.competences}")
+	private boolean print;
+
+	@Getter
+	@Value("${crac.traversal.steps}")
+	private int maxSteps;
+
+	@Getter
+	@Value("${crac.traversal.minSimilarity}")
+	private double minSimilarity;
 
 	private boolean synced = false;
 	private boolean cached = false;
@@ -158,12 +173,5 @@ public class CompetenceStorage {
 		return true;
 	}
 
-	public CompetenceDAO getCompetenceDAO() {
-		return competenceDAO;
-	}
-
-	public void setCompetenceDAO(CompetenceDAO competenceDAO) {
-		this.competenceDAO = competenceDAO;
-	}
 	
 }

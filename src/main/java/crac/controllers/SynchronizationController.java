@@ -169,9 +169,6 @@ public class SynchronizationController {
 	@Value("${crac.elastic.url}")
 	private String url;
 
-	@Value("${crac.elastic.bindEStoSearch}")
-	private boolean bindES;
-
 	@PostConstruct
 	public void init() {
 		this.internsync();
