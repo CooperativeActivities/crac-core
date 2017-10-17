@@ -173,7 +173,7 @@ public class SynchronizationController {
 
 	@PostConstruct
 	public void init() {
-		this.internsync();
+		// this.internsync();
 		this.filtersync();
 		// this.competencesync();
 	}

@@ -52,13 +52,19 @@ public class Decider {
 	}
 	
 	public ArrayList<Competence> findCompetences(Task t){
-		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) nlpWf.createWorker(TaskCompetenceMatchingWorker.class, t);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("task", t);
+		param.put("rules", "crac/module/nlp/resources/competence_extraction_rules.txt");
+		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) nlpWf.createWorker(TaskCompetenceMatchingWorker.class, param);
 		ArrayList<Competence> list = w.run(); 
 		return list; 
 	}
 	
 	public ArrayList<CompetenceArea> findCompetenceAreas(Task t){
-		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, t);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("task", t);
+		param.put("rules", "crac/module/nlp/resources/competence_extraction_rules.txt");
+		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, param);
 		ArrayList<CompetenceArea> list = w.run(); 
 		return list;
 	}

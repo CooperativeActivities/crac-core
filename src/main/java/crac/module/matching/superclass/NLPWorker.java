@@ -9,9 +9,14 @@ import crac.module.utility.CracUtility;
 import edu.stanford.nlp.ling.CoreAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.tokensregex.CoreMapExpressionExtractor;
 import edu.stanford.nlp.ling.tokensregex.MatchedExpression;
+import edu.stanford.nlp.ling.tokensregex.TokenSequencePattern;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.util.CoreMap;
 
@@ -20,6 +25,8 @@ public abstract class NLPWorker {
 		private String workerId;
 		
 		private NLPWorkerFactory wf;
+		
+		protected CoreMapExpressionExtractor<MatchedExpression> annotationExtractor;
 		
 		protected Annotation text; 
 		
@@ -48,12 +55,10 @@ public abstract class NLPWorker {
 			
 			Set<String> compAnn = new HashSet<String>();
 			
-			CoreMapExpressionExtractor<MatchedExpression> extractor = wf.getAnnotationExtractor();
-			
 			List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 			if (sentences != null && !sentences.isEmpty()){
 				for (CoreMap sentence : sentences){		
-					extractor.extractExpressions(sentence);
+					annotationExtractor.extractExpressions(sentence);
 					for (CoreLabel token: sentence.get(TokensAnnotation.class)){
 						if (token.get(CompetenceAnnotation.class) != null)
 							compAnn.add(token.get(CompetenceAnnotation.class));

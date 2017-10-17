@@ -34,8 +34,6 @@ public class NLPWorkerFactory{
 	
 	private StanfordCoreNLP pipeline;
 	
-	private CoreMapExpressionExtractor<MatchedExpression> annotationExtractor;
-	
 	private void buildNLPPipeline(String taggerDir){
 		Properties props = new Properties();
 		props.setProperty("customAnnotatorClass.german.lemma", "crac.module.nlp.TreeTaggerAnnotator");
@@ -69,10 +67,6 @@ public class NLPWorkerFactory{
 	
 	public StanfordCoreNLP getPipeline(){
 		return pipeline;
-	}
-	
-	public CoreMapExpressionExtractor<MatchedExpression> getAnnotationExtractor(){
-		return annotationExtractor;
 	}
 	
 	public ArrayList<CompetenceArea> getCompetenceAreas(String ann){

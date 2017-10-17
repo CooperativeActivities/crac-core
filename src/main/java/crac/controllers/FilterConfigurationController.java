@@ -182,7 +182,7 @@ public class FilterConfigurationController {
 		conf.restore();
 
 		HashMap<String, Object> meta = new HashMap<>();
-		meta.put(matchingType+ "-filters", "RESTORED");
+		meta.put(matchingType + "-filters", "RESTORED");
 		return JSONResponseHelper.createResponse(true, meta);
 	}
 

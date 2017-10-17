@@ -14,7 +14,11 @@ kochen	KOCHEN
 zubereiten	KOCHEN	BACKEN
 Eierspeise	WARME_SPEISE
 Spaghetti	WARME_SPEISE
+Pizza		WARME_SPEISE
 Parkett	BODEN
+Laminat	BODEN
+Holzboden	BODEN
+Teppich	BODEN
 Wand	WAND
 Stiegenhaus	WAND
 reinigen	PUTZEN
