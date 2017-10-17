@@ -35,7 +35,6 @@ public class CracSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				// .antMatchers("/adminOnly").hasAuthority("ADMIN")
-				.antMatchers("/lol/webhook").permitAll()
 				.anyRequest().fullyAuthenticated().and().httpBasic()
 				/*
 				 * .and() .logout() .logoutUrl("/logout")

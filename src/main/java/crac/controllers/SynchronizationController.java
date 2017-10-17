@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import crac.enums.ErrorCode;
+import crac.exception.KometMappingException;
 import crac.models.db.daos.AttachmentDAO;
 import crac.models.db.daos.CommentDAO;
 import crac.models.db.daos.CompetenceAreaDAO;
@@ -301,13 +302,18 @@ public class SynchronizationController {
 			ArrayList<SyncableCrac> newOrUpdate = new ArrayList<>();
 
 			kometData.forEach(c -> {
-				if (c.isValid()) {
-					if (!cracMap.containsKey((long) c.getUid())) {
-						newOrUpdate.add(c.map(map));
-					} else {
-						newOrUpdate.add(c.map(map));
-						cracMap.remove((long) c.getUid());
+				try {
+					if (c.isValid()) {
+						if (!cracMap.containsKey((long) c.getUid())) {
+							newOrUpdate.add(c.map(map));
+						} else {
+							newOrUpdate.add(c.map(map));
+							cracMap.remove((long) c.getUid());
+						}
 					}
+				} catch (KometMappingException ex) {
+					ex.printStackTrace();
+					System.out.println("Error at dataset with ID " + c.getUid()+" and type "+c.getClass().getSimpleName());
 				}
 			});
 
@@ -345,7 +351,7 @@ public class SynchronizationController {
 		preMatchingConfiguration.restore();
 		matchingConfig.restore();
 		postMatchingConfiguration.restore();
-		
+
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("sync", "FILTER");
 		return JSONResponseHelper.createResponse(true, meta);

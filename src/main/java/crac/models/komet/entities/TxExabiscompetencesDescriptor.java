@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.springframework.data.repository.CrudRepository;
 
+import crac.exception.KometMappingException;
 import crac.models.db.daos.CompetenceAreaDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CompetenceArea;
@@ -113,7 +114,7 @@ public class TxExabiscompetencesDescriptor implements SyncableKomet{
 	public TxExabiscompetencesDescriptor() {
 	}
 	
-	public SyncableCrac map(Map<Class<?>, CrudRepository<?, ?>> map){
+	public SyncableCrac map(Map<Class<?>, CrudRepository<?, ?>> map) throws KometMappingException{
 		
 		CompetenceAreaDAO competenceAreaDAO = (CompetenceAreaDAO) map.get(CompetenceAreaDAO.class);
 		
