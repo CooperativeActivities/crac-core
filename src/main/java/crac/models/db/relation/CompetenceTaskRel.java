@@ -16,7 +16,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.Task;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "competence_task_relationship")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -70,54 +72,6 @@ public class CompetenceTaskRel {
 		c.setMandatory(mandatory);
 		c.setTask(t);
 		return c;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public Competence getCompetence() {
-		return competence;
-	}
-
-	public void setCompetence(Competence competence) {
-		this.competence = competence;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-
-	public void setTask(Task task) {
-		this.task = task;
-	}
-
-	public int getNeededProficiencyLevel() {
-		return neededProficiencyLevel;
-	}
-
-	public void setNeededProficiencyLevel(int neededProficiencyLevel) {
-		this.neededProficiencyLevel = neededProficiencyLevel;
-	}
-
-	public int getImportanceLevel() {
-		return importanceLevel;
-	}
-
-	public void setImportanceLevel(int importanceLevel) {
-		this.importanceLevel = importanceLevel;
-	}
-
-	public boolean isMandatory() {
-		return mandatory;
-	}
-
-	public void setMandatory(boolean mandatory) {
-		this.mandatory = mandatory;
 	}
 	
 }

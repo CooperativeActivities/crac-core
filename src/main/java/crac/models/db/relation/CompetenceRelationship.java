@@ -2,8 +2,6 @@ package crac.models.db.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -15,9 +13,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.Competence;
 import crac.module.matching.interfaces.SyncableCrac;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "competence_relationship")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -45,53 +43,10 @@ public class CompetenceRelationship implements SyncableCrac {
 	@Column(name = "uni_direction")
 	private boolean uniDirection;
 	
-	@Getter
-	@Setter
 	private boolean deprecated;
 	
 	public CompetenceRelationship() {
 		this.uniDirection = false;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public CompetenceRelationshipType getType() {
-		return type;
-	}
-
-	public void setType(CompetenceRelationshipType type) {
-		this.type = type;
-	}
-
-	public Competence getCompetence1() {
-		return competence1;
-	}
-
-	public void setCompetence1(Competence competence1) {
-		this.competence1 = competence1;
-	}
-
-	public Competence getCompetence2() {
-		return competence2;
-	}
-
-	public void setCompetence2(Competence competence2) {
-		this.competence2 = competence2;
-	}
-
-	public boolean isUniDirection() {
-		return uniDirection;
-	}
-
-	public void setUniDirection(boolean uniDirection) {
-		this.uniDirection = uniDirection;
-	}
-	
 	
 }

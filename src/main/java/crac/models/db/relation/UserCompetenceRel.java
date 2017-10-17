@@ -15,7 +15,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "user_competence_relationship")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -56,54 +58,6 @@ public class UserCompetenceRel {
 		this.proficiencyValue = proficiencyValue;
 		this.likeValue = likeValue;
 		this.selfAssigned = true;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public CracUser getUser() {
-		return user;
-	}
-
-	public void setUser(CracUser user) {
-		this.user = user;
-	}
-
-	public Competence getCompetence() {
-		return competence;
-	}
-
-	public void setCompetence(Competence competence) {
-		this.competence = competence;
-	}
-
-	public int getLikeValue() {
-		return likeValue;
-	}
-
-	public void setLikeValue(int likeValue) {
-		this.likeValue = likeValue;
-	}
-
-	public int getProficiencyValue() {
-		return proficiencyValue;
-	}
-
-	public void setProficiencyValue(int proficiencyValue) {
-		this.proficiencyValue = proficiencyValue;
-	}
-
-	public boolean isSelfAssigned() {
-		return selfAssigned;
-	}
-
-	public void setSelfAssigned(boolean selfAssigned) {
-		this.selfAssigned = selfAssigned;
 	}
 
 }

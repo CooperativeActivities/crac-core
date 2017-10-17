@@ -17,6 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name = "task_relationship_type")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -41,46 +44,6 @@ public class TaskRelationshipType {
 	private Set<UserTaskRel> mappedRelationships;
 
 	public TaskRelationshipType() {
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public int getImportanceVal() {
-		return importanceVal;
-	}
-
-	public void setImportanceVal(int importanceVal) {
-		this.importanceVal = importanceVal;
-	}
-
-	public Set<UserTaskRel> getMappedRelationships() {
-		return mappedRelationships;
-	}
-
-	public void setMappedRelationships(Set<UserTaskRel> mappedRelationships) {
-		this.mappedRelationships = mappedRelationships;
 	}
 	
 }

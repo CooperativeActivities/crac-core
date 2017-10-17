@@ -1,7 +1,5 @@
 package crac.models.db.relation;
 
-import java.util.HashMap;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +26,9 @@ import crac.models.utility.NotificationConfiguration;
 import crac.module.factories.NotificationFactory;
 import crac.module.notifier.Notification;
 import crac.module.notifier.notifications.EvaluationNotification;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "user_task_relationship")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -69,10 +69,6 @@ public class UserTaskRel {
 		completed = false;
 	}
 
-	public long getId() {
-		return id;
-	}
-	
 	public Evaluation triggerEval(NotificationFactory nf){
 		Evaluation e = new Evaluation(this);
 		
@@ -92,64 +88,12 @@ public class UserTaskRel {
 		return e;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public CracUser getUser() {
-		return user;
-	}
-
-	public void setUser(CracUser user) {
-		this.user = user;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-
-	public void setTask(Task task) {
-		this.task = task;
-	}
-
-	public TaskParticipationType getParticipationType() {
-		return participationType;
-	}
-
-	public void setParticipationType(TaskParticipationType participationType) {
-		this.participationType = participationType;
-	}
-
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	public void setCompleted(boolean completed) {
-		this.completed = completed;
-	}
-
-	public TaskRelationshipType getType() {
-		return type;
-	}
-
-	public void setType(TaskRelationshipType type) {
-		this.type = type;
-	}
-
-	public Evaluation getEvaluation() {
-		return evaluation;
-	}
-
-	public void setEvaluation(Evaluation evaluation) {
-		this.evaluation = evaluation;
-	}
-
-	public boolean isEvalTriggered() {
-		return evalTriggered;
-	}
-
-	public void setEvalTriggered(boolean evalTriggered) {
-		this.evalTriggered = evalTriggered;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
 	}
 
 	@Override
@@ -165,7 +109,5 @@ public class UserTaskRel {
 			return false;
 		return true;
 	}
-	
-	
 	
 }

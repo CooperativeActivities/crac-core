@@ -17,9 +17,9 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.entities.CracUser.UserShort;
 import crac.models.db.entities.Material;
 import crac.models.db.entities.Material.MaterialShort;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "user_material_subscription")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -28,30 +28,20 @@ public class UserMaterialSubscription {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
-	@Getter
-	@Setter
 	private long id;
 	
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "user_id")
-	@Getter
-	@Setter
 	private CracUser user;
 	
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId=true)
 	@JoinColumn(name = "material_id")
-	@Getter
-	@Setter
 	private Material material;
 	
-	@Getter
-	@Setter
 	private Long quantity;
 	
-	@Getter
-	@Setter
 	private boolean fullfilled;
 	
 	public UserMaterialSubscription(){
@@ -73,22 +63,12 @@ public class UserMaterialSubscription {
 		this.quantity = quantity;
 	}
 	
+	@Data
 	public class SubscriptionShort{
 		
-		@Getter
-		@Setter
-		private UserShort user;
-		
-		@Getter
-		@Setter
-		private MaterialShort material;
-		
-		@Getter
-		@Setter
-		private Long quantity;
-		
-		@Getter
-		@Setter
+		private UserShort user;	
+		private MaterialShort material;		
+		private Long quantity;		
 		private boolean fullfilled;
 		
 		public SubscriptionShort(){
