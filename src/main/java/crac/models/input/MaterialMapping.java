@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import crac.models.db.daos.MaterialDAO;
 import crac.models.db.entities.Material;
+import lombok.Data;
 
+@Data
 public class MaterialMapping {
 	
 	private long materialId;
@@ -67,38 +69,6 @@ public class MaterialMapping {
 		}
 		
 		return m;
-	}
-
-	public long getMaterialId() {
-		return materialId;
-	}
-
-	public void setMaterialId(long materialId) {
-		this.materialId = materialId;
-	}
-
-	public long getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(long quantity) {
-		this.quantity = quantity;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 }

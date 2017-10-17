@@ -2,7 +2,9 @@ package crac.models.output;
 
 import crac.models.db.entities.Competence;
 import crac.module.matching.helpers.AugmentedSimpleCompetence;
+import lombok.Data;
 
+@Data
 public class CompetenceGraphDetails implements Comparable<Object>{
 	
 	private long id;
@@ -19,38 +21,6 @@ public class CompetenceGraphDetails implements Comparable<Object>{
 		this.name = c.getName();
 		this.description = c.getDescription();
 		this.similarity = ac.getSimilarity();
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public double getSimilarity() {
-		return similarity;
-	}
-
-	public void setSimilarity(double similarity) {
-		this.similarity = similarity;
 	}
 
 	@Override

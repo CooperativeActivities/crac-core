@@ -24,155 +24,49 @@ import crac.models.db.relation.UserMaterialSubscription.SubscriptionShort;
 import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.storage.CompetenceStorage;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+@Data
 public class TaskDetails {
 
-	@Getter
-	@Setter
 	private long id;
-
-	@Getter
-	@Setter
 	private String name;
-
-	@Getter
-	@Setter
 	private String description;
-
-	@Getter
-	@Setter
 	private String address;
-
-	@Getter
-	@Setter
 	private String location;
-
-	@Getter
-	@Setter
 	private double geoLat;
-
-	@Getter
-	@Setter
 	private double geoLng;
-
-	@Getter
-	@Setter
 	private String geoName;
-	
-	@Getter
-	@Setter
 	private String geoCountry;
-	
-	@Getter
-	@Setter
 	private String geoCountryA;
-	
-	@Getter
-	@Setter
 	private String geoMacroRegion;
-	
-	@Getter
-	@Setter
 	private String geoRegion;
-	
-	@Getter
-	@Setter
 	private String geoLocality;
-
-	@Getter
-	@Setter
 	private Calendar startTime;
-
-	@Getter
-	@Setter
 	private Calendar endTime;
-
-	@Getter
-	@Setter
 	private int minAmountOfVolunteers;
-
-	@Getter
-	@Setter
 	private int maxAmountOfVolunteers;
-
-	@Getter
-	@Setter
 	private int signedUsers;
-
-	@Getter
-	@Setter
 	private ConcreteTaskState taskState;
-
-	@Getter
-	@Setter
 	private boolean readyToPublish;
-
-	@Getter
 	private Calendar creationDate;
-
-	@Getter
-	@Setter
 	private TaskShort superTask;
-
-	@Getter
-	@Setter
 	private Set<TaskShort> childTasks;
-
-	@Getter
 	private CracUser creator;
-
-	@Getter
-	@Setter
 	private Set<Attachment> attachments;
-
-	@Getter
-	@Setter
 	private Set<Comment> comments;
-	
-	@Getter
-	@Setter
 	private Set<SubscriptionShort> materialSubscription;
-
-	@Getter
-	@Setter
 	private Set<Evaluation> mappedEvaluations;
-
-	@Getter
-	@Setter
 	private Set<UserFriendDetails> userRelationships;
-
-	@Getter
-	@Setter
 	private Set<CompetenceRelationDetails> taskCompetences;
-
-	@Getter
-	@Setter
 	private Set<MaterialDetails> materials;
-
-	@Getter
-	@Setter
 	private TaskType taskType;
-
-	@Getter
-	@Setter
 	private Set<UserTaskRel> participationDetails;
-	
-	@Getter
-	@Setter
 	private Set<CracGroup> restrictingGroups;
-	
-	@Getter
-	@Setter
 	private Set<CracGroup> invitedGroups;
-
-	@Getter
-	@Setter
 	private boolean assigned;
-
-	@Getter
-	@Setter
 	private boolean permissions;
 
 	public TaskDetails(Task t, CracUser u, UserTaskRelDAO userTaskRelDAO, CompetenceStorage cs) {
@@ -205,7 +99,6 @@ public class TaskDetails {
 		this.attachments = t.getAttachments();
 		this.comments = t.getComments();
 		this.userRelationships = calcFriends(t, u);
-		//TODO one call!
 		this.taskCompetences = new HashSet<>();
 		this.taskCompetences = calcComps(t, u, cs);
 		
@@ -274,34 +167,7 @@ public class TaskDetails {
 		});
 		
 		return list;
-		/*
-		if (mctr != null) {
-			if (mctr.size() != 0) {
-				for (CompetenceTaskRel ctr : mctr) {
-					double bestVal = 0;
-					if (u.getCompetenceRelationships() != null) {
-						for (UserCompetenceRel ucr : u.getCompetenceRelationships()) {
-							double newVal = cs.getCompetenceSimilarity(ucr.getCompetence(),
-									ctr.getCompetence());
-							if (newVal > bestVal) {
-								bestVal = newVal;
-							}
-						}
-					}
-					System.out.println("name: " + ctr.getCompetence().getName() + " val: " + bestVal);
-					CompetenceRelationDetails cd = new CompetenceRelationDetails(ctr.getCompetence());
-					cd.setMandatory(ctr.isMandatory());
-					cd.setRelationValue(bestVal);
-					cd.setImportanceLevel(ctr.getImportanceLevel());
-					cd.setNeededProficiencyLevel(ctr.getNeededProficiencyLevel());
 
-					list.add(cd);
-				}
-			}
-		}
-
-		return list;
-*/
 	}
 
 	private Set<UserFriendDetails> calcFriends(Task t, CracUser u) {
@@ -316,56 +182,6 @@ public class TaskDetails {
 				.map( rel -> new UserFriendDetails(u, u.isFriend(rel.getUser()), rel) )
 				.collect(Collectors.toSet());
 		
-		/*
-
-		Set<UserFriendDetails> list = new HashSet<>();
-		UserRelationship found = null;
-		boolean friend = false;
-		CracUser otherU = null;
-
-		if (participantRels.size() != 0) {
-			for (UserTaskRel utr : participantRels) {
-				found = null;
-				otherU = utr.getUser();
-
-				if (u.getUserRelationshipsAs1() != null) {
-					if (u.getUserRelationshipsAs1().size() != 0) {
-						for (UserRelationship ur : u.getUserRelationshipsAs1()) {
-							if (otherU.getId() == ur.getC2().getId()) {
-								found = ur;
-							}
-						}
-					}
-				}
-				if (u.getUserRelationshipsAs2() != null) {
-					if (u.getUserRelationshipsAs2().size() != 0) {
-						for (UserRelationship ur : u.getUserRelationshipsAs2()) {
-							if (utr.getUser().getId() == ur.getC1().getId()) {
-								found = ur;
-							}
-						}
-					}
-				}
-
-				if (found != null) {
-					friend = found.isFriends();
-				} else {
-					friend = false;
-				}
-
-				UserFriendDetails fd = new UserFriendDetails(otherU, friend, utr);
-
-				if (otherU.getId() == u.getId()) {
-					fd.setSelf(true);
-				}
-
-				list.add(fd);
-			}
-
-		}
-
-		return list;
-*/
 	}
 
 }

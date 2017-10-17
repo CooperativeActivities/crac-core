@@ -5,14 +5,23 @@ import java.util.HashMap;
 
 import crac.enums.ErrorCode;
 import crac.enums.RESTAction;
+import lombok.Getter;
+import lombok.Setter;
 
 public class RESTResponse<T> {
 	
+	@Getter
 	private String type;
+	@Getter
 	private RESTAction rest_action;
+	@Getter
 	private boolean success;
+	@Getter
 	private ArrayList<RESTError> errors;
+	@Getter
 	private T object;
+	@Getter
+	@Setter
 	private HashMap<String, Object> meta;
 	
 	public RESTResponse(RESTAction rest_action, boolean success, T object) {
@@ -31,38 +40,12 @@ public class RESTResponse<T> {
 	public void addError(ErrorCode name, String cause){
 		errors.add(new RESTError(name, cause));
 	}
-
-	public String getType() {
-		return type;
-	}
-
-	public RESTAction getRest_action() {
-		return rest_action;
-	}
-
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public ArrayList<RESTError> getErrors() {
-		return errors;
-	}
-
-	public T getObject() {
-		return object;
-	}
-
-	public HashMap<String, Object> getMeta() {
-		return meta;
-	}
-
-	public void setMeta(HashMap<String, Object> meta) {
-		this.meta = meta;
-	}
 	
 	public class RESTError {
 		
+		@Getter
 		private ErrorCode name;
+		@Getter
 		private String cause;
 
 		public RESTError(ErrorCode name, String cause) {
@@ -70,12 +53,6 @@ public class RESTResponse<T> {
 			this.cause = cause;
 		}
 		
-		public ErrorCode getName() {
-			return name;
-		}
-		public String getCause() {
-			return cause;
-		}
 	}
 
 }
