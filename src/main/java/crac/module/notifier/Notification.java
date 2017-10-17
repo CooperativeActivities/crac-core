@@ -9,6 +9,7 @@ import crac.models.db.entities.CracUser.NotificationUser;
 import crac.models.utility.NotificationConfiguration;
 import crac.module.factories.NotificationFactory;
 import crac.module.utility.CracUtility;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,35 +19,18 @@ import lombok.Setter;
  * @author David Hondl
  *
  */
+
+@Data
 public abstract class Notification {
 	
-	@Getter
-	@Setter
 	private String notificationId;
-	
-	@Getter
-	@Setter
 	private NotificationUser sender;
-
-	@Getter
-	@Setter
 	private NotificationUser target;
-	
-	@Getter
-	@Setter
 	private Calendar creationTime;
-	
-	@Getter
-	@Setter
 	private String name;
-	
-	@Getter
-	@Setter
 	private NotificationType type;
 	
 	@JsonIgnore
-	@Getter
-	@Setter
 	private NotificationFactory nf;
 		
 	public Notification(String name, NotificationType type){
