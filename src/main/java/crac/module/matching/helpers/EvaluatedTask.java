@@ -1,8 +1,10 @@
 package crac.module.matching.helpers;
 
 import crac.models.db.entities.Task;
+import lombok.Data;
 
-public class EvaluatedTask implements Comparable{
+@Data
+public class EvaluatedTask implements Comparable<Object>{
 	
 	private Task task;
 	
@@ -14,30 +16,6 @@ public class EvaluatedTask implements Comparable{
 		this.task = task;
 		this.assessment = assessment;
 		this.doable = true;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-
-	public void setTask(Task task) {
-		this.task = task;
-	}
-
-	public double getAssessment() {
-		return assessment;
-	}
-
-	public void setAssessment(double assessment) {
-		this.assessment = assessment;
-	}
-
-	public boolean isDoable() {
-		return doable;
-	}
-
-	public void setDoable(boolean doable) {
-		this.doable = doable;
 	}
 
 	@Override

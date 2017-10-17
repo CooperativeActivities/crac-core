@@ -1,23 +1,17 @@
 package crac.models.utility;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 public class PersonalizedFilters {
 
-	@Getter
-	@Setter
 	private String query;
-
-	@Getter
-	@Setter
 	private List<PersonalizedFilter> filters;
 
 	public PersonalizedFilters() {

@@ -1,8 +1,10 @@
 package crac.module.matching.helpers;
 
 import crac.models.db.entities.CracUser;
+import lombok.Data;
 
-public class EvaluatedUser implements Comparable{
+@Data
+public class EvaluatedUser implements Comparable<Object>{
 	
 	private CracUser User;
 	
@@ -16,22 +18,6 @@ public class EvaluatedUser implements Comparable{
 		this.doable = true;
 	}
 
-	public CracUser getUser() {
-		return User;
-	}
-
-	public void setUser(CracUser user) {
-		User = user;
-	}
-
-	public double getAssessment() {
-		return assessment;
-	}
-
-	public void setAssessment(double assessment) {
-		this.assessment = assessment;
-	}
-
 	@Override
 	public int compareTo(Object user) {
 		if(((EvaluatedUser) user).getAssessment() > this.getAssessment()){
@@ -43,12 +29,5 @@ public class EvaluatedUser implements Comparable{
 		}
 	}
 
-	public boolean isDoable() {
-		return doable;
-	}
-
-	public void setDoable(boolean doable) {
-		this.doable = doable;
-	}
 	
 }

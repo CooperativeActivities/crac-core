@@ -3,21 +3,13 @@ package crac.models.utility;
 import java.util.List;
 
 import crac.module.matching.superclass.ConcreteFilter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 public class PersonalizedFilter {
 	
-	@Getter
-	@Setter
 	private String name;
-	
-	@Getter
-	@Setter
 	private List<ParamterDummy> params;
-	
-	@Getter
-	@Setter
 	private ConcreteFilter cf;
 	
 	public PersonalizedFilter(){

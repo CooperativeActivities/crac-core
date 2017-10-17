@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.entities.Competence;
 import crac.module.storage.CompetenceStorage;
+import lombok.Data;
 
+@Data
 public class AugmentedSimpleCompetenceCollection {
 
 	private AugmentedSimpleCompetence main;
@@ -51,22 +53,6 @@ public class AugmentedSimpleCompetenceCollection {
 		return 0.0;
 	}
 	
-	public AugmentedSimpleCompetence getMain() {
-		return main;
-	}
-
-	public void setMain(AugmentedSimpleCompetence main) {
-		this.main = main;
-	}
-
-	public ArrayList<AugmentedSimpleCompetence> getAugmented() {
-		return augmented;
-	}
-
-	public void setAugmented(ArrayList<AugmentedSimpleCompetence> augmented) {
-		this.augmented = augmented;
-	}
-
 	public boolean containsComp(AugmentedSimpleCompetence c) {
 		for (AugmentedSimpleCompetence a : augmented) {
 			if (a.getComp() == c.getComp()) {
