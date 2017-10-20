@@ -10,6 +10,11 @@ import crac.module.matching.helpers.CompetenceCollectionMatrix;
 import crac.module.matching.helpers.EvaluatedUser;
 import crac.module.matching.superclass.Worker;
 
+/**
+ * A worker, that matches a pool of users with a task
+ * @author David Hondl
+ *
+ */
 public class UserMatchingWorker extends Worker {
 
 	private Task task;
@@ -22,6 +27,10 @@ public class UserMatchingWorker extends Worker {
     public UserMatchingWorker() {
 	}
 
+    /**
+     * The run method loads the users and evaluates them only according to the competence-matching (no prematching or postmatching-filters)
+     * Then returns the evaluated users in an ordered list
+     */
 	@Override
 	public ArrayList<EvaluatedUser> run() {
 

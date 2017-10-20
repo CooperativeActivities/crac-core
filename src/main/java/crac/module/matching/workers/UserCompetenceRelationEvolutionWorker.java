@@ -7,6 +7,11 @@ import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import crac.module.matching.superclass.Worker;
 
+/**
+ * Worker, that updates the values stored in the user-competence-relationship based on a given evaluation
+ * @author David Hondl
+ *
+ */
 public class UserCompetenceRelationEvolutionWorker extends Worker {
 
 	private CracUser user;
@@ -23,6 +28,9 @@ public class UserCompetenceRelationEvolutionWorker extends Worker {
         this.task = evaluation.getUserTaskRel().getTask();
     }
 
+    /**
+     * The run-method uses the values of the evaluation, to update the user-competence-relationship
+     */
 	@Override
 	public Object run() {
 		for (CompetenceTaskRel ctr : task.getMappedCompetences()) {

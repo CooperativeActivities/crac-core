@@ -21,6 +21,11 @@ import crac.module.matching.helpers.SimpleCompetence;
 import crac.module.matching.helpers.SimpleCompetenceRelation;
 import lombok.Getter;
 
+/**
+ * The storage-component, which caches the SimpleCompetences and SimpleCompetenceRelationships, as well as the results of the augmentation-process
+ * @author David Hondl
+ *
+ */
 @Component
 @Scope("singleton")
 public class CompetenceStorage {
@@ -50,6 +55,10 @@ public class CompetenceStorage {
 	private HashMap<Long, SimpleCompetence> competences = new HashMap<Long, SimpleCompetence>();
 	private ArrayList<AugmentedSimpleCompetenceCollection> cache = new ArrayList<>();
 
+	/**
+	 * Copies the competences of the database into the storage and returns, if it was successfull
+	 * @return boolean
+	 */
 	public boolean copy() {
 
 		for (Competence c : competenceDAO.findAll()) {
@@ -75,17 +84,10 @@ public class CompetenceStorage {
 		return true;
 	}
 
-	public boolean clearCache() {
-		return this.clear();
-
-	}
-
-	public boolean synchronize() {
-		copy();
-		cache();
-		return true;
-	}
-
+	/**
+	 * Calls the AugmenterUnit and storages the results of the augmentation of all competences
+	 * @return boolean
+	 */
 	public boolean cache() {
 
 		AugmenterUnit au = new AugmenterUnit(this);
@@ -99,9 +101,32 @@ public class CompetenceStorage {
 		return true;
 	}
 
+	/**
+	 * Synchronizes the storage, using both the copy()- and cache()-method
+	 * @return boolean
+	 */
+	public boolean synchronize() {
+		copy();
+		cache();
+		return true;
+	}
+
+	/**
+	 * Clears the storage
+	 * @return boolean
+	 */
+	public boolean clearCache() {
+		return this.clear();
+
+	}
+
 	private CompetenceStorage() {
 	}
 
+	/**
+	 * Returns all stored competences
+	 * @return HashMap<Long, SimpleCompetence>
+	 */
 	public HashMap<Long, SimpleCompetence> getCompetences() {
 		if (this.synced) {
 			return this.competences;
@@ -110,6 +135,11 @@ public class CompetenceStorage {
 		}
 	}
 
+	/**
+	 * Returns target stored competence
+	 * @param key
+	 * @return SimpleCompetence
+	 */
 	public SimpleCompetence getCompetence(Long key) {
 		if (this.synced) {
 			return this.competences.get(key);
@@ -118,6 +148,12 @@ public class CompetenceStorage {
 		}
 	}
 
+	/**
+	 * Returns the similarity between two given competences
+	 * @param assigned
+	 * @param target
+	 * @return double
+	 */
 	public double getCompetenceSimilarity(Competence assigned, Competence target) {
 		if (!this.synced || !this.cached) {
 			return 0;
@@ -126,14 +162,29 @@ public class CompetenceStorage {
 		}
 	}
 
+	/**
+	 * Returns a AugmentedSimpleCompetenceCollection for given competence
+	 * @param c
+	 * @return AugmentedSimpleCompetenceCollection
+	 */
 	public AugmentedSimpleCompetenceCollection getCollection(Competence c) {
 		return this.getCollectionIntern(c.getId());
 	}
 
+	/**
+	 * Returns a AugmentedSimpleCompetenceCollection for given competence-id
+	 * @param id
+	 * @return AugmentedSimpleCompetenceCollection
+	 */
 	public AugmentedSimpleCompetenceCollection getCollection(Long id) {
 		return this.getCollectionIntern(id);
 	}
 
+	/**
+	 * Returns all collected for the competences of target task
+	 * @param t
+	 * @return ArrayList<AugmentedSimpleCompetenceCollection>
+	 */
 	public ArrayList<AugmentedSimpleCompetenceCollection> getCollections(Task t) {
 		ArrayList<AugmentedSimpleCompetenceCollection> collections = new ArrayList<AugmentedSimpleCompetenceCollection>();
 		for (CompetenceTaskRel ctr : t.getMappedCompetences()) {
@@ -142,6 +193,11 @@ public class CompetenceStorage {
 		return collections;
 	}
 
+	/**
+	 * Returns all collected for the competences of target user
+	 * @param u
+	 * @return ArrayList<AugmentedSimpleCompetenceCollection>
+	 */
 	public ArrayList<AugmentedSimpleCompetenceCollection> getCollections(CracUser u) {
 		ArrayList<AugmentedSimpleCompetenceCollection> collections = new ArrayList<AugmentedSimpleCompetenceCollection>();
 		for (UserCompetenceRel ucr : u.getCompetenceRelationships()) {
@@ -150,14 +206,27 @@ public class CompetenceStorage {
 		return collections;
 	}
 
+	/**
+	 * Shows if storage is synced
+	 * @return boolean
+	 */
 	public boolean isSynced() {
 		return this.synced;
 	}
 
+	/**
+	 * Shows if storage is cached
+	 * @return boolean
+	 */
 	public boolean isCached() {
 		return this.cached;
 	}
 
+	/**
+	 * Returns a AugmentedSimpleCompetenceCollection by given id from the cache
+	 * @param id
+	 * @return AugmentedSimpleCompetenceCollection
+	 */
 	private AugmentedSimpleCompetenceCollection getCollectionIntern(Long id) {
 		if (this.cached) {
 			for (AugmentedSimpleCompetenceCollection single : this.cache) {
@@ -169,6 +238,10 @@ public class CompetenceStorage {
 		return null;
 	}
 
+	/**
+	 * Clears the cache
+	 * @return boolean
+	 */
 	private boolean clear() {
 		competences = new HashMap<Long, SimpleCompetence>();
 		cached = false;

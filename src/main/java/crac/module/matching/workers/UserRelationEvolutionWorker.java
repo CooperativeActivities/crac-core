@@ -7,6 +7,11 @@ import crac.models.db.relation.UserRelationship;
 import crac.models.db.relation.UserTaskRel;
 import crac.module.matching.superclass.Worker;
 
+/**
+ * Worker, that updates the values stored in the user-relationship based on a given evaluation
+ * @author David Hondl
+ *
+ */
 public class UserRelationEvolutionWorker extends Worker {
 
 	private CracUser user;
@@ -22,6 +27,9 @@ public class UserRelationEvolutionWorker extends Worker {
         this.user = evaluation.getUserTaskRel().getUser();
 	}
 
+    /**
+     * The run-method uses the values of the evaluation, to update the user-relationship
+     */
 	@Override
 	public Object run() {
 		for (UserTaskRel utr : evaluation.getUserTaskRel().getTask().getUserRelationships()) {

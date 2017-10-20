@@ -36,6 +36,12 @@ import crac.models.db.entities.Task;
 import crac.module.matching.helpers.EvaluatedTask;
 import lombok.Getter;
 
+/**
+ * Generic-class that serves as an interface to the Java-API of Elasticsearch
+ * @author David Hondl
+ *
+ * @param <T>
+ */
 @Component
 @Scope("singleton")
 public class ElasticConnector<T> {
@@ -70,6 +76,9 @@ public class ElasticConnector<T> {
 	public ElasticConnector() {
 	}
 
+	/**
+	 * Wakes up the connection to the Elasticsearch-server
+	 */
 	@PostConstruct
 	private void wake() {
 		System.out.println("called on creation");
@@ -83,11 +92,20 @@ public class ElasticConnector<T> {
 		type = "task";
 	}
 
+	/**
+	 * Closes the connection to the Elasticsearch server
+	 */
 	@PreDestroy
 	private void close() {
 		this.client.close();
 	}
 
+	/**
+	 * Indexes or updates target object in the Elasticsearch-index
+	 * @param id
+	 * @param obj
+	 * @return IndexResponse
+	 */
 	@SuppressWarnings("deprecation")
 	public IndexResponse indexOrUpdate(String id, T obj) {
 
@@ -102,17 +120,32 @@ public class ElasticConnector<T> {
 
 	}
 
+	/**
+	 * Load target object from the index of the Elasticsearch-Server
+	 * @param id
+	 * @return GetResponse
+	 */
 	public GetResponse get(String id) {
 		GetResponse r = client.prepareGet(index, type, id).get();
 		return r;
 	}
 
+	/**
+	 * Delete target object from the index of the Elasticsearch-Server
+	 * @param id
+	 * @return DeleteResponse
+	 */
 	public DeleteResponse delete(String id) {
 		DeleteResponse r = client.prepareDelete(index, type, id).get();
 		return r;
 	}
 
-	public ArrayList<EvaluatedTask> query(String searchText) {
+	/**
+	 * Query the Elasticsearch-Index for matching objects and return them after mapping them to framework-objects
+	 * @param searchText
+	 * @return ArrayList<EvaluatedTask>
+	 */
+	public List<EvaluatedTask> query(String searchText) {
 		System.out.println("index: " + index + ", type: " + type);
 		SearchRequestBuilder search = client.prepareSearch(index).setTypes(type);
 		search.setQuery(QueryBuilders.matchQuery("name", searchText));
@@ -134,6 +167,11 @@ public class ElasticConnector<T> {
 		return foundTasks;
 	}
 
+	/**
+	 * Queries for tasks with given search-text, results are mapped to Task-objects
+	 * @param searchText
+	 * @return List<Task>
+	 */
 	public List<Task> queryForTasks(String searchText) {
 		System.out.println("index: " + index + ", type: " + type + ", searchText: " + searchText);
 
@@ -156,6 +194,10 @@ public class ElasticConnector<T> {
 		return tasks;
 	}
 
+	/**
+	 * Deletes the index from the Elasticsearch-Server
+	 * @return DeleteIndexResponse
+	 */
 	public DeleteIndexResponse deleteIndex() {
 		DeleteIndexResponse response = client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet();
 		return response;

@@ -17,6 +17,11 @@ import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
 import crac.module.matching.superclass.Worker;
 
+/**
+ * A worker, that matches a pool of tasks with a user
+ * @author David Hondl
+ *
+ */
 public class TaskMatchingWorker extends Worker {
 
 	private CracUser user;
@@ -26,6 +31,10 @@ public class TaskMatchingWorker extends Worker {
         this.user = (CracUser) param;
     }
 
+    /**
+     * The run method loads the tasks and filters them according to the matching-configuration (prematching-, matching-, and postmatching-filters)
+     * Then returns the evaluated tasks in an ordered list
+     */
 	@Override
 	public ArrayList<EvaluatedTask> run() {
 
@@ -76,6 +85,10 @@ public class TaskMatchingWorker extends Worker {
 		return tasks;
 	}
 
+	/**
+	 * Loads the tasks, the user in not participating in
+	 * @return ArrayList<Task>
+	 */
 	public ArrayList<Task> loadFilteredTasks() {
 
 		ArrayList<Task> result = new ArrayList<>();
@@ -100,27 +113,6 @@ public class TaskMatchingWorker extends Worker {
 		}
 		System.out.println("returned: " + result.size());
 		return result;
-	}
-
-	public void postModifyTasks(ArrayList<EvaluatedTask> tasks) {
-
-		for (EvaluatedTask task : tasks) {
-			Task t = task.getTask();
-
-			if (t.getTaskState() == ConcreteTaskState.STARTED) {
-
-				double mval = 0.6;
-				double newval = 0;
-
-				double valAdjust = ((double) t.getRelationships(0, TaskParticipationType.PARTICIPATING).size() / (double) t.getMinAmountOfVolunteers());
-
-				newval = task.getAssessment() * (1 + (1 - valAdjust) * mval);
-
-				task.setAssessment((double) Math.round(newval * 100) / 100);
-
-			}
-		}
-
 	}
 
 }

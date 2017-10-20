@@ -1906,7 +1906,7 @@ public class TaskController {
 		PostOptions query;
 		query = mapper.readValue(json, PostOptions.class);
 
-		ArrayList<EvaluatedTask> et = ect.query(query.getText());
+		List<EvaluatedTask> et = ect.query(query.getText());
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();

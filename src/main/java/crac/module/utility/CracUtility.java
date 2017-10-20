@@ -15,8 +15,18 @@ import org.springframework.web.multipart.MultipartFile;
 import crac.enums.ErrorCode;
 import crac.exception.InvalidActionException;
 
+/**
+ * This class contains generally helpfull static methods for the framework
+ * @author David Hondl
+ *
+ */
 public class CracUtility {
 
+	/**
+	 * Static method that returns a random string with given length
+	 * @param length
+	 * @return String
+	 */
 	public static String randomString(final int length) {
 		Random r = new Random();
 		StringBuilder sb = new StringBuilder();
@@ -27,6 +37,14 @@ public class CracUtility {
 		return sb.toString();
 	}
 
+	/**
+	 * Static method that processes an uploaded multipart-file
+	 * @param file
+	 * @param allowedMIME
+	 * @return
+	 * @throws IOException
+	 * @throws InvalidActionException
+	 */
 	public static String processUpload(MultipartFile file, String... allowedMIME)
 			throws IOException, InvalidActionException {
 
@@ -55,12 +73,23 @@ public class CracUtility {
 		return filename;
 	}
 
+	/**
+	 * Static method, that removes target file
+	 * @param path
+	 * @throws InvalidActionException
+	 */
 	public static void removeFile(String path) throws InvalidActionException {
 		if (!new File("uploadedFiles/" + path).delete()) {
 			throw new InvalidActionException(ErrorCode.ACTION_NOT_VALID);
 		}
 	}
 
+	/**
+	 * Static method that loads and returns target file as byte-array
+	 * @param path
+	 * @return byte[]
+	 * @throws IOException
+	 */
 	public static byte[] getFile(String path) throws IOException {
 		File image = new File("uploadedFiles/" + path);
 		byte[] imageContent = null;

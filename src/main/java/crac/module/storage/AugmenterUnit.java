@@ -8,6 +8,11 @@ import crac.module.matching.helpers.AugmentedSimpleCompetenceCollection;
 import crac.module.matching.helpers.SimpleCompetence;
 import crac.module.matching.helpers.SimpleCompetenceRelation;
 
+/**
+ * Class that handles the graph-traversal-process and returns the result (the agumented competences)
+ * @author David Hondl
+ *
+ */
 public class AugmenterUnit {
 
 	private CompetenceStorage storage;
@@ -16,6 +21,11 @@ public class AugmenterUnit {
 		this.storage = storage;
 	}
 
+	/**
+	 * Augment a single SimpleCompetence and return a AugmentedSimpleCompetenceCollection with it as mainId
+	 * @param c
+	 * @return AugmentedSimpleCompetenceCollection
+	 */
 	public AugmentedSimpleCompetenceCollection augment(SimpleCompetence c) {
 
 		AugmentedSimpleCompetenceCollection competences = new AugmentedSimpleCompetenceCollection(c);
@@ -31,6 +41,11 @@ public class AugmenterUnit {
 
 	}
 
+	/**
+	 * Recursive method, that augments the SimpleCompetence
+	 * @param collection
+	 * @param target
+	 */
 	private void augmentIntern(AugmentedSimpleCompetenceCollection collection, AugmentedSimpleCompetence target) {
 
 		if (target.getStepsDone() <= storage.getMaxSteps() && target.getSimilarity() >= storage.getMinSimilarity()) {
@@ -42,6 +57,11 @@ public class AugmenterUnit {
 
 	}
 
+	/**
+	 * Method, that calls the augmentInter()-method for all related competences, as long as the rules for further traversal are not violated
+	 * @param collection
+	 * @param parent
+	 */
 	public void callChildren(AugmentedSimpleCompetenceCollection collection, AugmentedSimpleCompetence parent) {
 		List<SimpleCompetenceRelation> rels = parent.getComp().getRelations();
 		if (rels != null) {
@@ -69,6 +89,12 @@ public class AugmenterUnit {
 		}
 	}
 
+	/**
+	 * Method that updates the values for traversed competences
+	 * @param target
+	 * @param parent
+	 * @param distance
+	 */
 	private void updateValues(AugmentedSimpleCompetence target, AugmentedSimpleCompetence parent, double distance) {
 
 		target.setStepsDone(parent.getStepsDone() + 1);
