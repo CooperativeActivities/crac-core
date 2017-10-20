@@ -9,6 +9,11 @@ import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This filter adjusts the assessment-value based on missing participants
+ * @author David Hondl
+ *
+ */
 public class MissingVolunteerFilter extends ConcreteFilter {
 
 	public MissingVolunteerFilter() {

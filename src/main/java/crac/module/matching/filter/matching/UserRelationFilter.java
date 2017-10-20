@@ -12,6 +12,11 @@ import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.helpers.MatrixField;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This matching-filter modifies the matching score by adjusting competence-similarities based on the like-value of every user to the other users connected to the task
+ * @author David Hondl
+ *
+ */
 public class UserRelationFilter extends ConcreteFilter {
 	
 	private double userLikeVal;

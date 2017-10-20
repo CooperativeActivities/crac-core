@@ -1,13 +1,11 @@
 package crac.module.matching.filter.matching;
 
-import java.util.HashMap;
-
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.helpers.MatrixField;
 import crac.module.matching.superclass.ConcreteFilter;
 
 /**
- * This matching-filter 
+ * This matching-filter modifies the matching score by adjusting competence-similarities based on the importance of every competence to the task it's connected to
  * @author David Hondl
  *
  */

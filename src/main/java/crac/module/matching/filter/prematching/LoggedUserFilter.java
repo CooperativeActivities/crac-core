@@ -11,8 +11,8 @@ import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
 /**
- * Filters a pool of tasks for the ones that the logged in user is not already related to
- * @author David
+ * Filters a pool of tasks for the ones that the logged in user is not already participating in
+ * @author David Hondl
  *
  */
 public class LoggedUserFilter extends ConcreteFilter {

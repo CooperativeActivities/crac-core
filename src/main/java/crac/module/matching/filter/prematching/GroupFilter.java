@@ -10,6 +10,11 @@ import crac.models.db.entities.Task;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * Adds/removes tasks from the task-pool, based on assigned groups
+ * @author David Hondl
+ *
+ */
 public class GroupFilter extends ConcreteFilter {
 
 	public GroupFilter() {

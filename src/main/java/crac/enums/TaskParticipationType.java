@@ -26,11 +26,6 @@ public enum TaskParticipationType implements ParticipationType{
 			return () -> false;
 		}
 
-		@Override
-		public boolean changeTo(ParticipationType pi) {
-			// TODO Auto-generated method stub
-			return false;
-		}
 
 	},
 	FOLLOWING {
@@ -43,12 +38,6 @@ public enum TaskParticipationType implements ParticipationType{
 			return () -> false;
 		}
 
-		@Override
-		public boolean changeTo(ParticipationType pi) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
 	},
 	LEADING {
 
@@ -57,31 +46,16 @@ public enum TaskParticipationType implements ParticipationType{
 			return  ErrorCode.ACTION_NOT_VALID;
 		}
 
-		@Override
-		public boolean changeTo(ParticipationType pi) {
-			// TODO Auto-generated method stub
+	};
+
+	@Override
+	public boolean changeTo(ParticipationType pi) {
+		if(pi == TaskParticipationType.LEADING){
 			return false;
 		}
-
-	}/*,
-	MATERIAL{
-
-		@Override
-		public ErrorStatus applicable(Task t) {
-			if (t.getTaskState().isInteractable()) {
-				return ErrorCode.TASK_NOT_INTERACTABLE;
-			}
-			return () -> false;
-		}
-
-		@Override
-		public boolean changeTo(ParticipationType pi) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-	}*/
-
+		return true;
+	}
+	
 }
 
 interface ParticipationType {

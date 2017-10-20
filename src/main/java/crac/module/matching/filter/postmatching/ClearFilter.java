@@ -7,6 +7,11 @@ import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This filter removes tasks from the task-pool based on the (competence-matching-) assessment of each task
+ * @author David Hondl
+ *
+ */
 public class ClearFilter extends ConcreteFilter {
 
 	public ClearFilter() {
