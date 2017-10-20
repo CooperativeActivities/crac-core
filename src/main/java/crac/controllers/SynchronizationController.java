@@ -182,7 +182,6 @@ public class SynchronizationController {
 	public void init() {
 		this.internsync();
 		this.filtersync();
-		// this.competencesync();
 	}
 
 	/**

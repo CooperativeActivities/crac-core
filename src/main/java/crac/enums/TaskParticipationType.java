@@ -37,7 +37,7 @@ public enum TaskParticipationType implements ParticipationType{
 
 		@Override
 		public ErrorStatus applicable(Task t) {
-			if (t.getTaskState().isInteractable()) {
+			if (!t.getTaskState().isInteractable()) {
 				return ErrorCode.TASK_NOT_INTERACTABLE;
 			}
 			return () -> false;

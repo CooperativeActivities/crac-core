@@ -123,13 +123,6 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file) {
 		System.out.println("write1");
-		try {
-			System.out.println("write2");
-			CracUtility.processTest(file);
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		return JSONResponseHelper.createResponse("a", true);
 	}
 

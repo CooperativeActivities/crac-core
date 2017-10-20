@@ -27,11 +27,6 @@ public class CracUtility {
 		return sb.toString();
 	}
 
-	public static void processTest(MultipartFile file) {
-		System.out.println("ASDKjn");
-		System.out.println("Type: " + file.getContentType());
-	}
-
 	public static String processUpload(MultipartFile file, String... allowedMIME)
 			throws IOException, InvalidActionException {
 
