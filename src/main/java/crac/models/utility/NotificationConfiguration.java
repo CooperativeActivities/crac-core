@@ -3,8 +3,13 @@ package crac.models.utility;
 import java.util.HashMap;
 import java.util.Map;
 
-import crac.exception.WrongParameterException;
+import crac.exception.InvalidParameterException;
 
+/**
+ * Helperclass that is used to configure target notification
+ * @author David Hondl
+ *
+ */
 public class NotificationConfiguration {
 	
 	Map<String, Object> configs;
@@ -28,7 +33,7 @@ public class NotificationConfiguration {
 		try{
 			return clazz.cast(configs.get(s));
 		}catch(ClassCastException ex){
-			throw new WrongParameterException();
+			throw new InvalidParameterException();
 		}	
 	}
 	

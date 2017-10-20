@@ -14,51 +14,40 @@ import crac.module.matching.configuration.PostMatchingConfiguration;
 import crac.module.matching.configuration.PreMatchingConfiguration;
 import crac.module.matching.superclass.Worker;
 import crac.module.storage.CompetenceStorage;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+/**
+ * A factory that creates worker based on a given type
+ * @author David Hondl
+ *
+ */
+@Data
 @Component
 @Scope("prototype")
 public class WorkerFactory {
 
 	@Autowired
-	@Getter
-	@Setter
 	private PreMatchingConfiguration pmc;
 
 	@Autowired
-	@Getter
-	@Setter
 	private MatchingConfiguration mc;
 
 	@Autowired
-	@Getter
-	@Setter
 	private PostMatchingConfiguration pomc;
 
 	@Autowired
-	@Getter
-	@Setter
 	private TaskDAO taskDAO;
 
 	@Autowired
-	@Getter
-	@Setter
 	private UserCompetenceRelDAO userCompetenceRelDAO;
 
 	@Autowired
-	@Getter
-	@Setter
 	private CracUserDAO userDAO;
 
 	@Autowired
-	@Getter
-	@Setter
 	private UserRelationshipDAO userRelalationshipDAO;
 
 	@Autowired
-	@Getter
-	@Setter
 	private CompetenceStorage cs;
 
     public <T extends Worker> Worker createWorker(Class<T> type, Object param) {        

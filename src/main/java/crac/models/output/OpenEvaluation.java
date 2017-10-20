@@ -6,6 +6,11 @@ import crac.models.db.entities.Task.TaskShort;
 import crac.models.db.relation.UserTaskRel;
 import lombok.Data;
 
+/**
+ * Helper class for output, that contains information about an open evaluation
+ * @author David Hondl
+ *
+ */
 @Data
 public class OpenEvaluation {
 	

@@ -3,6 +3,11 @@ package crac.models.output;
 import crac.models.db.entities.Competence;
 import lombok.Data;
 
+/**
+ * Helper class for output, that contains information about competence-relation-details
+ * @author David Hondl
+ *
+ */
 @Data
 public class CompetenceRelationDetails {
 	

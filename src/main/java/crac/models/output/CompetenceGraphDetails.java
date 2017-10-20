@@ -4,6 +4,11 @@ import crac.models.db.entities.Competence;
 import crac.module.matching.helpers.AugmentedSimpleCompetence;
 import lombok.Data;
 
+/**
+ * Helper class for output, that contains information about competence-similarity based on the competence-graph
+ * @author David Hondl
+ *
+ */
 @Data
 public class CompetenceGraphDetails implements Comparable<Object>{
 	

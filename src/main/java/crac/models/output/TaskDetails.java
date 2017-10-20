@@ -28,6 +28,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Helper class for output, that contains detailed information about one specific task
+ * @author David Hondl
+ *
+ */
 @Data
 public class TaskDetails {
 

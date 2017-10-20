@@ -8,6 +8,13 @@ import crac.enums.RESTAction;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Helper class for arbitrary output, that contains information about the whole request
+ * This is the output-class for the framework, each response ends up beeing an instance of this class
+ * @author David Hondl
+ *
+ * @param <T>
+ */
 public class RESTResponse<T> {
 	
 	@Getter

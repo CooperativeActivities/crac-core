@@ -5,6 +5,12 @@ import crac.models.db.entities.CracUser;
 import crac.models.db.relation.UserTaskRel;
 import lombok.Data;
 
+/**
+ * Helper class for output, that contains detailed information about the relation between two users
+ * Needed for the TaskDetails-Class
+ * @author David Hondl
+ *
+ */
 @Data
 public class UserFriendDetails {
 

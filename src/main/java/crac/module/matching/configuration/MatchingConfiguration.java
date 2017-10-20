@@ -13,6 +13,12 @@ import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This singleton-component provides a configuration for the competence-based onthology-matching
+ * It can be accessed and re-configured globally
+ * @author David Hondl
+ *
+ */
 @Service
 @Scope("singleton")
 public class MatchingConfiguration implements FilterConfiguration {

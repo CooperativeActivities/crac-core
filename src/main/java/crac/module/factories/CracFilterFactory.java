@@ -9,26 +9,25 @@ import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.GroupDAO;
 import crac.module.matching.superclass.ConcreteFilter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+/**
+ * A factory that creates filter-objects from their given classes or their names
+ * @author David Hondl
+ *
+ */
+@Data
 @Component
 @Scope("prototype")
 public class CracFilterFactory {
 	
 	@Autowired
-	@Getter
-	@Setter
 	CracUserDAO userDAO;
 	
 	@Autowired
-	@Getter
-	@Setter
 	GroupDAO groupDAO;
 	
 	@Autowired
-	@Getter
-	@Setter
 	CompetenceDAO competenceDAO;
 
 	public <T extends ConcreteFilter> ConcreteFilter createMatchingFilter(Class<T> type){

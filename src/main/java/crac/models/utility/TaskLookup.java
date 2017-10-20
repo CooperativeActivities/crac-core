@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
+import crac.models.input.PersonalizedFilters;
+import crac.models.input.PersonalizedFilters.PersonalizedFilter;
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
@@ -22,6 +24,11 @@ import crac.module.matching.superclass.IndividualFilter;
 import crac.module.utility.ElasticConnector;
 import lombok.Getter;
 
+/**
+ * Helper-component that loads and filters tasks based on the given filters (posted as json as part of the request)
+ * @author David Hondl
+ *
+ */
 @Component
 @Scope("prototype")
 public class TaskLookup {

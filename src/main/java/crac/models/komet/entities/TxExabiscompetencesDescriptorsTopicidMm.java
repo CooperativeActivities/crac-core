@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 /**
  * The persistent class for the tx_exabiscompetences_descriptors_topicid_mm database table.
- * 
+ * @author David Hondl
  */
 @Entity
 @Table(name="tx_exabiscompetences_descriptors_topicid_mm")

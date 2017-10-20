@@ -15,6 +15,12 @@ import crac.module.matching.filter.postmatching.MissingVolunteerFilter;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This singleton-component provides a configuration for filtering the tasks after the competence-based onthology-matching has been done
+ * It can be accessed and re-configured globally
+ * @author David Hondl
+ *
+ */
 @Service
 @Scope("singleton")
 public class PostMatchingConfiguration implements FilterConfiguration {
