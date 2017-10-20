@@ -57,6 +57,8 @@ import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing users.
+ * 
+ * @author David Hondl
  */
 
 @RestController
@@ -98,8 +100,7 @@ public class CracUserController {
 	@RequestMapping(value = { "/all/", "/all" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> index() {
-		List<UserShort> list = StreamSupport.stream(userDAO.findAll().spliterator(), false)
-				.map(CracUser::toShort)
+		List<UserShort> list = StreamSupport.stream(userDAO.findAll().spliterator(), false).map(CracUser::toShort)
 				.collect(Collectors.toList());
 		return JSONResponseHelper.createResponse(list, true);
 	}
@@ -255,8 +256,7 @@ public class CracUserController {
 			"/find/{task_id}/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<String> findUsers(@PathVariable(value = "task_id") Long taskId) {
-        return JSONResponseHelper.createResponse(decider.findUsers(taskDAO.findOne(taskId)),
-				true);
+		return JSONResponseHelper.createResponse(decider.findUsers(taskDAO.findOne(taskId)), true);
 	}
 
 	/**
@@ -321,7 +321,8 @@ public class CracUserController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-		return JSONResponseHelper.createResponse(user.getFriends().stream().map(CracUser::toShort).collect(Collectors.toSet()), true);
+		return JSONResponseHelper
+				.createResponse(user.getFriends().stream().map(CracUser::toShort).collect(Collectors.toSet()), true);
 
 	}
 
@@ -519,8 +520,7 @@ public class CracUserController {
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image",
-			"/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@RequestMapping(value = { "/image", "/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
 	public ResponseEntity<byte[]> getUserImage() throws IOException, InvalidActionException {
 
@@ -546,6 +546,7 @@ public class CracUserController {
 
 	/**
 	 * Get the image of target user
+	 * 
 	 * @param id
 	 * @return ResponseEntity
 	 * @throws IOException
@@ -573,7 +574,7 @@ public class CracUserController {
 				return ResponseEntity.ok().headers(headers).body(img);
 			}
 		}
-		
+
 		throw new InvalidActionException(ErrorCode.NOT_FOUND);
 
 	}

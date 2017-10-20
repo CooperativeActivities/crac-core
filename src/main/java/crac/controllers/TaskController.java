@@ -63,10 +63,10 @@ import crac.models.db.relation.UserMaterialSubscription;
 import crac.models.db.relation.UserTaskRel;
 import crac.models.input.CompetenceTaskMapping;
 import crac.models.input.MaterialMapping;
+import crac.models.input.PersonalizedFilters;
 import crac.models.input.PostOptions;
 import crac.models.output.TaskDetails;
 import crac.models.utility.NotificationConfiguration;
-import crac.models.utility.PersonalizedFilters;
 import crac.models.utility.TaskLookup;
 import crac.module.factories.NotificationFactory;
 import crac.module.matching.Decider;
@@ -83,6 +83,8 @@ import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing tasks.
+ * 
+ * @author David Hondl
  */
 
 @RestController
@@ -258,7 +260,7 @@ public class TaskController {
 
 			}
 
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ACTION_NOT_VALID);
+			return JSONResponseHelper.createResponse(false, "bad_request", (ErrorCode) es);
 
 		}
 
@@ -628,9 +630,9 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-        List<TaskShort> set = decider.findTasks(user).stream()
-                .map(evaltask -> evaltask.getTask().toShort()).collect(Collectors.toList());
-        
+		List<TaskShort> set = decider.findTasks(user).stream().map(evaltask -> evaltask.getTask().toShort())
+				.collect(Collectors.toList());
+
 		return JSONResponseHelper.createResponse(set, true);
 
 	}
@@ -650,8 +652,8 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-        List<TaskShort> set = decider.findTasks(user).stream()
-                .map(evaltask -> evaltask.getTask().toShort()).limit(numberOfTasks).collect(Collectors.toList());
+		List<TaskShort> set = decider.findTasks(user).stream().map(evaltask -> evaltask.getTask().toShort())
+				.limit(numberOfTasks).collect(Collectors.toList());
 
 		return JSONResponseHelper.createResponse(set, true);
 
@@ -1734,7 +1736,7 @@ public class TaskController {
 				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
-				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
+			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
 		}
 
 	}
@@ -1771,7 +1773,7 @@ public class TaskController {
 				}
 				return JSONResponseHelper.successfullyUpdated(task);
 			} else {
-			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
+				return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.PERMISSIONS_NOT_SUFFICIENT);
 			}
 		} else {
 			return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.ID_NOT_FOUND);
@@ -1910,7 +1912,7 @@ public class TaskController {
 				.getContext().getAuthentication();
 		CracUser user = userDAO.findByName(userDetails.getName());
 
-        ArrayList<EvaluatedTask> doables = decider.findTasks(user);
+		ArrayList<EvaluatedTask> doables = decider.findTasks(user);
 
 		for (EvaluatedTask ets : et) {
 			ets.setDoable(false);
@@ -2115,21 +2117,20 @@ public class TaskController {
 		return JSONResponseHelper.createResponse(myTask.getComments(), true);
 	}
 
-	
 	@RequestMapping(value = { "/{task_id}/competence/suggest",
-	"/{task_id}/competence/suggest/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody 
+			"/{task_id}/competence/suggest/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
 	public ResponseEntity<String> suggestCompetences(@PathVariable(value = "task_id") Long taskId) {
-		Task task = taskDAO.findOne(taskId);	
+		Task task = taskDAO.findOne(taskId);
 		return JSONResponseHelper.createResponse(decider.findCompetences(task), true);
 	}
-	
+
 	@RequestMapping(value = { "/{task_id}/competenceArea/suggest",
-	"/{task_id}/competenceArea/suggest/" }, method = RequestMethod.GET, produces = "application/json")
-	@ResponseBody 
+			"/{task_id}/competenceArea/suggest/" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
 	public ResponseEntity<String> suggestCompetenceAreas(@PathVariable(value = "task_id") Long taskId) {
-		Task task = taskDAO.findOne(taskId);	
+		Task task = taskDAO.findOne(taskId);
 		return JSONResponseHelper.createResponse(decider.findCompetenceAreas(task), true);
 	}
-	
+
 }

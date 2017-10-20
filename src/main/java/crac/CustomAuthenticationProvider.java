@@ -22,6 +22,11 @@ import crac.models.db.entities.CracToken;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Role;
 
+/**
+ * This class handles authentication of users (either by token or basic-authentication)
+ * @author David Hondl
+ *
+ */
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
@@ -34,6 +39,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	@Autowired
 	private HttpServletRequest request;
 
+	/**
+	 * The authenticate-method checks the sent authentication (name and password) and token and allows or disallows the request to target endpoint
+	 */
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		String tokenCode = request.getHeader("Token");

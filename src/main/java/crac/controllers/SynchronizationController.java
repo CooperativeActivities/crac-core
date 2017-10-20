@@ -75,6 +75,11 @@ import crac.module.storage.CompetenceStorage;
 import crac.module.utility.ElasticConnector;
 import crac.module.utility.JSONResponseHelper;
 
+/**
+ * REST controller for managing synchronization-related endpoints
+ * @author David Hondl
+ *
+ */
 @RestController
 @RequestMapping("/synchronization")
 public class SynchronizationController {

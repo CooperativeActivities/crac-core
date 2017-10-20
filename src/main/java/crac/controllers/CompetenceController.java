@@ -38,6 +38,8 @@ import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing competences.
+ * 
+ * @author David Hondl
  */
 @RestController
 @RequestMapping("/competence")
@@ -117,9 +119,7 @@ public class CompetenceController {
 	public ResponseEntity<String> showRelated(@PathVariable(value = "competence_id") Long id) {
 		Competence c = competenceDAO.findOne(id);
 		List<CompetenceGraphDetails> crd = cs.getCollection(c).getAugmented().stream()
-				.filter(ac -> !ac.getConcreteComp().equals(c))
-				.map(ac -> new CompetenceGraphDetails(ac))
-				.sorted()
+				.filter(ac -> !ac.getConcreteComp().equals(c)).map(ac -> new CompetenceGraphDetails(ac)).sorted()
 				.collect(Collectors.toList());
 		HashMap<String, Object> meta = new HashMap<>();
 		meta.put("competences", crd);
@@ -303,10 +303,9 @@ public class CompetenceController {
 		CracUser user = userDAO.findByName(userDetails.getName());
 
 		List<Competence> comps = StreamSupport.stream(competenceDAO.findByDeprecatedNot(true).spliterator(), false)
-		.filter(c -> user.getCompetenceRelationships().stream()
-				.map(UserCompetenceRel::getCompetence)
-				.noneMatch(uc -> uc.equals(c)) )
-		.collect(Collectors.toList());
+				.filter(c -> user.getCompetenceRelationships().stream().map(UserCompetenceRel::getCompetence)
+						.noneMatch(uc -> uc.equals(c)))
+				.collect(Collectors.toList());
 
 		if (comps.size() != 0) {
 			return JSONResponseHelper.createResponse(comps, true);

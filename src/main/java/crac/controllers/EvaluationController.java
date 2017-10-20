@@ -37,6 +37,11 @@ import crac.module.factories.NotificationFactory;
 import crac.module.matching.Decider;
 import crac.module.utility.JSONResponseHelper;
 
+/**
+ * REST controller for managing evaluations
+ * @author David Hondl
+ *
+ */
 @RestController
 @RequestMapping("/evaluation")
 public class EvaluationController {

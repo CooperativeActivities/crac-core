@@ -23,6 +23,11 @@ import crac.module.factories.NotificationFactory;
 import crac.module.notifier.Notification;
 import crac.module.utility.JSONResponseHelper;
 
+/**
+ * REST controller for managing notifications
+ * @author David Hondl
+ *
+ */
 @RestController
 @RequestMapping("/notification")
 

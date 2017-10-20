@@ -12,6 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import crac.models.db.daos.RoleDAO;
 import crac.module.utility.JSONResponseHelper;
 
+/**
+ * REST controller for managing roles
+ * @author David Hondl
+ *
+ */
 @RestController
 @RequestMapping("/role")
 public class RoleController {

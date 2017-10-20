@@ -2165,7 +2165,21 @@ postmatching: ClearFilter, MissingVolunteerFilter
 POST /filter/{matching_type}
 
 	{
-		"parameters": ["ImportancyLevelFilter", "LikeLevelFilter", "ProficiencyLevelFilter", "LikeLevelFilter"]
+		"filters": [
+			{
+				"name":"ImportancyLevelFilter"
+			},
+			{
+				"name":"LikeLevelFilter"
+			},
+			{
+				"name":"ProficiencyLevelFilter"
+			},
+			{
+				"name":"LikeLevelFilter"
+			}
+
+			]
 	}
 
 ##### *Response:*

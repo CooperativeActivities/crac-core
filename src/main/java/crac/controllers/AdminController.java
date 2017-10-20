@@ -46,8 +46,9 @@ import crac.module.utility.JSONResponseHelper;
 
 /**
  * 
- * @author David This controller contains all REAL rest-endpoints. With
- *         ADMIN-rights, all datasets can be manipulated here.
+ * REST-controller for handling different additionally secured endpoints
+ * 
+ * @author David Hondl
  */
 @RestController
 @RequestMapping("/admin")

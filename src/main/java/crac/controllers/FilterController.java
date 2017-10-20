@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import crac.enums.ErrorCode;
-import crac.models.utility.PersonalizedFilters;
+import crac.models.input.PersonalizedFilters;
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.matching.configuration.PostMatchingConfiguration;
@@ -27,9 +27,14 @@ import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.utility.JSONResponseHelper;
 import lombok.Getter;
 
+/**
+ * REST controller for managing filters
+ * @author David Hondl
+ *
+ */
 @RestController
 @RequestMapping("/filter")
-public class FilterConfigurationController {
+public class FilterController {
 
 	@Getter
 	@Value("${crac.filters.prematching}")

@@ -27,6 +27,7 @@ import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing groups.
+ * @author David Hondl
  */
 @RestController
 @RequestMapping("/group")

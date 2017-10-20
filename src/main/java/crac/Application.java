@@ -8,13 +8,15 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author David Hondl
+ * Main class for running the application, this file must be executed
+ * It is also configured for running on an external tomcat-server instead of the embedded one
+ */
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
 @SpringBootApplication
-/**
- * main class for running the application, this file must be executed
- */
 public class Application extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
