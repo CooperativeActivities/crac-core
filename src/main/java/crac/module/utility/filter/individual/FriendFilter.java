@@ -14,6 +14,11 @@ import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * The Friend-Filter requires a username as name or both firstname and lastname to find a user and show tasks that this user is
+ * @author David Hondl
+ *
+ */
 public class FriendFilter extends ConcreteFilter {
 
 	public FriendFilter() {

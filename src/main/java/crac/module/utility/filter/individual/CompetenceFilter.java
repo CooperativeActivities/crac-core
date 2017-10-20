@@ -12,6 +12,11 @@ import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * The Competence-Filter requires arbitrary competence-ids to filter tasks for these competences
+ * @author David Hondl
+ *
+ */
 public class CompetenceFilter extends ConcreteFilter {
 
 	public CompetenceFilter() {

@@ -20,7 +20,6 @@ import crac.models.input.PersonalizedFilters.PersonalizedFilter;
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
-import crac.module.matching.superclass.IndividualFilter;
 import crac.module.utility.ElasticConnector;
 import lombok.Getter;
 

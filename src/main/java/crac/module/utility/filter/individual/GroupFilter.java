@@ -15,6 +15,11 @@ import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This filter requires the name and id of a group to find a certain group and will filter the tasks based on the restricting groups
+ * @author David Hondl
+ *
+ */
 public class GroupFilter extends ConcreteFilter {
 
 	public GroupFilter() {

@@ -15,10 +15,19 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * Spring-filter, that adds CORS-header-attributes to the REST-Responses of the framework
+ * This allows client-side-frameworks to access endpoints
+ * @author David Hondl
+ *
+ */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
+	/**
+	 * This method adds the relevant key/value-pairs to the http-response
+	 */
 	@Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;

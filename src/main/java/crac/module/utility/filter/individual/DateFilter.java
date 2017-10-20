@@ -9,6 +9,11 @@ import crac.models.db.entities.Task;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * The Date-Filter requires a combination of those four parameters to determine the time-intervall of the tasks
+ * @author David Hondl
+ *
+ */
 public class DateFilter extends ConcreteFilter {
 
 	public DateFilter() {

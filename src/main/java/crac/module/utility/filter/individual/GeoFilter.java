@@ -7,6 +7,13 @@ import crac.models.db.entities.Task;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * The Geo-Filter requires the fields geoLat, geoLng as double and geoName, geoCountry, geoCountryA, geoMacroRegion, 
+ * geoRegion, geoLocality as String. All tasks are filtered for matching fields, 
+ * as long as they are not -1 (if it is a double) or "" (if it is a string)
+ * @author David Hondl
+ *
+ */
 public class GeoFilter extends ConcreteFilter {
 
 	public GeoFilter() {
