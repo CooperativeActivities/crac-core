@@ -7,6 +7,12 @@ import crac.models.db.entities.Competence;
 import crac.module.storage.CompetenceStorage;
 import lombok.Data;
 
+/**
+ * A class that holds multiple AugmentedSimpleCompetence-objects and performs actions on them
+ * It contains a main-competence and all competences related to it (augmented)
+ * @author David Hondl
+ *
+ */
 @Data
 public class AugmentedSimpleCompetenceCollection {
 
@@ -27,6 +33,11 @@ public class AugmentedSimpleCompetenceCollection {
 		this.augmented = new ArrayList<AugmentedSimpleCompetence>();
 	}
 
+	/**
+	 * This method takes in another collection and compares how their main-competences are related to each other
+	 * @param other
+	 * @return double
+	 */
 	public double compare(AugmentedSimpleCompetenceCollection other){
 		if(other.getMain().getComp().getId() == this.getMain().getComp().getId()){
 			return 1.0;
@@ -44,6 +55,11 @@ public class AugmentedSimpleCompetenceCollection {
 		return 0.0;
 	}
 
+	/**
+	 * This method takes in another AugmentedSimpleCompetence and compares how it is related to the augmented-competences of this collection
+	 * @param other
+	 * @return double
+	 */
 	public double compare(AugmentedSimpleCompetence other){
 		for(AugmentedSimpleCompetence aut : this.augmented){
 			if(aut.getComp().getId() == other.getComp().getId()){
@@ -53,6 +69,11 @@ public class AugmentedSimpleCompetenceCollection {
 		return 0.0;
 	}
 	
+	/**
+	 * This method evaluates if given AugmentedSimpleCompetence is part of the augmented-competences
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean containsComp(AugmentedSimpleCompetence c) {
 		for (AugmentedSimpleCompetence a : augmented) {
 			if (a.getComp() == c.getComp()) {
@@ -62,6 +83,12 @@ public class AugmentedSimpleCompetenceCollection {
 		return false;
 	}
 
+	/**
+	 * Adds given SimpleCompetence to the collection or updates an existing competence if it equals the given one
+	 * Returns the newly created or updated AugmentedSimpleCompetence
+	 * @param c
+	 * @return AugmentedSimpleCompetence
+	 */
 	public AugmentedSimpleCompetence loadOrCreate(SimpleCompetence c) {
 		for (AugmentedSimpleCompetence a : augmented) {
 			if (a.getComp() == c) {
@@ -71,14 +98,26 @@ public class AugmentedSimpleCompetenceCollection {
 		return new AugmentedSimpleCompetence(c);
 	}
 
+	/**
+	 * Adds target AugmentedSimpleCompetence to the augmented competences
+	 * @param c
+	 */
 	public void addCompetence(AugmentedSimpleCompetence c) {
 		this.augmented.add(c);
 	}
 
+	/**
+	 * Creates a AugmentedSimpleCompetence from given SimpleCompetence and adds it to the augmented competences
+	 * @param c
+	 */
 	public void addCompetence(SimpleCompetence c) {
 		augmented.add(new AugmentedSimpleCompetence(c));
 	}
 
+	/**
+	 * Loads the concrete competences from the database, based on the SimpleCompetences
+	 * @param competenceDAO
+	 */
 	public void loadCompetences(CompetenceDAO competenceDAO) {
 		main.loadConcreteCompetence(competenceDAO);
 		for (AugmentedSimpleCompetence ac : augmented) {
@@ -86,6 +125,9 @@ public class AugmentedSimpleCompetenceCollection {
 		}
 	}
 
+	/**
+	 * Prints the collection
+	 */
 	public void print() {
 		boolean loaded = false;
 		if (main.getConcreteComp() != null) {

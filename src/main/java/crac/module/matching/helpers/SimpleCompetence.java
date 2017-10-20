@@ -6,6 +6,11 @@ import java.util.List;
 import crac.models.db.entities.Competence;
 import lombok.Data;
 
+/**
+ * Helperclass that represents a simplified version of the competence-class
+ * @author David Hondl
+ *
+ */
 @Data
 public class SimpleCompetence {
 

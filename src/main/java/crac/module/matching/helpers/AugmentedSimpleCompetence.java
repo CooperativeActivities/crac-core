@@ -4,6 +4,11 @@ import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.entities.Competence;
 import lombok.Data;
 
+/**
+ * Helperclass that saves different values of the graph-traversal-process in addition to the actual competence
+ * @author David Hondl
+ *
+ */
 @Data
 public class AugmentedSimpleCompetence {
 	

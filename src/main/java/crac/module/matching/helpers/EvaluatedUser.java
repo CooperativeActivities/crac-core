@@ -3,6 +3,12 @@ package crac.module.matching.helpers;
 import crac.models.db.entities.CracUser;
 import lombok.Data;
 
+/**
+ * Helperclass that represents target user and its assessed matching-score
+ * Comparable to other objects of this class based on its assessment
+ * @author David Hondl
+ *
+ */
 @Data
 public class EvaluatedUser implements Comparable<Object>{
 	

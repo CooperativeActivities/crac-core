@@ -10,6 +10,12 @@ import crac.models.db.relation.UserCompetenceRel;
 import crac.module.matching.configuration.MatchingConfiguration;
 import crac.module.storage.CompetenceStorage;
 
+/**
+ * Helperclass that contains a matrix, comparing target task and user based on their competences
+ * Used for the competence-matching
+ * @author David Hondl
+ *
+ */
 public class CompetenceCollectionMatrix {
 
 	private CompetenceStorage cs;
@@ -26,6 +32,14 @@ public class CompetenceCollectionMatrix {
 	private boolean nullTask;
 	private boolean nullUser;
 
+	/**
+	 * Constructors takes in target user, task, a configuration containg matching-filters, and a reference to the competence-storage-singleton
+	 * Builds the matrix based on the loaded competences of user, task and their similarity-values
+	 * @param user
+	 * @param task
+	 * @param matching-configuration
+	 * @param competence-storage
+	 */
 	public CompetenceCollectionMatrix(CracUser u, Task t, MatchingConfiguration m, CompetenceStorage cs) {
 		this.cs = cs;
 		this.u = u;
@@ -60,6 +74,9 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
+	/**
+	 * Methods builds the matrix itself (2D-Array)
+	 */
 	private void buildMatrix() {
 		int uCount = 0;
 		for (UserCompetenceRel ucr : userComps) {
@@ -79,6 +96,10 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
+	/**
+	 * Method applies filters of given configuration to the matrix
+	 * @param m
+	 */
 	private void applyFilters(MatchingConfiguration m) {
 
 		FilterParameters fp = new FilterParameters();
@@ -92,6 +113,9 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
+	/**
+	 * Method that marks competences that violate the mandatory-rule (competence set as mandatory for a task)
+	 */
 	private void markMandatoryViolation() {
 
 		double[] columns = bestColumn();
@@ -116,6 +140,10 @@ public class CompetenceCollectionMatrix {
 
 	}
 
+	/**
+	 * Method calculated the actual matching score and considering tasks and users without assigned competences
+	 * @return double
+	 */
 	public double calcMatch() {
 		if (this.nullTask && this.nullUser) {
 			return 0.5;
@@ -129,6 +157,10 @@ public class CompetenceCollectionMatrix {
 		}
 	}
 
+	/**
+	 * Calculates the final score of the matrix based on best values for column
+	 * @return double
+	 */
 	private double calcMatchColumn() {
 
 		double[] intermediate = bestColumn();
@@ -144,6 +176,10 @@ public class CompetenceCollectionMatrix {
 		return (double) Math.round(result * 100) / 100;
 	}
 
+	/**
+	 * Calculates the final score of the matrix based on best values for row
+	 * @return double
+	 */
 	private double calcMatchRow() {
 
 		double[] intermediate = bestRow();
@@ -159,6 +195,10 @@ public class CompetenceCollectionMatrix {
 		return (double) Math.round(result * 100) / 100;
 	}
 
+	/**
+	 * Returns best column
+	 * @return double[]
+	 */
 	private double[] bestColumn() {
 
 		double[] intermediate = new double[matrix[0].length];
@@ -177,6 +217,10 @@ public class CompetenceCollectionMatrix {
 
 	}
 
+	/**
+	 * Returns best rows
+	 * @return double[]
+	 */
 	private double[] bestRow() {
 
 		double[] intermediate = new double[matrix.length];
@@ -199,6 +243,9 @@ public class CompetenceCollectionMatrix {
 		return doable;
 	}
 
+	/**
+	 * Prints the matrix
+	 */
 	public void print() {
 		if (this.nullTask || this.nullUser) {
 			System.out.println("_____________________________________");

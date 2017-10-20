@@ -2,6 +2,11 @@ package crac.module.matching.helpers;
 
 import lombok.Data;
 
+/**
+ * Helperclass that represents a simplified version of the competence-relationship-class
+ * @author David Hondl
+ *
+ */
 @Data
 public class SimpleCompetenceRelation {
 	

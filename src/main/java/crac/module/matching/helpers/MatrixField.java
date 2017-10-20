@@ -4,6 +4,12 @@ import crac.models.db.relation.CompetenceTaskRel;
 import crac.models.db.relation.UserCompetenceRel;
 import lombok.Data;
 
+/**
+ * Helperclass that represent a single field (similarity-value) of the CompetenceCollectionMatrix
+ * Contains references to the relations between the user and task and the similarity value represented by the matrix-field
+ * @author David Hondl
+ *
+ */
 @Data
 public class MatrixField {
 	
