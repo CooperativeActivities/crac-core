@@ -17,6 +17,11 @@ import crac.models.db.entities.Competence;
 import crac.models.db.entities.CracUser;
 import lombok.Data;
 
+/**
+ * The user-competence-relationship entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "user_competence_relationship")

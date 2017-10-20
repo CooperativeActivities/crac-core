@@ -6,6 +6,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Helperclass that maps json-input to data that can be used by different endpoints
+ * @author David Hondl
+ *
+ */
 @Data
 public class PostOptions {
 

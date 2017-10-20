@@ -9,7 +9,9 @@ import crac.models.komet.entities.TxExabiscompetencesDescriptorsTopicidMm;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
+ * Spring Data CrudRepository for the tx-exabiscompetences-descriptors-topic entity (from Komet-DB)
+ * @author David Hondl
+ *
  */
 @Transactional
 public interface TxExabiscompetencesDescriptorsTopicidMmDAO extends CrudRepository<TxExabiscompetencesDescriptorsTopicidMm, Long> {

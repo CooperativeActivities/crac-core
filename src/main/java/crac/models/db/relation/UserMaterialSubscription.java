@@ -19,6 +19,11 @@ import crac.models.db.entities.Material;
 import crac.models.db.entities.Material.MaterialShort;
 import lombok.Data;
 
+/**
+ * The user-meterial-subscription entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "user_material_subscription")

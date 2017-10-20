@@ -7,7 +7,9 @@ import crac.models.komet.entities.TxExabiscompetencesCrosssubject;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
+ * Spring Data CrudRepository for the tx-exabiscompetences-crosssubject entity (from Komet-DB)
+ * @author David Hondl
+ *
  */
 @Transactional
 public interface TxExabiscompetencesCrosssubjectDAO extends CrudRepository<TxExabiscompetencesCrosssubject, Long> {

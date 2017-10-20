@@ -28,6 +28,11 @@ import crac.module.notifier.Notification;
 import crac.module.notifier.notifications.EvaluationNotification;
 import lombok.Data;
 
+/**
+ * The user-task-relationship entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "user_task_relationship")

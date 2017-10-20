@@ -7,7 +7,7 @@ import org.hibernate.annotations.Type;
 
 /**
  * The persistent class for the tx_exabiscompetences_crosssubjects database table.
- * 
+ * @author David Hondl
  */
 @Entity
 @Table(name="tx_exabiscompetences_crosssubjects")

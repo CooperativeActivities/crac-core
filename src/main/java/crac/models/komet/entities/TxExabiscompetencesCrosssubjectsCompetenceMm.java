@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 /**
  * The persistent class for the tx_exabiscompetences_crosssubjects_competence_mm database table.
- * 
+ * @author David Hondl
  */
 @Entity
 @Table(name="tx_exabiscompetences_crosssubjects_competence_mm")

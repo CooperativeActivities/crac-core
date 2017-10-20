@@ -19,6 +19,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
 
+/**
+ * The task-relationship-type entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "task_relationship_type")

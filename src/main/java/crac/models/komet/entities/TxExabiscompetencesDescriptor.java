@@ -21,7 +21,7 @@ import crac.module.matching.interfaces.SyncableKomet;
 
 /**
  * The persistent class for the tx_exabiscompetences_descriptors database table.
- * 
+ * @author David Hondl
  */
 @Entity
 @Table(name="tx_exabiscompetences_descriptors")

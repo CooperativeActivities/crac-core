@@ -6,6 +6,12 @@ import crac.models.db.daos.MaterialDAO;
 import crac.models.db.entities.Material;
 import lombok.Data;
 
+/**
+ * Helperclass that maps json-input to data that can be used to create a material
+ * Also handles default values for the relationship
+ * @author David Hondl
+ *
+ */
 @Data
 public class MaterialMapping {
 	

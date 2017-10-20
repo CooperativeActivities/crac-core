@@ -18,6 +18,11 @@ import crac.models.db.entities.CracUser.UserShort;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * The user-relationship entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "user_relationship")
