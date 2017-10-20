@@ -5,11 +5,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import crac.exception.WrongParameterException;
+import crac.exception.InvalidParameterException;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
-import crac.models.utility.ParamterDummy;
+import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
@@ -23,7 +23,7 @@ public class CreatorFilter extends ConcreteFilter {
 	@Override
 	public void apply(FilterParameters fp) {
 
-		List<ParamterDummy> params = super.getPf().getParams();
+		List<InputParameters> params = super.getPf().getParams();
 		List<CracUser> l = new ArrayList<>();
 		CracUserDAO userDAO = super.getCff().getUserDAO();
 
@@ -31,7 +31,7 @@ public class CreatorFilter extends ConcreteFilter {
 		String lastName = "";
 		String name = "";
 
-		for (ParamterDummy pm : params) {
+		for (InputParameters pm : params) {
 
 			try {
 				HashMap<String, String> v = (HashMap<String, String>) pm.getValue();
@@ -39,7 +39,7 @@ public class CreatorFilter extends ConcreteFilter {
 				firstName = (v.get("firstName") != null) ? v.get("firstName") : "";
 				lastName = (v.get("lastName") != null) ? v.get("lastName") : "";
 			} catch (Exception e) {
-					throw new WrongParameterException("Wrong parameters");
+					throw new InvalidParameterException("Wrong parameters");
 			}
 
 			List<CracUser> c = userDAO.queryByNameOrFullname(name, firstName, lastName);

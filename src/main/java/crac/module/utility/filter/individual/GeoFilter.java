@@ -2,7 +2,7 @@ package crac.module.utility.filter.individual;
 
 import java.util.List;
 
-import crac.exception.WrongParameterException;
+import crac.exception.InvalidParameterException;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
@@ -38,7 +38,7 @@ public class GeoFilter extends ConcreteFilter {
 					|| (!geoLocality.equals("")) && (!x.getGeoLocality().equalsIgnoreCase(geoLocality)));
 		} catch (ClassCastException e) {
 			System.out.println(e.getMessage());
-			throw new WrongParameterException();
+			throw new InvalidParameterException();
 		}
 
 	}

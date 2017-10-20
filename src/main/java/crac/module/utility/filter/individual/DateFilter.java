@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import crac.exception.WrongParameterException;
+import crac.exception.InvalidParameterException;
 import crac.models.db.entities.Task;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
@@ -30,7 +30,7 @@ public class DateFilter extends ConcreteFilter {
 			endDateMin = (Long) super.getPf().getParam("endDateMin");
 			endDateMax = (Long) super.getPf().getParam("endDateMax");
 		} catch (Exception e) {
-			throw new WrongParameterException("Wrong parameters");
+			throw new InvalidParameterException("Wrong parameters");
 		}
 
 		boolean minSD = startDateMin != null;

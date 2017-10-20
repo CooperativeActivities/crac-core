@@ -26,9 +26,16 @@ import crac.exception.InvalidActionException;
 import crac.exception.NoSuchStateException;
 import crac.exception.RequirementsNotFullfilledException;
 import crac.exception.SubItemsNotReadyException;
-import crac.exception.WrongParameterException;
+import crac.exception.InvalidParameterException;
 import crac.module.utility.JSONResponseHelper;
 
+/**
+ * This controller provides handing of uncatched exceptions
+ * Exceptions can be thrown by controllers and caught by this bean
+ * Exceptions that get caught by standard methods have to be overwritten (example: handleHttpRequestMethodNotSupported) or else they will be ambiguous
+ * @author David Hondl
+ *
+ */
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -64,7 +71,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		return JSONResponseHelper.createResponseObj(RESTAction.ANY, "bad_request", ErrorCode.NO_SUCH_TYPE);
 	}
 
-	@ExceptionHandler(WrongParameterException.class)
+	@ExceptionHandler(InvalidParameterException.class)
 	protected ResponseEntity<String> handleParameterException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.WRONG_PARAMETER);
 	}

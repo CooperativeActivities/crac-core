@@ -22,6 +22,11 @@ import crac.module.matching.workers.UserCompetenceRelationEvolutionWorker;
 import crac.module.matching.workers.UserMatchingWorker;
 import crac.module.matching.workers.UserRelationEvolutionWorker;
 
+/**
+ * The decider-service serves as layer between the controllers and the instanced workers
+ * @author David Hondl
+ *
+ */
 @Service
 public class Decider {
 	

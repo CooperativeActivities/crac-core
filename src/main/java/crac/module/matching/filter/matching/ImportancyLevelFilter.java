@@ -6,6 +6,11 @@ import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.helpers.MatrixField;
 import crac.module.matching.superclass.ConcreteFilter;
 
+/**
+ * This matching-filter 
+ * @author David Hondl
+ *
+ */
 public class ImportancyLevelFilter extends ConcreteFilter{
 
 	public ImportancyLevelFilter() {
