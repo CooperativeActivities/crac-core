@@ -9,6 +9,12 @@ import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
 
+/**
+ * This enum represent the different states a task can be in
+ * Every state also implements different functionality, defined by the TaskState-Interface
+ * @author David Hondl
+ *
+ */
 public enum ConcreteTaskState implements TaskState {
 
 	NOT_PUBLISHED {

@@ -7,8 +7,9 @@ import crac.models.db.entities.Comment;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
- */
+ * Spring Data CrudRepository for the comment entity.
+ * @author David Hondl
+*/
 @Transactional
 public interface CommentDAO extends CrudRepository<Comment, Long> {
 	public Comment findByName(String name);

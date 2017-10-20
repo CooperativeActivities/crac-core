@@ -1,8 +1,10 @@
 package crac.exception;
 
-import crac.enums.ErrorCode;
-import lombok.Getter;
-
+/**
+ * This exceptions represents and error while mapping a SyncableKomet-Entity
+ * @author David Hondl
+ *
+ */
 public class KometMappingException extends Exception {
 
 	private static final long serialVersionUID = 4980695608450807332L;

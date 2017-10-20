@@ -19,6 +19,11 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * This class defines the configuration for the komet database and which package's entities are connected to it
+ * @author David Hondl
+ *
+ */
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(entityManagerFactoryRef = "barEntityManagerFactory", transactionManagerRef = "barTransactionManager", basePackages = {

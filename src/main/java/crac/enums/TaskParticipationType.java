@@ -3,6 +3,12 @@ package crac.enums;
 import crac.models.db.entities.Task;
 import crac.module.matching.interfaces.ErrorStatus;
 
+/**
+ * This enum represents different kinds of participation of a user on target task
+ * Every type implements different methods, defined be the ParticipationType-interface
+ * @author David Hondl
+ *
+ */
 public enum TaskParticipationType implements ParticipationType{
 
 	PARTICIPATING {

@@ -2,6 +2,12 @@ package crac.enums;
 
 import crac.module.matching.interfaces.ErrorStatus;
 
+/**
+ * This enum represent different error-codes
+ * It also implements the ErrorStatus-Interface, a functional-interface that makes a SAM-implementation of the an existing error possible
+ * @author David Hondl
+ *
+ */
 public enum ErrorCode implements ErrorStatus{
 	
 	ACTION_NOT_VALID, ID_NOT_VALID, ID_NOT_FOUND, TASK_NOT_EXTENDABLE, PERMISSIONS_NOT_SUFFICIENT, ORGANISATIONAL_EXTENDS_SHIFT, 
