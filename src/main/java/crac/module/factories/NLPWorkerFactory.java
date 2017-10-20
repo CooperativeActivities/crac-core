@@ -25,7 +25,7 @@ import lombok.Setter;
 @Scope("prototype")
 public class NLPWorkerFactory{
 	
-    @Value("${crac.nlp.taggerDirectory}") String taggerDirectory;
+    //@Value("${crac.nlp.taggerDirectory}") String taggerDirectory;
 	
 	@Autowired
 	@Getter
@@ -55,7 +55,8 @@ public class NLPWorkerFactory{
 	
 	@PostConstruct
 	private void init(){
-		buildNLPPipeline(taggerDirectory);
+		//buildNLPPipeline(taggerDirectory);
+		buildNLPPipeline("/opt/tree-tagger");
 	}
 
 	public <T extends NLPWorker> NLPWorker createWorker(Class<T> type, Object param) {
