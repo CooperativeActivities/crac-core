@@ -24,14 +24,14 @@ import lombok.Getter;
 @Component
 @Scope("singleton")
 public class CompetenceStorage {
-	
+
 	@Getter
 	@Autowired
 	private CompetenceDAO competenceDAO;
-	
+
 	@Autowired
 	private CompetenceRelationshipDAO compRelDAO;
-	
+
 	@Getter
 	@Value("${crac.print.synchronization.competences}")
 	private boolean print;
@@ -51,17 +51,19 @@ public class CompetenceStorage {
 	private ArrayList<AugmentedSimpleCompetenceCollection> cache = new ArrayList<>();
 
 	public boolean copy() {
-		
+
 		for (Competence c : competenceDAO.findAll()) {
 			this.competences.put(c.getId(), new SimpleCompetence(c));
 		}
 
 		for (CompetenceRelationship cr : compRelDAO.findAll()) {
-			SimpleCompetence c1 = this.competences.get(cr.getCompetence1().getId());
-			SimpleCompetence c2 = this.competences.get(cr.getCompetence2().getId());
-			if (cr.getType() != null) {
-				c1.addRelation(new SimpleCompetenceRelation(c2, cr.getType().getDistanceVal()));
-				c2.addRelation(new SimpleCompetenceRelation(c1, cr.getType().getDistanceVal()));
+			if (cr.getCompetence1() != null && cr.getCompetence2() != null) {
+				SimpleCompetence c1 = this.competences.get(cr.getCompetence1().getId());
+				SimpleCompetence c2 = this.competences.get(cr.getCompetence2().getId());
+				if (cr.getType() != null) {
+					c1.addRelation(new SimpleCompetenceRelation(c2, cr.getType().getDistanceVal()));
+					c2.addRelation(new SimpleCompetenceRelation(c1, cr.getType().getDistanceVal()));
+				}
 			}
 		}
 
@@ -173,5 +175,4 @@ public class CompetenceStorage {
 		return true;
 	}
 
-	
 }
