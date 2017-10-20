@@ -22,6 +22,11 @@ import crac.models.db.entities.Competence;
 import crac.models.db.entities.Role;
 import lombok.Data;
 
+/**
+ * The competence-permission-type entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "competence_permission_type")

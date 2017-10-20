@@ -15,6 +15,11 @@ import crac.models.db.entities.Competence;
 import crac.module.matching.interfaces.SyncableCrac;
 import lombok.Data;
 
+/**
+ * The competence-relationship entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "competence_relationship")

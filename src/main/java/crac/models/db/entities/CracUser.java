@@ -46,8 +46,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The cracUser-entity.
- */
+ * The cracUser-entity
+ * @author David Hondl
+*/
 
 @Entity
 @Table(name = "users")

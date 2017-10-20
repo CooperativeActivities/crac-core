@@ -18,6 +18,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import crac.models.db.relation.UserTaskRel;
 
+/**
+ * The evaluation entity
+ * @author David Hondl
+ *
+ */
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "evaluations")

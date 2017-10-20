@@ -21,8 +21,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
- * The group-entity.
- */
+ * The group-entity
+ * @author David Hondl
+*/
 
 @Entity
 @Table(name = "groups")

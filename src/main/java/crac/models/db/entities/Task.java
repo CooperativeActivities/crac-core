@@ -40,8 +40,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The task-entity.
- */
+ * The task-entity
+ * @author David Hondl
+*/
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "tasks")

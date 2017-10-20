@@ -18,6 +18,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import crac.models.db.entities.Task;
 import lombok.Data;
 
+/**
+ * The repetition-date entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "repetition_dates")

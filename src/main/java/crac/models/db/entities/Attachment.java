@@ -18,8 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
- * The attachment-entity.
- */
+ * The attachment-entity
+ * @author David Hondl
+*/
 
 @Entity
 @Table(name = "attachments")

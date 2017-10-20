@@ -18,6 +18,11 @@ import crac.models.db.entities.Competence;
 import crac.models.db.entities.Task;
 import lombok.Data;
 
+/**
+ * The competence-task-relationship entity
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "competence_task_relationship")

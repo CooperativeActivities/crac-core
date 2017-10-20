@@ -25,6 +25,11 @@ import crac.module.matching.interfaces.SyncableCrac;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The competence-area entity
+ * @author David Hondl
+ *
+ */
 @Entity
 @Table(name = "competence_area")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")

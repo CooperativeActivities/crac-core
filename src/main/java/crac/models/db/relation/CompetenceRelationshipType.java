@@ -19,6 +19,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
 
+/**
+ * The competence-relationship-type
+ * @author David Hondl
+ *
+ */
 @Data
 @Entity
 @Table(name = "competence_relationship_type")

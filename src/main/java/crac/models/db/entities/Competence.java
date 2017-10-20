@@ -36,8 +36,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The competence-entity.
- */
+ * The competence-entity
+ * @author David Hondl
+*/
 
 @Entity
 @Table(name = "competences")

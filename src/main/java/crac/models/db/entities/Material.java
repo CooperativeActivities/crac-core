@@ -24,6 +24,11 @@ import crac.models.db.relation.UserMaterialSubscription;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The material entity
+ * @author David Hondl
+ *
+ */
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "material")

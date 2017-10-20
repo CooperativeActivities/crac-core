@@ -23,6 +23,11 @@ import crac.models.db.relation.CompetencePermissionType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The role entity
+ * @author David Hondl
+ *
+ */
 @Entity
 @Table(name = "role")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
