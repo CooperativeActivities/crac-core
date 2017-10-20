@@ -7,8 +7,9 @@ import crac.models.db.relation.RepetitionDate;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
- */
+ * Spring Data CrudRepository for the repetition-date entity.
+ * @author David Hondl
+*/
 @Transactional
 public interface RepetitionDateDAO extends CrudRepository<RepetitionDate, Long> {
 }

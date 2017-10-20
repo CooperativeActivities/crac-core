@@ -1,21 +1,19 @@
 package crac.models.db.daos;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import crac.models.db.entities.Competence;
-import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceRelationship;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
- */
+ * Spring Data CrudRepository for the competence-relationship entity.
+ * @author David Hondl
+*/
 @Transactional
 @Component
 public interface CompetenceRelationshipDAO extends CrudRepository<CompetenceRelationship, Long> {

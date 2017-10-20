@@ -12,6 +12,12 @@ import crac.module.utility.ElasticConnector;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * This class presents a service that combines the CrudRepository and the Elasticsearch-access
+ * Methods of both components are available as delegate or as a combination
+ * @author David Hondl
+ *
+ */
 @Component
 @Scope("singleton")
 public class TaskDAO {

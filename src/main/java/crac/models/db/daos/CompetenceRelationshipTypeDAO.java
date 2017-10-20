@@ -7,8 +7,9 @@ import crac.models.db.relation.CompetenceRelationshipType;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
- */
+ * Spring Data CrudRepository for the competence-relationship-type entity.
+ * @author David Hondl
+*/
 @Transactional
 public interface CompetenceRelationshipTypeDAO extends CrudRepository<CompetenceRelationshipType, Long> {
 }

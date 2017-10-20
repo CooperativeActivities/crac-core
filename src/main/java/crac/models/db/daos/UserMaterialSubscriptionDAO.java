@@ -9,8 +9,9 @@ import crac.models.db.relation.UserMaterialSubscription;
 
 
 /**
- * Spring Data CrudRepository for the competence entity.
- */
+ * Spring Data CrudRepository for the user-material-subscription entity.
+ * @author David Hondl
+*/
 @Transactional
 public interface UserMaterialSubscriptionDAO extends CrudRepository<UserMaterialSubscription, Long> {
 	public UserMaterialSubscription findByMaterial(Material material);
