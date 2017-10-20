@@ -2116,7 +2116,7 @@ public class TaskController {
 		Task myTask = taskDAO.findOne(task_id);
 		return JSONResponseHelper.createResponse(myTask.getComments(), true);
 	}
-
+/*
 	@RequestMapping(value = { "/{task_id}/competence/suggest",
 			"/{task_id}/competence/suggest/" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
@@ -2132,5 +2132,5 @@ public class TaskController {
 		Task task = taskDAO.findOne(taskId);
 		return JSONResponseHelper.createResponse(decider.findCompetenceAreas(task), true);
 	}
-
+*/
 }

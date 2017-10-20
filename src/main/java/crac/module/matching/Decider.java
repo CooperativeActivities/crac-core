@@ -32,10 +32,10 @@ public class Decider {
 	
 	@Autowired
 	private WorkerFactory wf;
-	
+	/*
 	@Autowired
 	private NLPWorkerFactory nlpWf;
-	
+	*/
 	public ArrayList<EvaluatedTask> findTasks(CracUser u){
 		TaskMatchingWorker w = (TaskMatchingWorker) wf.createWorker(TaskMatchingWorker.class, u);
 		ArrayList<EvaluatedTask> list = w.run();
@@ -55,7 +55,7 @@ public class Decider {
 		w1.run();
 		w2.run();
 	}
-	
+	/*
 	public ArrayList<Competence> findCompetences(Task t){
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("task", t);
@@ -72,5 +72,5 @@ public class Decider {
 		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, param);
 		ArrayList<CompetenceArea> list = w.run(); 
 		return list;
-	}
+	}*/
 }

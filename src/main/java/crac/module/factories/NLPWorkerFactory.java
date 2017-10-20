@@ -21,8 +21,8 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import lombok.Getter;
 import lombok.Setter;
 
-@Component
-@Scope("prototype")
+//@Component
+//@Scope("prototype")
 public class NLPWorkerFactory{
 	
     @Value("${crac.nlp.taggerDirectory}") String taggerDirectory;
