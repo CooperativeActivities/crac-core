@@ -77,6 +77,7 @@ import crac.module.utility.JSONResponseHelper;
 
 /**
  * REST controller for managing synchronization-related endpoints
+ * 
  * @author David Hondl
  *
  */
@@ -173,6 +174,9 @@ public class SynchronizationController {
 
 	@Value("${crac.elastic.url}")
 	private String url;
+
+	@Value("${crac.print.synchronization.competences}")
+	private boolean compsync;
 
 	@PostConstruct
 	public void init() {
@@ -314,8 +318,11 @@ public class SynchronizationController {
 						}
 					}
 				} catch (KometMappingException ex) {
-					ex.printStackTrace();
-					System.out.println("Error at dataset with ID " + c.getUid()+" and type "+c.getClass().getSimpleName());
+					if (compsync) {
+						ex.printStackTrace();
+					}
+					System.out.println(
+							"Error at dataset with ID " + c.getUid() + " and type " + c.getClass().getSimpleName());
 				}
 			});
 
