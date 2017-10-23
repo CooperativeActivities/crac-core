@@ -11,7 +11,6 @@ import crac.models.db.entities.CompetenceArea;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Evaluation;
 import crac.models.db.entities.Task;
-import crac.module.factories.NLPWorkerFactory;
 import crac.module.factories.WorkerFactory;
 import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.helpers.EvaluatedUser;
@@ -21,6 +20,7 @@ import crac.module.matching.workers.TaskMatchingWorker;
 import crac.module.matching.workers.UserCompetenceRelationEvolutionWorker;
 import crac.module.matching.workers.UserMatchingWorker;
 import crac.module.matching.workers.UserRelationEvolutionWorker;
+import crac.module.nlp.NLPProcessing;
 
 /**
  * The decider-service serves as layer between the controllers and the instanced workers
@@ -32,10 +32,10 @@ public class Decider {
 	
 	@Autowired
 	private WorkerFactory wf;
-	/*
+	
 	@Autowired
-	private NLPWorkerFactory nlpWf;
-	*/
+	private NLPProcessing nlpProcessing;
+
 	public ArrayList<EvaluatedTask> findTasks(CracUser u){
 		TaskMatchingWorker w = (TaskMatchingWorker) wf.createWorker(TaskMatchingWorker.class, u);
 		ArrayList<EvaluatedTask> list = w.run();
@@ -55,12 +55,13 @@ public class Decider {
 		w1.run();
 		w2.run();
 	}
-	/*
+	
 	public ArrayList<Competence> findCompetences(Task t){
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("task", t);
 		param.put("rules", "crac/module/nlp/resources/competence_extraction_rules.txt");
-		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) nlpWf.createWorker(TaskCompetenceMatchingWorker.class, param);
+		TaskCompetenceMatchingWorker w = (TaskCompetenceMatchingWorker) wf.createWorker(TaskCompetenceMatchingWorker.class, param);
+		w.setNlpProcessing(nlpProcessing);
 		ArrayList<Competence> list = w.run(); 
 		return list; 
 	}
@@ -69,8 +70,9 @@ public class Decider {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("task", t);
 		param.put("rules", "crac/module/nlp/resources/competence_extraction_rules.txt");
-		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) nlpWf.createWorker(TaskCompetenceAreaMatchingWorker.class, param);
+		TaskCompetenceAreaMatchingWorker w = (TaskCompetenceAreaMatchingWorker) wf.createWorker(TaskCompetenceAreaMatchingWorker.class, param);
+		w.setNlpProcessing(nlpProcessing);
 		ArrayList<CompetenceArea> list = w.run(); 
 		return list;
-	}*/
+	}
 }

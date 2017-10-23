@@ -25,3 +25,8 @@ reinigen	PUTZEN
 aufräumen	PUTZEN
 wischen		PUTZEN
 saugen		PUTZEN
+kommunikativ	KOMMUNIKATION
+frei(.*)	FLEXIBEL
+Team(.*)	TEAM
+Gruppe	TEAM
+zusammen	TEAM

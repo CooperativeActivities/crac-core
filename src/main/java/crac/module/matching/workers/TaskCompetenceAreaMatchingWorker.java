@@ -32,7 +32,7 @@ public class TaskCompetenceAreaMatchingWorker extends NLPWorker {
 		
 		Set<CompetenceArea> compAreas = new HashSet<CompetenceArea>();
 		for (String cAnn: compAnn){
-			compAreas.addAll(getWf().getCompetenceAreas(cAnn));
+			compAreas.addAll(getNlpProcessing().getCompetenceAreas(cAnn));
 		}		
 		return new ArrayList<CompetenceArea>(compAreas);
 	}

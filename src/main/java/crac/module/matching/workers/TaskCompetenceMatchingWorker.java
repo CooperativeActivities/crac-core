@@ -30,7 +30,7 @@ public class TaskCompetenceMatchingWorker extends NLPWorker {
 		
 		Set<Competence> competences = new HashSet<Competence>();
 		for (String cAnn: compAnn){
-			competences.addAll(getWf().getCompetences(cAnn));
+			competences.addAll(getNlpProcessing().getCompetences(cAnn));
 		}		
 		return new ArrayList<Competence>(competences);
 	}

@@ -1,33 +1,29 @@
-ENV.defaults["stage.limitIters"] = 2
+ENV.defaults["stage.limitIters"] = 3
 
 # Map variable names to annotation keys
 ner = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$NamedEntityTagAnnotation" }
 
 compAnn = { type: "CLASS", value: "crac.module.matching.superclass.NLPWorker$CompetenceAnnotation" }
 
-$BACKEN = "[ {ner:KUCH} | {ner:TORTE}]"
+$BACKEN = "[ {ner:BACK} | {ner:KUCH} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken} ]"
 
-$KOCHEN = "[ {ner:BACK} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken}]"
+$KOCHEN = "[ {lemma:kochen} | {ner:WARME_SPEISE} ]"
 
 $PUTZEN = "[ {ner:PUTZEN} | {lemma:putzen}]"
+
+$TEAMFAEHIGKEIT = "[ {ner:TEAM} ]"
 
 {
   // ruleType is "text", "tokens", "composite", or "filter"
   ruleType: "tokens",
   
   // pattern to be matched  
-  pattern: ($KOCHEN),
+  pattern: ($KOCHEN | $BACKEN),
 
   // value associated with the expression for which the pattern was matched
   // matched expressions are returned with "DATE_OF_BIRTH" as the value
   // (as part of the MatchedExpression class)
   action: (Annotate($0, compAnn, "Kochen"))
-}
-
-{
-	ruleType: "tokens",
-	pattern: ($BACKEN),
-	action: (Annotate($0, ner, "BACK2"))
 }
 
 {
@@ -37,5 +33,10 @@ $PUTZEN = "[ {ner:PUTZEN} | {lemma:putzen}]"
   // pattern to be matched  
   pattern: ($PUTZEN),
   action: (Annotate($0, compAnn, "Putzen"))
+}
+
+{
+  pattern: ($TEAMFAEHIGKEIT),
+  action: (Annotate($0, compAnn, "Teamfähigkeit"))
 }
 
