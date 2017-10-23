@@ -25,6 +25,7 @@ import crac.models.db.entities.Task;
 import crac.models.utility.NotificationConfiguration;
 import crac.module.factories.NotificationFactory;
 import crac.module.notifier.Notification;
+import crac.module.notifier.notifications.EvaluationNotification;
 import lombok.Data;
 
 /**
