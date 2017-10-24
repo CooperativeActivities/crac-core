@@ -1,5 +1,6 @@
 package crac.controllers;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -493,7 +494,7 @@ public class CracUserController {
 		if (a != null) {
 			try {
 				CracUtility.removeFile(a.getPath());
-			} catch (InvalidActionException ex) {
+			} catch (InvalidActionException | FileNotFoundException ex) {
 				System.out.println("File not found!");
 			}
 		} else {

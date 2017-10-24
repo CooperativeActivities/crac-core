@@ -1,5 +1,6 @@
 package crac;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -39,8 +40,7 @@ import crac.module.utility.JSONResponseHelper;
  */
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-
-
+	
 	@Override
 	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -82,6 +82,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(InvalidParameterException.class)
 	protected ResponseEntity<String> handleParameterException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.WRONG_PARAMETER);
+	}
+	
+	@ExceptionHandler(FileNotFoundException.class)
+	protected ResponseEntity<String> handleFileNotFoundException(Exception ex) {
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.FILE_NOT_FOUND);
 	}
 
 	@ExceptionHandler(NoNodeAvailableException.class)

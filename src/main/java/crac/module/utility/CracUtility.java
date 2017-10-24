@@ -2,6 +2,7 @@ package crac.module.utility;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -78,7 +79,7 @@ public class CracUtility {
 	 * @param path
 	 * @throws InvalidActionException
 	 */
-	public static void removeFile(String path) throws InvalidActionException {
+	public static void removeFile(String path) throws InvalidActionException, FileNotFoundException {
 		if (!new File("uploadedFiles/" + path).delete()) {
 			throw new InvalidActionException(ErrorCode.ACTION_NOT_VALID);
 		}
