@@ -478,8 +478,8 @@ public class CracUserController {
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image/add",
-			"/image/add/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
+	@RequestMapping(value = { "/image",
+			"/image/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
 
 	@ResponseBody
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file)
@@ -521,7 +521,7 @@ public class CracUserController {
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image/get", "/image/get/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@RequestMapping(value = { "/image", "/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
 	public ResponseEntity<byte[]> getUserImage() throws IOException, InvalidActionException {
 
@@ -553,8 +553,8 @@ public class CracUserController {
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/{user_id}/image/get",
-			"/{user_id}/image/get/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+	@RequestMapping(value = { "/{user_id}/image",
+			"/{user_id}/image/" }, method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
 	public ResponseEntity<byte[]> getUserImageById(@PathVariable(value = "user_id") Long id)
 			throws IOException, InvalidActionException {

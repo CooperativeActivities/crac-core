@@ -24,6 +24,8 @@ import crac.exception.InvalidActionException;
  */
 public class CracUtility {
 
+	private static String dir = "uploadedFiles";
+	
 	/**
 	 * Static method that returns a random string with given length
 	 * 
@@ -66,8 +68,7 @@ public class CracUtility {
 		}
 
 		String filename = new Timestamp(new Date().getTime()).hashCode() + file.getOriginalFilename();
-		String directory = "uploadedFiles";
-		String filepath = Paths.get(directory, filename).toString();
+		String filepath = Paths.get(dir, filename).toString();
 
 		// Save the file locally
 		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath)));
@@ -87,7 +88,7 @@ public class CracUtility {
 		File f = null;
 		boolean deleted = true;
 		try {
-			f = new File("uploadedFiles/" + path);
+			f = new File(dir + path);
 			f.delete();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -106,7 +107,7 @@ public class CracUtility {
 	 * @throws IOException
 	 */
 	public static byte[] getFile(String path) throws IOException {
-		File image = new File("uploadedFiles/" + path);
+		File image = new File(dir + path);
 		byte[] imageContent = null;
 		imageContent = Files.readAllBytes(image.toPath());
 		return imageContent;
