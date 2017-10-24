@@ -494,7 +494,7 @@ public class CracUserController {
 		if (a != null) {
 			try {
 				CracUtility.removeFile(a.getPath());
-			} catch (InvalidActionException | FileNotFoundException ex) {
+			} catch (InvalidActionException ex) {
 				System.out.println("File not found!");
 			}
 		} else {

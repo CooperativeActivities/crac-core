@@ -18,6 +18,7 @@ import crac.exception.InvalidActionException;
 
 /**
  * This class contains generally helpfull static methods for the framework
+ * 
  * @author David Hondl
  *
  */
@@ -25,6 +26,7 @@ public class CracUtility {
 
 	/**
 	 * Static method that returns a random string with given length
+	 * 
 	 * @param length
 	 * @return String
 	 */
@@ -40,6 +42,7 @@ public class CracUtility {
 
 	/**
 	 * Static method that processes an uploaded multipart-file
+	 * 
 	 * @param file
 	 * @param allowedMIME
 	 * @return
@@ -76,17 +79,25 @@ public class CracUtility {
 
 	/**
 	 * Static method, that removes target file
+	 * 
 	 * @param path
 	 * @throws InvalidActionException
 	 */
-	public static void removeFile(String path) throws InvalidActionException, FileNotFoundException {
-		if (!new File("uploadedFiles/" + path).delete()) {
+	public static void removeFile(String path) throws InvalidActionException {
+		File f = null;
+		try {
+			f = new File("uploadedFiles/" + path);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		if (!f.delete()) {
 			throw new InvalidActionException(ErrorCode.ACTION_NOT_VALID);
 		}
 	}
 
 	/**
 	 * Static method that loads and returns target file as byte-array
+	 * 
 	 * @param path
 	 * @return byte[]
 	 * @throws IOException
