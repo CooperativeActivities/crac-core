@@ -53,6 +53,7 @@ public class WorkerFactory {
     public <T extends Worker> Worker createWorker(Class<T> type, Object param) {        
         Worker w = BeanUtils.instantiate(type);    
         w.injectParam(param);
+        w.setWf(this);
 		return w;
 	}
 
