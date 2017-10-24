@@ -477,8 +477,8 @@ public class CracUserController {
 	 * @throws IOException
 	 * @throws InvalidActionException
 	 */
-	@RequestMapping(value = { "/image",
-			"/image/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
+	@RequestMapping(value = { "/image/add",
+			"/image/add/" }, method = RequestMethod.POST, headers = "content-type=multipart/*", produces = "application/json")
 
 	@ResponseBody
 	public ResponseEntity<String> addAttachment(@RequestParam("file") MultipartFile file)
