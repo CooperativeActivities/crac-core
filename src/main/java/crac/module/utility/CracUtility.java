@@ -85,12 +85,15 @@ public class CracUtility {
 	 */
 	public static void removeFile(String path) throws InvalidActionException {
 		File f = null;
+		boolean deleted = true;
 		try {
 			f = new File("uploadedFiles/" + path);
+			f.delete();
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			deleted = false;
 		}
-		if (!f.delete()) {
+		if (!deleted) {
 			throw new InvalidActionException(ErrorCode.ACTION_NOT_VALID);
 		}
 	}

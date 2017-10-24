@@ -83,11 +83,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	protected ResponseEntity<String> handleParameterException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.WRONG_PARAMETER);
 	}
-	
+	/*
 	@ExceptionHandler(FileNotFoundException.class)
 	protected ResponseEntity<String> handleFileNotFoundException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.FILE_NOT_FOUND);
-	}
+	}*/
 
 	@ExceptionHandler(NoNodeAvailableException.class)
 	protected ResponseEntity<String> handleESExceptions(NoNodeAvailableException ex) {
