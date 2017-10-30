@@ -46,7 +46,7 @@ public class GeoFilter extends ConcreteFilter {
 
 			List<Task> l = fp.getTasksPool();
 
-			if (andBind) {
+			if (!andBind) {
 				l.removeIf(x -> (geoLat != -1) && (x.getGeoLat() != geoLat) && (geoLng != -1)
 						&& (x.getGeoLng() != geoLng) && (!geoName.equals(""))
 						&& (!x.getGeoName().equalsIgnoreCase(geoName)) && (!geoCountry.equals(""))

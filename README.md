@@ -970,11 +970,16 @@ The Competence-Filter requires arbitrary competence-ids to filter tasks for thes
     	}
     	
 The Geo-Filter requires the fields geoLat, geoLng as double and geoName, geoCountry, geoCountryA, geoMacroRegion, geoRegion, geoLocality as String.
-All tasks are filtered for matching fields, as long as they are not -1 (if it is a double) or "" (if it is a string)
+All tasks are filtered for matching fields, as long as they are not -1 (if it is a double) or "" (if it is a string).
+The attribute "logicAnd" can be set to true or false and connects all given attributes by And (if true) or by Or (if false).
 
 	{
 		    "name": "GeoFilter",
 		    "params": [
+		      {
+	    		   "name": "logicAnd",
+	    		   "value": false	
+	    	   },
 		    	{
 		    		"name": "geoLat",
 		    		"value": -1.0
