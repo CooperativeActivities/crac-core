@@ -24,7 +24,7 @@ import crac.exception.InvalidActionException;
  */
 public class CracUtility {
 
-	private static String dir = " /var/lib/tomcat7/work/Catalina/localhost/crac-core/uploadedFiles";
+	private static String dir = "/var/lib/tomcat7/work/Catalina/localhost/crac-core/uploadedFiles";
 	
 	/**
 	 * Static method that returns a random string with given length
@@ -71,7 +71,7 @@ public class CracUtility {
 		String filepath = Paths.get(dir, filename).toString();
 
 		// Save the file locally
-		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath)));
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath).getAbsolutePath()));
 		stream.write(file.getBytes());
 		stream.close();
 
