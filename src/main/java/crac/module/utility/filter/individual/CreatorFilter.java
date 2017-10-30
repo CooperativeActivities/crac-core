@@ -9,9 +9,9 @@ import crac.exception.InvalidParameterException;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
-import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
+import crac.module.utility.filter.input.InputParameters;
 
 /**
  * The Creator-Filter requires the same parameters the Friend-Filter does but filters for tasks that have the given user as creator

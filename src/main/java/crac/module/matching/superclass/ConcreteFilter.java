@@ -2,10 +2,10 @@ package crac.module.matching.superclass;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import crac.models.input.PersonalizedFilters.PersonalizedFilter;
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.interfaces.CracFilter;
+import crac.module.utility.filter.input.PersonalizedFilter;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -83,11 +84,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	protected ResponseEntity<String> handleParameterException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.WRONG_PARAMETER);
 	}
-	/*
+	
 	@ExceptionHandler(FileNotFoundException.class)
 	protected ResponseEntity<String> handleFileNotFoundException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.FILE_NOT_FOUND);
-	}*/
+	}
+	
+	@ExceptionHandler(FileSizeLimitExceededException.class)
+	protected ResponseEntity<String> handleFileSizeLimitExceededException(Exception ex) {
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.FILESIZE_TOO_BIG);
+	}
 
 	@ExceptionHandler(NoNodeAvailableException.class)
 	protected ResponseEntity<String> handleESExceptions(NoNodeAvailableException ex) {

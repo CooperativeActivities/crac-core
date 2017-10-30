@@ -10,9 +10,9 @@ import crac.models.db.daos.CracUserDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.UserTaskRel;
-import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
+import crac.module.utility.filter.input.InputParameters;
 
 /**
  * The Friend-Filter requires a username as name or both firstname and lastname to find a user and show tasks that this user is
