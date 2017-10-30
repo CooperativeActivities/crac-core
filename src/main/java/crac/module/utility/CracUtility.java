@@ -24,7 +24,7 @@ import crac.exception.InvalidActionException;
  */
 public class CracUtility {
 
-	private static String dir = "uploadedFiles";
+	private static String dir = " /var/lib/tomcat7/work/Catalina/localhost/crac-core/uploadedFiles";
 	
 	/**
 	 * Static method that returns a random string with given length
