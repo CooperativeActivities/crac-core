@@ -8,9 +8,9 @@ import crac.models.db.daos.CompetenceDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetenceTaskRel;
-import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
+import crac.module.utility.filter.input.InputParameters;
 
 /**
  * The Competence-Filter requires arbitrary competence-ids to filter tasks for these competences

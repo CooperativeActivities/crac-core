@@ -11,9 +11,9 @@ import crac.models.db.daos.GroupDAO;
 import crac.models.db.entities.CracGroup;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
-import crac.models.input.PersonalizedFilters.PersonalizedFilter.InputParameters;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
+import crac.module.utility.filter.input.InputParameters;
 
 /**
  * This filter requires the name and id of a group to find a certain group and will filter the tasks based on the restricting groups

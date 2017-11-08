@@ -1,16 +1,19 @@
 package crac;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,7 +41,13 @@ import crac.module.utility.JSONResponseHelper;
  */
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-
+	
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		return JSONResponseHelper.createResponseObj(RESTAction.ANY, "bad_request", ErrorCode.UNSUPPORTED_MEDIA_TYPE);
+	}
+	
 	@Override
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -74,6 +83,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(InvalidParameterException.class)
 	protected ResponseEntity<String> handleParameterException(Exception ex) {
 		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.WRONG_PARAMETER);
+	}
+	
+	@ExceptionHandler(FileNotFoundException.class)
+	protected ResponseEntity<String> handleFileNotFoundException(Exception ex) {
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.FILE_NOT_FOUND);
+	}
+	
+	@ExceptionHandler(FileSizeLimitExceededException.class)
+	protected ResponseEntity<String> handleFileSizeLimitExceededException(Exception ex) {
+		return JSONResponseHelper.createResponse(false, "bad_request", ErrorCode.FILESIZE_TOO_BIG);
 	}
 
 	@ExceptionHandler(NoNodeAvailableException.class)

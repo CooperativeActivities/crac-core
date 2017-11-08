@@ -8,9 +8,11 @@ import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 
 /**
- * The Geo-Filter requires the fields geoLat, geoLng as double and geoName, geoCountry, geoCountryA, geoMacroRegion, 
- * geoRegion, geoLocality as String. All tasks are filtered for matching fields, 
- * as long as they are not -1 (if it is a double) or "" (if it is a string)
+ * The Geo-Filter requires the fields geoLat, geoLng as double and geoName,
+ * geoCountry, geoCountryA, geoMacroRegion, geoRegion, geoLocality as String.
+ * All tasks are filtered for matching fields, as long as they are not -1 (if it
+ * is a double) or "" (if it is a string)
+ * 
  * @author David Hondl
  *
  */
@@ -34,15 +36,35 @@ public class GeoFilter extends ConcreteFilter {
 			String geoRegion = (String) super.getPf().getParam("geoRegion");
 			String geoLocality = (String) super.getPf().getParam("geoLocality");
 
+			boolean andBind = true;
+
+			try {
+				andBind = (boolean) super.getPf().getParam("logicAnd");
+			} catch (Exception ex) {
+				System.out.println("AndBind not possible");
+			}
+
 			List<Task> l = fp.getTasksPool();
 
-			l.removeIf(x -> (geoLat != -1) && (x.getGeoLat() != geoLat) || (geoLng != -1) && (x.getGeoLng() != geoLng)
-					|| (!geoName.equals("")) && (!x.getGeoName().equalsIgnoreCase(geoName))
-					|| (!geoCountry.equals("")) && (!x.getGeoCountry().equalsIgnoreCase(geoCountry))
-					|| (!geoCountryA.equals("")) && (!x.getGeoCountryA().equalsIgnoreCase(geoCountryA))
-					|| (!geoMacroRegion.equals("")) && (!x.getGeoMacroRegion().equalsIgnoreCase(geoMacroRegion))
-					|| (!geoRegion.equals("")) && (!x.getGeoRegion().equalsIgnoreCase(geoRegion))
-					|| (!geoLocality.equals("")) && (!x.getGeoLocality().equalsIgnoreCase(geoLocality)));
+			if (!andBind) {
+				l.removeIf(x -> (geoLat != -1) && (x.getGeoLat() != geoLat) && (geoLng != -1)
+						&& (x.getGeoLng() != geoLng) && (!geoName.equals(""))
+						&& (!x.getGeoName().equalsIgnoreCase(geoName)) && (!geoCountry.equals(""))
+						&& (!x.getGeoCountry().equalsIgnoreCase(geoCountry)) && (!geoCountryA.equals(""))
+						&& (!x.getGeoCountryA().equalsIgnoreCase(geoCountryA)) && (!geoMacroRegion.equals(""))
+						&& (!x.getGeoMacroRegion().equalsIgnoreCase(geoMacroRegion)) && (!geoRegion.equals(""))
+						&& (!x.getGeoRegion().equalsIgnoreCase(geoRegion)) && (!geoLocality.equals(""))
+						&& (!x.getGeoLocality().equalsIgnoreCase(geoLocality)));
+			} else {
+				l.removeIf(x -> (geoLat != -1) && (x.getGeoLat() != geoLat)
+						|| (geoLng != -1) && (x.getGeoLng() != geoLng)
+						|| (!geoName.equals("")) && (!x.getGeoName().equalsIgnoreCase(geoName))
+						|| (!geoCountry.equals("")) && (!x.getGeoCountry().equalsIgnoreCase(geoCountry))
+						|| (!geoCountryA.equals("")) && (!x.getGeoCountryA().equalsIgnoreCase(geoCountryA))
+						|| (!geoMacroRegion.equals("")) && (!x.getGeoMacroRegion().equalsIgnoreCase(geoMacroRegion))
+						|| (!geoRegion.equals("")) && (!x.getGeoRegion().equalsIgnoreCase(geoRegion))
+						|| (!geoLocality.equals("")) && (!x.getGeoLocality().equalsIgnoreCase(geoLocality)));
+			}
 		} catch (ClassCastException e) {
 			System.out.println(e.getMessage());
 			throw new InvalidParameterException();

@@ -16,11 +16,11 @@ import crac.models.db.daos.TaskDAO;
 import crac.models.db.entities.CracUser;
 import crac.models.db.entities.Task;
 import crac.models.input.PersonalizedFilters;
-import crac.models.input.PersonalizedFilters.PersonalizedFilter;
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.helpers.FilterParameters;
 import crac.module.matching.superclass.ConcreteFilter;
 import crac.module.utility.ElasticConnector;
+import crac.module.utility.filter.input.PersonalizedFilter;
 import lombok.Getter;
 
 /**

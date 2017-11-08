@@ -6,6 +6,7 @@ import java.util.List;
 import crac.module.factories.CracFilterFactory;
 import crac.module.matching.interfaces.FilterConfiguration;
 import crac.module.matching.superclass.ConcreteFilter;
+import crac.module.utility.filter.input.PersonalizedFilter;
 import lombok.Data;
 
 /**
@@ -46,54 +47,4 @@ public class PersonalizedFilters {
         return true;
     }
     
-    /**
-     * Helper-class that contains a single filter
-     * @author David
-     *
-     */
-    @Data
-    public class PersonalizedFilter {
-    	
-    	private String name;
-    	private List<InputParameters> params;
-    	private ConcreteFilter cf;
-    	
-    	public PersonalizedFilter(){
-    		
-    	}
-    	
-    	public Object getParam(String name){
-    		for(InputParameters pd : params){
-    			if(pd.getName().equals(name)){
-    				return pd.getValue();
-    			}
-    		}
-    		return null;
-    	}
-    	
-    	public boolean paramExists(String name){
-    		for(InputParameters pd : params){
-    			if(pd.getName().equals(name)){
-    				return true;
-    			}
-    		}
-    		return false;
-    	}
-    	
-    	/**
-    	 * Helper class that contains attributes of a single filter
-    	 * @author David
-    	 *
-    	 */
-    	@Data
-    	public class InputParameters {
-    		
-    		private String name;
-    		private Object value;
-
-    	}
-    	
-    }
-
-
 }

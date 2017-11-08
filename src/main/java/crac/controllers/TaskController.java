@@ -1,5 +1,6 @@
 package crac.controllers;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1978,6 +1979,7 @@ public class TaskController {
 	 * @param task_id
 	 * @return ResponseEntity
 	 * @throws InvalidActionException
+	 * @throws FileNotFoundException 
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
@@ -1986,7 +1988,7 @@ public class TaskController {
 
 	@ResponseBody
 	public ResponseEntity<String> removeAttachment(@PathVariable(value = "task_id") Long task_id,
-			@PathVariable(value = "attachment_id") Long attachment_id) throws InvalidActionException {
+			@PathVariable(value = "attachment_id") Long attachment_id) throws InvalidActionException, FileNotFoundException {
 
 		UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 				.getContext().getAuthentication();
