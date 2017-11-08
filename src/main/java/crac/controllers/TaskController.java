@@ -74,6 +74,7 @@ import crac.module.matching.helpers.EvaluatedTask;
 import crac.module.matching.interfaces.ErrorStatus;
 import crac.module.notifier.Notification;
 import crac.module.notifier.notifications.LeadNomination;
+import crac.module.notifier.notifications.TaskDoneNotification;
 import crac.module.notifier.notifications.TaskInvitation;
 import crac.module.storage.CompetenceStorage;
 import crac.module.utility.CracUtility;

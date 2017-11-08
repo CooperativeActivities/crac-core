@@ -5,13 +5,23 @@ ner = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$NamedEntity
 
 compAnn = { type: "CLASS", value: "crac.module.matching.superclass.NLPWorker$CompetenceAnnotation" }
 
-$BACKEN = "[ {ner:BACK} | {ner:KUCH} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken} ]"
+$BACKEN = "[ {ner:BACK} | {ner:KUCHEN} | {ner:TORTE} | {lemma:backen} | {lemma:selbstgebacken} ]"
 
 $KOCHEN = "[ {lemma:kochen} | {ner:WARME_SPEISE} ]"
 
 $PUTZEN = "[ {ner:PUTZEN} | {lemma:putzen}]"
 
 $TEAMFAEHIGKEIT = "[ {ner:TEAM} ]"
+
+$ORGANISATIONSFAEHIGKEIT = "[ {ner:ORGANISIEREN} ]"
+
+$ENGAGEMENTBEREITSCHAFT = "[ {ner:ENGAGIEREN} ]"
+
+$KOERPERLICHE_EIGNUNG = "[ {ner:KOERPERLICH} ]"
+
+$GEISTIGE_EIGNUNG = "[ {ner:GEISTIG} | {ner:PSYCHISCH} | {lemma:psychisch} | {lemma:emotional} ]"
+
+$SOZIAL	= "[ {ner:UMGAENGLICH} | {lemma:sozial} ]"
 
 {
   // ruleType is "text", "tokens", "composite", or "filter"
@@ -40,3 +50,27 @@ $TEAMFAEHIGKEIT = "[ {ner:TEAM} ]"
   action: (Annotate($0, compAnn, "Teamfähigkeit"))
 }
 
+{
+  pattern: ($ORGANISATIONSFAEHIGKEIT),
+  action: (Annotate($0, compAnn, "Organisationsfähigkeit"))
+}
+
+{
+  pattern: ($ENGAGEMENTBEREITSCHAFT),
+  action: (Annotate($0, compAnn, "Engagementbereitschaft"))
+}
+
+{
+  pattern: ($KOERPERLICHE_EIGNUNG),
+  action: (Annotate($0, compAnn, "Belastbarkeit"))
+}
+
+{
+  pattern: ($GEISTIGE_EIGNUNG),
+  action: (Annotate($0, compAnn, "Belastbarkeit"))
+}
+
+{
+  pattern: ($SOZIAL),
+  action: (Annotate($0, compAnn, "Sozialkompetenz"))
+}
