@@ -33,6 +33,7 @@ import crac.models.db.daos.CompetenceTaskRelDAO;
 import crac.models.db.daos.CracUserDAO;
 import crac.models.db.daos.EvaluationDAO;
 import crac.models.db.daos.GroupDAO;
+import crac.models.db.daos.MappingCompetenceAreaCompetenceDAO;
 import crac.models.db.daos.MaterialDAO;
 import crac.models.db.daos.RepetitionDateDAO;
 import crac.models.db.daos.RoleDAO;
@@ -50,6 +51,7 @@ import crac.models.db.entities.Task;
 import crac.models.db.relation.CompetencePermissionType;
 import crac.models.db.relation.CompetenceRelationship;
 import crac.models.db.relation.CompetenceRelationshipType;
+import crac.models.db.relation.MappingCompetenceAreaCompetence;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsDescriptorMmDAO;
 import crac.models.komet.daos.TxExabiscompetencesDescriptorsTopicidMmDAO;
@@ -96,6 +98,9 @@ public class SynchronizationController {
 
 	@Autowired
 	private CompetenceAreaDAO competenceAreaDAO;
+	
+	@Autowired
+	private MappingCompetenceAreaCompetenceDAO mappingCompetenceAreaCompetenceDAO;
 
 	@Autowired
 	private CompetencePermissionTypeDAO competencePermissionTypeDAO;
@@ -278,9 +283,13 @@ public class SynchronizationController {
 		map.put(CompetenceAreaDAO.class, competenceAreaDAO);
 
 		boolean competencemap = sync(txExabiscompetencesDescriptorDAO, competenceDAO, map);
-
-		map = new HashMap<>();
+		
 		map.put(CompetenceDAO.class, competenceDAO);
+		
+		// map competences to competence areas
+		boolean areacompmap = syncAreaCompMapping(map);
+
+		map.put(MappingCompetenceAreaCompetenceDAO.class,mappingCompetenceAreaCompetenceDAO);
 		map.put(CompetenceRelationshipTypeDAO.class, competenceRelationshipTypeDAO);
 
 		boolean comprelmap = sync(txExabiscompetencesDescriptorsDescriptorMmDAO, competenceRelationshipDAO, map);
@@ -289,6 +298,7 @@ public class SynchronizationController {
 		meta.put("sync", "DATABASE");
 		meta.put("competence_areas", areamap);
 		meta.put("competences", competencemap);
+		meta.put("mapping_competenceArea_competences", areacompmap);
 		meta.put("competence_relationships", comprelmap);
 		return JSONResponseHelper.createResponse(true, meta);
 
@@ -343,6 +353,33 @@ public class SynchronizationController {
 		}
 	}
 
+	public boolean syncAreaCompMapping(Map<Class<?>, CrudRepository<?, ?>> map) {
+		try {
+			
+			Iterable<TxExabiscompetencesDescriptorsTopicidMm> kometData = txExabiscompetencesDescriptorsTopicidMmDAO.findAll();
+			
+			// RESET: delete all mapping entries in crac-db
+			mappingCompetenceAreaCompetenceDAO.deleteAll();
+
+			kometData.forEach(c -> {
+				try {
+					if (c.isValid())
+						mappingCompetenceAreaCompetenceDAO.save((MappingCompetenceAreaCompetence) c.map(map));
+				} catch (KometMappingException ex) {
+					if (compsync) {
+						ex.printStackTrace();
+					}
+					System.out.println(
+							"Error at dataset with foreign ID " + c.getUidForeign() + " and local ID " + c.getUidLocal() + " and type " + c.getClass().getSimpleName());
+				}
+			});
+			return true;
+		} catch (ClassCastException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
 	/**
 	 * Add filters to the configuration
 	 * 
