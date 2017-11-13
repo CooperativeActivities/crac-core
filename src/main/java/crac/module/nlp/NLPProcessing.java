@@ -11,17 +11,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import crac.models.db.daos.CompetenceAreaDAO;
-import crac.models.db.daos.CracUserDAO;
-import crac.models.db.daos.TaskDAO;
-import crac.models.db.daos.UserCompetenceRelDAO;
-import crac.models.db.daos.UserRelationshipDAO;
 import crac.models.db.entities.Competence;
 import crac.models.db.entities.CompetenceArea;
-import crac.module.factories.WorkerFactory;
-import crac.module.matching.configuration.MatchingConfiguration;
-import crac.module.matching.configuration.PostMatchingConfiguration;
-import crac.module.matching.configuration.PreMatchingConfiguration;
-import crac.module.storage.CompetenceStorage;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import lombok.Data;
 import lombok.Getter;
