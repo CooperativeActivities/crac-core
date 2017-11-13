@@ -40,11 +40,11 @@ public class NLPProcessing {
 			props.setProperty("annotators", "tokenize, ssplit, pos, german.lemma, ner, parse, regexner"); 
 			props.setProperty("tokenize.language", "de"); 
 			
-			props.setProperty("pos.model", "src/main/java/crac/module/nlp/resources/german-hgc.tagger");
+			props.setProperty("pos.model", "nlp/german-hgc.tagger");
 			props.setProperty("treetagger.home", taggerDir);
-			props.setProperty("ner.model", "src/main/java/crac/module/nlp/resources/german.conll.hgc_175m_600.crf.ser.gz");
-			props.setProperty("parse.model", "src/main/java/crac/module/nlp/resources/germanFactored.ser.gz");
-			props.setProperty("regexner.mapping", "src/main/java/crac/module/nlp/resources/gaz_WDS.txt");
+			props.setProperty("ner.model", "nlp/german.conll.hgc_175m_600.crf.ser.gz");
+			props.setProperty("parse.model", "nlp/germanFactored.ser.gz");
+			props.setProperty("regexner.mapping", "nlp/gaz_WDS.txt");
 			props.setProperty("ner.useSUTime", "0");
 							
 			pipeline = new StanfordCoreNLP(props);
@@ -56,12 +56,7 @@ public class NLPProcessing {
 		@PostConstruct
 		private void init(){
 			buildNLPPipeline(taggerDirectory);
-			//buildNLPPipeline("/opt/tree-tagger");
 		}
-		
-		/*public StanfordCoreNLP getPipeline(){
-			return pipeline;
-		}*/
 		
 		public ArrayList<CompetenceArea> getCompetenceAreas(String ann){
 			ArrayList<CompetenceArea> compAreas = new ArrayList<CompetenceArea>();
